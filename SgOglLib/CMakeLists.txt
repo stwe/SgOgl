@@ -3,6 +3,8 @@ project(SgOglLib)
 set(LIB_SRC_FILES
     src/SgOglLib/Application.cpp
     src/SgOglLib/Log.cpp
+    src/SgOglLib/Config.cpp
+    src/SgOglLib/SgException.cpp
 )
 
 if (SHARED_LIB)
@@ -24,8 +26,15 @@ else()
     endif()
 endif()
 
-add_library(Sg::GameEngineLib ALIAS ${PROJECT_NAME})
-
+# include dirs
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src/SgOglLib)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/spdlog/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/glm)
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/tinyxml2/include)
+
+# link tinyxml2 static debug lib
+target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/tinyxml2/lib/static/linux/libtinyxml2d.a)
+
+# set an alias
+add_library(Sg::GameEngineLib ALIAS ${PROJECT_NAME})

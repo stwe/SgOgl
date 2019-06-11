@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "Core.h"
+#include "Config.h"
 
 namespace sg::ogl
 {
@@ -12,14 +13,26 @@ namespace sg::ogl
         // Ctors. / Dtor.
         //-------------------------------------------------
 
-        Application() = default;
+        Application() = delete;
+
+        explicit Application(const std::string& t_configFileName);
 
         Application(const Application& t_other) = delete;
         Application(Application&& t_other) noexcept = delete;
         Application& operator=(const Application& t_other) = delete;
         Application& operator=(Application&& t_other) noexcept = delete;
 
-        virtual ~Application() noexcept = default;
+        virtual ~Application() noexcept;
+
+        //-------------------------------------------------
+        // Getter
+        //-------------------------------------------------
+
+        const WindowOptions& GetWindowOptions() const noexcept;
+        WindowOptions& GetWindowOptions() noexcept;
+
+        const ProjectionOptions& GetProjectionOptions() const noexcept;
+        ProjectionOptions& GetProjectionOptions() noexcept;
 
         //-------------------------------------------------
         // Run
@@ -36,6 +49,9 @@ namespace sg::ogl
     protected:
 
     private:
+        WindowOptions m_windowOptions{};
+        ProjectionOptions m_projectionOptions{};
+
         //-------------------------------------------------
         // Init
         //-------------------------------------------------
