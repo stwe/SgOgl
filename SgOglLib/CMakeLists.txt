@@ -5,6 +5,7 @@ set(LIB_SRC_FILES
     src/SgOglLib/Log.cpp
     src/SgOglLib/Config.cpp
     src/SgOglLib/SgException.cpp
+    src/SgOglLib/Color.cpp
 )
 
 if (SHARED_LIB)
