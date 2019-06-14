@@ -19,12 +19,12 @@ void sg::ogl::Window::Init()
 
     // Setup an error callback.
     glfwSetErrorCallback
-            (
-                    [](int t_error, const char* t_description)
-                    {
-                        SG_OGL_CORE_LOG_ERROR("GLFW Error ({}) {}", t_error, t_description);
-                    }
-            );
+    (
+        [](int t_error, const char* t_description)
+        {
+            SG_OGL_CORE_LOG_ERROR("GLFW Error ({}) {}", t_error, t_description);
+        }
+    );
 
     // Initialize GLFW.
     if (!glfwInit())
@@ -38,8 +38,8 @@ void sg::ogl::Window::Init()
     glfwDefaultWindowHints();
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // todo
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); // todo
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, windowOptions.glMajor);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, windowOptions.glMinor);
 
     if (windowOptions.debugContext)
     {
@@ -109,55 +109,56 @@ void sg::ogl::Window::Init()
 
     // Set a framebuffer size callback.
     glfwSetFramebufferSizeCallback
-            (
-                    m_windowHandle,
-                    [](GLFWwindow* t_window, int t_width, int t_height)
-                    {
-                        static auto* win{ static_cast<Window*>(glfwGetWindowUserPointer(t_window)) };
+    (
+        m_windowHandle,
+        [](GLFWwindow* t_window, int t_width, int t_height)
+        {
+            static auto* win{ static_cast<Window*>(glfwGetWindowUserPointer(t_window)) };
 
-                        auto& projection{ win->m_application->GetProjectionOptions() };
+            auto& projection{ win->m_application->GetProjectionOptions() };
 
-                        // Update width && height.
-                        projection.width = t_width;
-                        projection.height = t_height;
+            // Update width && height.
+            projection.width = t_width;
+            projection.height = t_height;
 
-                        // Update viewport.
-                        glViewport(0, 0, projection.width, projection.height);
+            // Update viewport.
+            glViewport(0, 0, projection.width, projection.height);
 
-                        // todo
-                        // Update projection matrix.
-                        //win->UpdateProjectionMatrix();
-                        //win->UpdateOrthographicProjectionMatrix();
-                    }
-            );
+            // todo
+            // Update projection matrix.
+            //win->UpdateProjectionMatrix();
+            //win->UpdateOrthographicProjectionMatrix();
+        }
+    );
 
     // Setup a key callback.
-    glfwSetKeyCallback(
-            m_windowHandle,
-            [](GLFWwindow* t_window, int t_key, int t_scancode, int t_action, int t_mods)
+    glfwSetKeyCallback
+    (
+        m_windowHandle,
+        [](GLFWwindow* t_window, int t_key, int t_scancode, int t_action, int t_mods)
+        {
+            static auto* win{ static_cast<Window*>(glfwGetWindowUserPointer(t_window)) };
+
+            auto& windowOptions{ win->m_application->GetWindowOptions() };
+
+            if (t_key == GLFW_KEY_ESCAPE && t_action == GLFW_RELEASE)
             {
-                static auto* win{ static_cast<Window*>(glfwGetWindowUserPointer(t_window)) };
-
-                auto& windowOptions{ win->m_application->GetWindowOptions() };
-
-                if (t_key == GLFW_KEY_ESCAPE && t_action == GLFW_RELEASE)
-                {
-                    // We will detect this in the game loop.
-                    glfwSetWindowShouldClose(t_window, GLFW_TRUE);
-                }
-
-                if (t_key == GLFW_KEY_T && t_action == GLFW_RELEASE)
-                {
-                    windowOptions.showTriangles = !windowOptions.showTriangles;
-                    windowOptions.showTriangles ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                }
-
-                if (t_key == GLFW_KEY_C && t_action == GLFW_RELEASE)
-                {
-                    windowOptions.faceCulling = !windowOptions.faceCulling;
-                    windowOptions.faceCulling ? EnableFaceCulling() : DisableFaceCulling();
-                }
+                // We will detect this in the game loop.
+                glfwSetWindowShouldClose(t_window, GLFW_TRUE);
             }
+
+            if (t_key == GLFW_KEY_T && t_action == GLFW_RELEASE)
+            {
+                windowOptions.showTriangles = !windowOptions.showTriangles;
+                windowOptions.showTriangles ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+
+            if (t_key == GLFW_KEY_C && t_action == GLFW_RELEASE)
+            {
+                windowOptions.faceCulling = !windowOptions.faceCulling;
+                windowOptions.faceCulling ? EnableFaceCulling() : DisableFaceCulling();
+            }
+        }
     );
 
     // Make the window visible.

@@ -18,6 +18,8 @@ namespace sg::ogl
         bool faceCulling{ true };
         bool frustumCulling{ false };
         bool printFrameRate{ false };
+        int glMajor{ 3 };
+        int glMinor{ 3 };
     };
 
     //-------------------------------------------------

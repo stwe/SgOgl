@@ -10,6 +10,8 @@
         <faceCulling>1</faceCulling>
         <frustumCulling>0</frustumCulling>
         <printFrameRate>0</printFrameRate>
+        <glMajor>3</glMajor>
+        <glMinor>3</glMinor>
     </window>
     <projection>
         <fovDeg>70.0</fovDeg>
