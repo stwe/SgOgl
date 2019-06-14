@@ -6,9 +6,13 @@
 
 namespace sg::ogl
 {
+    class Window;
+
     class SG_OGL_API Application
     {
     public:
+        using WindowUniquePtr = std::unique_ptr<Window>;
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
@@ -47,6 +51,7 @@ namespace sg::ogl
         void CleanUp() const;
 
     protected:
+        WindowUniquePtr m_window;
 
     private:
         WindowOptions m_windowOptions{};

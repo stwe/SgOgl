@@ -6,6 +6,8 @@ set(LIB_SRC_FILES
     src/SgOglLib/Config.cpp
     src/SgOglLib/SgException.cpp
     src/SgOglLib/Color.cpp
+    src/SgOglLib/Window.cpp
+    src/SgOglLib/OpenGl.cpp
 )
 
 if (SHARED_LIB)
@@ -34,8 +36,25 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/s
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/glm)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/tinyxml2/include)
 
-# link tinyxml2 static debug lib
-target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/tinyxml2/lib/static/linux/libtinyxml2d.a)
+# add tinyxml2 lib
+target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/tinyxml2/lib/libtinyxml2.a)
 
-# set an alias
+# add glfw
+find_package(glfw3 REQUIRED)
+include_directories(${GLFW_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw)
+
+# add glew
+find_package(GLEW REQUIRED)
+include_directories(${GLEW_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${GLEW_LIBRARY} )
+
+set(OpenGL_GL_PREFERENCE "LEGACY")
+
+# add OpenGL
+find_package(OpenGL REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC ${OPENGL_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_gl_LIBRARY})
+
+# set an alias for this lib
 add_library(Sg::GameEngineLib ALIAS ${PROJECT_NAME})
