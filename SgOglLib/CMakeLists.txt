@@ -37,7 +37,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/g
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/tinyxml2/include)
 
 # add tinyxml2 lib
-target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/tinyxml2/lib/libtinyxml2.a)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/tinyxml2/lib/static/linux/libtinyxml2.a)
 
 # add glfw
 find_package(glfw3 REQUIRED)

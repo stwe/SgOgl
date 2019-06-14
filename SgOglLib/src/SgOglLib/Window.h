@@ -7,7 +7,7 @@ struct GLFWwindow;
 namespace sg::ogl
 {
     class Application;
-    class Color;
+    struct Color;
 
     class SG_OGL_API Window
     {

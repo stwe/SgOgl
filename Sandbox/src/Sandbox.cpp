@@ -33,5 +33,11 @@ private:
 
 std::unique_ptr<sg::ogl::Application> sg::ogl::create_application()
 {
+#if defined(_WIN64) && defined(_MSC_VER)
+    return std::make_unique<Sandbox>("res/Config.xml");
+#elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
     return std::make_unique<Sandbox>("/home/steffen/CLionProjects/SgOgl/Sandbox/res/Config.xml");
+#else
+    #error Unsupported platform or unsupported compiler!
+#endif
 }
