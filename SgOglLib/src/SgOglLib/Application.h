@@ -1,17 +1,20 @@
 #pragma once
 
 #include <memory>
+#include <stack>
 #include "Core.h"
 #include "Config.h"
 
 namespace sg::ogl
 {
     class Window;
+    class State;
 
     class SG_OGL_API Application
     {
     public:
         using WindowUniquePtr = std::unique_ptr<Window>;
+        using States = std::stack<State*>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -44,14 +47,19 @@ namespace sg::ogl
 
         void Run();
 
-        //-------------------------------------------------
-        // CleanUp
-        //-------------------------------------------------
-
-        void CleanUp() const;
-
     protected:
         WindowUniquePtr m_window;
+        States m_states;
+
+        //-------------------------------------------------
+        // States
+        //-------------------------------------------------
+
+        void PushState(State* t_state);
+        void PopState();
+        void ChangeState(State* t_state);
+
+        State* PeekState();
 
     private:
         WindowOptions m_windowOptions{};
@@ -62,6 +70,12 @@ namespace sg::ogl
         //-------------------------------------------------
 
         void Init();
+
+        //-------------------------------------------------
+        // CleanUp
+        //-------------------------------------------------
+
+        void CleanUp();
     };
 
     //-------------------------------------------------

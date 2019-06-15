@@ -7,11 +7,11 @@ sg::ogl::Color::Color(const uint8_t t_red, const uint8_t t_green, const uint8_t 
     , a{ t_alpha }
 {}
 
-sg::ogl::Color::Color(uint32_t color)
-    : r( (color & 0xff000000) >> 24 )
-    , g( (color & 0x00ff0000) >> 16 )
-    , b( (color & 0x0000ff00) >> 8  )
-    , a( (color & 0x000000ff) >> 0  )
+sg::ogl::Color::Color(const uint32_t t_color)
+    : r( (t_color & 0xff000000) >> 24 )
+    , g( (t_color & 0x00ff0000) >> 16 )
+    , b( (t_color & 0x0000ff00) >> 8  )
+    , a( (t_color & 0x000000ff) >> 0  )
 {}
 
 uint32_t sg::ogl::Color::ToInteger() const

@@ -30,9 +30,9 @@ namespace sg::ogl
         /**
          * @brief Construct the color from 32-bit unsigned integer.
          *
-         * @param color Color Number containing the RGBA components (in that order).
+         * @param t_color Color Number containing the RGBA components (in that order).
          */
-        explicit Color(uint32_t color);
+        explicit Color(uint32_t t_color);
 
         //-------------------------------------------------
         // Helper

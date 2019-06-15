@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "Window.h"
 #include "Color.h"
+#include "State.h"
 
 sg::ogl::Application::Application(const std::string& t_configFileName)
 {
@@ -15,6 +16,8 @@ sg::ogl::Application::Application(const std::string& t_configFileName)
 sg::ogl::Application::~Application() noexcept
 {
     SG_OGL_CORE_LOG_DEBUG("[Application::~Application] Execute the Application destructor.");
+
+    CleanUp();
 }
 
 const sg::ogl::WindowOptions& sg::ogl::Application::GetWindowOptions() const noexcept
@@ -45,21 +48,69 @@ void sg::ogl::Application::Run()
 
     while (m_window->WindowIsNotClosed())
     {
-        sg::ogl::Window::SetClearColor(sg::ogl::Color::CornflowerBlue());
-        sg::ogl::Window::Clear();
+        Window::SetClearColor(Color::CornflowerBlue());
+        Window::Clear();
+
+        if (PeekState())
+        {
+            PeekState()->Input();
+            PeekState()->Update(0.0f);
+            PeekState()->Render(0.0f);
+        }
 
         m_window->Update();
     }
 }
 
-void sg::ogl::Application::CleanUp() const
+void sg::ogl::Application::PushState(State* t_state)
 {
-    SG_OGL_CORE_LOG_DEBUG("[Application::CleanUp()] Cleaning up Application...");
+    t_state->SetApplication(this);
+    m_states.push(t_state);
+}
 
-    m_window->CleanUp();
+void sg::ogl::Application::PopState()
+{
+    // Top() returns a reference to the top element.
+    delete m_states.top();
+
+    // Remove top element.
+    m_states.pop();
+}
+
+void sg::ogl::Application::ChangeState(State* t_state)
+{
+    if (!m_states.empty())
+    {
+        PopState();
+    }
+
+    PushState(t_state);
+}
+
+sg::ogl::State* sg::ogl::Application::PeekState()
+{
+    if (m_states.empty())
+    {
+        return nullptr;
+    }
+
+    return m_states.top();
 }
 
 void sg::ogl::Application::Init()
 {
     m_window->Init();
+}
+
+void sg::ogl::Application::CleanUp()
+{
+    SG_OGL_CORE_LOG_DEBUG("[Application::CleanUp()] Cleaning up Application...");
+
+    SG_OGL_CORE_LOG_DEBUG("[Application::CleanUp()] Cleaning up States.");
+    while (!m_states.empty())
+    {
+        PopState();
+    }
+
+    m_window->CleanUp();
 }
