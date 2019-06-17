@@ -1,6 +1,9 @@
 project(Sandbox)
 
-set(SANDBOX_SRC_FILES src/Sandbox.cpp)
+set(SANDBOX_SRC_FILES
+    src/PlaygroundState.cpp
+    src/Sandbox.cpp
+)
 
 add_executable(${PROJECT_NAME} ${SANDBOX_SRC_FILES})
 

@@ -8,6 +8,7 @@ set(LIB_SRC_FILES
     src/SgOglLib/Color.cpp
     src/SgOglLib/Window.cpp
     src/SgOglLib/OpenGl.cpp
+    src/SgOglLib/State.cpp
 )
 
 if (SHARED_LIB)
