@@ -32,7 +32,7 @@
 #endif
 
 #ifdef SG_OGL_ENABLE_ASSERTS
-    #define SG_OGL_ASSERT(x, ...) { if(!(x)) { SG_OGL_CORE_LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); SG_OGL_DEBUG_BREAK; } }
+    #define SG_OGL_ASSERT(x, ...) { if(!(x)) { SG_OGL_LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); SG_OGL_DEBUG_BREAK; } }
     #define SG_OGL_CORE_ASSERT(x, ...) { if(!(x)) { SG_OGL_CORE_LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); SG_OGL_DEBUG_BREAK; } }
 #else
     #define SG_OGL_ASSERT(x, ...)

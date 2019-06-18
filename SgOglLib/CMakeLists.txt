@@ -9,6 +9,7 @@ set(LIB_SRC_FILES
     src/SgOglLib/Window.cpp
     src/SgOglLib/OpenGl.cpp
     src/SgOglLib/State.cpp
+    src/SgOglLib/buffer/Vao.cpp
 )
 
 if (SHARED_LIB)
