@@ -4,12 +4,14 @@ set(LIB_SRC_FILES
     src/SgOglLib/Application.cpp
     src/SgOglLib/Log.cpp
     src/SgOglLib/Config.cpp
-    src/SgOglLib/SgException.cpp
+    src/SgOglLib/SgOglException.cpp
     src/SgOglLib/Color.cpp
     src/SgOglLib/Window.cpp
     src/SgOglLib/OpenGl.cpp
     src/SgOglLib/State.cpp
     src/SgOglLib/buffer/Vao.cpp
+    src/SgOglLib/buffer/BufferLayout.cpp
+    src/SgOglLib/resource/ShaderProgram.cpp
 )
 
 if (SHARED_LIB)

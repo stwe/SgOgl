@@ -36,7 +36,7 @@ namespace sg::ogl::resource
             }
             catch (const std::ifstream::failure&)
             {
-                throw SG_OGL_EXCEPTION("[ShaderUtil::ReadShaderFile()] Exception caught while loading of file.");
+                throw SG_OGL_EXCEPTION("[ShaderUtil::ReadShaderFile()] Exception caught while loading of file " + t_fileName + ".");
             }
 
             return content;

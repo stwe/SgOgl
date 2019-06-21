@@ -8,7 +8,7 @@ sg::ogl::SgOglException::SgOglException(const int t_line, const char* t_file, st
 {
 }
 
-const char* sg::ogl::SgOglException::what() const
+const char* sg::ogl::SgOglException::what() const noexcept
 {
     std::ostringstream oss;
 
@@ -21,12 +21,12 @@ const char* sg::ogl::SgOglException::what() const
     return m_whatBuffer.c_str();
 }
 
-const char* sg::ogl::SgOglException::GetType() const
+const char* sg::ogl::SgOglException::GetType() const noexcept
 {
     return "SgOgl Exception";
 }
 
-int sg::ogl::SgOglException::GetLine() const
+int sg::ogl::SgOglException::GetLine() const noexcept
 {
     return m_line;
 }
@@ -36,7 +36,7 @@ const std::string& sg::ogl::SgOglException::GetFile() const noexcept
     return m_file;
 }
 
-std::string sg::ogl::SgOglException::GetOriginString() const
+std::string sg::ogl::SgOglException::GetOriginString() const noexcept
 {
     std::ostringstream oss;
 

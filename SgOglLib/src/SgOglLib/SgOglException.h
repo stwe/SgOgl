@@ -10,13 +10,13 @@ namespace sg::ogl
     public:
         SgOglException(int t_line, const char* t_file, std::string t_message);
 
-        char const* what() const override;
+        const char* what() const noexcept override;
 
-        virtual const char* GetType() const;
+        virtual const char* GetType() const noexcept;
 
-        int GetLine() const;
+        int GetLine() const noexcept ;
         const std::string& GetFile() const noexcept;
-        std::string GetOriginString() const;
+        std::string GetOriginString() const noexcept;
 
     protected:
         mutable std::string m_whatBuffer;

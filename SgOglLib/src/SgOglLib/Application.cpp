@@ -100,8 +100,23 @@ void sg::ogl::Application::Run()
     indices.clear();
 
     resource::ShaderProgram shaderProgram;
-    shaderProgram.AddVertexShader(resource::ShaderUtil::ReadShaderFile("res/shader/simple/Vertex.vert"));
-    shaderProgram.AddFragmentShader(resource::ShaderUtil::ReadShaderFile("res/shader/simple/Fragment.frag"));
+
+    #if defined(_WIN64) && defined(_MSC_VER)
+
+        shaderProgram.AddVertexShader(resource::ShaderUtil::ReadShaderFile("res/shader/simple/Vertex.vert"));
+        shaderProgram.AddFragmentShader(resource::ShaderUtil::ReadShaderFile("res/shader/simple/Fragment.frag"));
+
+    #elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
+
+        shaderProgram.AddVertexShader(resource::ShaderUtil::ReadShaderFile("/home/steffen/Dev/SgOgl/Sandbox/res/shader/simple/Vertex.vert"));
+        shaderProgram.AddFragmentShader(resource::ShaderUtil::ReadShaderFile("/home/steffen/Dev/SgOgl/Sandbox/res/shader/simple/Fragment.frag"));
+
+    #else
+
+        #error Unsupported platform or unsupported compiler!
+
+    #endif
+
     shaderProgram.LinkAndValidateProgram();
     //shaderProgram.AddAllFoundUniforms();
 
