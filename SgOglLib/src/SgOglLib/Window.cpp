@@ -1,17 +1,30 @@
 #include "Window.h"
 #include "OpenGl.h"
 #include "Application.h"
-#include "SgException.h"
+#include "SgOglException.h"
 #include "Color.h"
+#include "Log.h"
+
+//-------------------------------------------------
+// Ctors. / Dtor.
+//-------------------------------------------------
 
 sg::ogl::Window::Window(Application* t_application)
     : m_application{ t_application }
 {}
 
+//-------------------------------------------------
+// Getter
+//-------------------------------------------------
+
 GLFWwindow* sg::ogl::Window::GetWindowHandle() const
 {
     return m_windowHandle;
 }
+
+//-------------------------------------------------
+// Init
+//-------------------------------------------------
 
 void sg::ogl::Window::Init()
 {
@@ -29,7 +42,7 @@ void sg::ogl::Window::Init()
     // Initialize GLFW.
     if (!glfwInit())
     {
-        SG_OGL_EXCEPTION("[Window::Init()] Unable to initialize GLFW.");
+        throw SG_OGL_EXCEPTION("[Window::Init()] Unable to initialize GLFW.");
     }
 
     auto& windowOptions{ m_application->GetWindowOptions() };
@@ -43,12 +56,13 @@ void sg::ogl::Window::Init()
 
     if (windowOptions.debugContext)
     {
-        SG_OGL_CORE_LOG_WARN("WARNING: Using OpenGL in debug context!");
+        SG_OGL_CORE_LOG_WARN("WARNING: Using OpenGL in Debug Context!");
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     }
 
     if (windowOptions.compatibleProfile)
     {
+        SG_OGL_CORE_LOG_WARN("WARNING: Using the OpenGL Compatibility Profile!");
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     }
     else
@@ -64,11 +78,15 @@ void sg::ogl::Window::Init()
     m_windowHandle = glfwCreateWindow(projectionOptions.width, projectionOptions.height, windowOptions.title.c_str(), nullptr, nullptr);
     if (!m_windowHandle)
     {
-        SG_OGL_EXCEPTION("[Window::Init()] Failed to create the GLFW window.");
+        throw SG_OGL_EXCEPTION("[Window::Init()] Failed to create the GLFW window.");
     }
 
     // Get the resolution of the primary monitor.
     const auto* primaryMonitor{ glfwGetVideoMode(glfwGetPrimaryMonitor()) };
+    if (!primaryMonitor)
+    {
+        throw SG_OGL_EXCEPTION("[Window::Init()] Unable to get the primary monitor.");
+    }
 
     // Center our window.
     glfwSetWindowPos(m_windowHandle, (primaryMonitor->width - projectionOptions.width) / 2, (primaryMonitor->height - projectionOptions.height) / 2);
@@ -80,7 +98,7 @@ void sg::ogl::Window::Init()
     const auto err{ glewInit() };
     if (err != GLEW_OK)
     {
-        SG_OGL_EXCEPTION("[Window::Init()] Unable to initialize GLEW." + std::string(reinterpret_cast<const char*>(glewGetErrorString(err))));
+        throw SG_OGL_EXCEPTION("[Window::Init()] Unable to initialize GLEW." + std::string(reinterpret_cast<const char*>(glewGetErrorString(err))));
     }
 
     // Registering OpenGL Debug Callback.
@@ -180,10 +198,18 @@ void sg::ogl::Window::Init()
     }
 }
 
+//-------------------------------------------------
+// Helper
+//-------------------------------------------------
+
 bool sg::ogl::Window::WindowIsNotClosed() const
 {
     return glfwWindowShouldClose(m_windowHandle) == 0;
 }
+
+//-------------------------------------------------
+// Update
+//-------------------------------------------------
 
 void sg::ogl::Window::Update() const
 {
@@ -191,9 +217,13 @@ void sg::ogl::Window::Update() const
     glfwPollEvents();
 }
 
+//-------------------------------------------------
+// OpenGL
+//-------------------------------------------------
+
 void sg::ogl::Window::SetClearColor(const Color& t_color)
 {
-    glClearColor(t_color.r / 255.0f, t_color.g / 255.0f, t_color.b / 255.0f, t_color.a / 255.0f);
+    glClearColor(static_cast<float>(t_color.r) / 255.0f, static_cast<float>(t_color.g) / 255.0f, static_cast<float>(t_color.b) / 255.0f, static_cast<float>(t_color.a) / 255.0f);
 }
 
 void sg::ogl::Window::Clear()
@@ -243,6 +273,10 @@ void sg::ogl::Window::RestoreInitialGlStates() const
     auto& windowOptions{ m_application->GetWindowOptions() };
     windowOptions.faceCulling ? EnableFaceCulling() : DisableFaceCulling();
 }
+
+//-------------------------------------------------
+// CleanUp
+//-------------------------------------------------
 
 void sg::ogl::Window::CleanUp()
 {

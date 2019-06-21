@@ -1,37 +1,36 @@
 #pragma once
 
+#include <string>
+#include "SgOglException.h"
+
 namespace sg::ogl::buffer
 {
-    template <typename T>
+    enum class VertexAttributeType
+    {
+        NONE, POSITION, POSITION_2D, COLOR, UV, NORMAL
+    };
+
     struct VertexAttribute
     {
-        VertexAttribute() = default;
-
-        VertexAttribute(std::string t_name, int32_t t_numberOfComponents, bool t_normalized = false)
-            : name{ std::move( t_name ) }
-            , numberOfComponents{ t_numberOfComponents}
-            , normalized{ t_normalized }
-        {}
-
-        ~VertexAttribute() = default;
-
-        /**
-         * @brief The name of the attribute.
-         */
+        VertexAttributeType vertexAttributeType{ VertexAttributeType::NONE };
         std::string name;
-
-        /**
-         * @brief Specifies the number of components.
-         */
-        int32_t numberOfComponents{ 0 };
-
-        /**
-         * @brief specifies whether fixed-point data values should be normalized.
-         */
         bool normalized{ false };
+        uint32_t size{ 0 };
+        uint64_t offset{ 0 };
 
-        static constexpr auto sizeOfAttributeType{ sizeof(T) };
+        int32_t GetComponentCount() const
+        {
+            switch (vertexAttributeType)
+            {
+                case VertexAttributeType::POSITION: return 3;
+                case VertexAttributeType::POSITION_2D: return 2;
+                case VertexAttributeType::COLOR: return 3;
+                case VertexAttributeType::UV: return 2;
+                case VertexAttributeType::NORMAL: return 3;
+                default:;
+            }
 
-        int32_t offset{ 0 };
+            throw SG_OGL_EXCEPTION("[VertexAttribute::GetComponentCount()] Unknown VertexAttributeType.");
+        }
     };
 }

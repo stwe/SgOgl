@@ -37,6 +37,7 @@ project "SgOglLib"
     includedirs
     {
         "%{prj.name}/src",
+        "%{prj.name}/src/SgOglLib", 
         "%{prj.name}/vendor/spdlog/include",
         "%{prj.name}/vendor/glew/include",
         "%{prj.name}/vendor/glfw/include",
@@ -116,6 +117,12 @@ project "Sandbox"
 
     filter "system:windows"
         systemversion "latest"
+        linkoptions
+        {
+            "/NODEFAULTLIB:MSVCRT",
+            "/NODEFAULTLIB:LIBCMT",
+            "/IGNORE:4099"
+        }
 
     filter "configurations:Debug"
         defines "SG_OGL_DEBUG_BUILD"

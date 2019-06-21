@@ -3,18 +3,15 @@
 #include <cstdint>
 #include <vector>
 
-struct Vertex
-{
-};
-
 namespace sg::ogl::buffer
 {
+    class BufferLayout;
+
     class Vao
     {
     public:
         using Vbos = std::vector<uint32_t>;
         using IndicesContainer = std::vector<uint32_t>;
-        using VerticesContainer = std::vector<Vertex>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -33,10 +30,10 @@ namespace sg::ogl::buffer
         // Getter
         //-------------------------------------------------
 
-        auto GetVaoId() const;
-        const auto& GetVbos() const;
-        auto GetEboId() const;
-        auto HasIndexBuffer() const;
+        uint32_t GetVaoId() const;
+        const Vbos& GetVbos() const;
+        uint32_t GetEboId() const;
+        bool HasIndexBuffer() const;
 
         //-------------------------------------------------
         // Setter
@@ -56,7 +53,7 @@ namespace sg::ogl::buffer
         // Vbo`s
         //-------------------------------------------------
 
-        auto GenerateVbo();
+        uint32_t GenerateVbo();
         void BindVbo(uint32_t t_id) const;
         static void UnbindVbo();
         void DeleteVbos() const;
@@ -73,11 +70,14 @@ namespace sg::ogl::buffer
         // Allocate
         //-------------------------------------------------
 
-        /**
-         * @brief Creates and fills a vertex buffer (VBO).
-         * @param t_vertices The vertices to store in the buffer.
-         */
-        void AllocateVertices(const VerticesContainer& t_vertices);
+        void AllocateIndices(const IndicesContainer& t_indices);
+        void AllocateVertices(float* t_vertices, int32_t t_drawCount, uint32_t t_size, const BufferLayout& t_bufferLayout);
+
+        //-------------------------------------------------
+        // Draw
+        //-------------------------------------------------
+
+        void DrawPrimitives() const;
 
         //-------------------------------------------------
         // CleanUp

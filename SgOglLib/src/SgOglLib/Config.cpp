@@ -1,11 +1,12 @@
+#include <tinyxml2.h>
 #include "Config.h"
 #include "Core.h"
-#include "SgException.h"
-#include "tinyxml2.h"
+#include "SgOglException.h"
+#include "Log.h"
 
 bool sg::ogl::Config::ToBool(const std::string& t_value)
 {
-    SG_OGL_CORE_ASSERT(t_value == "0" || t_value == "1", "[Config::ToBool()] Assertion failed.")
+    SG_OGL_CORE_ASSERT(t_value == "0" || t_value == "1", "[Config::ToBool()] Invalid value.")
     return t_value == "1";
 }
 
@@ -18,7 +19,7 @@ void sg::ogl::Config::LoadOptions(const std::string& t_fileName, WindowOptions& 
     const auto result{ document.LoadFile(t_fileName.c_str()) };
     if (result != tinyxml2::XML_SUCCESS)
     {
-        SG_OGL_EXCEPTION("[Config::LoadOptions()] A XMLError has occurred.");
+        throw SG_OGL_EXCEPTION("[Config::LoadOptions()] Error while loading Xml-Config file " + t_fileName + ".");
     }
 
     const auto* root{ document.FirstChildElement("init") };
@@ -40,7 +41,7 @@ void sg::ogl::Config::LoadOptions(const std::string& t_fileName, WindowOptions& 
         }
         else
         {
-            SG_OGL_EXCEPTION("[Config::LoadOptions()] The <window> element could not be found.");
+            throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <window> element could not be found.");
         }
 
         const auto* projection{ root->FirstChildElement("projection") };
@@ -54,11 +55,11 @@ void sg::ogl::Config::LoadOptions(const std::string& t_fileName, WindowOptions& 
         }
         else
         {
-            SG_OGL_EXCEPTION("[Config::LoadOptions()] The <projection> element could not be found.");
+            throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <projection> element could not be found.");
         }
     }
     else
     {
-        SG_OGL_EXCEPTION("[Config::LoadOptions()] The <init> element could not be found.");
+        throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <init> element could not be found.");
     }
 }

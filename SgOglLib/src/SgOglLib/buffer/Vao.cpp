@@ -2,6 +2,7 @@
 #include "Log.h"
 #include "OpenGl.h"
 #include "BufferLayout.h"
+#include "VertexAttribute.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -19,22 +20,22 @@ sg::ogl::buffer::Vao::Vao()
 // Getter
 //-------------------------------------------------
 
-auto sg::ogl::buffer::Vao::GetVaoId() const
+uint32_t sg::ogl::buffer::Vao::GetVaoId() const
 {
     return m_vaoId;
 }
 
-const auto& sg::ogl::buffer::Vao::GetVbos() const
+const sg::ogl::buffer::Vao::Vbos& sg::ogl::buffer::Vao::GetVbos() const
 {
     return m_vbos;
 }
 
-auto sg::ogl::buffer::Vao::GetEboId() const
+uint32_t sg::ogl::buffer::Vao::GetEboId() const
 {
     return m_eboId;
 }
 
-auto sg::ogl::buffer::Vao::HasIndexBuffer() const
+bool sg::ogl::buffer::Vao::HasIndexBuffer() const
 {
     return m_eboId != 0;
 }
@@ -45,6 +46,7 @@ auto sg::ogl::buffer::Vao::HasIndexBuffer() const
 
 void sg::ogl::buffer::Vao::SetDrawCount(const int32_t t_drawCount)
 {
+    SG_OGL_CORE_ASSERT(t_drawCount > 0, "[Vao::SetDrawCount()] Invalid value.")
     m_drawCount = t_drawCount;
 }
 
@@ -59,7 +61,7 @@ void sg::ogl::buffer::Vao::GenerateVao()
 
 void sg::ogl::buffer::Vao::BindVao() const
 {
-    SG_OGL_CORE_ASSERT(m_vaoId, "Invalid Vao-Id.")
+    SG_OGL_CORE_ASSERT(m_vaoId, "[Vao::BindVao()] Invalid Vao Id.")
     glBindVertexArray(m_vaoId);
 }
 
@@ -81,11 +83,11 @@ void sg::ogl::buffer::Vao::DeleteVao() const
 // Vbo`s
 //-------------------------------------------------
 
-auto sg::ogl::buffer::Vao::GenerateVbo()
+uint32_t sg::ogl::buffer::Vao::GenerateVbo()
 {
     uint32_t vboId{ 0 };
     glGenBuffers(1, &vboId);
-    SG_OGL_CORE_ASSERT(vboId, "Invalid Vbo-Id.")
+    SG_OGL_CORE_ASSERT(vboId, "[Vao::GenerateVbo()] Error while creating a new Vbo.")
 
     m_vbos.push_back(vboId);
 
@@ -102,7 +104,7 @@ void sg::ogl::buffer::Vao::BindVbo(const uint32_t t_id) const
     }
     else
     {
-        SG_OGL_CORE_LOG_ERROR("[Vao::BindVbo()] Can't find the Vbo Id. Id: {}", t_id);
+        throw SG_OGL_EXCEPTION("[Vao::BindVbo()] Can't find the Vbo Id. Id: " + std::to_string(t_id));
     }
 }
 
@@ -126,17 +128,17 @@ void sg::ogl::buffer::Vao::DeleteVbos() const
 
 void sg::ogl::buffer::Vao::GenerateEbo()
 {
-    SG_OGL_CORE_ASSERT(!m_eboId, "An index buffer already exists.")
+    SG_OGL_CORE_ASSERT(!m_eboId, "[Vao::GenerateEbo()] An Ebo already exists.")
 
     glGenBuffers(1, &m_eboId);
-    SG_OGL_CORE_ASSERT(m_eboId, "Invalid Ebo-Id.")
+    SG_OGL_CORE_ASSERT(m_eboId, "[Vao::GenerateEbo()] Error while creating a new Ebo.")
 
     SG_OGL_CORE_LOG_DEBUG("[Vao::GenerateEbo()] A new Ebo was created. Id: {}", m_eboId);
 }
 
 void sg::ogl::buffer::Vao::BindEbo() const
 {
-    SG_OGL_CORE_ASSERT(m_eboId, "Invalid Ebo-Id.")
+    SG_OGL_CORE_ASSERT(m_eboId, "[Vao::BindEbo()] Invalid Ebo Id.")
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_eboId);
 }
 
@@ -145,7 +147,7 @@ void sg::ogl::buffer::Vao::DeleteEbo() const
     if (m_eboId)
     {
         glDeleteBuffers(1, &m_eboId);
-        SG_OGL_CORE_LOG_DEBUG("[Vao::DeleteEbo()] Ebo was deleted. Id: ", m_eboId);
+        SG_OGL_CORE_LOG_DEBUG("[Vao::DeleteEbo()] Ebo was deleted. Id: {}", m_eboId);
     }
 }
 
@@ -153,44 +155,84 @@ void sg::ogl::buffer::Vao::DeleteEbo() const
 // Allocate
 //-------------------------------------------------
 
-void sg::ogl::buffer::Vao::AllocateVertices(const sg::ogl::buffer::Vao::VerticesContainer& t_vertices)
+void sg::ogl::buffer::Vao::AllocateIndices(const IndicesContainer& t_indices)
 {
-    const auto elementSizeInBytes{ sizeof(Vertex) };
-    const auto numberOfElements{ t_vertices.size() };
+    static constexpr auto ELEMENT_SIZE_IN_BYTES{ sizeof(uint32_t) };
+    const auto numberOfElements{ static_cast<int32_t>(t_indices.size()) };
 
+    // Bind our existing Vao.
     BindVao();
 
+    // Generate and bind a new Ebo.
+    GenerateEbo();
+    BindEbo();
+
+    // Create and initialize a buffer.
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfElements * ELEMENT_SIZE_IN_BYTES, t_indices.data(), GL_STATIC_DRAW);
+
+    // Unbind Vao.
+    UnbindVao();
+
+    // Set draw count.
+    SetDrawCount(numberOfElements);
+}
+
+void sg::ogl::buffer::Vao::AllocateVertices(float* const t_vertices, const int32_t t_drawCount, const uint32_t t_size, const BufferLayout& t_bufferLayout)
+{
+    // Bind our existing Vao.
+    BindVao();
+
+    // Generate and bind a new Vbo.
     const auto vboId{ GenerateVbo() };
     BindVbo(vboId);
 
     // Specifies the target to which the buffer object is bound.
     const auto target{ GL_ARRAY_BUFFER };
-    // Specifies the size in bytes of the buffer object's new data store.
-    const auto size{ numberOfElements * elementSizeInBytes };
-    // Specifies a pointer to data that will be copied into the data store for initialization, or NULL if no data is to be copied.
-    const auto data{ t_vertices.data() };
+
     // Specifies the expected usage pattern of the data store.
     const auto usage{ GL_STATIC_DRAW };
 
     // Create and initialize a buffer.
-    glBufferData(target, size, data, usage);
+    glBufferData(target, t_size, t_vertices, usage);
 
-    // position attribute
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE_IN_BYTES, static_cast<void*>(nullptr));
-    glEnableVertexAttribArray(0);
+    // Specify how OpenGL should interpret the vertex data before rendering.
+    uint32_t index{ 0 };
+    for (const auto& attribute : t_bufferLayout.GetAttributes())
+    {
+        glEnableVertexAttribArray(index);
+        glVertexAttribPointer(index,
+            attribute.GetComponentCount(),
+            BufferLayout::GetOpenGlType(attribute.vertexAttributeType),
+            attribute.normalized ? GL_TRUE : GL_FALSE,
+            t_bufferLayout.GetStride(),
+            reinterpret_cast<uintptr_t*>(attribute.offset)
+        );
 
-    // color attribute
-    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE_IN_BYTES, reinterpret_cast<void*>(SIZE3_F));
-    glEnableVertexAttribArray(1);
+        index++;
+    }
 
-    // uv attribute
-    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE_IN_BYTES, reinterpret_cast<void*>(SIZE6_F));
-    glEnableVertexAttribArray(2);
-
+    // Unbind buffers.
     UnbindVbo();
     UnbindVao();
 
-    m_drawCount = numberOfElements;
+    // Set draw count.
+    SetDrawCount(t_drawCount);
+}
+
+//-------------------------------------------------
+// Draw
+//-------------------------------------------------
+
+void sg::ogl::buffer::Vao::DrawPrimitives() const
+{
+    if (HasIndexBuffer())
+    {
+        glDrawElements(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, nullptr);
+    }
+    else
+    {
+        glDrawArrays(GL_TRIANGLES, 0, m_drawCount);
+    }
 }
 
 //-------------------------------------------------
