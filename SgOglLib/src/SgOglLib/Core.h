@@ -17,6 +17,7 @@
 #endif
 
 #ifdef SG_OGL_DLL
+    #pragma warning(disable: 4251)
     #ifdef SG_OGL_DLL_EXPORTS
         #define SG_OGL_API DLL_EXPORT
     #else

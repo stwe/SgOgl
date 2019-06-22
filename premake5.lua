@@ -66,6 +66,12 @@ project "SgOglLib"
         {
             "GLFW_INCLUDE_NONE"
         }
+        linkoptions
+        {
+            "/NODEFAULTLIB:MSVCRT",
+            "/NODEFAULTLIB:LIBCMT",
+            "/IGNORE:4099"
+        }
 
     filter "platforms:StaticLib"
         kind "StaticLib"
@@ -107,6 +113,7 @@ project "Sandbox"
     {
         "SgOglLib/vendor/spdlog/include",
         "SgOglLib/src",
+        "SgOglLib/src/SgOglLib",
         "SgOglLib/vendor/glm"
     }
 

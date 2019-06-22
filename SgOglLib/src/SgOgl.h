@@ -5,3 +5,4 @@
 #include "SgOglLib/State.h"
 #include "SgOglLib/Log.h"
 #include "SgOglLib/Color.h"
+#include "SgOglLib/resource/ShaderManager.h"

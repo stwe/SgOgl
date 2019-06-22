@@ -5,6 +5,11 @@
 #include "Core.h"
 #include "Config.h"
 
+namespace sg::ogl::resource
+{
+    class ShaderManager;
+}
+
 namespace sg::ogl
 {
     class Window;
@@ -14,6 +19,7 @@ namespace sg::ogl
     {
     public:
         using WindowUniquePtr = std::unique_ptr<Window>;
+        using ShaderManagerUniquePtr = std::unique_ptr<resource::ShaderManager>;
         using States = std::stack<State*>;
 
         //-------------------------------------------------
@@ -49,6 +55,7 @@ namespace sg::ogl
 
     protected:
         WindowUniquePtr m_window;
+        ShaderManagerUniquePtr m_shaderManager;
         States m_states;
 
         //-------------------------------------------------

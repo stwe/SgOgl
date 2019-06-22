@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Color.h"
 #include "State.h"
+#include "resource/ShaderManager.h"
 
 
 // todo start temp code
@@ -25,6 +26,7 @@ sg::ogl::Application::Application(const std::string& t_configFileName)
     Config::LoadOptions(t_configFileName, m_windowOptions, m_projectionOptions);
 
     m_window = std::make_unique<Window>(this);
+    m_shaderManager = std::make_unique<resource::ShaderManager>();
 }
 
 sg::ogl::Application::~Application() noexcept

@@ -17,6 +17,10 @@ public:
         SG_OGL_LOG_DEBUG("[Sandbox::Sandbox()] Execute the Sandbox constructor.");
 
         PushState(new PlaygroundState);
+
+        // todo init shader im State
+
+        m_shaderManager->AddShaderProgram("simple");
     }
 
     Sandbox(const Sandbox& t_other) = delete;
