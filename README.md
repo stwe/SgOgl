@@ -1,5 +1,7 @@
 # SgOgl
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/499a4726db5844449126e0101ac1074f)](https://app.codacy.com/app/stwe/SgOgl?utm_source=github.com&utm_medium=referral&utm_content=stwe/SgOgl&utm_campaign=Badge_Grade_Dashboard)
+
 ## What it does.
 
 Open Source, multi-platform GameEngine library for OpenGL.
