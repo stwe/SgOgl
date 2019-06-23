@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <stack>
 #include "Core.h"
 #include "Config.h"
 
@@ -10,17 +9,21 @@ namespace sg::ogl::resource
     class ShaderManager;
 }
 
+namespace sg::ogl::state
+{
+    class StateStack;
+}
+
 namespace sg::ogl
 {
     class Window;
-    class State;
 
     class SG_OGL_API Application
     {
     public:
         using WindowUniquePtr = std::unique_ptr<Window>;
         using ShaderManagerUniquePtr = std::unique_ptr<resource::ShaderManager>;
-        using States = std::stack<State*>;
+        using StateStackUniquePtr = std::unique_ptr<state::StateStack>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -56,17 +59,14 @@ namespace sg::ogl
     protected:
         WindowUniquePtr m_window;
         ShaderManagerUniquePtr m_shaderManager;
-        States m_states;
+        StateStackUniquePtr m_stateStack;
 
         //-------------------------------------------------
-        // States
+        // Override
         //-------------------------------------------------
 
-        void PushState(State* t_state);
-        void PopState();
-        void ChangeState(State* t_state);
-
-        State* PeekState();
+        virtual void RegisterStates();
+        virtual void Init();
 
     private:
         WindowOptions m_windowOptions{};
@@ -76,7 +76,14 @@ namespace sg::ogl
         // Init
         //-------------------------------------------------
 
-        void Init();
+        void CoreInit();
+
+        //-------------------------------------------------
+        // Logic
+        //-------------------------------------------------
+
+        void Update(float t_dt);
+        void Render();
 
         //-------------------------------------------------
         // CleanUp

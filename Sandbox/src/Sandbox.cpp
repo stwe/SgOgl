@@ -1,6 +1,6 @@
 #include "SgOgl.h"
 #include "SgOglEntryPoint.h"
-#include "PlaygroundState.h"
+#include "GameState.h"
 
 class Sandbox final : public sg::ogl::Application
 {
@@ -15,12 +15,6 @@ public:
         : Application{ t_configFileName }
     {
         SG_OGL_LOG_DEBUG("[Sandbox::Sandbox()] Execute the Sandbox constructor.");
-
-        PushState(new PlaygroundState);
-
-        // todo init shader im State
-
-        m_shaderManager->AddShaderProgram("simple");
     }
 
     Sandbox(const Sandbox& t_other) = delete;
@@ -34,6 +28,21 @@ public:
     }
 
 protected:
+    //-------------------------------------------------
+    // Override
+    //-------------------------------------------------
+
+    void RegisterStates() override
+    {
+        SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register Game State.");
+        m_stateStack->RegisterState<GameState>(sg::ogl::state::GAME);
+    }
+
+    void Init() override
+    {
+        SG_OGL_LOG_DEBUG("[Sandbox::Init()] Init Game State.");
+        m_stateStack->PushState(sg::ogl::state::GAME);
+    }
 
 private:
 

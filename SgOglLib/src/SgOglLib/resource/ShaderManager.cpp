@@ -4,6 +4,9 @@
 
 void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_folder)
 {
+    // todo: Versuch Doppeleintrag -> Exception
+    // todo: weitere Shader zufügen
+
     auto shaderProgram{ std::make_unique<ShaderProgram>() };
     shaderProgram->AddVertexShader(ShaderUtil::ReadShaderFile("res/shader/" + t_folder + "/Vertex.vert"));
     shaderProgram->AddFragmentShader(ShaderUtil::ReadShaderFile("res/shader/" + t_folder + "/Fragment.frag"));
