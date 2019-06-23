@@ -1,7 +1,7 @@
 project(Sandbox)
 
 set(SANDBOX_SRC_FILES
-    src/PlaygroundState.cpp
+    src/GameState.cpp
     src/Sandbox.cpp
 )
 
