@@ -2,12 +2,13 @@
 
 #include <cstdint>
 #include <vector>
+#include "Core.h"
 
 namespace sg::ogl::buffer
 {
     class BufferLayout;
 
-    class Vao
+    class SG_OGL_API Vao
     {
     public:
         using Vbos = std::vector<uint32_t>;

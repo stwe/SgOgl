@@ -7,7 +7,7 @@
 
 namespace sg::ogl::state
 {
-    class StateStack
+    class SG_OGL_API StateStack
     {
     public:
         //-------------------------------------------------

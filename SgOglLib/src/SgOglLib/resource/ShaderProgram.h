@@ -4,10 +4,11 @@
 #include <vector>
 #include <map>
 #include <glm/glm.hpp>
+#include "Core.h"
 
 namespace sg::ogl::resource
 {
-    class ShaderProgram
+    class SG_OGL_API ShaderProgram
     {
     public:
         //-------------------------------------------------

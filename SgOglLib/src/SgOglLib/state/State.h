@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include "Core.h"
 
 namespace sg::ogl
 {
@@ -29,7 +30,7 @@ namespace sg::ogl::state
 
     class StateStack;
 
-    class State
+    class SG_OGL_API State
     {
     public:
         using StateUniquePtr = std::unique_ptr<State>;
