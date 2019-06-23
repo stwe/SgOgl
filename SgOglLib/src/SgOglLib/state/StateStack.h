@@ -27,7 +27,7 @@ namespace sg::ogl::state
 
         StateStack() = delete;
 
-        explicit StateStack(State::Context& t_context);
+        explicit StateStack(State::Context t_context);
 
         StateStack(const StateStack& t_other) = delete;
         StateStack(StateStack&& t_other) noexcept = delete;

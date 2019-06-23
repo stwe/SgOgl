@@ -5,11 +5,24 @@
 void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_folder)
 {
     // todo: Versuch Doppeleintrag -> Exception
-    // todo: weitere Shader zufügen
 
     auto shaderProgram{ std::make_unique<ShaderProgram>() };
+
+#if defined(_WIN64) && defined(_MSC_VER)
+
     shaderProgram->AddVertexShader(ShaderUtil::ReadShaderFile("res/shader/" + t_folder + "/Vertex.vert"));
     shaderProgram->AddFragmentShader(ShaderUtil::ReadShaderFile("res/shader/" + t_folder + "/Fragment.frag"));
+
+#elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
+
+    shaderProgram->AddVertexShader(ShaderUtil::ReadShaderFile("/home/steffen/Dev/SgOgl/Sandbox/res/shader/" + t_folder + "/Vertex.vert"));
+    shaderProgram->AddFragmentShader(ShaderUtil::ReadShaderFile("/home/steffen/Dev/SgOgl/Sandbox/res/shader/" + t_folder + "/Fragment.frag"));
+
+#else
+
+#error Unsupported platform or unsupported compiler!
+
+#endif
 
     shaderProgram->LinkAndValidateProgram();
     shaderProgram->AddAllFoundUniforms();

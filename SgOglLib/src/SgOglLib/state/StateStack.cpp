@@ -1,7 +1,7 @@
 #include "StateStack.h"
 #include "SgOglException.h"
 
-sg::ogl::state::StateStack::StateStack(State::Context& t_context)
+sg::ogl::state::StateStack::StateStack(State::Context t_context)
     : m_context{ t_context }
 {
 }
