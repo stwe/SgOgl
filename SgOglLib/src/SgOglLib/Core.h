@@ -1,7 +1,6 @@
 #pragma once
 
 #if defined(_WIN64) && defined(_MSC_VER)
-    #include <Windows.h>
     #define SG_OGL_DEBUG_BREAK __debugbreak()
     #define DLL_IMPORT __declspec(dllimport)
     #define DLL_EXPORT __declspec(dllexport)

@@ -11,6 +11,7 @@ namespace sg::ogl
 namespace sg::ogl::resource
 {
     class ShaderManager;
+    class TextureManager;
 }
 
 namespace sg::ogl::state
@@ -43,10 +44,11 @@ namespace sg::ogl::state
         {
             Context() = delete;
 
-            Context(Window& t_window, resource::ShaderManager& t_shaderManager);
+            Context(Window& t_window, resource::ShaderManager& t_shaderManager, resource::TextureManager& t_textureManager);
 
-            Window* window;
-            resource::ShaderManager* shaderManager;
+            Window* window{ nullptr };
+            resource::ShaderManager* shaderManager{ nullptr };
+            resource::TextureManager* textureManager{ nullptr };
         };
 
         //-------------------------------------------------

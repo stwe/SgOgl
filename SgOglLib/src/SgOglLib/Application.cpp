@@ -6,6 +6,7 @@
 #include "state/StateStack.h"
 #include "resource/ShaderProgram.h"
 #include "resource/ShaderManager.h"
+#include "resource/TextureManager.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -16,8 +17,6 @@ sg::ogl::Application::Application(const std::string& t_configFileName)
     SG_OGL_CORE_LOG_DEBUG("[Application::Application] Execute the Application constructor.");
 
     Config::LoadOptions(t_configFileName, m_windowOptions, m_projectionOptions);
-
-    m_window = std::make_unique<Window>(this);
 }
 
 sg::ogl::Application::~Application() noexcept
@@ -88,10 +87,18 @@ void sg::ogl::Application::Init()
 
 void sg::ogl::Application::CoreInit()
 {
+    m_window = std::make_unique<Window>(this);
+    SG_OGL_CORE_ASSERT(m_window, "[Application::CoreInit()] Null pointer.")
     m_window->Init();
 
     m_shaderManager = std::make_unique<resource::ShaderManager>();
-    m_stateStack = std::make_unique<state::StateStack>(state::State::Context(*m_window, *m_shaderManager));
+    SG_OGL_CORE_ASSERT(m_shaderManager, "[Application::CoreInit()] Null pointer.")
+
+    m_textureManager = std::make_unique<resource::TextureManager>();
+    SG_OGL_CORE_ASSERT(m_textureManager, "[Application::CoreInit()] Null pointer.")
+
+    m_stateStack = std::make_unique<state::StateStack>(state::State::Context(*m_window, *m_shaderManager, *m_textureManager));
+    SG_OGL_CORE_ASSERT(m_stateStack, "[Application::CoreInit()] Null pointer.")
 
     RegisterStates();
     Init();

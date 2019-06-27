@@ -5,6 +5,7 @@
 #include "SgOglLib/Window.h"
 #include "SgOglLib/Log.h"
 #include "SgOglLib/Color.h"
+#include "SgOglLib/OpenGl.h"
 
 // buffer
 #include "SgOglLib/buffer/Vao.h"
@@ -18,3 +19,4 @@
 // resource
 #include "SgOglLib/resource/ShaderProgram.h"
 #include "SgOglLib/resource/ShaderManager.h"
+#include "SgOglLib/resource/TextureManager.h"

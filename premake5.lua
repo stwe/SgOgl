@@ -111,9 +111,11 @@ project "Sandbox"
 
     includedirs
     {
-        "SgOglLib/vendor/spdlog/include",
         "SgOglLib/src",
         "SgOglLib/src/SgOglLib",
+        "SgOglLib/vendor/spdlog/include",
+        "SgOglLib/vendor/glew/include",
+        "SgOglLib/vendor/glfw/include",
         "SgOglLib/vendor/glm"
     }
 

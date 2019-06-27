@@ -7,6 +7,7 @@
 namespace sg::ogl::resource
 {
     class ShaderManager;
+    class TextureManager;
 }
 
 namespace sg::ogl::state
@@ -23,6 +24,7 @@ namespace sg::ogl
     public:
         using WindowUniquePtr = std::unique_ptr<Window>;
         using ShaderManagerUniquePtr = std::unique_ptr<resource::ShaderManager>;
+        using TextureManagerUniquePtr = std::unique_ptr<resource::TextureManager>;
         using StateStackUniquePtr = std::unique_ptr<state::StateStack>;
 
         //-------------------------------------------------
@@ -59,6 +61,7 @@ namespace sg::ogl
     protected:
         WindowUniquePtr m_window;
         ShaderManagerUniquePtr m_shaderManager;
+        TextureManagerUniquePtr m_textureManager;
         StateStackUniquePtr m_stateStack;
 
         //-------------------------------------------------
