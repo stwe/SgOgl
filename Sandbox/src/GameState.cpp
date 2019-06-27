@@ -24,8 +24,21 @@ bool GameState::Update(float t_dt)
 
 void GameState::Init()
 {
+#if defined(_WIN64) && defined(_MSC_VER)
+
     // load texture
     m_textureId = GetContext().textureManager->GetTextureIdFromPath("res/texture/grass.jpg");
+
+#elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
+
+    // load texture
+    m_textureId = GetContext().textureManager->GetTextureIdFromPath("/home/steffen/Dev/SgOgl/Sandbox/res/texture/grass.jpg");
+
+#else
+
+#error Unsupported platform or unsupported compiler!
+
+#endif
 
     // load shader
     GetContext().shaderManager->AddShaderProgram("simple");

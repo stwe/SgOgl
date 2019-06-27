@@ -12,6 +12,8 @@ set(LIB_SRC_FILES
     src/SgOglLib/buffer/BufferLayout.cpp
     src/SgOglLib/resource/ShaderProgram.cpp
     src/SgOglLib/resource/ShaderManager.cpp
+    src/SgOglLib/resource/TextureManager.cpp
+    src/SgOglLib/resource/StbImage.cpp
     src/SgOglLib/state/State.cpp
     src/SgOglLib/state/StateStack.cpp
 )
