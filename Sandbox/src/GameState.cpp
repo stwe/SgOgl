@@ -1,5 +1,21 @@
 #include "GameState.h"
 
+bool GameState::Input()
+{
+    if (sg::ogl::input::MouseInput::GetInstance().IsRightButtonPressed())
+    {
+        SG_OGL_LOG_DEBUG("Rechte Maustaste");
+        //m_sceneLoader->GetCameraManager()->GetLookAtCamera("default")->ProcessMouse(sg::ogl::input::MouseInput::GetInstance().GetDisplVec());
+    }
+
+    return true;
+}
+
+bool GameState::Update(float t_dt)
+{
+    return true;
+}
+
 void GameState::Render()
 {
     m_vao.BindVao();
@@ -15,11 +31,6 @@ void GameState::Render()
     m_vao.DrawPrimitives();
 
     m_vao.UnbindVao();
-}
-
-bool GameState::Update(float t_dt)
-{
-    return true;
 }
 
 void GameState::Init()
@@ -39,6 +50,9 @@ void GameState::Init()
 #error Unsupported platform or unsupported compiler!
 
 #endif
+
+    // set clear color
+    sg::ogl::Window::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
     // load shader
     GetContext().shaderManager->AddShaderProgram("simple");

@@ -76,15 +76,18 @@ namespace sg::ogl
         ProjectionOptions m_projectionOptions{};
 
         //-------------------------------------------------
-        // Init
+        // Init && GameLoop
         //-------------------------------------------------
 
         void CoreInit();
+        void ClientInit();
+        void GameLoop();
 
         //-------------------------------------------------
         // Logic
         //-------------------------------------------------
 
+        void Input();
         void Update(float t_dt);
         void Render();
 

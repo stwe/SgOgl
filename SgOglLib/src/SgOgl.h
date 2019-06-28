@@ -12,11 +12,17 @@
 #include "SgOglLib/buffer/VertexAttribute.h"
 #include "SgOglLib/buffer/BufferLayout.h"
 
-// state
-#include "SgOglLib/state/State.h"
-#include "SgOglLib/state/StateStack.h"
+// camera
+#include "SgOglLib/camera/LookAtCamera.h"
+
+// input
+#include "SgOglLib/input/MouseInput.h"
 
 // resource
 #include "SgOglLib/resource/ShaderProgram.h"
 #include "SgOglLib/resource/ShaderManager.h"
 #include "SgOglLib/resource/TextureManager.h"
+
+// state
+#include "SgOglLib/state/State.h"
+#include "SgOglLib/state/StateStack.h"

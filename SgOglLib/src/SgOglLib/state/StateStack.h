@@ -54,8 +54,9 @@ namespace sg::ogl::state
             };
         }
 
-        void Render();
+        void Input();
         void Update(float t_dt);
+        void Render();
 
         void PushState(StateId t_stateId);
         void PopState();

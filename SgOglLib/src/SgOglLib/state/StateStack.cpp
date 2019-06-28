@@ -6,19 +6,24 @@ sg::ogl::state::StateStack::StateStack(State::Context t_context)
 {
 }
 
-void sg::ogl::state::StateStack::Render()
+void sg::ogl::state::StateStack::Input()
 {
-    // Draw all active states from bottom to top.
-    for (auto& state : m_stack)
+    // Iterate from top to bottom, stop as soon as Input() returns false.
+    for (auto itr{ m_stack.rbegin() }; itr != m_stack.rend(); ++itr)
     {
-        state->Render();
+        if (!(*itr)->Input())
+        {
+            break;
+        }
     }
+
+    ApplyPendingChanges();
 }
 
 void sg::ogl::state::StateStack::Update(const float t_dt)
 {
     // Iterate from top to bottom, stop as soon as Update() returns false.
-    for (auto itr = m_stack.rbegin(); itr != m_stack.rend(); ++itr)
+    for (auto itr{ m_stack.rbegin() }; itr != m_stack.rend(); ++itr)
     {
         if (!(*itr)->Update(t_dt))
         {
@@ -27,6 +32,15 @@ void sg::ogl::state::StateStack::Update(const float t_dt)
     }
 
     ApplyPendingChanges();
+}
+
+void sg::ogl::state::StateStack::Render()
+{
+    // Draw all active states from bottom to top.
+    for (auto& state : m_stack)
+    {
+        state->Render();
+    }
 }
 
 void sg::ogl::state::StateStack::PushState(const StateId t_stateId)

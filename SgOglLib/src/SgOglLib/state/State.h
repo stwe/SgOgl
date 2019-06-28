@@ -70,8 +70,9 @@ namespace sg::ogl::state
         // State logic
         //-------------------------------------------------
 
-        virtual void Render() = 0;
+        virtual bool Input() = 0;
         virtual bool Update(float t_dt) = 0;
+        virtual void Render() = 0;
 
     protected:
         //-------------------------------------------------

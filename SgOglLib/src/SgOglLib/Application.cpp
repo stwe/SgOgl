@@ -1,12 +1,12 @@
 #include "Application.h"
 #include "Log.h"
 #include "Window.h"
-#include "Color.h"
 #include "state/State.h"
 #include "state/StateStack.h"
 #include "resource/ShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "resource/TextureManager.h"
+#include "input/MouseInput.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -59,14 +59,8 @@ void sg::ogl::Application::Run()
     SG_OGL_CORE_LOG_DEBUG("[Application::Run()] Application is started.");
 
     CoreInit();
-
-    while (m_window->WindowIsNotClosed())
-    {
-        Update(0.0f);
-        Render();
-
-        m_window->Update();
-    }
+    ClientInit();
+    GameLoop();
 }
 
 //-------------------------------------------------
@@ -82,7 +76,7 @@ void sg::ogl::Application::Init()
 }
 
 //-------------------------------------------------
-// Init
+// Init && GameLoop
 //-------------------------------------------------
 
 void sg::ogl::Application::CoreInit()
@@ -100,13 +94,39 @@ void sg::ogl::Application::CoreInit()
     m_stateStack = std::make_unique<state::StateStack>(state::State::Context(*m_window, *m_shaderManager, *m_textureManager));
     SG_OGL_CORE_ASSERT(m_stateStack, "[Application::CoreInit()] Null pointer.")
 
+    input::MouseInput::Init(*m_window);
+}
+
+void sg::ogl::Application::ClientInit()
+{
     RegisterStates();
     Init();
+}
+
+void sg::ogl::Application::GameLoop()
+{
+    while (m_window->WindowIsNotClosed())
+    {
+        Input();
+        Update(0.0f);
+        Render();
+
+        // m_window->Update():
+        //     (1) Swap front and back buffers: glfwSwapBuffers(m_windowHandle)
+        //     (2) Process events: glfwPollEvents()
+        m_window->Update();
+    }
 }
 
 //-------------------------------------------------
 // Logic
 //-------------------------------------------------
+
+void sg::ogl::Application::Input()
+{
+    input::MouseInput::GetInstance().Input();
+    m_stateStack->Input();
+}
 
 void sg::ogl::Application::Update(const float t_dt)
 {
@@ -115,7 +135,6 @@ void sg::ogl::Application::Update(const float t_dt)
 
 void sg::ogl::Application::Render()
 {
-    Window::SetClearColor(Color::CornflowerBlue());
     Window::Clear();
 
     m_stateStack->Render();

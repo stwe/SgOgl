@@ -18,8 +18,9 @@ public:
         Init();
     }
 
-    void Render() override;
+    bool Input() override;
     bool Update(float t_dt) override;
+    void Render() override;
 
 protected:
 
