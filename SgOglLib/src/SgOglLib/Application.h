@@ -15,6 +15,11 @@ namespace sg::ogl::state
     class StateStack;
 }
 
+namespace sg::ogl::event
+{
+    class CircularEventQueue;
+}
+
 namespace sg::ogl
 {
     class Window;
@@ -39,6 +44,11 @@ namespace sg::ogl
         void operator()(state::StateStack* t_stateStack) const;
     };
 
+    struct DeleteCircularEventQueue
+    {
+        void operator()(event::CircularEventQueue* t_circularEventQueue) const;
+    };
+
     class SG_OGL_API Application
     {
     public:
@@ -46,6 +56,7 @@ namespace sg::ogl
         using ShaderManagerUniquePtr = std::unique_ptr<resource::ShaderManager, DeleteShaderManager>;
         using TextureManagerUniquePtr = std::unique_ptr<resource::TextureManager, DeleteTextureManager>;
         using StateStackUniquePtr = std::unique_ptr<state::StateStack, DeleteStateStack>;
+        using CircularEventQueueUniquePtr = std::unique_ptr<event::CircularEventQueue, DeleteCircularEventQueue>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -83,6 +94,7 @@ namespace sg::ogl
         ShaderManagerUniquePtr m_shaderManager;
         TextureManagerUniquePtr m_textureManager;
         StateStackUniquePtr m_stateStack;
+        CircularEventQueueUniquePtr m_circularEventQueue;
 
         //-------------------------------------------------
         // Override
@@ -107,8 +119,8 @@ namespace sg::ogl
         // Logic
         //-------------------------------------------------
 
-        void Input();
-        void Update(float t_dt);
+        void Input(event::CircularEventQueue& t_circularEventQueue);
+        void Update(float t_dt, event::CircularEventQueue& t_circularEventQueue);
         void Render();
     };
 

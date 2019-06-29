@@ -11,6 +11,11 @@ sg::ogl::event::CircularEventQueue::CircularEventQueue(GLFWwindow* const t_glfWw
     glfwSetWindowUserPointer(m_glfWwindow, this);
 }
 
+sg::ogl::event::CircularEventQueue::~CircularEventQueue() noexcept
+{
+    SG_OGL_CORE_LOG_DEBUG("[CircularEventQueue::~CircularEventQueue()] Execute the CircularEventQueue destructor.");
+}
+
 void sg::ogl::event::CircularEventQueue::SetCallbacks() const
 {
     glfwSetWindowPosCallback(

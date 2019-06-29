@@ -162,7 +162,7 @@ namespace sg::ogl::event
         CircularEventQueue& operator=(const CircularEventQueue& t_other) = delete;
         CircularEventQueue& operator=(CircularEventQueue&& t_other) noexcept = delete;
 
-        ~CircularEventQueue() = default;
+        ~CircularEventQueue() noexcept;
 
         /**
          * @brief The front of the queue is removed. If the queue is empty
