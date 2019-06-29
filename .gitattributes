@@ -2,3 +2,7 @@
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
 * text=auto
+
+SgOglLib/vendor/* linguist-vendored
+SgOglLib/src/SgOglLib/resource/*.h linguist-vendored
+
