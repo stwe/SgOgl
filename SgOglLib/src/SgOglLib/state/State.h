@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include "Core.h"
 
 namespace sg::ogl
@@ -34,8 +33,6 @@ namespace sg::ogl::state
     class SG_OGL_API State
     {
     public:
-        using StateUniquePtr = std::unique_ptr<State>;
-
         /**
          * @brief Struct to hold shared objects between all States.
          *        Every State will have access to a GetContext() method.

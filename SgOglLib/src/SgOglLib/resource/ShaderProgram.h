@@ -22,7 +22,7 @@ namespace sg::ogl::resource
         ShaderProgram& operator=(const ShaderProgram& t_other) = delete;
         ShaderProgram& operator=(ShaderProgram&& t_other) noexcept = delete;
 
-        ~ShaderProgram() = default;
+        ~ShaderProgram() noexcept;
 
         //-------------------------------------------------
         // Getter
@@ -74,12 +74,6 @@ namespace sg::ogl::resource
         void SetUniform(const std::string& t_uniformName, const glm::mat4& t_value);
         void SetUniform(const std::string& t_uniformName, const glm::mat3& t_value);
 
-        //-------------------------------------------------
-        // CleanUp
-        //-------------------------------------------------
-
-        void CleanUp() const;
-
     protected:
 
     private:
@@ -114,5 +108,11 @@ namespace sg::ogl::resource
         uint32_t AddShader(const std::string& t_shaderCode, int32_t t_shaderType);
 
         int32_t GetUniformLocation(const std::string& t_uniformName);
+
+        //-------------------------------------------------
+        // CleanUp
+        //-------------------------------------------------
+
+        void CleanUp() const;
     };
 }

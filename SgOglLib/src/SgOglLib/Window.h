@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "Core.h"
 
 struct GLFWwindow;
@@ -9,9 +10,16 @@ namespace sg::ogl
     class Application;
     struct Color;
 
+    struct GlfwDeleteWindow
+    {
+        void operator()(GLFWwindow* t_window) const;
+    };
+
     class SG_OGL_API Window
     {
     public:
+        using GlfWwindowUniquePtr = std::unique_ptr<GLFWwindow, GlfwDeleteWindow>;
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
@@ -25,7 +33,7 @@ namespace sg::ogl
         Window& operator=(const Window& t_other) = delete;
         Window& operator=(Window&& t_other) noexcept = delete;
 
-        ~Window() noexcept = default;
+        ~Window() noexcept;
 
         //-------------------------------------------------
         // Getter
@@ -63,23 +71,10 @@ namespace sg::ogl
         static void DisableBlending();
         void RestoreInitialGlStates() const;
 
-        //-------------------------------------------------
-        // CleanUp
-        //-------------------------------------------------
-
-        static void CleanUp();
-
     protected:
 
     private:
-        /**
-         * @brief Pointer to store the parent Application.
-         */
         Application* m_application{ nullptr };
-
-        /**
-         * @brief Pointer to store the GLFWwindow.
-         */
-        GLFWwindow* m_windowHandle{ nullptr };
+        GlfWwindowUniquePtr m_windowHandle;
     };
 }

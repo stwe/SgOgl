@@ -6,12 +6,28 @@
 #include "Log.h"
 
 //-------------------------------------------------
+// Custom Deleter
+//-------------------------------------------------
+
+void sg::ogl::GlfwDeleteWindow::operator()(GLFWwindow* t_window) const
+{
+    SG_OGL_CORE_LOG_DEBUG("[GlfwDeleteWindow::operator()] Destroying GLFW Window Context.");
+    glfwDestroyWindow(t_window);
+    glfwTerminate();
+}
+
+//-------------------------------------------------
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::Window::Window(Application* t_application)
+sg::ogl::Window::Window(Application* const t_application)
     : m_application{ t_application }
 {}
+
+sg::ogl::Window::~Window() noexcept
+{
+    SG_OGL_CORE_LOG_DEBUG("[Window::~Window()] Execute the Window destructor.");
+}
 
 //-------------------------------------------------
 // Getter
@@ -19,7 +35,7 @@ sg::ogl::Window::Window(Application* t_application)
 
 GLFWwindow* sg::ogl::Window::GetWindowHandle() const
 {
-    return m_windowHandle;
+    return m_windowHandle.get();
 }
 
 //-------------------------------------------------
@@ -74,8 +90,8 @@ void sg::ogl::Window::Init()
     SG_OGL_CORE_ASSERT(projectionOptions.width > 0, "The width should be greater than 0.")
     SG_OGL_CORE_ASSERT(projectionOptions.height > 0, "The height should be greater than 0.")
 
-    // Create the window.
-    m_windowHandle = glfwCreateWindow(projectionOptions.width, projectionOptions.height, windowOptions.title.c_str(), nullptr, nullptr);
+    // Create the glfw window.
+    m_windowHandle.reset(glfwCreateWindow(projectionOptions.width, projectionOptions.height, windowOptions.title.c_str(), nullptr, nullptr));
     if (!m_windowHandle)
     {
         throw SG_OGL_EXCEPTION("[Window::Init()] Failed to create the GLFW window.");
@@ -89,10 +105,10 @@ void sg::ogl::Window::Init()
     }
 
     // Center our window.
-    glfwSetWindowPos(m_windowHandle, (primaryMonitor->width - projectionOptions.width) / 2, (primaryMonitor->height - projectionOptions.height) / 2);
+    glfwSetWindowPos(GetWindowHandle(), (primaryMonitor->width - projectionOptions.width) / 2, (primaryMonitor->height - projectionOptions.height) / 2);
 
     // Make the OpenGL context current.
-    glfwMakeContextCurrent(m_windowHandle);
+    glfwMakeContextCurrent(GetWindowHandle());
 
     // Initialize GLEW.
     const auto err{ glewInit() };
@@ -123,12 +139,12 @@ void sg::ogl::Window::Init()
     SG_OGL_CORE_LOG_INFO("Renderer: {}", glGetString(GL_RENDERER));
 
     // Set the user pointer.
-    glfwSetWindowUserPointer(m_windowHandle, this);
+    glfwSetWindowUserPointer(GetWindowHandle(), this);
 
     // Set a framebuffer size callback.
     glfwSetFramebufferSizeCallback
     (
-        m_windowHandle,
+        GetWindowHandle(),
         [](GLFWwindow* t_window, int t_width, int t_height)
         {
             static auto* win{ static_cast<Window*>(glfwGetWindowUserPointer(t_window)) };
@@ -152,7 +168,7 @@ void sg::ogl::Window::Init()
     // Setup a key callback.
     glfwSetKeyCallback
     (
-        m_windowHandle,
+        GetWindowHandle(),
         [](GLFWwindow* t_window, int t_key, int t_scancode, int t_action, int t_mods)
         {
             static auto* win{ static_cast<Window*>(glfwGetWindowUserPointer(t_window)) };
@@ -180,7 +196,7 @@ void sg::ogl::Window::Init()
     );
 
     // Make the window visible.
-    glfwShowWindow(m_windowHandle);
+    glfwShowWindow(GetWindowHandle());
 
     // If showTriangles, draw a surface with outlined polygons.
     if (windowOptions.showTriangles)
@@ -204,7 +220,7 @@ void sg::ogl::Window::Init()
 
 bool sg::ogl::Window::WindowIsNotClosed() const
 {
-    return glfwWindowShouldClose(m_windowHandle) == 0;
+    return glfwWindowShouldClose(GetWindowHandle()) == 0;
 }
 
 //-------------------------------------------------
@@ -213,7 +229,7 @@ bool sg::ogl::Window::WindowIsNotClosed() const
 
 void sg::ogl::Window::Update() const
 {
-    glfwSwapBuffers(m_windowHandle);
+    glfwSwapBuffers(GetWindowHandle());
     glfwPollEvents();
 }
 
@@ -272,15 +288,4 @@ void sg::ogl::Window::RestoreInitialGlStates() const
 
     auto& windowOptions{ m_application->GetWindowOptions() };
     windowOptions.faceCulling ? EnableFaceCulling() : DisableFaceCulling();
-}
-
-//-------------------------------------------------
-// CleanUp
-//-------------------------------------------------
-
-void sg::ogl::Window::CleanUp()
-{
-    SG_OGL_CORE_LOG_DEBUG("[Window::CleanUp()] Cleaning up Window.");
-
-    glfwTerminate();
 }

@@ -9,10 +9,15 @@ namespace sg::ogl::resource
 {
     class ShaderProgram;
 
+    struct DeleteShaderProgram
+    {
+        void operator()(ShaderProgram* t_shaderProgram) const;
+    };
+
     class SG_OGL_API ShaderManager
     {
     public:
-        using ShaderProgramUniquePtr = std::unique_ptr<ShaderProgram>;
+        using ShaderProgramUniquePtr = std::unique_ptr<ShaderProgram, DeleteShaderProgram>;
         using ShaderPrograms = std::map<std::string, ShaderProgramUniquePtr>;
 
         //-------------------------------------------------
@@ -26,7 +31,7 @@ namespace sg::ogl::resource
         ShaderManager& operator=(const ShaderManager& t_other) = delete;
         ShaderManager& operator=(ShaderManager&& t_other) noexcept = delete;
 
-        ~ShaderManager() noexcept = default;
+        ~ShaderManager() noexcept;;
 
         //-------------------------------------------------
         // Add shader program
@@ -42,12 +47,6 @@ namespace sg::ogl::resource
         const ShaderPrograms& GetShaderPrograms() const noexcept;
 
         ShaderProgramUniquePtr& GetShaderProgram(const std::string& t_name);
-
-        //-------------------------------------------------
-        // CleanUp
-        //-------------------------------------------------
-
-        void CleanUp();
 
     protected:
 

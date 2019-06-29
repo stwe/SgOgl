@@ -4,6 +4,16 @@
 #include "SgOglException.h"
 
 //-------------------------------------------------
+// Ctors. / Dtor.
+//-------------------------------------------------
+
+sg::ogl::resource::TextureManager::~TextureManager() noexcept
+{
+    SG_OGL_CORE_LOG_DEBUG("[TextureManager::~TextureManager()] Execute the TextureManager destructor.");
+    CleanUp();
+}
+
+//-------------------------------------------------
 // Load && Create
 //-------------------------------------------------
 
@@ -178,27 +188,6 @@ const sg::ogl::resource::TextureManager::Meta& sg::ogl::resource::TextureManager
 }
 
 //-------------------------------------------------
-// CleanUp
-//-------------------------------------------------
-
-void sg::ogl::resource::TextureManager::CleanUp()
-{
-    SG_OGL_CORE_LOG_DEBUG("[TextureManager::CleanUp()] Start the clean up process.");
-
-    for (const auto& texture : m_textures)
-    {
-        glDeleteTextures(1, &texture.second);
-        SG_OGL_CORE_LOG_DEBUG("[TextureManager::CleanUp()] Texture was deleted. Id: {}", texture.second);
-    }
-
-    for (const auto& cubemap : m_cubemaps)
-    {
-        glDeleteTextures(1, &cubemap.second);
-        SG_OGL_CORE_LOG_DEBUG("[TextureManager::CleanUp()] Cubemap was deleted. Id: {}", cubemap.second);
-    }
-}
-
-//-------------------------------------------------
 // Image loader
 //-------------------------------------------------
 
@@ -278,4 +267,25 @@ void sg::ogl::resource::TextureManager::LoadTextureFromFile(const std::vector<st
 
     UseBilinearFilter(GL_TEXTURE_CUBE_MAP);
     UseClampToEdgeWrapping(GL_TEXTURE_CUBE_MAP);
+}
+
+//-------------------------------------------------
+// CleanUp
+//-------------------------------------------------
+
+void sg::ogl::resource::TextureManager::CleanUp()
+{
+    SG_OGL_CORE_LOG_DEBUG("[TextureManager::CleanUp()] Start the OpenGL clean up process for textures.");
+
+    for (const auto& texture : m_textures)
+    {
+        glDeleteTextures(1, &texture.second);
+        SG_OGL_CORE_LOG_DEBUG("[TextureManager::CleanUp()] Texture was deleted. Id: {}", texture.second);
+    }
+
+    for (const auto& cubemap : m_cubemaps)
+    {
+        glDeleteTextures(1, &cubemap.second);
+        SG_OGL_CORE_LOG_DEBUG("[TextureManager::CleanUp()] Cubemap was deleted. Id: {}", cubemap.second);
+    }
 }

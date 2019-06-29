@@ -1,12 +1,37 @@
 #include "ShaderManager.h"
 #include "ShaderProgram.h"
 #include "ShaderUtil.h"
+#include "Log.h"
+
+//-------------------------------------------------
+// Custom Deleter
+//-------------------------------------------------
+
+void sg::ogl::resource::DeleteShaderProgram::operator()(ShaderProgram* t_shaderProgram) const
+{
+    SG_OGL_CORE_LOG_DEBUG("[DeleteShaderProgram::operator()] Delete ShaderProgram Id: {}.", t_shaderProgram->GetProgramId());
+    delete t_shaderProgram;
+}
+
+//-------------------------------------------------
+// Ctors. / Dtor.
+//-------------------------------------------------
+
+sg::ogl::resource::ShaderManager::~ShaderManager() noexcept
+{
+    SG_OGL_CORE_LOG_DEBUG("[ShaderManager::~ShaderManager()] Execute the ShaderManager destructor.");
+}
+
+//-------------------------------------------------
+// Add shader program
+//-------------------------------------------------
 
 void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_folder)
 {
-    // todo: Versuch Doppeleintrag -> Exception
+    // todo: auf Doppeleinträge prüfen
 
-    auto shaderProgram{ std::make_unique<ShaderProgram>() };
+    ShaderProgramUniquePtr shaderProgram;
+    shaderProgram.reset(new ShaderProgram);
 
 #if defined(_WIN64) && defined(_MSC_VER)
 
@@ -30,6 +55,10 @@ void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_fol
     m_shaderPrograms.emplace(t_folder, std::move(shaderProgram));
 }
 
+//-------------------------------------------------
+// Getter
+//-------------------------------------------------
+
 sg::ogl::resource::ShaderManager::ShaderPrograms& sg::ogl::resource::ShaderManager::GetShaderPrograms() noexcept
 {
     return m_shaderPrograms;
@@ -48,12 +77,4 @@ sg::ogl::resource::ShaderManager::ShaderProgramUniquePtr& sg::ogl::resource::Sha
     }
 
     return m_shaderPrograms.at(t_name);
-}
-
-void sg::ogl::resource::ShaderManager::CleanUp()
-{
-    for (auto& shaderProgram : m_shaderPrograms)
-    {
-        shaderProgram.second->CleanUp();
-    }
 }

@@ -16,6 +16,12 @@ sg::ogl::buffer::Vao::Vao()
     SG_OGL_CORE_LOG_DEBUG("[Vao::Vao()] A new Vao was created. Id: {}", m_vaoId);
 }
 
+sg::ogl::buffer::Vao::~Vao() noexcept
+{
+    SG_OGL_CORE_LOG_DEBUG("[Application::~Application()] Execute the Application destructor.");
+    CleanUp();
+}
+
 //-------------------------------------------------
 // Getter
 //-------------------------------------------------
@@ -241,7 +247,7 @@ void sg::ogl::buffer::Vao::DrawPrimitives() const
 
 void sg::ogl::buffer::Vao::CleanUp() const
 {
-    SG_OGL_CORE_LOG_DEBUG("[Vao::CleanUp()] Start the clean up process for Vao. Id: {}", m_vaoId);
+    SG_OGL_CORE_LOG_DEBUG("[Vao::CleanUp()] Start the OpenGL clean up process for Vao. Id: {}", m_vaoId);
 
     glDisableVertexAttribArray(0);
 

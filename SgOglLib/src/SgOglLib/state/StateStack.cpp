@@ -1,10 +1,34 @@
 #include "StateStack.h"
 #include "SgOglException.h"
+#include "Log.h"
+
+//-------------------------------------------------
+// Custom Deleter
+//-------------------------------------------------
+
+void sg::ogl::state::DeleteState::operator()(State* t_state) const
+{
+    SG_OGL_CORE_LOG_DEBUG("[DeleteState::operator()] Delete State.");
+    delete t_state;
+}
+
+//-------------------------------------------------
+// Ctors. / Dtor.
+//-------------------------------------------------
 
 sg::ogl::state::StateStack::StateStack(State::Context t_context)
     : m_context{ t_context }
 {
 }
+
+sg::ogl::state::StateStack::~StateStack() noexcept
+{
+    SG_OGL_CORE_LOG_DEBUG("[StateStack::~StateStack()] Execute the StateStack destructor.");
+}
+
+//-------------------------------------------------
+// Handle States
+//-------------------------------------------------
 
 void sg::ogl::state::StateStack::Input()
 {
@@ -63,7 +87,7 @@ bool sg::ogl::state::StateStack::IsEmpty() const
     return m_stack.empty();
 }
 
-sg::ogl::state::State::StateUniquePtr sg::ogl::state::StateStack::CreateState(const StateId t_stateId)
+sg::ogl::state::StateStack::StateUniquePtr sg::ogl::state::StateStack::CreateState(const StateId t_stateId)
 {
     if (m_factories.count(t_stateId) == 0)
     {

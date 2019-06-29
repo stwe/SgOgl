@@ -17,6 +17,12 @@ sg::ogl::resource::ShaderProgram::ShaderProgram()
     SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::ShaderProgram()] A new ShaderProgram was created. Id: {}", m_programId);
 }
 
+sg::ogl::resource::ShaderProgram::~ShaderProgram() noexcept
+{
+    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::~ShaderProgram()] Execute the ShaderProgram destructor.");
+    CleanUp();
+}
+
 //-------------------------------------------------
 // Getter
 //-------------------------------------------------
@@ -264,59 +270,6 @@ void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformNa
 }
 
 //-------------------------------------------------
-// CleanUp
-//-------------------------------------------------
-
-void sg::ogl::resource::ShaderProgram::CleanUp() const
-{
-    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Start the clean up process for shader program. Id: {}", m_programId);
-
-    Unbind();
-
-    if (m_vertexShaderId)
-    {
-        glDeleteShader(m_vertexShaderId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Vertex shader was deleted. Id: {}", m_vertexShaderId);
-    }
-
-    if (m_tessellationControlShaderId)
-    {
-        glDeleteShader(m_tessellationControlShaderId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Tessellation control shader was deleted. Id: {}", m_tessellationControlShaderId);
-    }
-
-    if (m_tessellationEvaluationShaderId)
-    {
-        glDeleteShader(m_tessellationEvaluationShaderId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Tessellation evaluation shader was deleted. Id: {}", m_tessellationEvaluationShaderId);
-    }
-
-    if (m_geometryShaderId)
-    {
-        glDeleteShader(m_geometryShaderId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Geometry shader was deleted. Id: {}", m_geometryShaderId);
-    }
-
-    if (m_fragmentShaderId)
-    {
-        glDeleteShader(m_fragmentShaderId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Fragment shader was deleted. Id: {}", m_fragmentShaderId);
-    }
-
-    if (m_computeShaderId)
-    {
-        glDeleteShader(m_computeShaderId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Compute shader was deleted. Id: {}", m_computeShaderId);
-    }
-
-    if (m_programId)
-    {
-        glDeleteProgram(m_programId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Shader program was deleted. Id: {}", m_programId);
-    }
-}
-
-//-------------------------------------------------
 // Helper
 //-------------------------------------------------
 
@@ -446,4 +399,57 @@ int32_t sg::ogl::resource::ShaderProgram::GetUniformLocation(const std::string& 
     }
 
     return m_uniforms.at(t_uniformName);
+}
+
+//-------------------------------------------------
+// CleanUp
+//-------------------------------------------------
+
+void sg::ogl::resource::ShaderProgram::CleanUp() const
+{
+    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Start the OpenGL clean up process for ShaderProgram. Id: {}", m_programId);
+
+    Unbind();
+
+    if (m_vertexShaderId)
+    {
+        glDeleteShader(m_vertexShaderId);
+        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Vertex shader was deleted. Id: {}", m_vertexShaderId);
+    }
+
+    if (m_tessellationControlShaderId)
+    {
+        glDeleteShader(m_tessellationControlShaderId);
+        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Tessellation control shader was deleted. Id: {}", m_tessellationControlShaderId);
+    }
+
+    if (m_tessellationEvaluationShaderId)
+    {
+        glDeleteShader(m_tessellationEvaluationShaderId);
+        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Tessellation evaluation shader was deleted. Id: {}", m_tessellationEvaluationShaderId);
+    }
+
+    if (m_geometryShaderId)
+    {
+        glDeleteShader(m_geometryShaderId);
+        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Geometry shader was deleted. Id: {}", m_geometryShaderId);
+    }
+
+    if (m_fragmentShaderId)
+    {
+        glDeleteShader(m_fragmentShaderId);
+        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Fragment shader was deleted. Id: {}", m_fragmentShaderId);
+    }
+
+    if (m_computeShaderId)
+    {
+        glDeleteShader(m_computeShaderId);
+        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Compute shader was deleted. Id: {}", m_computeShaderId);
+    }
+
+    if (m_programId)
+    {
+        glDeleteProgram(m_programId);
+        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Shader program was deleted. Id: {}", m_programId);
+    }
 }

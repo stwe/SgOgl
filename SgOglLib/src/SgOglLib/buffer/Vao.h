@@ -25,7 +25,7 @@ namespace sg::ogl::buffer
         Vao& operator=(const Vao& t_other) = delete;
         Vao& operator=(Vao&& t_other) noexcept = delete;
 
-        ~Vao() noexcept = default;
+        ~Vao() noexcept;
 
         //-------------------------------------------------
         // Getter
@@ -80,12 +80,6 @@ namespace sg::ogl::buffer
 
         void DrawPrimitives() const;
 
-        //-------------------------------------------------
-        // CleanUp
-        //-------------------------------------------------
-
-        void CleanUp() const;
-
     protected:
 
     private:
@@ -109,6 +103,16 @@ namespace sg::ogl::buffer
          */
         int32_t m_drawCount{ 0 };
 
+        //-------------------------------------------------
+        // Helper
+        //-------------------------------------------------
+
         void GenerateVao();
+
+        //-------------------------------------------------
+        // CleanUp
+        //-------------------------------------------------
+
+        void CleanUp() const;
     };
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 #include <map>
 #include <functional>
@@ -7,9 +8,16 @@
 
 namespace sg::ogl::state
 {
+    struct DeleteState
+    {
+        void operator()(State* t_state) const;
+    };
+
     class SG_OGL_API StateStack
     {
     public:
+        using StateUniquePtr = std::unique_ptr<State, DeleteState>;
+
         //-------------------------------------------------
         // Stack actions
         //-------------------------------------------------
@@ -34,7 +42,7 @@ namespace sg::ogl::state
         StateStack& operator=(const StateStack& t_other) = delete;
         StateStack& operator=(StateStack&& t_other) noexcept = delete;
 
-        ~StateStack() noexcept = default;
+        ~StateStack() noexcept;
 
         //-------------------------------------------------
         // Handle States
@@ -50,7 +58,7 @@ namespace sg::ogl::state
         {
             m_factories[t_stateId] = [this]()
             {
-                return std::make_unique<T>(*this, m_context);
+                return StateUniquePtr(new T(* this, m_context));
             };
         }
 
@@ -81,16 +89,16 @@ namespace sg::ogl::state
         };
 
         State::Context m_context;
-        std::vector<State::StateUniquePtr> m_stack;
+        std::vector<StateUniquePtr> m_stack;
         std::vector<PendingChange> m_pendingList;
-        std::map<StateId, std::function<State::StateUniquePtr()>> m_factories;
+        std::map<StateId, std::function<StateUniquePtr()>> m_factories;
 
         /**
          * @brief Looking up the Id in the map and invoking the stored std::function factory.
          * @param t_stateId Id of a State.
          * @return Smart pointer to a newly created object of the corresponding State class.
          */
-        State::StateUniquePtr CreateState(StateId t_stateId);
+        StateUniquePtr CreateState(StateId t_stateId);
 
         void ApplyPendingChanges();
     };

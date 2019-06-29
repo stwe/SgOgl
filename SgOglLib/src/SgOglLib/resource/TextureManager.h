@@ -37,7 +37,7 @@ namespace sg::ogl::resource
         TextureManager& operator=(const TextureManager& t_other) = delete;
         TextureManager& operator=(TextureManager&& t_other) noexcept = delete;
 
-        ~TextureManager() noexcept = default;
+        ~TextureManager() noexcept;
 
         //-------------------------------------------------
         // Load && Create
@@ -132,12 +132,6 @@ namespace sg::ogl::resource
 
         const Meta& GetMetadata(const std::string& t_path) const;
 
-        //-------------------------------------------------
-        // CleanUp
-        //-------------------------------------------------
-
-        void CleanUp();
-
     protected:
 
     private:
@@ -159,5 +153,10 @@ namespace sg::ogl::resource
 
         static void LoadTextureFromFile(const std::vector<std::string>& t_pathNames, uint32_t t_textureId);
 
+        //-------------------------------------------------
+        // CleanUp
+        //-------------------------------------------------
+
+        void CleanUp();
     };
 }

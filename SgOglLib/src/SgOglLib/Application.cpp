@@ -9,21 +9,47 @@
 #include "input/MouseInput.h"
 
 //-------------------------------------------------
+// Custom Deleter
+//-------------------------------------------------
+
+void sg::ogl::DeleteWindow::operator()(Window* t_window) const
+{
+    SG_OGL_CORE_LOG_DEBUG("[DeleteWindow::operator()] Delete Window.");
+    delete t_window;
+}
+
+void sg::ogl::DeleteShaderManager::operator()(resource::ShaderManager* t_shaderManager) const
+{
+    SG_OGL_CORE_LOG_DEBUG("[DeleteShaderManager::operator()] Delete ShaderManager.");
+    delete t_shaderManager;
+}
+
+void sg::ogl::DeleteTextureManager::operator()(resource::TextureManager* t_textureManager) const
+{
+    SG_OGL_CORE_LOG_DEBUG("[DeleteTextureManager::operator()] Delete TextureManager.");
+    delete t_textureManager;
+}
+
+void sg::ogl::DeleteStateStack::operator()(state::StateStack* t_stateStack) const
+{
+    SG_OGL_CORE_LOG_DEBUG("[DeleteStateStack::operator()] Delete StateStack.");
+    delete t_stateStack;
+}
+
+//-------------------------------------------------
 // Ctors. / Dtor.
 //-------------------------------------------------
 
 sg::ogl::Application::Application(const std::string& t_configFileName)
 {
-    SG_OGL_CORE_LOG_DEBUG("[Application::Application] Execute the Application constructor.");
+    SG_OGL_CORE_LOG_DEBUG("[Application::Application()] Execute the Application constructor.");
 
     Config::LoadOptions(t_configFileName, m_windowOptions, m_projectionOptions);
 }
 
 sg::ogl::Application::~Application() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[Application::~Application] Execute the Application destructor.");
-
-    CleanUp();
+    SG_OGL_CORE_LOG_DEBUG("[Application::~Application()] Execute the Application destructor.");
 }
 
 //-------------------------------------------------
@@ -81,17 +107,17 @@ void sg::ogl::Application::Init()
 
 void sg::ogl::Application::CoreInit()
 {
-    m_window = std::make_unique<Window>(this);
+    m_window.reset(new Window{ this });
     SG_OGL_CORE_ASSERT(m_window, "[Application::CoreInit()] Null pointer.")
     m_window->Init();
 
-    m_shaderManager = std::make_unique<resource::ShaderManager>();
+    m_shaderManager.reset(new resource::ShaderManager);
     SG_OGL_CORE_ASSERT(m_shaderManager, "[Application::CoreInit()] Null pointer.")
 
-    m_textureManager = std::make_unique<resource::TextureManager>();
+    m_textureManager.reset(new resource::TextureManager);
     SG_OGL_CORE_ASSERT(m_textureManager, "[Application::CoreInit()] Null pointer.")
 
-    m_stateStack = std::make_unique<state::StateStack>(state::State::Context(*m_window, *m_shaderManager, *m_textureManager));
+    m_stateStack.reset(new state::StateStack{ state::State::Context{ *m_window, *m_shaderManager, *m_textureManager} } );
     SG_OGL_CORE_ASSERT(m_stateStack, "[Application::CoreInit()] Null pointer.")
 
     input::MouseInput::Init(*m_window);
@@ -138,15 +164,4 @@ void sg::ogl::Application::Render()
     Window::Clear();
 
     m_stateStack->Render();
-}
-
-//-------------------------------------------------
-// CleanUp
-//-------------------------------------------------
-
-void sg::ogl::Application::CleanUp()
-{
-    SG_OGL_CORE_LOG_DEBUG("[Application::CleanUp()] Cleaning up Application...");
-
-    m_window->CleanUp();
 }
