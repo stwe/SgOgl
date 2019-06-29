@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <glm/mat4x4.hpp>
 #include "Core.h"
 
 struct GLFWwindow;
@@ -41,6 +42,9 @@ namespace sg::ogl
 
         GLFWwindow* GetWindowHandle() const;
 
+        const glm::mat4& GetProjectionMatrix() const noexcept;
+        const glm::mat4& GetOrthographicProjectionMatrix() const noexcept;
+
         //-------------------------------------------------
         // Init
         //-------------------------------------------------
@@ -58,6 +62,8 @@ namespace sg::ogl
         //-------------------------------------------------
 
         void Update() const;
+        void UpdateProjectionMatrix();
+        void UpdateOrthographicProjectionMatrix();
 
         //-------------------------------------------------
         // OpenGL
@@ -76,5 +82,17 @@ namespace sg::ogl
     private:
         Application* m_application{ nullptr };
         GlfWwindowUniquePtr m_windowHandle;
+
+        /**
+         * @brief The perspective projection matrix.
+         *        Updated with UpdateProjectionMatrix().
+         */
+        glm::mat4 m_projectionMatrix{ glm::mat4(1.0f) };
+
+        /**
+         * @brief The orthographic projection matrix.
+         *        Updated with UpdateOrthographicProjectionMatrix().
+         */
+        glm::mat4 m_orthographicProjectionMatrix{ glm::mat4(1.0f) };
     };
 }

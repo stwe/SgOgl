@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/gtc/matrix_transform.hpp>
+#include "Core.h"
 
 namespace sg::ogl::camera
 {
@@ -17,7 +18,7 @@ namespace sg::ogl::camera
         DOWN
     };
 
-    class LookAtCamera
+    class SG_OGL_API LookAtCamera
     {
     public:
         //-------------------------------------------------

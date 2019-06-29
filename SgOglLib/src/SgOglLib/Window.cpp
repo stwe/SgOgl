@@ -1,3 +1,4 @@
+#include <glm/gtc/matrix_transform.hpp>
 #include "Window.h"
 #include "OpenGl.h"
 #include "Application.h"
@@ -36,6 +37,16 @@ sg::ogl::Window::~Window() noexcept
 GLFWwindow* sg::ogl::Window::GetWindowHandle() const
 {
     return m_windowHandle.get();
+}
+
+const glm::mat4& sg::ogl::Window::GetProjectionMatrix() const noexcept
+{
+    return m_projectionMatrix;
+}
+
+const glm::mat4& sg::ogl::Window::GetOrthographicProjectionMatrix() const noexcept
+{
+    return m_orthographicProjectionMatrix;
 }
 
 //-------------------------------------------------
@@ -158,10 +169,9 @@ void sg::ogl::Window::Init()
             // Update viewport.
             glViewport(0, 0, projection.width, projection.height);
 
-            // todo
             // Update projection matrix.
-            //win->UpdateProjectionMatrix();
-            //win->UpdateOrthographicProjectionMatrix();
+            win->UpdateProjectionMatrix();
+            win->UpdateOrthographicProjectionMatrix();
         }
     );
 
@@ -212,6 +222,10 @@ void sg::ogl::Window::Init()
     {
         glfwWindowHint(GLFW_SAMPLES, 4);
     }
+
+    // Set/Update the projection matrix.
+    UpdateProjectionMatrix();
+    UpdateOrthographicProjectionMatrix();
 }
 
 //-------------------------------------------------
@@ -231,6 +245,31 @@ void sg::ogl::Window::Update() const
 {
     glfwSwapBuffers(GetWindowHandle());
     glfwPollEvents();
+}
+
+void sg::ogl::Window::UpdateProjectionMatrix()
+{
+    const auto& projectionOptions{ m_application->GetProjectionOptions() };
+    m_projectionMatrix = glm::perspectiveFov
+    (
+        glm::radians(projectionOptions.fovDeg),
+        static_cast<float>(projectionOptions.width),
+        static_cast<float>(projectionOptions.height),
+        projectionOptions.nearPlane,
+        projectionOptions.farPlane
+    );
+}
+
+void sg::ogl::Window::UpdateOrthographicProjectionMatrix()
+{
+    const auto& projectionOptions{ m_application->GetProjectionOptions() };
+    m_orthographicProjectionMatrix = glm::ortho
+    (
+        0.0f,
+        static_cast<float>(projectionOptions.width),
+        0.0f,
+        static_cast<float>(projectionOptions.height)
+    );
 }
 
 //-------------------------------------------------
