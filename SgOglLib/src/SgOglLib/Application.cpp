@@ -166,10 +166,12 @@ void sg::ogl::Application::ClientInit()
 
 void sg::ogl::Application::GameLoop()
 {
+    static constexpr auto DT{ 1.0f / 60.0f };
+
     while (m_window->WindowIsNotClosed())
     {
         Input(*m_circularEventQueue);
-        Update(0.0f, *m_circularEventQueue);
+        Update(DT, *m_circularEventQueue);
         Render();
 
         // m_window->Update():

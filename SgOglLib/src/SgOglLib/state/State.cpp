@@ -18,7 +18,7 @@ sg::ogl::state::State::Context::Context(Window& t_window, resource::ShaderManage
 
 sg::ogl::state::State::State(StateStack& t_stateStack, Context& t_context)
     : m_stateStack{ &t_stateStack }
-    , m_context{  t_context }
+    , m_context{ t_context }
 {
     SG_OGL_CORE_ASSERT(m_stateStack, "[State::State()] Null pointer.")
 }

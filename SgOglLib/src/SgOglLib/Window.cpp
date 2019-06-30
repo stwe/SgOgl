@@ -237,6 +237,11 @@ bool sg::ogl::Window::WindowIsNotClosed() const
     return glfwWindowShouldClose(GetWindowHandle()) == 0;
 }
 
+bool sg::ogl::Window::IsKeyPressed(const int t_keyCode) const
+{
+    return glfwGetKey(GetWindowHandle(), t_keyCode) == GLFW_PRESS;
+}
+
 //-------------------------------------------------
 // Update
 //-------------------------------------------------

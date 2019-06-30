@@ -7,7 +7,7 @@
         <compatibleProfile>0</compatibleProfile>
         <debugContext>1</debugContext>
         <antialiasing>1</antialiasing>
-        <faceCulling>1</faceCulling>
+        <faceCulling>0</faceCulling>
         <frustumCulling>0</frustumCulling>
         <printFrameRate>0</printFrameRate>
         <glMajor>3</glMajor>

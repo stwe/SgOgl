@@ -56,6 +56,7 @@ namespace sg::ogl
         //-------------------------------------------------
 
         bool WindowIsNotClosed() const;
+        bool IsKeyPressed(int t_keyCode) const;
 
         //-------------------------------------------------
         // Update

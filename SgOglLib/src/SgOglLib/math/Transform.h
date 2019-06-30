@@ -1,10 +1,11 @@
 #pragma once
 
 #include <glm/gtc/matrix_transform.hpp>
+#include "Core.h"
 
 namespace sg::ogl::math
 {
-    struct Transform
+    struct SG_OGL_API Transform
     {
         auto GetModelMatrix() const
         {

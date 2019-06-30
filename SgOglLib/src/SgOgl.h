@@ -18,6 +18,9 @@
 // input
 #include "SgOglLib/input/MouseInput.h"
 
+// math
+#include "SgOglLib/math/Transform.h"
+
 // resource
 #include "SgOglLib/resource/ShaderProgram.h"
 #include "SgOglLib/resource/ShaderManager.h"
