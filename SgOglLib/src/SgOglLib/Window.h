@@ -56,7 +56,14 @@ namespace sg::ogl
         //-------------------------------------------------
 
         bool WindowIsNotClosed() const;
+
+        //-------------------------------------------------
+        // Input
+        //-------------------------------------------------
+
         bool IsKeyPressed(int t_keyCode) const;
+        bool IsMouseButtonPressed(int t_button) const;
+        glm::vec2 GetMousePosition() const;
 
         //-------------------------------------------------
         // Update

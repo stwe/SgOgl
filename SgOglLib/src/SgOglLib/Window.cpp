@@ -58,9 +58,7 @@ void sg::ogl::Window::Init()
     SG_OGL_CORE_ASSERT(m_application, "[Window::Init()] Application missing.")
 
     // Setup an error callback.
-    glfwSetErrorCallback
-    (
-        [](int t_error, const char* t_description)
+    glfwSetErrorCallback([](int t_error, const char* t_description)
         {
             SG_OGL_CORE_LOG_ERROR("GLFW Error ({}) {}", t_error, t_description);
         }
@@ -131,6 +129,7 @@ void sg::ogl::Window::Init()
     // Registering OpenGL Debug Callback.
     if (windowOptions.debugContext)
     {
+        // todo
         GLint flags;
         glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
         if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
@@ -148,62 +147,6 @@ void sg::ogl::Window::Init()
     SG_OGL_CORE_LOG_INFO("GLSL version: {}", glGetString(GL_SHADING_LANGUAGE_VERSION));
     SG_OGL_CORE_LOG_INFO("Vendor: {}", glGetString(GL_VENDOR));
     SG_OGL_CORE_LOG_INFO("Renderer: {}", glGetString(GL_RENDERER));
-
-    // Set the user pointer.
-    glfwSetWindowUserPointer(GetWindowHandle(), this);
-
-    // Set a framebuffer size callback.
-    glfwSetFramebufferSizeCallback
-    (
-        GetWindowHandle(),
-        [](GLFWwindow* t_window, int t_width, int t_height)
-        {
-            static auto* win{ static_cast<Window*>(glfwGetWindowUserPointer(t_window)) };
-
-            auto& projection{ win->m_application->GetProjectionOptions() };
-
-            // Update width && height.
-            projection.width = t_width;
-            projection.height = t_height;
-
-            // Update viewport.
-            glViewport(0, 0, projection.width, projection.height);
-
-            // Update projection matrix.
-            win->UpdateProjectionMatrix();
-            win->UpdateOrthographicProjectionMatrix();
-        }
-    );
-
-    // Setup a key callback.
-    glfwSetKeyCallback
-    (
-        GetWindowHandle(),
-        [](GLFWwindow* t_window, int t_key, int t_scancode, int t_action, int t_mods)
-        {
-            static auto* win{ static_cast<Window*>(glfwGetWindowUserPointer(t_window)) };
-
-            auto& windowOptions{ win->m_application->GetWindowOptions() };
-
-            if (t_key == GLFW_KEY_ESCAPE && t_action == GLFW_RELEASE)
-            {
-                // We will detect this in the game loop.
-                glfwSetWindowShouldClose(t_window, GLFW_TRUE);
-            }
-
-            if (t_key == GLFW_KEY_T && t_action == GLFW_RELEASE)
-            {
-                windowOptions.showTriangles = !windowOptions.showTriangles;
-                windowOptions.showTriangles ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            }
-
-            if (t_key == GLFW_KEY_C && t_action == GLFW_RELEASE)
-            {
-                windowOptions.faceCulling = !windowOptions.faceCulling;
-                windowOptions.faceCulling ? EnableFaceCulling() : DisableFaceCulling();
-            }
-        }
-    );
 
     // Make the window visible.
     glfwShowWindow(GetWindowHandle());
@@ -237,9 +180,27 @@ bool sg::ogl::Window::WindowIsNotClosed() const
     return glfwWindowShouldClose(GetWindowHandle()) == 0;
 }
 
+//-------------------------------------------------
+// Input
+//-------------------------------------------------
+
 bool sg::ogl::Window::IsKeyPressed(const int t_keyCode) const
 {
-    return glfwGetKey(GetWindowHandle(), t_keyCode) == GLFW_PRESS;
+    const auto state{ glfwGetKey(GetWindowHandle(), t_keyCode) };
+    return state == GLFW_PRESS || state == GLFW_REPEAT;
+}
+
+bool sg::ogl::Window::IsMouseButtonPressed(const int t_button) const
+{
+    const auto state{ glfwGetMouseButton(GetWindowHandle(), t_button) };
+    return state == GLFW_PRESS;
+}
+
+glm::vec2 sg::ogl::Window::GetMousePosition() const
+{
+    double xpos, ypos;
+    glfwGetCursorPos(GetWindowHandle(), &xpos, &ypos);
+    return glm::vec2(static_cast<float>(xpos), static_cast<float>(ypos));
 }
 
 //-------------------------------------------------

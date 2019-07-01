@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "Log.h"
 #include "Window.h"
+#include "OpenGl.h"
 #include "state/State.h"
 #include "state/StateStack.h"
 #include "resource/ShaderProgram.h"
@@ -8,9 +9,6 @@
 #include "resource/TextureManager.h"
 #include "input/MouseInput.h"
 #include "event/CircularEventQueue.h"
-
-// todo
-#include "OpenGl.h"
 
 //-------------------------------------------------
 // Custom Deleter
@@ -134,24 +132,6 @@ void sg::ogl::Application::CoreInit()
     SG_OGL_CORE_ASSERT(m_circularEventQueue, "[Application::CoreInit()] Null pointer.")
 
     // todo
-
-    /*
-    Window.cpp
-    ----------
-
-    - glfwSetErrorCallback
-    - glfwSetFramebufferSizeCallback
-    - glfwSetKeyCallback
-
-
-    MouseInput.cpp
-    --------------
-
-    - glfwSetCursorPosCallback
-    - glfwSetCursorEnterCallback
-    - glfwSetMouseButtonCallback
-     */
-
     input::MouseInput::Init(*m_window);
 
     // replace all callbacks
@@ -187,55 +167,57 @@ void sg::ogl::Application::GameLoop()
 
 void sg::ogl::Application::Input(event::CircularEventQueue& t_circularEventQueue)
 {
-    input::MouseInput::GetInstance().Input();
-    m_stateStack->Input();
-
-    // todo
-
+    // handle core events
     t_circularEventQueue.Update(event::EventVisitor(
-        [](event::PositionCategory& t_event)
-        {
-            //SG_OGL_CORE_LOG_DEBUG("Position changed");
-        },
-        [](event::SizeCategory& t_event)
+        [](event::PositionCategory&) {},
+        [this](event::SizeCategory& t_event)
         {
             if (t_event.eventType == event::EventType::FRAMEBUFFER_RESIZED ||
                 t_event.eventType == event::EventType::WINDOW_RESIZED)
             {
-                //SG_OGL_CORE_LOG_DEBUG("Update glViewport");
-                // Update with && height
-                // Update glViewport()
-                // UpdateProjectionMatrix()
-                // UpdateOrthographicProjectionMatrix()
+                // Update width && height.
+                m_projectionOptions.width = t_event.width;
+                m_projectionOptions.height = t_event.height;
+
+                // Update viewport.
+                glViewport(0, 0, m_projectionOptions.width, m_projectionOptions.height);
+
+                // Update projection matrix.
+                m_window->UpdateProjectionMatrix();
+                m_window->UpdateOrthographicProjectionMatrix();
             }
         },
-        [](event::SwitchCategory& t_event)
+        [](event::SwitchCategory&) {},
+        [](event::UseDeviceCategory&) {},
+        [](event::MouseCategory&) {},
+        [this](event::KeyboardCategory& t_event)
         {
-            //SG_OGL_CORE_LOG_DEBUG("Status changed");
-        },
-        [](event::UseDeviceCategory& t_event)
-        {
-            //SG_OGL_CORE_LOG_DEBUG("A device was used");
-        },
-        [](event::MouseCategory& t_event)
-        {
-            if (t_event.eventType == event::EventType::BUTTON_PRESSED && t_event.button == GLFW_MOUSE_BUTTON_LEFT)
-            {
-                SG_OGL_CORE_LOG_DEBUG("Left mouse button pressed");
-            }
-            if (t_event.eventType == event::EventType::BUTTON_PRESSED && t_event.button == GLFW_MOUSE_BUTTON_RIGHT)
-            {
-                SG_OGL_CORE_LOG_DEBUG("Right mouse button pressed");
-            }
-        },
-        [](event::KeyboardCategory& t_event)
-        {
+            // Exit
             if (t_event.eventType == event::EventType::KEY_PRESSED && t_event.key == GLFW_KEY_ESCAPE)
             {
                 glfwSetWindowShouldClose(t_event.window, GLFW_TRUE);
             }
-        }
-    ));
+
+            // Show Triangles
+            if (t_event.eventType == event::EventType::KEY_PRESSED && t_event.key == GLFW_KEY_T)
+            {
+                m_windowOptions.showTriangles = !m_windowOptions.showTriangles;
+                m_windowOptions.showTriangles ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+
+            // Face Culling
+            if (t_event.eventType == event::EventType::KEY_PRESSED && t_event.key == GLFW_KEY_C)
+            {
+                m_windowOptions.faceCulling = !m_windowOptions.faceCulling;
+                m_windowOptions.faceCulling ? m_window->EnableFaceCulling() : m_window->DisableFaceCulling();
+            }
+        })
+    );
+
+    // todo
+    input::MouseInput::GetInstance().Input();
+
+    m_stateStack->Input();
 }
 
 void sg::ogl::Application::Update(const float t_dt, event::CircularEventQueue& t_circularEventQueue)

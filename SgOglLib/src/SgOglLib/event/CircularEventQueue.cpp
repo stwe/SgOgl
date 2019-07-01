@@ -3,6 +3,10 @@
 #include "Core.h"
 #include "Log.h"
 
+//-------------------------------------------------
+// Ctors. / Dtor.
+//-------------------------------------------------
+
 sg::ogl::event::CircularEventQueue::CircularEventQueue(GLFWwindow* const t_glfWwindow, const size_t t_maxSize)
     : m_glfWwindow{ t_glfWwindow }
     , m_maxSize{ t_maxSize }
@@ -16,11 +20,13 @@ sg::ogl::event::CircularEventQueue::~CircularEventQueue() noexcept
     SG_OGL_CORE_LOG_DEBUG("[CircularEventQueue::~CircularEventQueue()] Execute the CircularEventQueue destructor.");
 }
 
+//-------------------------------------------------
+// Getter && Setter
+//-------------------------------------------------
+
 void sg::ogl::event::CircularEventQueue::SetCallbacks() const
 {
-    glfwSetWindowPosCallback(
-        m_glfWwindow,
-        [](GLFWwindow* t_window, int t_xPos, int t_yPos)
+    glfwSetWindowPosCallback(m_glfWwindow,[](GLFWwindow* t_window, int t_xPos, int t_yPos)
         {
             PositionCategory e;
             e.eventType = EventType::WINDOW_MOVED;
@@ -33,9 +39,7 @@ void sg::ogl::event::CircularEventQueue::SetCallbacks() const
         }
     );
 
-    glfwSetWindowSizeCallback(
-        m_glfWwindow,
-        [](GLFWwindow* t_window, int t_width, int t_height)
+    glfwSetWindowSizeCallback(m_glfWwindow,[](GLFWwindow* t_window, int t_width, int t_height)
         {
             SizeCategory e;
             e.eventType = EventType::WINDOW_RESIZED;
@@ -48,9 +52,7 @@ void sg::ogl::event::CircularEventQueue::SetCallbacks() const
         }
     );
 
-    glfwSetWindowCloseCallback(
-        m_glfWwindow,
-        [](GLFWwindow* t_window)
+    glfwSetWindowCloseCallback(m_glfWwindow,[](GLFWwindow* t_window)
         {
             SwitchCategory e;
             e.eventType = EventType::WINDOW_CLOSED;
@@ -62,9 +64,7 @@ void sg::ogl::event::CircularEventQueue::SetCallbacks() const
         }
     );
 
-    glfwSetWindowRefreshCallback(
-        m_glfWwindow,
-        [](GLFWwindow* t_window)
+    glfwSetWindowRefreshCallback(m_glfWwindow,[](GLFWwindow* t_window)
         {
             SwitchCategory e;
             e.eventType = EventType::WINDOW_REFRESH;
@@ -76,9 +76,7 @@ void sg::ogl::event::CircularEventQueue::SetCallbacks() const
         }
     );
 
-    glfwSetWindowFocusCallback(
-        m_glfWwindow,
-        [](GLFWwindow* t_window, int t_focus)
+    glfwSetWindowFocusCallback(m_glfWwindow,[](GLFWwindow* t_window, int t_focus)
         {
             SwitchCategory e;
             e.eventType = t_focus ? EventType::WINDOW_FOCUSED : EventType::WINDOW_DEFOCUSED;
@@ -90,9 +88,7 @@ void sg::ogl::event::CircularEventQueue::SetCallbacks() const
         }
     );
 
-    glfwSetWindowIconifyCallback(
-        m_glfWwindow,
-        [](GLFWwindow* t_window, int t_iconified)
+    glfwSetWindowIconifyCallback(m_glfWwindow,[](GLFWwindow* t_window, int t_iconified)
         {
             SwitchCategory e;
             e.eventType = t_iconified ? EventType::WINDOW_ICONIFIED : EventType::WINDOW_UNICONIFIED;
@@ -104,9 +100,7 @@ void sg::ogl::event::CircularEventQueue::SetCallbacks() const
         }
     );
 
-    glfwSetFramebufferSizeCallback(
-        m_glfWwindow,
-        [](GLFWwindow* t_window, int t_width, int t_height)
+    glfwSetFramebufferSizeCallback(m_glfWwindow,[](GLFWwindow* t_window, int t_width, int t_height)
         {
             SizeCategory e;
             e.eventType = EventType::FRAMEBUFFER_RESIZED;
@@ -119,9 +113,7 @@ void sg::ogl::event::CircularEventQueue::SetCallbacks() const
         }
     );
 
-    glfwSetMouseButtonCallback(
-        m_glfWwindow,
-        [](GLFWwindow* t_window, int t_button, int t_action, int t_mods)
+    glfwSetMouseButtonCallback(m_glfWwindow,[](GLFWwindow* t_window, int t_button, int t_action, int t_mods)
         {
             MouseCategory e;
 
@@ -143,9 +135,7 @@ void sg::ogl::event::CircularEventQueue::SetCallbacks() const
         }
     );
 
-    glfwSetCursorPosCallback(
-        m_glfWwindow,
-        [](GLFWwindow* t_window, double t_xPos, double t_yPos)
+    glfwSetCursorPosCallback(m_glfWwindow,[](GLFWwindow* t_window, double t_xPos, double t_yPos)
         {
             UseDeviceCategory e;
             e.eventType = EventType::CURSOR_MOVED;
@@ -158,9 +148,7 @@ void sg::ogl::event::CircularEventQueue::SetCallbacks() const
         }
     );
 
-    glfwSetCursorEnterCallback(
-        m_glfWwindow,
-        [](GLFWwindow* t_window, int t_entered)
+    glfwSetCursorEnterCallback(m_glfWwindow,[](GLFWwindow* t_window, int t_entered)
         {
             SwitchCategory e;
             e.eventType = t_entered ? EventType::CURSOR_ENTERED : EventType::CURSOR_LEFT;
@@ -172,9 +160,7 @@ void sg::ogl::event::CircularEventQueue::SetCallbacks() const
         }
     );
 
-    glfwSetScrollCallback(
-        m_glfWwindow,
-        [](GLFWwindow* t_window, double t_xOffset, double t_yOffset)
+    glfwSetScrollCallback(m_glfWwindow,[](GLFWwindow* t_window, double t_xOffset, double t_yOffset)
         {
             UseDeviceCategory e;
             e.eventType = EventType::SCROLLED;
@@ -187,9 +173,7 @@ void sg::ogl::event::CircularEventQueue::SetCallbacks() const
         }
     );
 
-    glfwSetKeyCallback(
-        m_glfWwindow,
-        [](GLFWwindow* t_window, int t_key, int t_scancode, int t_action, int t_mods)
+    glfwSetKeyCallback(m_glfWwindow,[](GLFWwindow* t_window, int t_key, int t_scancode, int t_action, int t_mods)
         {
             KeyboardCategory e;
 
