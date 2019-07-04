@@ -1,47 +1,8 @@
 #include "MouseInput.h"
-#include "Window.h"
-#include "OpenGl.h"
 
-sg::ogl::input::MouseInput& sg::ogl::input::MouseInput::GetInstance()
-{
-    static MouseInput instance;
-    return instance;
-}
-
-void sg::ogl::input::MouseInput::Init(const Window& t_window)
-{
-    // Called when the cursor is moved.
-    glfwSetCursorPosCallback
-    (
-        t_window.GetWindowHandle(),
-        [](GLFWwindow* t_window, const double t_x, const double t_y)
-        {
-            GetInstance().m_currentPosition.x = static_cast<int>(t_x);
-            GetInstance().m_currentPosition.y = static_cast<int>(t_y);
-        }
-    );
-
-    // Called when the cursor enters or leaves the client area of the window.
-    glfwSetCursorEnterCallback
-    (
-        t_window.GetWindowHandle(),
-        [](GLFWwindow* t_window, const int t_entered)
-        {
-            GetInstance().m_inWindow = t_entered == 1;
-        }
-    );
-
-    // Called when a mouse button is pressed or released.
-    glfwSetMouseButtonCallback
-    (
-        t_window.GetWindowHandle(),
-        [](GLFWwindow* t_window, const int t_button, const int t_action, const int t_mods)
-        {
-            GetInstance().m_leftButtonPressed = t_button == GLFW_MOUSE_BUTTON_1 && t_action == GLFW_PRESS;
-            GetInstance().m_rightButtonPressed = t_button == GLFW_MOUSE_BUTTON_2 && t_action == GLFW_PRESS;
-        }
-    );
-}
+//-------------------------------------------------
+// Getter
+//-------------------------------------------------
 
 glm::ivec2 sg::ogl::input::MouseInput::GetCurrentPos() const
 {
@@ -63,7 +24,45 @@ bool sg::ogl::input::MouseInput::IsRightButtonPressed() const
     return m_rightButtonPressed;
 }
 
-void sg::ogl::input::MouseInput::Input()
+//-------------------------------------------------
+// Setter
+//-------------------------------------------------
+
+void sg::ogl::input::MouseInput::SetPreviousPosition(const glm::ivec2& t_previousPosition)
+{
+    m_previousPosition = t_previousPosition;
+}
+
+void sg::ogl::input::MouseInput::SetCurrentPosition(const glm::ivec2& t_currentPosition)
+{
+    m_currentPosition = t_currentPosition;
+}
+
+void sg::ogl::input::MouseInput::SetDisplVec(const glm::vec2& t_displVec)
+{
+    m_displVec = t_displVec;
+}
+
+void sg::ogl::input::MouseInput::SetInWindow(const bool t_inWindow)
+{
+    m_inWindow = t_inWindow;
+}
+
+void sg::ogl::input::MouseInput::SetLeftButtonPressed(const bool t_leftButtonPressed)
+{
+    m_leftButtonPressed = t_leftButtonPressed;
+}
+
+void sg::ogl::input::MouseInput::SetRightButtonPressed(const bool t_rightButtonPressed)
+{
+    m_rightButtonPressed = t_rightButtonPressed;
+}
+
+//-------------------------------------------------
+// Update
+//-------------------------------------------------
+
+void sg::ogl::input::MouseInput::Update()
 {
     m_displVec.x = 0.0f;
     m_displVec.y = 0.0f;

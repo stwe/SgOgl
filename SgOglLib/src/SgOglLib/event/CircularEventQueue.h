@@ -3,6 +3,7 @@
 #include <variant>
 #include <queue>
 #include "EventCategories.h"
+#include "Log.h"
 
 namespace sg::ogl::event
 {
@@ -110,6 +111,7 @@ namespace sg::ogl::event
         {
             if (m_events.size() >= m_maxSize)
             {
+                SG_OGL_CORE_LOG_WARN("[CircularEventQueue::Add()] Buffer overflow.");
                 return QueueResult::BUFFER_OVERFLOW;
             }
 

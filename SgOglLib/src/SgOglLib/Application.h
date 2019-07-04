@@ -20,6 +20,11 @@ namespace sg::ogl::event
     class CircularEventQueue;
 }
 
+namespace sg::ogl::input
+{
+    class MouseInput;
+}
+
 namespace sg::ogl
 {
     class Window;
@@ -49,6 +54,11 @@ namespace sg::ogl
         void operator()(event::CircularEventQueue* t_circularEventQueue) const;
     };
 
+    struct DeleteMouseInput
+    {
+        void operator()(input::MouseInput* t_mouseInput) const;
+    };
+
     class SG_OGL_API Application
     {
     public:
@@ -57,6 +67,7 @@ namespace sg::ogl
         using TextureManagerUniquePtr = std::unique_ptr<resource::TextureManager, DeleteTextureManager>;
         using StateStackUniquePtr = std::unique_ptr<state::StateStack, DeleteStateStack>;
         using CircularEventQueueUniquePtr = std::unique_ptr<event::CircularEventQueue, DeleteCircularEventQueue>;
+        using MouseInputUniquePtr = std::unique_ptr<input::MouseInput, DeleteMouseInput>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -95,6 +106,7 @@ namespace sg::ogl
         TextureManagerUniquePtr m_textureManager;
         StateStackUniquePtr m_stateStack;
         CircularEventQueueUniquePtr m_circularEventQueue;
+        MouseInputUniquePtr m_mouseInput;
 
         //-------------------------------------------------
         // Override

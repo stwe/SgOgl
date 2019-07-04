@@ -44,6 +44,12 @@ void sg::ogl::DeleteCircularEventQueue::operator()(event::CircularEventQueue* t_
     delete t_circularEventQueue;
 }
 
+void sg::ogl::DeleteMouseInput::operator()(input::MouseInput* t_mouseInput) const
+{
+    SG_OGL_CORE_LOG_DEBUG("[DeleteCircularEventQueue::operator()] Delete MouseInput.");
+    delete t_mouseInput;
+}
+
 //-------------------------------------------------
 // Ctors. / Dtor.
 //-------------------------------------------------
@@ -131,8 +137,8 @@ void sg::ogl::Application::CoreInit()
     m_circularEventQueue.reset(new event::CircularEventQueue {m_window->GetWindowHandle(), 1024});
     SG_OGL_CORE_ASSERT(m_circularEventQueue, "[Application::CoreInit()] Null pointer.")
 
-    // todo
-    input::MouseInput::Init(*m_window);
+    m_mouseInput.reset(new input::MouseInput);
+    SG_OGL_CORE_ASSERT(m_mouseInput, "[Application::CoreInit()] Null pointer.")
 
     // replace all callbacks
     m_circularEventQueue->SetCallbacks();
@@ -167,7 +173,7 @@ void sg::ogl::Application::GameLoop()
 
 void sg::ogl::Application::Input(event::CircularEventQueue& t_circularEventQueue)
 {
-    // handle core events
+    // handle core input
     t_circularEventQueue.Update(event::EventVisitor(
         [](event::PositionCategory&) {},
         [this](event::SizeCategory& t_event)
@@ -187,9 +193,22 @@ void sg::ogl::Application::Input(event::CircularEventQueue& t_circularEventQueue
                 m_window->UpdateOrthographicProjectionMatrix();
             }
         },
-        [](event::SwitchCategory&) {},
-        [](event::UseDeviceCategory&) {},
-        [](event::MouseCategory&) {},
+        [this](event::SwitchCategory& t_event)
+        {
+                m_mouseInput->SetInWindow(t_event.value == 1);
+        },
+        [this](event::UseDeviceCategory& t_event)
+        {
+                m_mouseInput->SetCurrentPosition(glm::ivec2(static_cast<int>(t_event.xPos), static_cast<int>(t_event.yPos)));
+        },
+        [this](event::MouseCategory& t_event)
+        {
+            if (t_event.eventType == event::EventType::BUTTON_PRESSED)
+            {
+                m_mouseInput->SetLeftButtonPressed(t_event.button == GLFW_MOUSE_BUTTON_1);
+                m_mouseInput->SetRightButtonPressed(t_event.button == GLFW_MOUSE_BUTTON_2);
+            }
+        },
         [this](event::KeyboardCategory& t_event)
         {
             // Exit
@@ -214,14 +233,16 @@ void sg::ogl::Application::Input(event::CircularEventQueue& t_circularEventQueue
         })
     );
 
-    // todo
-    input::MouseInput::GetInstance().Input();
-
+    // handle states input
     m_stateStack->Input();
 }
 
 void sg::ogl::Application::Update(const float t_dt, event::CircularEventQueue& t_circularEventQueue)
 {
+    // handle core update
+    m_mouseInput->Update();
+
+    // handle states update
     m_stateStack->Update(t_dt);
 }
 
@@ -229,5 +250,6 @@ void sg::ogl::Application::Render()
 {
     Window::Clear();
 
+    // handle states render
     m_stateStack->Render();
 }
