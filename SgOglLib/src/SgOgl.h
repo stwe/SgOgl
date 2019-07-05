@@ -25,6 +25,8 @@
 #include "SgOglLib/resource/ShaderProgram.h"
 #include "SgOglLib/resource/ShaderManager.h"
 #include "SgOglLib/resource/TextureManager.h"
+#include "SgOglLib/resource/Mesh.h"
+#include "SgOglLib/resource/Model.h"
 
 // state
 #include "SgOglLib/state/State.h"

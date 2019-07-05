@@ -26,6 +26,11 @@ int32_t sg::ogl::buffer::BufferLayout::GetStride() const
     return m_stride;
 }
 
+uint32_t sg::ogl::buffer::BufferLayout::GetFloatsPerLayout() const
+{
+    return m_floatsPerLayout;
+}
+
 uint32_t sg::ogl::buffer::BufferLayout::GetVertexAttributeTypeSize(const VertexAttributeType t_vertexAttributeType)
 {
     static_assert(sizeof(float) == 4, "[BufferLayout::GetVertexAttributeTypeSize()] Float must be 4 bytes.");
@@ -75,5 +80,7 @@ void sg::ogl::buffer::BufferLayout::CalculateOffsetsAndStride()
         attribute.offset = offset;
         offset += attribute.size;
         m_stride += attribute.size;
+
+        m_floatsPerLayout += attribute.GetComponentCount();
     }
 }

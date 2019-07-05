@@ -35,6 +35,7 @@ namespace sg::ogl::buffer
 
         const Attributes& GetAttributes() const noexcept;
         int32_t GetStride() const;
+        uint32_t GetFloatsPerLayout() const;
 
         static uint32_t GetVertexAttributeTypeSize(VertexAttributeType t_vertexAttributeType);
         static uint32_t GetOpenGlType(VertexAttributeType t_vertexAttributeType);
@@ -44,6 +45,7 @@ namespace sg::ogl::buffer
     private:
         Attributes m_vertexAttributes;
         int32_t m_stride{ 0 };
+        uint32_t m_floatsPerLayout{ 0 };
 
         //-------------------------------------------------
         // Helper

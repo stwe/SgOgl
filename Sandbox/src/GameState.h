@@ -38,9 +38,9 @@ protected:
 
 private:
     /**
-     * @brief A Vertex Array Objects to store our vertex data.
+     * @brief A Mesh to hold our vertex data.
      */
-    sg::ogl::buffer::Vao m_vao;
+    sg::ogl::resource::Mesh m_mesh;
 
     /**
      * @brief Store our texture Id.

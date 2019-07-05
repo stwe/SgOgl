@@ -23,7 +23,7 @@ namespace sg::ogl::event
         KeyboardCategory
     >;
 
-    template<typename ...Ts>
+    template <typename ...Ts>
     struct EventVisitor : Ts...
     {
         EventVisitor(const Ts& ... t_args)

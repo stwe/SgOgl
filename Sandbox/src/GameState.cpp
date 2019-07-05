@@ -53,7 +53,7 @@ bool GameState::Update(const float t_dt)
 
 void GameState::Render()
 {
-    m_vao.BindVao();
+    m_mesh.InitDraw();
 
     GetApplicationContext()->GetShaderManager()->GetShaderProgram("simple")->Bind();
 
@@ -65,9 +65,9 @@ void GameState::Render()
     GetApplicationContext()->GetShaderManager()->GetShaderProgram("simple")->SetUniform("transform", mvp);
     GetApplicationContext()->GetShaderManager()->GetShaderProgram("simple")->SetUniform("ourTexture", 0);
 
-    m_vao.DrawPrimitives();
+    m_mesh.DrawPrimitives();
 
-    m_vao.UnbindVao();
+    m_mesh.EndDraw();
 }
 
 //-------------------------------------------------
@@ -92,8 +92,7 @@ void GameState::Init()
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("simple");
 
     // copy vertices to GPU
-    m_vao.AllocateVertices(reinterpret_cast<float*>(m_vertices.data()), 3, 27 * sizeof(float), m_bufferLayout);
-    m_vao.AllocateIndices(m_indices);
+    m_mesh.Allocate(m_bufferLayout, &m_vertices, 3, &m_indices);
 
     // we don't need the vertex data anymore
     m_vertices.clear();
