@@ -1,21 +1,52 @@
 project(SgOglLib)
 
-set(LIB_SRC_FILES
+set(LIB_CORE_SRC_FILES
     src/SgOglLib/Application.cpp
-    src/SgOglLib/Log.cpp
-    src/SgOglLib/Config.cpp
-    src/SgOglLib/SgOglException.cpp
     src/SgOglLib/Color.cpp
-    src/SgOglLib/Window.cpp
+    src/SgOglLib/Config.cpp
+    src/SgOglLib/Log.cpp
     src/SgOglLib/OpenGl.cpp
-    src/SgOglLib/buffer/Vao.cpp
+    src/SgOglLib/SgOglException.cpp
+    src/SgOglLib/Window.cpp
+)
+
+set(LIB_BUFFER_SRC_FILES
     src/SgOglLib/buffer/BufferLayout.cpp
-    src/SgOglLib/resource/ShaderProgram.cpp
+    src/SgOglLib/buffer/Vao.cpp
+)
+
+set(LIB_CAMERA_SRC_FILES
+    src/SgOglLib/camera/LookAtCamera.cpp
+)
+
+set(LIB_EVENT_SRC_FILES
+    src/SgOglLib/event/CircularEventQueue.cpp
+)
+
+set(LIB_INPUT_SRC_FILES
+    src/SgOglLib/input/MouseInput.cpp
+)
+
+set(LIB_RES_SRC_FILES
     src/SgOglLib/resource/ShaderManager.cpp
-    src/SgOglLib/resource/TextureManager.cpp
+    src/SgOglLib/resource/ShaderProgram.cpp
     src/SgOglLib/resource/StbImage.cpp
+    src/SgOglLib/resource/TextureManager.cpp
+)
+
+set(LIB_STATE_SRC_FILES
     src/SgOglLib/state/State.cpp
     src/SgOglLib/state/StateStack.cpp
+)
+
+set(LIB_SRC_FILES
+    ${LIB_CORE_SRC_FILES}
+    ${LIB_BUFFER_SRC_FILES}
+    ${LIB_CAMERA_SRC_FILES}
+    ${LIB_EVENT_SRC_FILES}
+    ${LIB_INPUT_SRC_FILES}
+    ${LIB_RES_SRC_FILES}
+    ${LIB_STATE_SRC_FILES}
 )
 
 if (SHARED_LIB)
