@@ -94,6 +94,11 @@ namespace sg::ogl
         const ProjectionOptions& GetProjectionOptions() const noexcept;
         ProjectionOptions& GetProjectionOptions() noexcept;
 
+        WindowUniquePtr& GetWindow() noexcept;
+        ShaderManagerUniquePtr& GetShaderManager() noexcept;
+        TextureManagerUniquePtr& GetTextureManager() noexcept;
+        MouseInputUniquePtr& GetMouseInput() noexcept;
+
         //-------------------------------------------------
         // Run
         //-------------------------------------------------

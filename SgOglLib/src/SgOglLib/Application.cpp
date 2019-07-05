@@ -2,7 +2,6 @@
 #include "Log.h"
 #include "Window.h"
 #include "OpenGl.h"
-#include "state/State.h"
 #include "state/StateStack.h"
 #include "resource/ShaderProgram.h"
 #include "resource/ShaderManager.h"
@@ -90,6 +89,26 @@ sg::ogl::ProjectionOptions& sg::ogl::Application::GetProjectionOptions() noexcep
     return m_projectionOptions;
 }
 
+sg::ogl::Application::WindowUniquePtr& sg::ogl::Application::GetWindow() noexcept
+{
+    return m_window;
+}
+
+sg::ogl::Application::ShaderManagerUniquePtr& sg::ogl::Application::GetShaderManager() noexcept
+{
+    return m_shaderManager;
+}
+
+sg::ogl::Application::TextureManagerUniquePtr& sg::ogl::Application::GetTextureManager() noexcept
+{
+    return m_textureManager;
+}
+
+sg::ogl::Application::MouseInputUniquePtr& sg::ogl::Application::GetMouseInput() noexcept
+{
+    return m_mouseInput;
+}
+
 //-------------------------------------------------
 // Run
 //-------------------------------------------------
@@ -131,7 +150,7 @@ void sg::ogl::Application::CoreInit()
     m_textureManager.reset(new resource::TextureManager);
     SG_OGL_CORE_ASSERT(m_textureManager, "[Application::CoreInit()] Null pointer.")
 
-    m_stateStack.reset(new state::StateStack{ state::State::Context{ *m_window, *m_shaderManager, *m_textureManager} });
+    m_stateStack.reset(new state::StateStack{ this });
     SG_OGL_CORE_ASSERT(m_stateStack, "[Application::CoreInit()] Null pointer.")
 
     m_circularEventQueue.reset(new event::CircularEventQueue {m_window->GetWindowHandle(), 1024});

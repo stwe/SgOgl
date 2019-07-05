@@ -6,19 +6,8 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::state::State::Context::Context(Window& t_window, resource::ShaderManager& t_shaderManager, resource::TextureManager& t_textureManager)
-    : window{ &t_window }
-    , shaderManager{ &t_shaderManager }
-    , textureManager{ &t_textureManager }
-{
-    SG_OGL_CORE_ASSERT(window, "[State::Context::Context()] Null pointer.")
-    SG_OGL_CORE_ASSERT(shaderManager, "[State::Context::Context()] Null pointer.")
-    SG_OGL_CORE_ASSERT(textureManager, "[State::Context::Context()] Null pointer.")
-}
-
-sg::ogl::state::State::State(StateStack& t_stateStack, Context& t_context)
-    : m_stateStack{ &t_stateStack }
-    , m_context{ t_context }
+sg::ogl::state::State::State(StateStack* const t_stateStack)
+    : m_stateStack{ t_stateStack }
 {
     SG_OGL_CORE_ASSERT(m_stateStack, "[State::State()] Null pointer.")
 }
@@ -46,8 +35,7 @@ void sg::ogl::state::State::RequestStateClear() const
 // Getter
 //-------------------------------------------------
 
-// todo
-sg::ogl::state::State::Context sg::ogl::state::State::GetContext() const
+sg::ogl::Application* sg::ogl::state::State::GetApplicationContext() const
 {
-    return m_context;
+    return m_stateStack->GetApplication();
 }

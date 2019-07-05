@@ -23,7 +23,9 @@ void sg::ogl::GlfwDeleteWindow::operator()(GLFWwindow* t_window) const
 
 sg::ogl::Window::Window(Application* const t_application)
     : m_application{ t_application }
-{}
+{
+    SG_OGL_CORE_ASSERT(m_application, "[Window::Window()] Null pointer.")
+}
 
 sg::ogl::Window::~Window() noexcept
 {

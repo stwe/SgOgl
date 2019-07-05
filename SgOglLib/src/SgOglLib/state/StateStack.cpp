@@ -16,14 +16,24 @@ void sg::ogl::state::DeleteState::operator()(State* t_state) const
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::state::StateStack::StateStack(State::Context t_context)
-    : m_context{ t_context }
+sg::ogl::state::StateStack::StateStack(Application* const t_application)
+    : m_application{ t_application }
 {
+    SG_OGL_CORE_ASSERT(m_application, "[StateStack::StateStack()] Null pointer.")
 }
 
 sg::ogl::state::StateStack::~StateStack() noexcept
 {
     SG_OGL_CORE_LOG_DEBUG("[StateStack::~StateStack()] Execute the StateStack destructor.");
+}
+
+//-------------------------------------------------
+// Getter
+//-------------------------------------------------
+
+sg::ogl::Application* sg::ogl::state::StateStack::GetApplication() const
+{
+    return m_application;
 }
 
 //-------------------------------------------------

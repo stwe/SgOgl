@@ -6,6 +6,11 @@
 #include <functional>
 #include "State.h"
 
+namespace sg::ogl
+{
+    class Application;
+}
+
 namespace sg::ogl::state
 {
     struct DeleteState
@@ -35,7 +40,7 @@ namespace sg::ogl::state
 
         StateStack() = delete;
 
-        explicit StateStack(State::Context t_context);
+        explicit StateStack(Application* t_application);
 
         StateStack(const StateStack& t_other) = delete;
         StateStack(StateStack&& t_other) noexcept = delete;
@@ -43,6 +48,12 @@ namespace sg::ogl::state
         StateStack& operator=(StateStack&& t_other) noexcept = delete;
 
         ~StateStack() noexcept;
+
+        //-------------------------------------------------
+        // Getter
+        //-------------------------------------------------
+
+        Application* GetApplication() const;
 
         //-------------------------------------------------
         // Handle States
@@ -58,7 +69,7 @@ namespace sg::ogl::state
         {
             m_factories[t_stateId] = [this]()
             {
-                return StateUniquePtr(new T(* this, m_context));
+                return StateUniquePtr(new T(this));
             };
         }
 
@@ -88,7 +99,11 @@ namespace sg::ogl::state
             StateId stateId;
         };
 
-        State::Context m_context;
+        /**
+         * @brief Pointer to the parent application.
+         */
+        Application* m_application{ nullptr };
+
         std::vector<StateUniquePtr> m_stack;
         std::vector<PendingChange> m_pendingList;
         std::map<StateId, std::function<StateUniquePtr()>> m_factories;

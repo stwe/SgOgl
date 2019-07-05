@@ -20,8 +20,8 @@ public:
     // Ctors. / Dtor.
     //-------------------------------------------------
 
-    GameState(sg::ogl::state::StateStack& t_stateStack, Context& t_context)
-        : State{ t_stateStack, t_context }
+    explicit GameState(sg::ogl::state::StateStack* t_stateStack)
+        : State{ t_stateStack }
     {
         Init();
     }

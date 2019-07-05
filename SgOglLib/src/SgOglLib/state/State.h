@@ -4,13 +4,7 @@
 
 namespace sg::ogl
 {
-    class Window;
-}
-
-namespace sg::ogl::resource
-{
-    class ShaderManager;
-    class TextureManager;
+    class Application;
 }
 
 namespace sg::ogl::state
@@ -33,28 +27,13 @@ namespace sg::ogl::state
     class SG_OGL_API State
     {
     public:
-        /**
-         * @brief Struct to hold shared objects between all States.
-         *        Every State will have access to a GetContext() method.
-         */
-        struct Context
-        {
-            Context() = delete;
-
-            Context(Window& t_window, resource::ShaderManager& t_shaderManager, resource::TextureManager& t_textureManager);
-
-            Window* window{ nullptr };
-            resource::ShaderManager* shaderManager{ nullptr };
-            resource::TextureManager* textureManager{ nullptr };
-        };
-
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
 
         State() = delete;
 
-        State(StateStack& t_stateStack, Context& t_context);
+        explicit State(StateStack* t_stateStack);
 
         State(const State& t_other) = delete;
         State(State&& t_other) noexcept = delete;
@@ -84,17 +63,12 @@ namespace sg::ogl::state
         // Getter
         //-------------------------------------------------
 
-        Context GetContext() const;
+        Application* GetApplicationContext() const;
 
     private:
         /**
          * @brief Pointer to the parent StateStack.
          */
         StateStack* m_stateStack{ nullptr };
-
-        /**
-         * @brief Holder of shared objects.
-         */
-        Context m_context;
     };
 }
