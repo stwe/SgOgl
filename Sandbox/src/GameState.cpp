@@ -6,6 +6,11 @@
 
 bool GameState::Input()
 {
+    if (GetApplicationContext()->GetMouseInput()->IsRightButtonPressed())
+    {
+        m_camera.ProcessMouse(GetApplicationContext()->GetMouseInput()->GetDisplVec());
+    }
+
     return true;
 }
 

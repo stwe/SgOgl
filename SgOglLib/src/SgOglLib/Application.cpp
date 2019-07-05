@@ -224,8 +224,27 @@ void sg::ogl::Application::Input(event::CircularEventQueue& t_circularEventQueue
         {
             if (t_event.eventType == event::EventType::BUTTON_PRESSED)
             {
-                m_mouseInput->SetLeftButtonPressed(t_event.button == GLFW_MOUSE_BUTTON_1);
-                m_mouseInput->SetRightButtonPressed(t_event.button == GLFW_MOUSE_BUTTON_2);
+                if (t_event.button == GLFW_MOUSE_BUTTON_1)
+                {
+                    m_mouseInput->SetLeftButtonPressed(true);
+                }
+
+                if (t_event.button == GLFW_MOUSE_BUTTON_2)
+                {
+                    m_mouseInput->SetRightButtonPressed(true);
+                }
+            }
+            if (t_event.eventType == event::EventType::BUTTON_RELEASED)
+            {
+                if (t_event.button == GLFW_MOUSE_BUTTON_1)
+                {
+                    m_mouseInput->SetLeftButtonPressed(false);
+                }
+
+                if (t_event.button == GLFW_MOUSE_BUTTON_2)
+                {
+                    m_mouseInput->SetRightButtonPressed(false);
+                }
             }
         },
         [this](event::KeyboardCategory& t_event)
