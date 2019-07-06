@@ -7,7 +7,7 @@ namespace sg::ogl::buffer
 {
     enum class VertexAttributeType
     {
-        NONE, POSITION, POSITION_2D, COLOR, UV, NORMAL
+        NONE, POSITION, POSITION_2D, COLOR, UV, NORMAL, TANGENT, BITANGENT
     };
 
     struct VertexAttribute
@@ -27,6 +27,8 @@ namespace sg::ogl::buffer
                 case VertexAttributeType::COLOR: return 3;
                 case VertexAttributeType::UV: return 2;
                 case VertexAttributeType::NORMAL: return 3;
+                case VertexAttributeType::TANGENT: return 3;
+                case VertexAttributeType::BITANGENT: return 3;
                 default:;
             }
 

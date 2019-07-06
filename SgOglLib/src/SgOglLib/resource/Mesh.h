@@ -25,7 +25,7 @@ namespace sg::ogl::resource
         Mesh& operator=(const Mesh& t_other) = delete;
         Mesh& operator=(Mesh&& t_other) noexcept = delete;
 
-        ~Mesh() = default;
+        ~Mesh() noexcept = default;
 
         //-------------------------------------------------
         // Allocate

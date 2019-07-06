@@ -43,6 +43,8 @@ uint32_t sg::ogl::buffer::BufferLayout::GetVertexAttributeTypeSize(const VertexA
         case VertexAttributeType::COLOR: return SIZE_OF_FLOAT * 3;
         case VertexAttributeType::UV: return SIZE_OF_FLOAT * 2;
         case VertexAttributeType::NORMAL: return SIZE_OF_FLOAT * 3;
+        case VertexAttributeType::TANGENT: return SIZE_OF_FLOAT * 3;
+        case VertexAttributeType::BITANGENT: return SIZE_OF_FLOAT * 3;
         default:;
     }
 
@@ -57,7 +59,9 @@ uint32_t sg::ogl::buffer::BufferLayout::GetOpenGlType(const VertexAttributeType 
         case VertexAttributeType::POSITION_2D:
         case VertexAttributeType::COLOR:
         case VertexAttributeType::UV:
-        case VertexAttributeType::NORMAL: return GL_FLOAT;
+        case VertexAttributeType::NORMAL:
+        case VertexAttributeType::TANGENT:
+        case VertexAttributeType::BITANGENT: return GL_FLOAT;
         default:;
     }
 

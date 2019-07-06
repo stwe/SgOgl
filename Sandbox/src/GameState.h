@@ -5,16 +5,7 @@
 class GameState : public sg::ogl::state::State
 {
 public:
-    //-------------------------------------------------
-    // Vertex
-    //-------------------------------------------------
-
-    struct Vertex
-    {
-        glm::vec3 pos;
-        glm::vec3 col;
-        glm::vec2 uv;
-    };
+    using ModelUniquePtr = std::unique_ptr<sg::ogl::resource::Model>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -38,17 +29,17 @@ protected:
 
 private:
     /**
-     * @brief A Mesh to hold our vertex data.
+     * @brief A 3D Model.
      */
-    sg::ogl::resource::Mesh m_mesh;
+    ModelUniquePtr m_model;
 
     /**
-     * @brief Store our texture Id.
+     * @brief Store a texture Id.
      */
     uint32_t m_textureId{ 0 };
 
     /**
-     * @brief A camera to get a view matrix (Camera space).
+     * @brief A camera to create and get a view matrix (Camera space).
      */
     sg::ogl::camera::LookAtCamera m_camera;
 
@@ -61,29 +52,6 @@ private:
      * @brief The model matrix (World space).
      */
     sg::ogl::math::Transform m_transformMatrix;
-
-    /**
-     * @brief Vertex data of our Triangle (Object space).
-     */
-    std::vector<Vertex> m_vertices{
-        { glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec3(0.8f, 0.2f, 0.8f), glm::vec2(0.0f, 0.0f) },
-        { glm::vec3(0.5f, -0.5f, 0.0f), glm::vec3(0.2f, 0.3f, 0.8f), glm::vec2(1.0f, 0.0f) },
-        { glm::vec3(0.0f,  0.5f, 0.0f), glm::vec3(0.8f, 0.8f, 0.2f), glm::vec2(0.5f, 1.0f) }
-    };
-
-    /**
-     * @brief Enable indexing.
-     */
-    std::vector<uint32_t> m_indices{ 0, 1, 2 };
-
-    /**
-     * @brief Describes the buffer layout for the VBO.
-     */
-    const sg::ogl::buffer::BufferLayout m_bufferLayout{
-        { sg::ogl::buffer::VertexAttributeType::POSITION, "aPosition" },
-        { sg::ogl::buffer::VertexAttributeType::COLOR, "aColor" },
-        { sg::ogl::buffer::VertexAttributeType::UV, "aUv" },
-    };
 
     //-------------------------------------------------
     // Init

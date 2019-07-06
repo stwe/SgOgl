@@ -42,14 +42,16 @@ project "SgOglLib"
         "%{prj.name}/vendor/glew/include",
         "%{prj.name}/vendor/glfw/include",
         "%{prj.name}/vendor/tinyxml2/include",
-        "%{prj.name}/vendor/glm"
+        "%{prj.name}/vendor/glm",
+        "%{prj.name}/vendor/assimp/include"
     }
 
     libdirs
     {
         "%{prj.name}/vendor/glew/lib/static/win",
         "%{prj.name}/vendor/glfw/lib/static/win",
-        "%{prj.name}/vendor/tinyxml2/lib/static/win"
+        "%{prj.name}/vendor/tinyxml2/lib/static/win",
+        "%{prj.name}/vendor/assimp/lib/static/win"
     }
 
     links
@@ -57,7 +59,10 @@ project "SgOglLib"
         "tinyxml2",
         "glew32s",
         "glfw3",
-        "opengl32"
+        "opengl32",
+        "assimp-vc140-mt",
+        "IrrXML",
+        "zlibstaticd"
     }
 
     filter "system:windows"
@@ -116,7 +121,8 @@ project "Sandbox"
         "SgOglLib/vendor/spdlog/include",
         "SgOglLib/vendor/glew/include",
         "SgOglLib/vendor/glfw/include",
-        "SgOglLib/vendor/glm"
+        "SgOglLib/vendor/glm",
+        "SgOglLib/vendor/assimp/include"
     }
 
     links
