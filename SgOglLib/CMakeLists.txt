@@ -28,6 +28,8 @@ set(LIB_INPUT_SRC_FILES
 )
 
 set(LIB_RES_SRC_FILES
+    src/SgOglLib/resource/Mesh.cpp
+    src/SgOglLib/resource/Model.cpp
     src/SgOglLib/resource/ShaderManager.cpp
     src/SgOglLib/resource/ShaderProgram.cpp
     src/SgOglLib/resource/StbImage.cpp
@@ -94,6 +96,12 @@ set(OpenGL_GL_PREFERENCE "LEGACY")
 find_package(OpenGL REQUIRED)
 target_include_directories(${PROJECT_NAME} PUBLIC ${OPENGL_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_gl_LIBRARY})
+
+# add Assimp
+find_package(Assimp REQUIRED)
+include_directories(${ASSIMP_INCLUDE_DIRS})
+find_library(ASSIMP_LIBRARY NAMES ${ASSIMP_LIBRARIES} PATH ${ASSIMP_LIBRARY_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${ASSIMP_LIBRARY})
 
 # set an alias for this lib
 add_library(Sg::GameEngineLib ALIAS ${PROJECT_NAME})
