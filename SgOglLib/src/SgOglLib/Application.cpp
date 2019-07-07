@@ -55,14 +55,14 @@ void sg::ogl::DeleteMouseInput::operator()(input::MouseInput* t_mouseInput) cons
 
 sg::ogl::Application::Application(const std::string& t_configFileName)
 {
-    SG_OGL_CORE_LOG_DEBUG("[Application::Application()] Execute the Application constructor.");
+    SG_OGL_CORE_LOG_DEBUG("[Application::Application()] Create Application.");
 
     Config::LoadOptions(t_configFileName, m_windowOptions, m_projectionOptions);
 }
 
 sg::ogl::Application::~Application() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[Application::~Application()] Execute the Application destructor.");
+    SG_OGL_CORE_LOG_DEBUG("[Application::~Application()] Destruct Application.");
 }
 
 //-------------------------------------------------

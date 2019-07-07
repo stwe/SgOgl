@@ -10,10 +10,13 @@ sg::ogl::resource::Mesh::Mesh()
     : m_vao{ std::make_unique<buffer::Vao>() }
 {
     SG_OGL_CORE_ASSERT(m_vao, "[Mesh::Mesh()] Null pointer.")
+
+    SG_OGL_CORE_LOG_DEBUG("[Mesh::Mesh()] Create Mesh.");
 }
 
 sg::ogl::resource::Mesh::~Mesh() noexcept
 {
+    SG_OGL_CORE_LOG_DEBUG("[Mesh::Mesh()] Destruct Mesh.");
 }
 
 //-------------------------------------------------

@@ -2,7 +2,7 @@
 
 // In
 
-in vec2 texCoord;
+in vec2 vUv;
 
 // Out
 
@@ -10,11 +10,13 @@ out vec4 fragColor;
 
 // Uniforms
 
-uniform sampler2D ourTexture;
+uniform sampler2D diffuseMap;
+uniform vec3 ambientIntensity;
 
 // Main
 
 void main()
 {
-    fragColor = texture(ourTexture, texCoord);
+    vec4 mapColor = texture(diffuseMap, vUv);
+    fragColor = vec4(ambientIntensity, 1.0) * mapColor;
 }

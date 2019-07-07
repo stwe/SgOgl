@@ -30,7 +30,7 @@ namespace sg::ogl::resource
         // Ctors. / Dtor.
         //-------------------------------------------------
 
-        TextureManager() = default;
+        TextureManager();
 
         TextureManager(const TextureManager& t_other) = delete;
         TextureManager(TextureManager&& t_other) noexcept = delete;

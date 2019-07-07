@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "Core.h"
 
 namespace sg::ogl
@@ -33,14 +34,14 @@ namespace sg::ogl::state
 
         State() = delete;
 
-        explicit State(StateStack* t_stateStack);
+        explicit State(StateStack* t_stateStack, std::string t_debugName = "State");
 
         State(const State& t_other) = delete;
         State(State&& t_other) noexcept = delete;
         State& operator=(const State& t_other) = delete;
         State& operator=(State&& t_other) noexcept = delete;
 
-        virtual ~State() noexcept = default;
+        virtual ~State() noexcept;
 
         //-------------------------------------------------
         // State logic
@@ -70,5 +71,7 @@ namespace sg::ogl::state
          * @brief Pointer to the parent StateStack.
          */
         StateStack* m_stateStack{ nullptr };
+
+        std::string m_debugName;
     };
 }

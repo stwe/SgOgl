@@ -17,9 +17,14 @@ void sg::ogl::resource::DeleteShaderProgram::operator()(ShaderProgram* t_shaderP
 // Ctors. / Dtor.
 //-------------------------------------------------
 
+sg::ogl::resource::ShaderManager::ShaderManager()
+{
+    SG_OGL_CORE_LOG_DEBUG("[ShaderManager::ShaderManager()] Create ShaderManager.");
+}
+
 sg::ogl::resource::ShaderManager::~ShaderManager() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[ShaderManager::~ShaderManager()] Execute the ShaderManager destructor.");
+    SG_OGL_CORE_LOG_DEBUG("[ShaderManager::~ShaderManager()] Destruct ShaderManager.");
 }
 
 //-------------------------------------------------

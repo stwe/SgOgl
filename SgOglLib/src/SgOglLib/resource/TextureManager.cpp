@@ -7,9 +7,14 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
+sg::ogl::resource::TextureManager::TextureManager()
+{
+    SG_OGL_CORE_LOG_DEBUG("[TextureManager::TextureManager()] Create TextureManager.");
+}
+
 sg::ogl::resource::TextureManager::~TextureManager() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[TextureManager::~TextureManager()] Execute the TextureManager destructor.");
+    SG_OGL_CORE_LOG_DEBUG("[TextureManager::~TextureManager()] Destruct TextureManager.");
     CleanUp();
 }
 

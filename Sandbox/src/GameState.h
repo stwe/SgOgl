@@ -12,9 +12,14 @@ public:
     //-------------------------------------------------
 
     explicit GameState(sg::ogl::state::StateStack* t_stateStack)
-        : State{ t_stateStack }
+        : State{ t_stateStack, "GameState" }
     {
         Init();
+    }
+
+    ~GameState() noexcept override
+    {
+        SG_OGL_LOG_DEBUG("[GameState::~GameState()] Destruct GameState.");
     }
 
     //-------------------------------------------------
@@ -32,11 +37,6 @@ private:
      * @brief A 3D Model.
      */
     ModelUniquePtr m_model;
-
-    /**
-     * @brief Store a texture Id.
-     */
-    uint32_t m_textureId{ 0 };
 
     /**
      * @brief A camera to create and get a view matrix (Camera space).

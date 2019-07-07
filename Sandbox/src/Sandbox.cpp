@@ -14,7 +14,7 @@ public:
     explicit Sandbox(const std::string& t_configFileName)
         : Application{ t_configFileName }
     {
-        SG_OGL_LOG_DEBUG("[Sandbox::Sandbox()] Execute the Sandbox constructor.");
+        SG_OGL_LOG_DEBUG("[Sandbox::Sandbox()] Create Sandbox.");
     }
 
     Sandbox(const Sandbox& t_other) = delete;
@@ -24,7 +24,7 @@ public:
 
     ~Sandbox() noexcept override
     {
-        SG_OGL_LOG_DEBUG("[Sandbox::~Sandbox()] Execute the Sandbox destructor.");
+        SG_OGL_LOG_DEBUG("[Sandbox::~Sandbox()] Destruct Sandbox.");
     }
 
 protected:

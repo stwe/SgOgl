@@ -18,7 +18,7 @@ sg::ogl::buffer::Vao::Vao()
 
 sg::ogl::buffer::Vao::~Vao() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[Application::~Application()] Execute the Application destructor.");
+    SG_OGL_CORE_LOG_DEBUG("[Vao::~Vao()] Destruct Vao.");
     CleanUp();
 }
 

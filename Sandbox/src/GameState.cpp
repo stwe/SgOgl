@@ -53,24 +53,33 @@ bool GameState::Update(const float t_dt)
 
 void GameState::Render()
 {
+    // get ShaderProgram
+    auto& shaderProgram{ GetApplicationContext()->GetShaderManager()->GetShaderProgram("model") };
+
+    // bind ShaderProgram
+    shaderProgram->Bind();
+
+    // set transform
+    const auto mvp{ m_projectionMatrix * m_camera.GetViewMatrix() * m_transformMatrix.GetModelMatrix() };
+    shaderProgram->SetUniform("transform", mvp);
+
+    // set ambient intensity
+    shaderProgram->SetUniform("ambientIntensity", glm::vec3(1.0f));
+
+    // for each mesh
     for (const auto& mesh : m_model->GetMeshes())
     {
+        auto& material{ mesh->GetMaterial() };
+
+        shaderProgram->SetUniform("diffuseMap", 0);
+        GetApplicationContext()->GetTextureManager()->BindForReading(material->mapKd, GL_TEXTURE0);
+
         mesh->InitDraw();
-
-        GetApplicationContext()->GetShaderManager()->GetShaderProgram("model")->Bind();
-
-        GetApplicationContext()->GetTextureManager()->BindForReading(m_textureId, GL_TEXTURE0);
-        GetApplicationContext()->GetTextureManager()->UseBilinearFilter();
-        GetApplicationContext()->GetTextureManager()->UseRepeatWrapping();
-
-        const auto mvp{ m_projectionMatrix * m_camera.GetViewMatrix() * m_transformMatrix.GetModelMatrix() };
-        GetApplicationContext()->GetShaderManager()->GetShaderProgram("model")->SetUniform("transform", mvp);
-        GetApplicationContext()->GetShaderManager()->GetShaderProgram("model")->SetUniform("ourTexture", 0);
-
         mesh->DrawPrimitives();
-
         mesh->EndDraw();
     }
+
+    shaderProgram->Unbind();
 }
 
 //-------------------------------------------------
@@ -88,12 +97,10 @@ void GameState::Init()
     // load model && texture
 #if defined(_WIN64) && defined(_MSC_VER)
 
-    m_textureId = GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/grass.jpg");
     m_model = std::make_unique<sg::ogl::resource::Model>("res/model/nanosuit/nanosuit.obj", *GetApplicationContext()->GetTextureManager());
 
 #elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
 
-    m_textureId = GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("/home/steffen/Dev/SgOgl/Sandbox/res/texture/grass.jpg");
     m_model = std::make_unique<sg::ogl::resource::Model>("/home/steffen/Dev/SgOgl/Sandbox/res/model/nanosuit/nanosuit.obj");
 
 #else

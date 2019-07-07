@@ -19,7 +19,7 @@ sg::ogl::resource::ShaderProgram::ShaderProgram()
 
 sg::ogl::resource::ShaderProgram::~ShaderProgram() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::~ShaderProgram()] Execute the ShaderProgram destructor.");
+    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::~ShaderProgram()] Destruct ShaderProgram.");
     CleanUp();
 }
 

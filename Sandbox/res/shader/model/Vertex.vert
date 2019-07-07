@@ -10,7 +10,7 @@ layout (location = 4) in vec3 aBiTangent;
 
 // Out
 
-out vec2 texCoord;
+out vec2 vUv;
 
 // Uniforms
 
@@ -22,5 +22,5 @@ void main()
 {
     gl_Position = transform * vec4(aPosition, 1.0);
 
-    texCoord = aUv;
+    vUv = aUv;
 }

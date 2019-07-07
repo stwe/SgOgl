@@ -12,7 +12,7 @@
 
 void sg::ogl::GlfwDeleteWindow::operator()(GLFWwindow* t_window) const
 {
-    SG_OGL_CORE_LOG_DEBUG("[GlfwDeleteWindow::operator()] Destroying GLFW Window Context.");
+    SG_OGL_CORE_LOG_DEBUG("[GlfwDeleteWindow::operator()] Destroying GLFW Window Context. Goodbye.");
     glfwDestroyWindow(t_window);
     glfwTerminate();
 }
@@ -25,11 +25,13 @@ sg::ogl::Window::Window(Application* const t_application)
     : m_application{ t_application }
 {
     SG_OGL_CORE_ASSERT(m_application, "[Window::Window()] Null pointer.")
+
+    SG_OGL_CORE_LOG_DEBUG("[Window::Window()] Create Window.");
 }
 
 sg::ogl::Window::~Window() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[Window::~Window()] Execute the Window destructor.");
+    SG_OGL_CORE_LOG_DEBUG("[Window::~Window()] Destruct Window.");
 }
 
 //-------------------------------------------------

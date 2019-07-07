@@ -20,11 +20,13 @@ sg::ogl::state::StateStack::StateStack(Application* const t_application)
     : m_application{ t_application }
 {
     SG_OGL_CORE_ASSERT(m_application, "[StateStack::StateStack()] Null pointer.")
+
+    SG_OGL_CORE_LOG_DEBUG("[StateStack::StateStack()] Create StateStack.");
 }
 
 sg::ogl::state::StateStack::~StateStack() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[StateStack::~StateStack()] Execute the StateStack destructor.");
+    SG_OGL_CORE_LOG_DEBUG("[StateStack::~StateStack()] Destruct StateStack.");
 }
 
 //-------------------------------------------------
