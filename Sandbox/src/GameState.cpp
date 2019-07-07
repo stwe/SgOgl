@@ -114,4 +114,7 @@ void GameState::Init()
 
     // set a world position for the model
     m_transformMatrix.position = glm::vec3(0.0f, 0.0f, 1.0f);
+
+    // scale down
+    m_transformMatrix.scale = glm::vec3(0.25f);
 }

@@ -2,12 +2,12 @@
 #include "OpenGl.h"
 
 void APIENTRY gl_debug_output(
-    GLenum t_source,
-    GLenum t_type,
-    GLuint t_id,
-    GLenum t_severity,
-    GLsizei t_length,
-    const GLchar* t_message,
+    const uint32_t t_source,
+    const uint32_t t_type,
+    const uint32_t t_id,
+    const uint32_t t_severity,
+    int32_t t_length,
+    const char* t_message,
     const void* t_userParam
 )
 {
@@ -25,6 +25,7 @@ void APIENTRY gl_debug_output(
         case GL_DEBUG_SOURCE_THIRD_PARTY:     std::cout << "Source: Third Party"; break;
         case GL_DEBUG_SOURCE_APPLICATION:     std::cout << "Source: Application"; break;
         case GL_DEBUG_SOURCE_OTHER:           std::cout << "Source: Other"; break;
+        default:;
     } std::cout << std::endl;
 
     switch (t_type)
@@ -38,6 +39,7 @@ void APIENTRY gl_debug_output(
         case GL_DEBUG_TYPE_PUSH_GROUP:          std::cout << "Type: Push Group"; break;
         case GL_DEBUG_TYPE_POP_GROUP:           std::cout << "Type: Pop Group"; break;
         case GL_DEBUG_TYPE_OTHER:               std::cout << "Type: Other"; break;
+        default:;
     } std::cout << std::endl;
 
     switch (t_severity)
@@ -46,6 +48,7 @@ void APIENTRY gl_debug_output(
         case GL_DEBUG_SEVERITY_MEDIUM:       std::cout << "Severity: medium"; break;
         case GL_DEBUG_SEVERITY_LOW:          std::cout << "Severity: low"; break;
         case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Severity: notification"; break;
+        default:;
     } std::cout << std::endl;
 
     std::cout << std::endl;

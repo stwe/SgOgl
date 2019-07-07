@@ -69,6 +69,7 @@ void sg::ogl::Window::Init()
     );
 
     // Initialize GLFW.
+    SG_OGL_CORE_LOG_DEBUG("[Window::Init()] Initialize GLFW3.");
     if (!glfwInit())
     {
         throw SG_OGL_EXCEPTION("[Window::Init()] Unable to initialize GLFW.");
@@ -104,6 +105,7 @@ void sg::ogl::Window::Init()
     SG_OGL_CORE_ASSERT(projectionOptions.height > 0, "The height should be greater than 0.")
 
     // Create the glfw window.
+    SG_OGL_CORE_LOG_DEBUG("[Window::Init()] Initialize GLFW3 Window. Width: {}, Height {}", projectionOptions.width, projectionOptions.height);
     m_windowHandle.reset(glfwCreateWindow(projectionOptions.width, projectionOptions.height, windowOptions.title.c_str(), nullptr, nullptr));
     if (!m_windowHandle)
     {
@@ -124,6 +126,7 @@ void sg::ogl::Window::Init()
     glfwMakeContextCurrent(GetWindowHandle());
 
     // Initialize GLEW.
+    SG_OGL_CORE_LOG_DEBUG("[Window::Init()] Initialize GLEW.");
     const auto err{ glewInit() };
     if (err != GLEW_OK)
     {
@@ -133,16 +136,20 @@ void sg::ogl::Window::Init()
     // Registering OpenGL Debug Callback.
     if (windowOptions.debugContext)
     {
-        // todo
-        GLint flags;
+        int32_t flags;
         glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
         if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
         {
+            SG_OGL_CORE_LOG_DEBUG("[Window::Init()] Initialize OpenGL debug output.");
+
             glEnable(GL_DEBUG_OUTPUT);
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
             glDebugMessageCallback(gl_debug_output, nullptr);
             glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-            //glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_ERROR, GL_DEBUG_SEVERITY_HIGH, 0, nullptr, GL_TRUE);
+        }
+        else
+        {
+            throw SG_OGL_EXCEPTION("[Window::Init()] Unable to initialize the OpenGL debug output.");
         }
     }
 

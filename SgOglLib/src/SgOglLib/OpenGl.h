@@ -31,11 +31,11 @@
 //-------------------------------------------------
 
 void APIENTRY gl_debug_output(
-    GLenum t_source,
-    GLenum t_type,
-    GLuint t_id,
-    GLenum t_severity,
-    GLsizei t_length,
-    const GLchar* t_message,
+    uint32_t t_source,
+    uint32_t t_type,
+    uint32_t t_id,
+    uint32_t t_severity,
+    int32_t t_length,
+    const char* t_message,
     const void* t_userParam
 );
