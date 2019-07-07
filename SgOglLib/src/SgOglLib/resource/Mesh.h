@@ -8,11 +8,14 @@
 
 namespace sg::ogl::resource
 {
-    class Mesh
+    struct Material;
+
+    class SG_OGL_API Mesh
     {
     public:
         using IndicesContainer = std::vector<uint32_t>;
         using VaoUniquePtr = std::unique_ptr<buffer::Vao>;
+        using MaterialUniquePtr = std::unique_ptr<Material>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -25,7 +28,14 @@ namespace sg::ogl::resource
         Mesh& operator=(const Mesh& t_other) = delete;
         Mesh& operator=(Mesh&& t_other) noexcept = delete;
 
-        ~Mesh() noexcept = default;
+        ~Mesh() noexcept;
+
+        //-------------------------------------------------
+        // Getter
+        //-------------------------------------------------
+
+        MaterialUniquePtr& GetMaterial() noexcept;
+        const MaterialUniquePtr& GetMaterial() const noexcept;
 
         //-------------------------------------------------
         // Allocate
@@ -57,6 +67,12 @@ namespace sg::ogl::resource
         }
 
         //-------------------------------------------------
+        // Setter
+        //-------------------------------------------------
+
+        void SetMaterial(MaterialUniquePtr t_material);
+
+        //-------------------------------------------------
         // Draw mesh
         //-------------------------------------------------
 
@@ -79,5 +95,6 @@ namespace sg::ogl::resource
 
     private:
         VaoUniquePtr m_vao;
+        MaterialUniquePtr m_material;
     };
 }

@@ -1,18 +1,26 @@
 #pragma once
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 #include <vector>
 #include <memory>
 #include <string>
 
+struct aiNode;
+struct aiScene;
+struct aiMesh;
+struct aiMaterial;
+enum aiTextureType;
+
 namespace sg::ogl::resource
 {
+    class TextureManager;
     class Mesh;
 
-    class Model
+    class SG_OGL_API Model
     {
     public:
+        using VerticesContainer = std::vector<float>;
+        using IndicesContainer = std::vector<uint32_t>;
+        using TexturesContainer = std::vector<uint32_t>;
         using MeshUniquePtr = std::unique_ptr<Mesh>;
         using Meshes = std::vector<MeshUniquePtr>;
 
@@ -22,7 +30,7 @@ namespace sg::ogl::resource
 
         Model() = delete;
 
-        explicit Model(std::string t_filePath, bool t_useTextures = true);
+        Model(std::string t_fullFilePath, TextureManager& t_textureManager, bool t_useTextures = true);
 
         Model(const Model& t_other) = delete;
         Model(Model&& t_other) noexcept = delete;
@@ -43,8 +51,10 @@ namespace sg::ogl::resource
     private:
         Meshes m_meshes;
 
-        std::string m_fileName;
+        std::string m_fullFilePath;
         std::string m_directory;
+
+        TextureManager& m_textureManager;
 
         bool m_useTextures{ true };
 
@@ -55,6 +65,6 @@ namespace sg::ogl::resource
         void LoadModel();
         void ProcessNode(aiNode* t_node, const aiScene* t_scene);
         MeshUniquePtr ProcessMesh(aiMesh* t_mesh, const aiScene* t_scene) const;
-        //std::vector<uint32_t> LoadMaterialTextures(aiMaterial* t_mat, aiTextureType t_type) const;
+        TexturesContainer LoadMaterialTextures(aiMaterial* t_mat, aiTextureType t_type) const;
     };
 }

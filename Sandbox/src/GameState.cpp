@@ -89,7 +89,7 @@ void GameState::Init()
 #if defined(_WIN64) && defined(_MSC_VER)
 
     m_textureId = GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/grass.jpg");
-    m_model = std::make_unique<sg::ogl::resource::Model>("res/model/nanosuit/nanosuit.obj");
+    m_model = std::make_unique<sg::ogl::resource::Model>("res/model/nanosuit/nanosuit.obj", *GetApplicationContext()->GetTextureManager());
 
 #elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
 

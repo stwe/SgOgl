@@ -88,7 +88,10 @@ find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GLEW_LIBRARY} )
 
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!! Is only needed because of my old graphics card. The manufacturer has discontinued support for Linux. !!!
 set(OpenGL_GL_PREFERENCE "LEGACY")
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # add OpenGL
 find_package(OpenGL REQUIRED)

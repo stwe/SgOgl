@@ -22,11 +22,12 @@
 #include "SgOglLib/math/Transform.h"
 
 // resource
-#include "SgOglLib/resource/ShaderProgram.h"
-#include "SgOglLib/resource/ShaderManager.h"
-#include "SgOglLib/resource/TextureManager.h"
+#include "SgOglLib/resource/Material.h"
 #include "SgOglLib/resource/Mesh.h"
 #include "SgOglLib/resource/Model.h"
+#include "SgOglLib/resource/ShaderManager.h"
+#include "SgOglLib/resource/ShaderProgram.h"
+#include "SgOglLib/resource/TextureManager.h"
 
 // state
 #include "SgOglLib/state/State.h"
