@@ -16,7 +16,7 @@ bool GameState::Input()
 
 bool GameState::Update(const float t_dt)
 {
-    const auto vel{ 0.5f };
+    const auto vel{ 0.1f };
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
     {
@@ -97,11 +97,11 @@ void GameState::Init()
     // load model && texture
 #if defined(_WIN64) && defined(_MSC_VER)
 
-    m_model = std::make_unique<sg::ogl::resource::Model>("res/model/nanosuit/nanosuit.obj", *GetApplicationContext()->GetTextureManager());
+    m_model = std::make_unique<sg::ogl::resource::Model>("res/model/Tree_02/tree02.obj", *GetApplicationContext()->GetTextureManager());
 
 #elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
 
-    m_model = std::make_unique<sg::ogl::resource::Model>("/home/steffen/Dev/SgOgl/Sandbox/res/model/nanosuit/nanosuit.obj");
+    m_model = std::make_unique<sg::ogl::resource::Model>("/home/steffen/Dev/SgOgl/Sandbox/res/model/Tree_02/tree02.obj");
 
 #else
 
