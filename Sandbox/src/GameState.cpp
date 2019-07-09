@@ -101,7 +101,7 @@ void GameState::Init()
 
 #elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
 
-    m_model = std::make_unique<sg::ogl::resource::Model>("/home/steffen/Dev/SgOgl/Sandbox/res/model/Tree_02/tree02.obj");
+    m_model = std::make_unique<sg::ogl::resource::Model>("/home/steffen/Dev/SgOgl/Sandbox/res/model/Tree_02/tree02.obj", *GetApplicationContext()->GetTextureManager());
 
 #else
 

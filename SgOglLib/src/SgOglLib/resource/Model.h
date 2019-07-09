@@ -1,14 +1,9 @@
 #pragma once
 
+#include <assimp/scene.h>
 #include <vector>
 #include <memory>
 #include <string>
-
-struct aiNode;
-struct aiScene;
-struct aiMesh;
-struct aiMaterial;
-enum aiTextureType;
 
 namespace sg::ogl::resource
 {

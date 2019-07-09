@@ -28,6 +28,7 @@ set(LIB_INPUT_SRC_FILES
 )
 
 set(LIB_RES_SRC_FILES
+    src/SgOglLib/resource/Material.cpp
     src/SgOglLib/resource/Mesh.cpp
     src/SgOglLib/resource/Model.cpp
     src/SgOglLib/resource/ShaderManager.cpp
