@@ -1,6 +1,5 @@
 #include "Mesh.h"
 #include "Material.h"
-#include "buffer/VertexAttribute.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.

@@ -21,6 +21,10 @@
 // math
 #include "SgOglLib/math/Transform.h"
 
+// renderer
+#include "SgOglLib/renderer/ModelRenderer.h"
+#include "SgOglLib/renderer/TerrainRenderer.h"
+
 // resource
 #include "SgOglLib/resource/Material.h"
 #include "SgOglLib/resource/Mesh.h"
@@ -32,3 +36,6 @@
 // state
 #include "SgOglLib/state/State.h"
 #include "SgOglLib/state/StateStack.h"
+
+// terrain
+#include "SgOglLib/terrain/Terrain.h"

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include "SgOglException.h"
 
 namespace sg::ogl::buffer
 {
@@ -18,21 +17,6 @@ namespace sg::ogl::buffer
         uint32_t size{ 0 };
         uint64_t offset{ 0 };
 
-        int32_t GetComponentCount() const
-        {
-            switch (vertexAttributeType)
-            {
-                case VertexAttributeType::POSITION: return 3;
-                case VertexAttributeType::POSITION_2D: return 2;
-                case VertexAttributeType::COLOR: return 3;
-                case VertexAttributeType::UV: return 2;
-                case VertexAttributeType::NORMAL: return 3;
-                case VertexAttributeType::TANGENT: return 3;
-                case VertexAttributeType::BITANGENT: return 3;
-                default:;
-            }
-
-            throw SG_OGL_EXCEPTION("[VertexAttribute::GetComponentCount()] Unknown VertexAttributeType.");
-        }
+        int32_t GetComponentCount() const;
     };
 }

@@ -16,7 +16,7 @@ bool GameState::Input()
 
 bool GameState::Update(const float t_dt)
 {
-    const auto vel{ 0.1f };
+    const auto vel{ 6.0f };
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
     {
@@ -53,33 +53,16 @@ bool GameState::Update(const float t_dt)
 
 void GameState::Render()
 {
-    // get ShaderProgram
-    auto& shaderProgram{ GetApplicationContext()->GetShaderManager()->GetShaderProgram("model") };
+    // set world position for the model
+    sg::ogl::math::Transform transform;
+    transform.position = glm::vec3(400.0f, 10.0f, 400.0f);
+    transform.scale = glm::vec3(4.0f);
 
-    // bind ShaderProgram
-    shaderProgram->Bind();
+    // render model
+    m_modelRenderer->Render(*m_model, transform, "model");
 
-    // set transform
-    const auto mvp{ m_projectionMatrix * m_camera.GetViewMatrix() * m_transformMatrix.GetModelMatrix() };
-    shaderProgram->SetUniform("transform", mvp);
-
-    // set ambient intensity
-    shaderProgram->SetUniform("ambientIntensity", glm::vec3(1.0f));
-
-    // for each mesh
-    for (const auto& mesh : m_model->GetMeshes())
-    {
-        auto& material{ mesh->GetMaterial() };
-
-        shaderProgram->SetUniform("diffuseMap", 0);
-        GetApplicationContext()->GetTextureManager()->BindForReading(material->mapKd, GL_TEXTURE0);
-
-        mesh->InitDraw();
-        mesh->DrawPrimitives();
-        mesh->EndDraw();
-    }
-
-    shaderProgram->Unbind();
+    // render terrain
+    m_terrainRenderer->Render(m_terrains, "terrain");
 }
 
 //-------------------------------------------------
@@ -91,17 +74,26 @@ void GameState::Init()
     // set clear color
     sg::ogl::Window::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
-    // load "model" shader
+    // load shader
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("model");
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram("terrain");
 
-    // load model && texture
+    // get projection matrix
+    m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
+
+    // set the camera position
+    m_camera.SetPosition(glm::vec3(200.0f, 60.0f, 200.0f));
+
+    // load model && terrain
 #if defined(_WIN64) && defined(_MSC_VER)
 
     m_model = std::make_unique<sg::ogl::resource::Model>("res/model/Tree_02/tree02.obj", *GetApplicationContext()->GetTextureManager());
+    m_terrains.push_back(std::make_unique<sg::ogl::terrain::Terrain>(0.0f, 0.0f, *GetApplicationContext()->GetTextureManager(), "res/heightmap/heightmap.png"));
 
 #elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
 
     m_model = std::make_unique<sg::ogl::resource::Model>("/home/steffen/Dev/SgOgl/Sandbox/res/model/Tree_02/tree02.obj", *GetApplicationContext()->GetTextureManager());
+    m_terrains.push_back(std::make_unique<sg::ogl::terrain::Terrain>(0.0f, 0.0f, *GetApplicationContext()->GetTextureManager(), "/home/steffen/Dev/SgOgl/Sandbox/res/heightmap/heightmap.png"));
 
 #else
 
@@ -109,12 +101,19 @@ void GameState::Init()
 
 #endif
 
-    // get projection matrix
-    m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
+    // create model renderer
+    m_modelRenderer = std::make_unique<sg::ogl::renderer::ModelRenderer>(
+        *GetApplicationContext()->GetShaderManager(),
+        *GetApplicationContext()->GetTextureManager(),
+        m_camera,
+        m_projectionMatrix
+        );
 
-    // set a world position for the model
-    m_transformMatrix.position = glm::vec3(0.0f, 0.0f, 1.0f);
-
-    // scale down
-    m_transformMatrix.scale = glm::vec3(0.25f);
+    // create terrain renderer
+    m_terrainRenderer = std::make_unique<sg::ogl::renderer::TerrainRenderer>(
+        *GetApplicationContext()->GetShaderManager(),
+        *GetApplicationContext()->GetTextureManager(),
+        m_camera,
+        m_projectionMatrix
+        );
 }

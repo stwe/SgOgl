@@ -6,7 +6,6 @@
 #include "Log.h"
 #include "TextureManager.h"
 #include "SgOglException.h"
-#include "buffer/VertexAttribute.h"
 #include "buffer/BufferLayout.h"
 
 //-------------------------------------------------

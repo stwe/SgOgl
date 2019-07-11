@@ -6,16 +6,28 @@ class GameState : public sg::ogl::state::State
 {
 public:
     using ModelUniquePtr = std::unique_ptr<sg::ogl::resource::Model>;
+    using ModelRendererUniquePtr = std::unique_ptr<sg::ogl::renderer::ModelRenderer>;
+
+    using TerrainUniquePtr = std::unique_ptr<sg::ogl::terrain::Terrain>;
+    using TerrainRendererUniquePtr = std::unique_ptr<sg::ogl::renderer::TerrainRenderer>;
+    using TerrainContainer = std::vector<TerrainUniquePtr>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
     //-------------------------------------------------
+
+    GameState() = delete;
 
     explicit GameState(sg::ogl::state::StateStack* t_stateStack)
         : State{ t_stateStack, "GameState" }
     {
         Init();
     }
+
+    GameState(const GameState& t_other) = delete;
+    GameState(GameState&& t_other) noexcept = delete;
+    GameState& operator=(const GameState& t_other) = delete;
+    GameState& operator=(GameState&& t_other) noexcept = delete;
 
     ~GameState() noexcept override
     {
@@ -34,9 +46,24 @@ protected:
 
 private:
     /**
-     * @brief A 3D Model.
+     * @brief A model.
      */
     ModelUniquePtr m_model;
+
+    /**
+     * @brief A Renderer for the model.
+     */
+    ModelRendererUniquePtr m_modelRenderer;
+
+    /**
+     * @brief Our terrains.
+     */
+    TerrainContainer m_terrains;
+
+    /**
+     * @brief A Renderer for the terrains.
+     */
+    TerrainRendererUniquePtr m_terrainRenderer;
 
     /**
      * @brief A camera to create and get a view matrix (Camera space).
@@ -47,11 +74,6 @@ private:
      * @brief The perspective projection matrix (Projection space).
      */
     glm::mat4 m_projectionMatrix{ glm::mat4() };
-
-    /**
-     * @brief The model matrix (World space).
-     */
-    sg::ogl::math::Transform m_transformMatrix;
 
     //-------------------------------------------------
     // Init

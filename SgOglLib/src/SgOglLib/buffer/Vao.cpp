@@ -3,6 +3,7 @@
 #include "OpenGl.h"
 #include "BufferLayout.h"
 #include "VertexAttribute.h"
+#include "SgOglException.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.

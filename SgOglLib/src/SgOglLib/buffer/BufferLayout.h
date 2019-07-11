@@ -2,13 +2,11 @@
 
 #include <vector>
 #include <cstdint>
+#include "VertexAttribute.h"
 #include "Core.h"
 
 namespace sg::ogl::buffer
 {
-    enum class VertexAttributeType;
-    struct VertexAttribute;
-
     class SG_OGL_API BufferLayout
     {
     public:
