@@ -9,16 +9,6 @@
 #include "buffer/BufferLayout.h"
 
 //-------------------------------------------------
-// Custom Deleter
-//-------------------------------------------------
-
-void sg::ogl::resource::DeleteMesh::operator()(Mesh* t_mesh) const
-{
-    SG_OGL_CORE_LOG_DEBUG("[DeleteMesh::operator()] Delete Mesh.");
-    delete t_mesh;
-}
-
-//-------------------------------------------------
 // Ctors. / Dtor.
 //-------------------------------------------------
 
@@ -268,8 +258,7 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
     };
 
     // Create a Mesh instance.
-    MeshUniquePtr meshUniquePtr;
-    meshUniquePtr.reset(new Mesh);
+    auto meshUniquePtr{ std::make_unique<Mesh>() };
     SG_OGL_CORE_ASSERT(meshUniquePtr, "[Model::ProcessMesh()] Null pointer.")
 
     // Allocate the data to the mesh.

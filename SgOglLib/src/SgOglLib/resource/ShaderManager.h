@@ -37,7 +37,7 @@ namespace sg::ogl::resource
         // Add shader program
         //-------------------------------------------------
 
-        void AddShaderProgram(const std::string& t_folder);
+        void AddShaderProgram(const std::string& t_folder, bool t_loadGeometryShader = false);
 
         //-------------------------------------------------
         // Getter

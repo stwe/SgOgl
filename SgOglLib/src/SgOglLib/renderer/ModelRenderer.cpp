@@ -63,3 +63,28 @@ void sg::ogl::renderer::ModelRenderer::Render(resource::Model& t_model, math::Tr
 
     shaderProgram->Unbind();
 }
+
+void sg::ogl::renderer::ModelRenderer::RenderNormals(resource::Model& t_model, math::Transform& t_transform, const std::string& t_shaderProgramName) const
+{
+    // get ShaderProgram
+    auto& shaderProgram{ m_shaderManager.GetShaderProgram(t_shaderProgramName) };
+
+    // bind ShaderProgram
+    shaderProgram->Bind();
+
+    // set mvp
+    shaderProgram->SetUniform("projection", m_projectionMatrix);
+    shaderProgram->SetUniform("view", m_camera.GetViewMatrix());
+    shaderProgram->SetUniform("model", t_transform.GetModelMatrix());
+
+    // for each mesh
+    for (const auto& mesh : t_model.GetMeshes())
+    {
+        // render Mesh
+        mesh->InitDraw();
+        mesh->DrawPrimitives();
+        mesh->EndDraw();
+    }
+
+    shaderProgram->Unbind();
+}

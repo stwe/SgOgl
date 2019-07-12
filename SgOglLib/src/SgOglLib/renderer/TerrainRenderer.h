@@ -54,6 +54,7 @@ namespace sg::ogl::renderer
         //-------------------------------------------------
 
         void Render(TerrainContainer& t_terrains, const std::string& t_shaderProgramName) const;
+        void RenderNormals(TerrainContainer& t_terrains, const std::string& t_shaderProgramName) const;
 
     protected:
 

@@ -54,6 +54,7 @@ namespace sg::ogl::renderer
         //-------------------------------------------------
 
         void Render(resource::Model& t_model, math::Transform& t_transform, const std::string& t_shaderProgramName) const;
+        void RenderNormals(resource::Model& t_model, math::Transform& t_transform, const std::string& t_shaderProgramName) const;
 
     protected:
 

@@ -60,9 +60,11 @@ void GameState::Render()
 
     // render model
     m_modelRenderer->Render(*m_model, transform, "model");
+    //m_modelRenderer->RenderNormals(*m_model, transform, "normal");
 
     // render terrain
     m_terrainRenderer->Render(m_terrains, "terrain");
+    m_terrainRenderer->RenderNormals(m_terrains, "normal");
 }
 
 //-------------------------------------------------
@@ -77,6 +79,7 @@ void GameState::Init()
     // load shader
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("model");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("terrain");
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram("normal", true);
 
     // get projection matrix
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();

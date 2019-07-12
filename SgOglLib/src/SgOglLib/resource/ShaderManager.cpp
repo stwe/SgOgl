@@ -31,7 +31,7 @@ sg::ogl::resource::ShaderManager::~ShaderManager() noexcept
 // Add shader program
 //-------------------------------------------------
 
-void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_folder)
+void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_folder, const bool t_loadGeometryShader)
 {
     // todo: auf Doppeleinträge prüfen
 
@@ -43,10 +43,20 @@ void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_fol
     shaderProgram->AddVertexShader(ShaderUtil::ReadShaderFile("res/shader/" + t_folder + "/Vertex.vert"));
     shaderProgram->AddFragmentShader(ShaderUtil::ReadShaderFile("res/shader/" + t_folder + "/Fragment.frag"));
 
+    if (t_loadGeometryShader)
+    {
+        shaderProgram->AddGeometryShader(ShaderUtil::ReadShaderFile("res/shader/" + t_folder + "/Geometry.geom"));
+    }
+
 #elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
 
     shaderProgram->AddVertexShader(ShaderUtil::ReadShaderFile("/home/steffen/Dev/SgOgl/Sandbox/res/shader/" + t_folder + "/Vertex.vert"));
     shaderProgram->AddFragmentShader(ShaderUtil::ReadShaderFile("/home/steffen/Dev/SgOgl/Sandbox/res/shader/" + t_folder + "/Fragment.frag"));
+
+    if (t_loadGeometryShader)
+    {
+        shaderProgram->AddGeometryShader(ShaderUtil::ReadShaderFile("/home/steffen/Dev/SgOgl/Sandbox/res/shader/" + t_folder + "/Geometry.geom"));
+    }
 
 #else
 

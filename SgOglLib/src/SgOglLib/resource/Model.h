@@ -10,18 +10,13 @@ namespace sg::ogl::resource
     class TextureManager;
     class Mesh;
 
-    struct DeleteMesh
-    {
-        void operator()(Mesh* t_mesh) const;
-    };
-
     class SG_OGL_API Model
     {
     public:
         using VerticesContainer = std::vector<float>;
         using IndicesContainer = std::vector<uint32_t>;
         using TexturesContainer = std::vector<uint32_t>;
-        using MeshUniquePtr = std::unique_ptr<Mesh, DeleteMesh>;
+        using MeshUniquePtr = std::unique_ptr<Mesh>;
         using Meshes = std::vector<MeshUniquePtr>;
 
         //-------------------------------------------------
