@@ -64,7 +64,7 @@ void GameState::Render()
 
     // render terrain
     m_terrainRenderer->Render(m_terrains, "terrain");
-    m_terrainRenderer->RenderNormals(m_terrains, "normal");
+    //m_terrainRenderer->RenderNormals(m_terrains, "normal");
 }
 
 //-------------------------------------------------

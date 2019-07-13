@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <glm/glm.hpp>
 #include "Color.h"
 #include "Core.h"
 
@@ -75,5 +76,7 @@ namespace sg::ogl::terrain
 
         static Color GetPixel(int t_x, int t_z, int t_length, int t_channels, const unsigned char* t_image);
         static float GetHeight(int t_x, int t_z, int t_length, int t_channels, const unsigned char* t_image);
+
+        glm::vec3 CalculateNormal(int t_x, int t_z, int t_length, int t_channels, const unsigned char* t_image) const;
     };
 }

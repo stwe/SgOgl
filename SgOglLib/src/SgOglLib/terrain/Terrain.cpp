@@ -102,9 +102,10 @@ void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPa
             vertices.push_back(static_cast<float>(z) / (static_cast<float>(count) - 1) * SIZE);
 
             // normal (3 floats)
-            vertices.push_back(0.0f);
-            vertices.push_back(1.0f);
-            vertices.push_back(0.0f);
+            auto normal{ CalculateNormal(x, z, count, nrChannels, image) };
+            vertices.push_back(normal.x);
+            vertices.push_back(normal.y);
+            vertices.push_back(normal.z);
 
             // uv (2 floats)
             vertices.push_back(static_cast<float>(x) / (static_cast<float>(count) - 1));
@@ -194,4 +195,16 @@ float sg::ogl::terrain::Terrain::GetHeight(const int t_x, const int t_z, const i
     }
 
     return static_cast<float>(heightMapPixel.r * heightMapPixel.g * heightMapPixel.b);
+}
+
+glm::vec3 sg::ogl::terrain::Terrain::CalculateNormal(const int t_x, const int t_z, const int t_length, const int t_channels, const unsigned char* t_image) const
+{
+    const auto heightL{ GetHeight(t_x - 1, t_z, t_length, t_channels, t_image) };
+    const auto heightR{ GetHeight(t_x + 1, t_z, t_length, t_channels, t_image) };
+    const auto heightD{ GetHeight(t_x, t_z - 1, t_length, t_channels, t_image) };
+    const auto heightU{ GetHeight(t_x, t_z + 1, t_length, t_channels, t_image) };
+
+    const auto normal{ glm::vec3(heightL - heightR, 2.0f, heightD - heightU) };
+
+    return normalize(normal);
 }
