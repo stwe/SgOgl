@@ -38,6 +38,7 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         void AddShaderProgram(const std::string& t_folder, bool t_loadGeometryShader = false);
+        void AddComputeShaderProgram(const std::string& t_folder, const std::string& t_fileName);
 
         //-------------------------------------------------
         // Getter
@@ -48,9 +49,15 @@ namespace sg::ogl::resource
 
         ShaderProgramUniquePtr& GetShaderProgram(const std::string& t_name);
 
+        ShaderPrograms& GetComputeShaderPrograms() noexcept;
+        const ShaderPrograms& GetComputeShaderPrograms() const noexcept;
+
+        ShaderProgramUniquePtr& GetComputeShaderProgram(const std::string& t_folder, const std::string& t_fileName);
+
     protected:
 
     private:
         ShaderPrograms m_shaderPrograms;
+        ShaderPrograms m_computeShaderPrograms;
     };
 }

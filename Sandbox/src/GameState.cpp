@@ -80,6 +80,7 @@ void GameState::Init()
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("model");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("terrain");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("normal", true);
+    GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("compute", "splatmap"); // todo for test compute shader
 
     // get projection matrix
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();

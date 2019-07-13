@@ -33,7 +33,8 @@ sg::ogl::resource::ShaderManager::~ShaderManager() noexcept
 
 void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_folder, const bool t_loadGeometryShader)
 {
-    // todo: auf Doppeleinträge prüfen
+    // todo: auf Doppeleintraege prüfen
+    // todo: Pfad -> Config
 
     ShaderProgramUniquePtr shaderProgram;
     shaderProgram.reset(new ShaderProgram);
@@ -70,6 +71,22 @@ void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_fol
     m_shaderPrograms.emplace(t_folder, std::move(shaderProgram));
 }
 
+void sg::ogl::resource::ShaderManager::AddComputeShaderProgram(const std::string& t_folder, const std::string& t_fileName)
+{
+    // todo linux pfad
+
+    ShaderProgramUniquePtr shaderProgram;
+    shaderProgram.reset(new ShaderProgram);
+
+    shaderProgram->AddComputeShader(ShaderUtil::ReadShaderFile("res/shader/" + t_folder + "/" + t_fileName + ".comp"));
+
+    shaderProgram->LinkAndValidateProgram();
+    shaderProgram->AddAllFoundUniforms();
+
+    const auto key{ t_folder + "_" + t_fileName };
+    m_computeShaderPrograms.emplace(key, std::move(shaderProgram));
+}
+
 //-------------------------------------------------
 // Getter
 //-------------------------------------------------
@@ -92,4 +109,26 @@ sg::ogl::resource::ShaderManager::ShaderProgramUniquePtr& sg::ogl::resource::Sha
     }
 
     return m_shaderPrograms.at(t_name);
+}
+
+sg::ogl::resource::ShaderManager::ShaderPrograms& sg::ogl::resource::ShaderManager::GetComputeShaderPrograms() noexcept
+{
+    return m_computeShaderPrograms;
+}
+
+const sg::ogl::resource::ShaderManager::ShaderPrograms& sg::ogl::resource::ShaderManager::GetComputeShaderPrograms() const noexcept
+{
+    return m_computeShaderPrograms;
+}
+
+sg::ogl::resource::ShaderManager::ShaderProgramUniquePtr& sg::ogl::resource::ShaderManager::GetComputeShaderProgram(const std::string& t_folder, const std::string& t_fileName)
+{
+    const auto key{ t_folder + "_" + t_fileName };
+
+    if (m_computeShaderPrograms.count(key) == 0)
+    {
+        throw SG_OGL_EXCEPTION("[ShaderManager::GetComputeShaderProgram()] Compute shader program " + key + " not exist.");
+    }
+
+    return m_computeShaderPrograms.at(key);
 }

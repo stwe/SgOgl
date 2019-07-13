@@ -1,0 +1,59 @@
+#version 430
+
+layout (local_size_x = 16, local_size_y = 16) in;
+
+layout (binding = 0, rgba32f) uniform writeonly image2D splatmap;
+
+uniform sampler2D heightmap;
+uniform int heightmapWidth;
+uniform float normalStrength;
+
+void main()
+{
+    // z0 -- z1 -- z2
+    // |     |     |
+    // z3 -- h  -- z4
+    // |     |     |
+    // z5 -- z6 -- z7
+
+    ivec2 xy = ivec2(gl_GlobalInvocationID.xy);
+    vec2 texCoord = gl_GlobalInvocationID.xy / float(heightmapWidth);
+
+    float texelSize = 1.0 / heightmapWidth;
+
+    float z0 = texture(heightmap, texCoord + vec2(-texelSize, -texelSize)).r;
+    float z1 = texture(heightmap, texCoord + vec2(0.0, -texelSize)).r;
+    float z2 = texture(heightmap, texCoord + vec2(texelSize, -texelSize)).r;
+    float z3 = texture(heightmap, texCoord + vec2(-texelSize, 0.0)).r;
+    float z4 = texture(heightmap, texCoord + vec2(texelSize, 0.0)).r;
+    float z5 = texture(heightmap, texCoord + vec2(-texelSize, texelSize)).r;
+    float z6 = texture(heightmap, texCoord + vec2(0.0, texelSize)).r;
+    float z7 = texture(heightmap, texCoord + vec2(texelSize, texelSize)).r;
+
+    vec3 normal;
+
+    normal.z = 1.0 / normalStrength;
+    normal.x = z0 + 2 * z3 + z5 - z2 - 2 * z4 - z7;
+    normal.y = z0 + 2 * z1 + z2 -z5 - 2 * z6 - z7;
+
+    vec4 normalizedNormal = vec4(normalize(normal), 1.0);
+
+    vec4 colour = vec4(0.0, 0.0, 0.0, 0.0);
+
+    float slope = 1.0 - normalizedNormal.z;
+
+    if (slope < 0.2)
+    {
+        colour.x = 1.0; // grass
+    }
+    else if (slope < 0.4)
+    {
+        colour.y = 1.0; // sand
+    }
+    else
+    {
+        colour.z = 1.0; // stone
+    }
+
+    imageStore(splatmap, xy, colour);
+}
