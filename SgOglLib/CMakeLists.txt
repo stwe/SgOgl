@@ -13,6 +13,7 @@ set(LIB_CORE_SRC_FILES
 set(LIB_BUFFER_SRC_FILES
     src/SgOglLib/buffer/BufferLayout.cpp
     src/SgOglLib/buffer/Vao.cpp
+    src/SgOglLib/buffer/VertexAttribute.cpp
 )
 
 set(LIB_CAMERA_SRC_FILES
@@ -25,6 +26,11 @@ set(LIB_EVENT_SRC_FILES
 
 set(LIB_INPUT_SRC_FILES
     src/SgOglLib/input/MouseInput.cpp
+)
+
+set(LIB_RENDERER_SRC_FILES
+    src/SgOglLib/renderer/ModelRenderer.cpp
+    src/SgOglLib/renderer/TerrainRenderer.cpp
 )
 
 set(LIB_RES_SRC_FILES
@@ -42,14 +48,20 @@ set(LIB_STATE_SRC_FILES
     src/SgOglLib/state/StateStack.cpp
 )
 
+set(LIB_TERRAIN_SRC_FILES
+    src/SgOglLib/terrain/Terrain.cpp
+)
+
 set(LIB_SRC_FILES
     ${LIB_CORE_SRC_FILES}
     ${LIB_BUFFER_SRC_FILES}
     ${LIB_CAMERA_SRC_FILES}
     ${LIB_EVENT_SRC_FILES}
     ${LIB_INPUT_SRC_FILES}
+    ${LIB_RENDERER_SRC_FILES}
     ${LIB_RES_SRC_FILES}
     ${LIB_STATE_SRC_FILES}
+    ${LIB_TERRAIN_SRC_FILES}
 )
 
 if (SHARED_LIB)

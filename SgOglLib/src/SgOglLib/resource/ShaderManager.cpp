@@ -33,7 +33,7 @@ sg::ogl::resource::ShaderManager::~ShaderManager() noexcept
 
 void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_folder, const bool t_loadGeometryShader)
 {
-    // todo: auf Doppeleintraege prüfen
+    // todo: auf Doppeleintraege pruefen
     // todo: Pfad -> Config
 
     ShaderProgramUniquePtr shaderProgram;
@@ -78,18 +78,33 @@ void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_fol
 
 void sg::ogl::resource::ShaderManager::AddComputeShaderProgram(const std::string& t_folder, const std::string& t_fileName)
 {
-    // todo linux pfad
-
     ShaderProgramUniquePtr shaderProgram;
     shaderProgram.reset(new ShaderProgram);
+    SG_OGL_CORE_ASSERT(shaderProgram, "[ShaderManager::AddComputeShaderProgram()] Null pointer.")
+
+    const auto key{ t_folder + "_" + t_fileName };
+    SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] Start adding compute shader to program: {}.", key);
+
+#if defined(_WIN64) && defined(_MSC_VER)
 
     shaderProgram->AddComputeShader(ShaderUtil::ReadShaderFile("res/shader/" + t_folder + "/" + t_fileName + ".comp"));
+
+#elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
+
+    shaderProgram->AddComputeShader(ShaderUtil::ReadShaderFile("/home/steffen/Dev/SgOgl/Sandbox/res/shader/" + t_folder + "/" + t_fileName + ".comp"));
+
+#else
+
+#error Unsupported platform or unsupported compiler!
+
+#endif
 
     shaderProgram->LinkAndValidateProgram();
     shaderProgram->AddAllFoundUniforms();
 
-    const auto key{ t_folder + "_" + t_fileName };
     m_computeShaderPrograms.emplace(key, std::move(shaderProgram));
+
+    SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] All shader was added successfully to program {}.", t_folder);
 }
 
 //-------------------------------------------------
