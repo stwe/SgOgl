@@ -197,8 +197,18 @@ float sg::ogl::terrain::Terrain::GetHeight(const int t_x, const int t_z, const i
     return static_cast<float>(heightMapPixel.r * heightMapPixel.g * heightMapPixel.b);
 }
 
-glm::vec3 sg::ogl::terrain::Terrain::CalculateNormal(const int t_x, const int t_z, const int t_length, const int t_channels, const unsigned char* t_image) const
+glm::vec3 sg::ogl::terrain::Terrain::CalculateNormal(int t_x, int t_z, const int t_length, const int t_channels, const unsigned char* t_image) const
 {
+    if (t_x == 0)
+    {
+        t_x = 1;
+    }
+
+    if (t_z == 0)
+    {
+        t_z = 1;
+    }
+
     const auto heightL{ GetHeight(t_x - 1, t_z, t_length, t_channels, t_image) };
     const auto heightR{ GetHeight(t_x + 1, t_z, t_length, t_channels, t_image) };
     const auto heightD{ GetHeight(t_x, t_z - 1, t_length, t_channels, t_image) };
