@@ -38,6 +38,9 @@ void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_fol
 
     ShaderProgramUniquePtr shaderProgram;
     shaderProgram.reset(new ShaderProgram);
+    SG_OGL_CORE_ASSERT(shaderProgram, "[ShaderManager::AddShaderProgram()]  Null pointer.")
+
+    SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] Start adding shader to program: {}.", t_folder);
 
 #if defined(_WIN64) && defined(_MSC_VER)
 
@@ -69,6 +72,8 @@ void sg::ogl::resource::ShaderManager::AddShaderProgram(const std::string& t_fol
     shaderProgram->AddAllFoundUniforms();
 
     m_shaderPrograms.emplace(t_folder, std::move(shaderProgram));
+
+    SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] All shader was added successfully to program {}.", t_folder);
 }
 
 void sg::ogl::resource::ShaderManager::AddComputeShaderProgram(const std::string& t_folder, const std::string& t_fileName)

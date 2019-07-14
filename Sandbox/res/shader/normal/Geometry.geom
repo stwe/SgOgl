@@ -1,26 +1,35 @@
 #version 330
 
-layout (triangles) in;
-layout (line_strip, max_vertices = 6) out;
+layout(triangles) in;
+layout(line_strip, max_vertices = 6) out;
 
-in vec3 gsNormal[];
+// In
 
-const float MAGNITUDE = 0.4;
+in vec3 vNormal[];
 
-void GenerateLine(int index)
-{
-    gl_Position = gl_in[index].gl_Position;
-    EmitVertex();
-    gl_Position = gl_in[index].gl_Position + vec4(gsNormal[index], 0.0) * MAGNITUDE;
-    EmitVertex();
-    EndPrimitive();
-}
+// Out
+
+out vec3 gNormal;
+
+// Uniforms
+
+uniform mat4 transform;
+uniform float normalLength;
 
 // Main
 
 void main()
 {
-    GenerateLine(0); // first vertex normal
-    GenerateLine(1); // second vertex normal
-    GenerateLine(2); // third vertex normal
+   for (int i = 0; i < 3; i++)
+   {
+       gl_Position = gl_in[i].gl_Position;
+       gNormal = vNormal[i];
+       EmitVertex();
+
+       gl_Position = gl_in[i].gl_Position + transform * vec4(vNormal[i] * normalLength, 0.0);
+       gNormal = vNormal[i];
+       EmitVertex();
+
+       EndPrimitive();
+   }
 }

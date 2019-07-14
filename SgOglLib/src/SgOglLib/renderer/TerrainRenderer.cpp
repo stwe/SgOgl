@@ -62,7 +62,7 @@ void sg::ogl::renderer::TerrainRenderer::Render(TerrainContainer& t_terrains, co
     shaderProgram->Unbind();
 }
 
-void sg::ogl::renderer::TerrainRenderer::RenderNormals(TerrainContainer& t_terrains, const std::string& t_shaderProgramName) const
+void sg::ogl::renderer::TerrainRenderer::RenderNormals(TerrainContainer& t_terrains, const std::string& t_shaderProgramName, const float t_normalLength) const
 {
     // get ShaderProgram
     auto& shaderProgram{ m_shaderManager.GetShaderProgram(t_shaderProgramName) };
@@ -73,12 +73,14 @@ void sg::ogl::renderer::TerrainRenderer::RenderNormals(TerrainContainer& t_terra
     // for each terrain
     for (auto& terrain : t_terrains)
     {
-        // set mvp
+        // set transform uniform
         math::Transform transform;
         transform.position = glm::vec3(terrain->GetPosX(), 0.0f, terrain->GetPosZ());
-        shaderProgram->SetUniform("projection", m_projectionMatrix);
-        shaderProgram->SetUniform("view", m_camera.GetViewMatrix());
-        shaderProgram->SetUniform("model", transform.GetModelMatrix());
+        const auto mvp{ m_projectionMatrix * m_camera.GetViewMatrix() * transform.GetModelMatrix() };
+        shaderProgram->SetUniform("transform", mvp);
+
+        // set normalLength uniform
+        shaderProgram->SetUniform("normalLength", t_normalLength);
 
         // get terrain Mesh
         auto& mesh{ terrain->GetMesh() };

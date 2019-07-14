@@ -64,7 +64,12 @@ void sg::ogl::renderer::ModelRenderer::Render(resource::Model& t_model, math::Tr
     shaderProgram->Unbind();
 }
 
-void sg::ogl::renderer::ModelRenderer::RenderNormals(resource::Model& t_model, math::Transform& t_transform, const std::string& t_shaderProgramName) const
+void sg::ogl::renderer::ModelRenderer::RenderNormals(
+    resource::Model& t_model,
+    math::Transform& t_transform,
+    const std::string& t_shaderProgramName,
+    const float t_normalLength
+) const
 {
     // get ShaderProgram
     auto& shaderProgram{ m_shaderManager.GetShaderProgram(t_shaderProgramName) };
@@ -72,10 +77,12 @@ void sg::ogl::renderer::ModelRenderer::RenderNormals(resource::Model& t_model, m
     // bind ShaderProgram
     shaderProgram->Bind();
 
-    // set mvp
-    shaderProgram->SetUniform("projection", m_projectionMatrix);
-    shaderProgram->SetUniform("view", m_camera.GetViewMatrix());
-    shaderProgram->SetUniform("model", t_transform.GetModelMatrix());
+    // set transform uniform
+    const auto mvp{ m_projectionMatrix * m_camera.GetViewMatrix() * t_transform.GetModelMatrix() };
+    shaderProgram->SetUniform("transform", mvp);
+
+    // set normalLength uniform
+    shaderProgram->SetUniform("normalLength", t_normalLength);
 
     // for each mesh
     for (const auto& mesh : t_model.GetMeshes())

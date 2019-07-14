@@ -60,11 +60,11 @@ void GameState::Render()
 
     // render model
     m_modelRenderer->Render(*m_model, transform, "model");
-    //m_modelRenderer->RenderNormals(*m_model, transform, "normal");
+    //m_modelRenderer->RenderNormals(*m_model, transform, "normal", 0.2f);
 
     // render terrain
     m_terrainRenderer->Render(m_terrains, "terrain");
-    //m_terrainRenderer->RenderNormals(m_terrains, "normal");
+    m_terrainRenderer->RenderNormals(m_terrains, "normal", 1.0f);
 }
 
 //-------------------------------------------------
@@ -80,13 +80,13 @@ void GameState::Init()
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("model");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("terrain");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("normal", true);
-    GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("compute", "splatmap"); // todo for test compute shader
+    GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("compute", "splatmap"); // todo test for compute shader
 
     // get projection matrix
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
 
     // set the camera position
-    m_camera.SetPosition(glm::vec3(200.0f, 60.0f, 200.0f));
+    m_camera.SetPosition(glm::vec3(370.0f, 20.0f, 370.0f));
 
     // load model && terrain
 #if defined(_WIN64) && defined(_MSC_VER)
