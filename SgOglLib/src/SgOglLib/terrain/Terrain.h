@@ -54,7 +54,7 @@ namespace sg::ogl::terrain
         Terrain& operator=(const Terrain& t_other) = delete;
         Terrain& operator=(Terrain&& t_other) noexcept = delete;
 
-        ~Terrain() noexcept = default;
+        ~Terrain() noexcept;
 
         //-------------------------------------------------
         // Getter

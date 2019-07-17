@@ -33,6 +33,10 @@ sg::ogl::terrain::Terrain::Terrain(
     GenerateSplatmap();
 }
 
+sg::ogl::terrain::Terrain::~Terrain() noexcept
+{
+}
+
 //-------------------------------------------------
 // Getter
 //-------------------------------------------------
