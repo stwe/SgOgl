@@ -5,6 +5,11 @@
 #include <map>
 #include "Core.h"
 
+namespace sg::ogl
+{
+    struct PlatformOptions;
+}
+
 namespace sg::ogl::resource
 {
     class ShaderProgram;
@@ -24,7 +29,9 @@ namespace sg::ogl::resource
         // Ctors. / Dtor.
         //-------------------------------------------------
 
-        ShaderManager();
+        ShaderManager() = delete;
+
+        explicit ShaderManager(const PlatformOptions& t_platformOptions);
 
         ShaderManager(const ShaderManager& t_other) = delete;
         ShaderManager(ShaderManager&& t_other) noexcept = delete;
@@ -38,7 +45,7 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         void AddShaderProgram(const std::string& t_folder, bool t_loadGeometryShader = false);
-        void AddComputeShaderProgram(const std::string& t_folder, const std::string& t_fileName);
+        void AddComputeShaderProgram(const std::string& t_fileName);
 
         //-------------------------------------------------
         // Getter
@@ -52,11 +59,13 @@ namespace sg::ogl::resource
         ShaderPrograms& GetComputeShaderPrograms() noexcept;
         const ShaderPrograms& GetComputeShaderPrograms() const noexcept;
 
-        ShaderProgramUniquePtr& GetComputeShaderProgram(const std::string& t_folder, const std::string& t_fileName);
+        ShaderProgramUniquePtr& GetComputeShaderProgram(const std::string& t_name);
 
     protected:
 
     private:
+        std::string m_linuxPath;
+
         ShaderPrograms m_shaderPrograms;
         ShaderPrograms m_computeShaderPrograms;
     };

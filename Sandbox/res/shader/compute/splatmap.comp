@@ -42,7 +42,7 @@ void main()
 
     float slope = 1.0 - normalizedNormal.z;
 
-    if (slope < 0.2)
+    if (slope < 0.1)
     {
         colour.x = 1.0; // grass
     }

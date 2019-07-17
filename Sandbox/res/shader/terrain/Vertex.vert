@@ -8,6 +8,7 @@ layout (location = 2) in vec2 aUv;
 
 // Out
 
+out vec2 vUvOrig;
 out vec2 vUv;
 
 // Uniforms
@@ -20,5 +21,6 @@ void main()
 {
     gl_Position = transform * vec4(aPosition, 1.0);
 
+    vUvOrig = aUv;
     vUv = aUv * 40;
 }

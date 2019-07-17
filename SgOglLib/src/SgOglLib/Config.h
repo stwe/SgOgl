@@ -36,6 +36,15 @@ namespace sg::ogl
     };
 
     //-------------------------------------------------
+    // Platform options
+    //-------------------------------------------------
+
+    struct PlatformOptions
+    {
+        std::string path{"" };
+    };
+
+    //-------------------------------------------------
     // Config
     //-------------------------------------------------
 
@@ -43,7 +52,12 @@ namespace sg::ogl
     {
     public:
         static bool ToBool(const std::string& t_value);
-        static void LoadOptions(const std::string& t_fileName, WindowOptions& t_windowOptions, ProjectionOptions& t_projectionOptions);
+        static void LoadOptions(
+            const std::string& t_fileName,
+            WindowOptions& t_windowOptions,
+            ProjectionOptions& t_projectionOptions,
+            PlatformOptions& t_platformOptions
+        );
 
     protected:
 

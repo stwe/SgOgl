@@ -5,9 +5,6 @@
 class GameState : public sg::ogl::state::State
 {
 public:
-    using ModelUniquePtr = std::unique_ptr<sg::ogl::resource::Model>;
-    using ModelRendererUniquePtr = std::unique_ptr<sg::ogl::renderer::ModelRenderer>;
-
     using TerrainUniquePtr = std::unique_ptr<sg::ogl::terrain::Terrain>;
     using TerrainRendererUniquePtr = std::unique_ptr<sg::ogl::renderer::TerrainRenderer>;
     using TerrainContainer = std::vector<TerrainUniquePtr>;
@@ -45,16 +42,6 @@ public:
 protected:
 
 private:
-    /**
-     * @brief A model.
-     */
-    ModelUniquePtr m_model;
-
-    /**
-     * @brief A Renderer for the model.
-     */
-    ModelRendererUniquePtr m_modelRenderer;
-
     /**
      * @brief Our terrains.
      */

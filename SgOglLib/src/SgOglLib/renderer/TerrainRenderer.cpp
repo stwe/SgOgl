@@ -49,9 +49,18 @@ void sg::ogl::renderer::TerrainRenderer::Render(TerrainContainer& t_terrains, co
         // get terrain Mesh
         auto& mesh{ terrain->GetMesh() };
 
-        // set a grass texture
-        shaderProgram->SetUniform("grassTexture", 0);
-        resource::TextureManager::BindForReading(terrain->GetTextureId(), GL_TEXTURE0);
+        // set textures
+        int32_t counter{ 0 };
+        for (const auto& entry : terrain->GetTextureMap())
+        {
+            shaderProgram->SetUniform(entry.first, counter);
+            resource::TextureManager::BindForReading(m_textureManager.GetTextureIdFromPath(entry.second), GL_TEXTURE0 + counter);
+            counter++;
+        }
+
+        // bind splatmap
+        shaderProgram->SetUniform("splatmap", counter);
+        resource::TextureManager::BindForReading(m_textureManager.GetTextureId("splatmapTexture"), GL_TEXTURE0 + counter);
 
         // render Mesh
         mesh->InitDraw();

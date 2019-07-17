@@ -53,18 +53,8 @@ bool GameState::Update(const float t_dt)
 
 void GameState::Render()
 {
-    // set world position for the model
-    sg::ogl::math::Transform transform;
-    transform.position = glm::vec3(400.0f, 10.0f, 400.0f);
-    transform.scale = glm::vec3(4.0f);
-
-    // render model
-    m_modelRenderer->Render(*m_model, transform, "model");
-    //m_modelRenderer->RenderNormals(*m_model, transform, "normal", 0.2f);
-
-    // render terrain
     m_terrainRenderer->Render(m_terrains, "terrain");
-    m_terrainRenderer->RenderNormals(m_terrains, "normal", 1.0f);
+    //m_terrainRenderer->RenderNormals(m_terrains, "normal", 1.0f);
 }
 
 //-------------------------------------------------
@@ -77,41 +67,17 @@ void GameState::Init()
     sg::ogl::Window::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
     // load shader
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram("model");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("terrain");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("normal", true);
-    GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("compute", "splatmap"); // todo test for compute shader
+
+    // load compute shader
+    GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("splatmap");
 
     // get projection matrix
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
 
     // set the camera position
     m_camera.SetPosition(glm::vec3(370.0f, 20.0f, 370.0f));
-
-    // load model && terrain
-#if defined(_WIN64) && defined(_MSC_VER)
-
-    m_model = std::make_unique<sg::ogl::resource::Model>("res/model/Tree_02/tree02.obj", *GetApplicationContext()->GetTextureManager());
-    m_terrains.push_back(std::make_unique<sg::ogl::terrain::Terrain>(0.0f, 0.0f, *GetApplicationContext()->GetTextureManager(), "res/heightmap/heightmap.png"));
-
-#elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
-
-    m_model = std::make_unique<sg::ogl::resource::Model>("/home/steffen/Dev/SgOgl/Sandbox/res/model/Tree_02/tree02.obj", *GetApplicationContext()->GetTextureManager());
-    m_terrains.push_back(std::make_unique<sg::ogl::terrain::Terrain>(0.0f, 0.0f, *GetApplicationContext()->GetTextureManager(), "/home/steffen/Dev/SgOgl/Sandbox/res/heightmap/heightmap.png"));
-
-#else
-
-    #error Unsupported platform or unsupported compiler!
-
-#endif
-
-    // create model renderer
-    m_modelRenderer = std::make_unique<sg::ogl::renderer::ModelRenderer>(
-        *GetApplicationContext()->GetShaderManager(),
-        *GetApplicationContext()->GetTextureManager(),
-        m_camera,
-        m_projectionMatrix
-        );
 
     // create terrain renderer
     m_terrainRenderer = std::make_unique<sg::ogl::renderer::TerrainRenderer>(
@@ -120,4 +86,21 @@ void GameState::Init()
         m_camera,
         m_projectionMatrix
         );
+
+    // set terrain textures
+    sg::ogl::terrain::Terrain::TextureMap textureMap;
+    textureMap.emplace("grass", "res/texture/grass0_DIF.jpg");
+    textureMap.emplace("sand", "res/texture/Ground_11_DIF.jpg");
+    textureMap.emplace("stone1", "res/texture/Ground_17_DIF.jpg");
+    textureMap.emplace("stone2", "res/texture/Ground_21_DIF.jpg");
+
+    // load terrain
+    auto terrainUniquePtr{ std::make_unique<sg::ogl::terrain::Terrain>(
+        0.0f,
+        0.0f,
+        *GetApplicationContext()->GetTextureManager(),
+        *GetApplicationContext()->GetShaderManager(),
+        "res/heightmap/heightmap.png",
+        textureMap) };
+    m_terrains.push_back(std::move(terrainUniquePtr));
 }

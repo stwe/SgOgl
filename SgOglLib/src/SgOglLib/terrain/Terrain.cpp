@@ -1,9 +1,13 @@
+#include <utility>
 #include <vector>
+#include <memory>
 #include "Terrain.h"
 #include "resource/Mesh.h"
+#include "resource/ShaderManager.h"
 #include "resource/TextureManager.h"
 #include "resource/stb_image.h"
 #include "buffer/BufferLayout.h"
+#include "renderer/SplatmapRenderer.h"
 #include "Log.h"
 #include "SgOglException.h"
 
@@ -11,12 +15,22 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::terrain::Terrain::Terrain(const float t_posX, const  float t_posZ, resource::TextureManager& t_textureManager, const std::string& t_heightmapPath)
+sg::ogl::terrain::Terrain::Terrain(
+    const float t_posX,
+    const  float t_posZ,
+    resource::TextureManager& t_textureManager,
+    resource::ShaderManager& t_shaderManager,
+    const std::string& t_heightmapPath,
+    TextureMap t_textureMap
+)
     : m_textureManager{ t_textureManager }
+    , m_shaderManager{ t_shaderManager }
     , m_posX{ t_posX * SIZE }
     , m_posZ{ t_posZ * SIZE }
+    , m_textureMap{ std::move(t_textureMap) }
 {
     GenerateTerrain(t_heightmapPath);
+    GenerateSplatmap();
 }
 
 //-------------------------------------------------
@@ -43,9 +57,14 @@ sg::ogl::terrain::Terrain::MeshUniquePtr& sg::ogl::terrain::Terrain::GetMesh()
     return m_mesh;
 }
 
-uint32_t sg::ogl::terrain::Terrain::GetTextureId() const
+const sg::ogl::terrain::Terrain::TextureMap& sg::ogl::terrain::Terrain::GetTextureMap() const
 {
-    return m_grassTextureId;
+    return m_textureMap;
+}
+
+uint32_t sg::ogl::terrain::Terrain::GetHeightmapTextureId() const
+{
+    return m_heightmapTextureId;
 }
 
 //-------------------------------------------------
@@ -54,7 +73,16 @@ uint32_t sg::ogl::terrain::Terrain::GetTextureId() const
 
 void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPath)
 {
-    // load heightmap
+    // Generate a OpenGL texture handle for the heightmap.
+    m_heightmapTextureId = m_textureManager.GetTextureIdFromPath(t_heightmapPath);
+
+    // Generate OpenGL texture handles for other textures.
+    for (const auto& entry : m_textureMap)
+    {
+        m_textureManager.GetTextureIdFromPath(entry.second);
+    }
+
+    // Load heightmap locally again as image.
     SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] Load heightmap {}.", t_heightmapPath);
     int nrChannels, width, height;
     const auto* const image{ stbi_load(t_heightmapPath.c_str(), &width, &height, &nrChannels, 0) };
@@ -63,7 +91,7 @@ void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPa
         throw SG_OGL_EXCEPTION("[Terrain::GenerateTerrain()] Heightmap failed to load at path " + t_heightmapPath + ".");
     }
 
-    // width and height should have the same value
+    // Width and height should have the same value.
     if (width != height)
     {
         throw SG_OGL_EXCEPTION("[Terrain::GenerateTerrain()] Width and height should have the same value.");
@@ -73,18 +101,21 @@ void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPa
     SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] Heightmap width: {}, height: {}.", width, height);
 
     // width = height -> can use one of them as a counter
-    const auto count{ height };
+    const auto count{ width };
 
-    // create vertices
+    // ... and store the width
+    m_heightmapWidth = width;
+
+    // Create the terrain vertices.
     VerticesContainer vertices;
     for (auto z{ 0 }; z < count; ++z)
     {
         for (auto x{ 0 }; x < count; ++x)
         {
-            // get the height value from the heightmap
+            // Get the height value from the heightmap.
             auto y{ GetHeight(x, z, count, nrChannels, image) };
 
-            // scale the height value into range <0.0, 1.0>
+            // Scale the height value into range <0.0, 1.0>.
             if (nrChannels == STBI_grey)
             {
                 y /= 256.0f;
@@ -113,7 +144,7 @@ void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPa
         }
     }
 
-    // create indices
+    // Create the terrain indices.
     IndicesContainer indices;
     for (auto gz{ 0 }; gz < count - 1; ++gz)
     {
@@ -145,9 +176,17 @@ void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPa
 
     // Allocate the data to the mesh.
     m_mesh->Allocate(bufferLayout, &vertices, count * count, &indices);
+}
 
-    // Load grass texture.
-    m_grassTextureId = m_textureManager.GetTextureIdFromPath("res/texture/grass.jpg");
+void sg::ogl::terrain::Terrain::GenerateSplatmap()
+{
+    // create splatmap renderer instance
+    // todo set name of texture
+    m_splatmapRenderer = std::make_unique<renderer::SplatmapRenderer>(m_heightmapWidth, "splatmapTexture", m_textureManager);
+    SG_OGL_CORE_ASSERT(m_splatmapRenderer, "[Terrain::GenerateSplatmap()] Null pointer.")
+
+    // create a Splatmap from the given heightmap.
+    m_splatmapRenderer->ComputeSplatmap(m_shaderManager, m_heightmapTextureId, 12.0f);
 }
 
 //-------------------------------------------------

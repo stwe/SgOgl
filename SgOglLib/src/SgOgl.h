@@ -24,6 +24,7 @@
 // renderer
 #include "SgOglLib/renderer/ModelRenderer.h"
 #include "SgOglLib/renderer/TerrainRenderer.h"
+#include "SgOglLib/renderer/SplatmapRenderer.h"
 
 // resource
 #include "SgOglLib/resource/Material.h"

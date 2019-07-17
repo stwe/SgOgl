@@ -57,7 +57,7 @@ sg::ogl::Application::Application(const std::string& t_configFileName)
 {
     SG_OGL_CORE_LOG_DEBUG("[Application::Application()] Create Application.");
 
-    Config::LoadOptions(t_configFileName, m_windowOptions, m_projectionOptions);
+    Config::LoadOptions(t_configFileName, m_windowOptions, m_projectionOptions, m_platformOptions);
 }
 
 sg::ogl::Application::~Application() noexcept
@@ -87,6 +87,16 @@ const sg::ogl::ProjectionOptions& sg::ogl::Application::GetProjectionOptions() c
 sg::ogl::ProjectionOptions& sg::ogl::Application::GetProjectionOptions() noexcept
 {
     return m_projectionOptions;
+}
+
+const sg::ogl::PlatformOptions& sg::ogl::Application::GetPlatformOptions() const noexcept
+{
+    return m_platformOptions;
+}
+
+sg::ogl::PlatformOptions& sg::ogl::Application::GetPlatformOptions() noexcept
+{
+    return m_platformOptions;
 }
 
 sg::ogl::Application::WindowUniquePtr& sg::ogl::Application::GetWindow() noexcept
@@ -144,7 +154,7 @@ void sg::ogl::Application::CoreInit()
     SG_OGL_CORE_ASSERT(m_window, "[Application::CoreInit()] Null pointer.")
     m_window->Init();
 
-    m_shaderManager.reset(new resource::ShaderManager);
+    m_shaderManager.reset(new resource::ShaderManager{ m_platformOptions });
     SG_OGL_CORE_ASSERT(m_shaderManager, "[Application::CoreInit()] Null pointer.")
 
     m_textureManager.reset(new resource::TextureManager);
