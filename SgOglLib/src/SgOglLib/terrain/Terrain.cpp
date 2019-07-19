@@ -7,6 +7,7 @@
 #include "resource/TextureManager.h"
 #include "resource/stb_image.h"
 #include "buffer/BufferLayout.h"
+#include "renderer/NormalmapRenderer.h"
 #include "renderer/SplatmapRenderer.h"
 #include "Log.h"
 #include "SgOglException.h"
@@ -30,7 +31,7 @@ sg::ogl::terrain::Terrain::Terrain(
     , m_textureMap{ std::move(t_textureMap) }
 {
     GenerateTerrain(t_heightmapPath);
-    GenerateSplatmap();
+    GenerateMaps();
 }
 
 sg::ogl::terrain::Terrain::~Terrain() noexcept
@@ -182,15 +183,26 @@ void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPa
     m_mesh->Allocate(bufferLayout, &vertices, count * count, &indices);
 }
 
-void sg::ogl::terrain::Terrain::GenerateSplatmap()
+void sg::ogl::terrain::Terrain::GenerateMaps()
 {
-    // create splatmap renderer instance
-    // todo set name of texture
-    m_splatmapRenderer = std::make_unique<renderer::SplatmapRenderer>(m_heightmapWidth, "splatmapTexture", m_textureManager);
-    SG_OGL_CORE_ASSERT(m_splatmapRenderer, "[Terrain::GenerateSplatmap()] Null pointer.")
+    m_normalmapTextureId = renderer::NormalmapRenderer::ComputeNormalmap(
+        m_textureManager,
+        m_shaderManager,
+        "normalmapTexture",
+        "normalmap",
+        m_heightmapTextureId,
+        m_heightmapWidth,
+        60.0f
+    );
 
-    // create a Splatmap from the given heightmap.
-    m_splatmapRenderer->ComputeSplatmap(m_shaderManager, m_heightmapTextureId, 12.0f);
+    m_splatmapTextureId = renderer::SplatmapRenderer::ComputeSplatmap(
+        m_textureManager,
+        m_shaderManager,
+        "splatmapTexture",
+        "splatmap",
+        m_normalmapTextureId,
+        m_heightmapWidth
+    );
 }
 
 //-------------------------------------------------

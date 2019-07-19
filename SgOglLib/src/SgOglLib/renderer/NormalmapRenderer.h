@@ -10,16 +10,17 @@ namespace sg::ogl::resource
 
 namespace sg::ogl::renderer
 {
-    class SplatmapRenderer
+    class NormalmapRenderer
     {
     public:
-        static uint32_t ComputeSplatmap(
+        static uint32_t ComputeNormalmap(
             resource::TextureManager& t_textureManager,
             resource::ShaderManager& t_shaderManager,
-            const std::string& t_splatmapTextureName,
-            const std::string& t_splatmapShaderName,
-            uint32_t t_normalmapTextureId,
-            int t_heightmapWidth
+            const std::string& t_normalmapTextureName,
+            const std::string& t_normalmapShaderName,
+            uint32_t t_heightmapTextureId,
+            int t_heightmapWidth,
+            float t_normalStrength
         );
 
     protected:

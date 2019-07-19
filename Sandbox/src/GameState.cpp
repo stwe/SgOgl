@@ -71,6 +71,7 @@ void GameState::Init()
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("normal", true);
 
     // load compute shader
+    GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("normalmap");
     GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("splatmap");
 
     // get projection matrix
@@ -89,10 +90,9 @@ void GameState::Init()
 
     // set terrain textures
     sg::ogl::terrain::Terrain::TextureMap textureMap;
-    textureMap.emplace("grass", "res/texture/grass0_DIF.jpg");
-    textureMap.emplace("sand", "res/texture/Ground_11_DIF.jpg");
-    textureMap.emplace("stone1", "res/texture/Ground_17_DIF.jpg");
-    textureMap.emplace("stone2", "res/texture/Ground_21_DIF.jpg");
+    textureMap.emplace("grass", "res/texture/Grass.jpg");
+    textureMap.emplace("sand", "res/texture/Sand.jpg");
+    textureMap.emplace("rock", "res/texture/Rock.jpg");
 
     // load terrain
     auto terrainUniquePtr{ std::make_unique<sg::ogl::terrain::Terrain>(

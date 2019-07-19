@@ -4,53 +4,41 @@
 #include "resource/TextureManager.h"
 #include "OpenGl.h"
 
-//-------------------------------------------------
-// Ctors. / Dtor.
-//-------------------------------------------------
-
-sg::ogl::renderer::SplatmapRenderer::SplatmapRenderer(const int t_heightmapWidth, std::string t_splatmapTextureName, resource::TextureManager& t_textureManager)
-    : m_heightmapWidth{ t_heightmapWidth }
-    , m_splatmapTextureName{ std::move(t_splatmapTextureName) }
+uint32_t sg::ogl::renderer::SplatmapRenderer::ComputeSplatmap(
+    resource::TextureManager& t_textureManager,
+    resource::ShaderManager& t_shaderManager,
+    const std::string& t_splatmapTextureName,
+    const std::string& t_splatmapShaderName,
+    const uint32_t t_normalmapTextureId,
+    const int t_heightmapWidth
+)
 {
-    // Get a new texture handle.
-    m_splatmapTextureId = t_textureManager.GetTextureId(m_splatmapTextureName);
-    resource::TextureManager::Bind(m_splatmapTextureId);
+    // Get a new texture handle by name.
+    const auto splatmapTextureId{ t_textureManager.GetTextureId(t_splatmapTextureName) };
+    resource::TextureManager::Bind(splatmapTextureId);
     resource::TextureManager::UseBilinearFilter();
 
     // Specify the amount of storage we want to use for the new splatmap texture.
-    glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA32F, m_heightmapWidth, m_heightmapWidth);
-}
+    const int32_t numMipmaps{ 1 };
+    glTexStorage2D(GL_TEXTURE_2D, numMipmaps, GL_RGBA32F, t_heightmapWidth, t_heightmapWidth);
 
-//-------------------------------------------------
-// Compute splatmap
-//-------------------------------------------------
-
-// todo pass shader name
-void sg::ogl::renderer::SplatmapRenderer::ComputeSplatmap(resource::ShaderManager& t_shaderManager, const uint32_t t_heightmapId, const float t_normalStrength) const
-{
-    auto& computeShaderProgram{ t_shaderManager.GetComputeShaderProgram("splatmap") };
+    // Get the shader program by name.
+    auto& computeShaderProgram{ t_shaderManager.GetComputeShaderProgram(t_splatmapShaderName) };
     computeShaderProgram->Bind();
 
+    // Render to splatmap texture.
     glActiveTexture(GL_TEXTURE0);
-    resource::TextureManager::BindForReading(t_heightmapId, GL_TEXTURE0);
-    computeShaderProgram->SetUniform("heightmap", 0);
-    computeShaderProgram->SetUniform("heightmapWidth", m_heightmapWidth);
-    computeShaderProgram->SetUniform("normalStrength", t_normalStrength);
+    resource::TextureManager::BindForReading(t_normalmapTextureId, GL_TEXTURE0);
+    computeShaderProgram->SetUniform("normalmap", 0);
+    computeShaderProgram->SetUniform("heightmapWidth", t_heightmapWidth);
 
-    glBindImageTexture(0, m_splatmapTextureId, 0, false, 0, GL_WRITE_ONLY, GL_RGBA32F);
-    glDispatchCompute(m_heightmapWidth / 16, m_heightmapWidth / 16, 1);
+    glBindImageTexture(0, splatmapTextureId, 0, false, 0, GL_WRITE_ONLY, GL_RGBA32F);
+    glDispatchCompute(t_heightmapWidth / 16, t_heightmapWidth / 16, 1);
 
-    resource::TextureManager::Bind(m_splatmapTextureId);
+    resource::TextureManager::Bind(splatmapTextureId);
     resource::TextureManager::UseBilinearFilter();
 
     resource::ShaderProgram::Unbind();
-}
 
-//-------------------------------------------------
-// Getter
-//-------------------------------------------------
-
-uint32_t sg::ogl::renderer::SplatmapRenderer::GetSplatmapTextureId() const
-{
-    return m_splatmapTextureId;
+    return splatmapTextureId;
 }

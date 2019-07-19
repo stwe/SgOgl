@@ -14,11 +14,6 @@ namespace sg::ogl::resource
     class Mesh;
 }
 
-namespace sg::ogl::renderer
-{
-    class SplatmapRenderer;
-}
-
 namespace sg::ogl::terrain
 {
     class SG_OGL_API Terrain
@@ -31,8 +26,6 @@ namespace sg::ogl::terrain
         using TextureName = std::string;
         using TexturePath = std::string;
         using TextureMap = std::map<TextureName, TexturePath>;
-
-        using SplatmapRendererUniquePtr = std::unique_ptr<renderer::SplatmapRenderer>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -75,7 +68,7 @@ namespace sg::ogl::terrain
     private:
         static constexpr float SIZE{ 800 };
         static constexpr auto MAX_PIXEL_COLOUR{ 256.0f * 256.0f * 256.0f };
-        static constexpr auto SCALE_HEIGHT{ 128.0f };
+        static constexpr auto SCALE_HEIGHT{ 512.0f };
 
         resource::TextureManager& m_textureManager;
         resource::ShaderManager& m_shaderManager;
@@ -90,14 +83,15 @@ namespace sg::ogl::terrain
         int m_heightmapWidth{ 0 };
         uint32_t m_heightmapTextureId{ 0 };
 
-        SplatmapRendererUniquePtr m_splatmapRenderer;
+        uint32_t m_normalmapTextureId{ 0 };
+        uint32_t m_splatmapTextureId{ 0 };
 
         //-------------------------------------------------
         // Generate
         //-------------------------------------------------
 
         void GenerateTerrain(const std::string& t_heightmapPath);
-        void GenerateSplatmap();
+        void GenerateMaps(); // todo
 
         //-------------------------------------------------
         // Helper

@@ -13,21 +13,24 @@ out vec4 fragColor;
 
 uniform sampler2D grass;
 uniform sampler2D sand;
-uniform sampler2D stone1;
-uniform sampler2D stone2;
+uniform sampler2D rock;
+uniform sampler2D normalmap;
 uniform sampler2D splatmap;
 
 // Main
 
 void main()
 {
+    vec3 normal = normalize(texture(normalmap, vUvOrig).rbg);
     vec4 blendValues = texture(splatmap, vUvOrig).rgba;
 
     vec3 grass = texture(grass, vUv).rgb * blendValues.r;
     vec3 sand = texture(sand, vUv).rgb * blendValues.g;
-    vec3 stone1 = texture(stone1, vUv).rgb * blendValues.b;
+    vec3 rock = texture(rock, vUv).rgb * blendValues.b;
 
-    vec3 res = grass + sand + stone1;
+    vec3 res = grass + sand + rock;
 
     fragColor = vec4(res, 1.0);
+//    fragColor = vec4(normal, 1.0);
+//    fragColor = blendValues;
 }

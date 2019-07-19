@@ -58,6 +58,11 @@ void sg::ogl::renderer::TerrainRenderer::Render(TerrainContainer& t_terrains, co
             counter++;
         }
 
+        // bind normalmap
+        shaderProgram->SetUniform("normalmap", counter);
+        resource::TextureManager::BindForReading(m_textureManager.GetTextureId("normalmapTexture"), GL_TEXTURE0 + counter);
+        counter++;
+
         // bind splatmap
         shaderProgram->SetUniform("splatmap", counter);
         resource::TextureManager::BindForReading(m_textureManager.GetTextureId("splatmapTexture"), GL_TEXTURE0 + counter);
