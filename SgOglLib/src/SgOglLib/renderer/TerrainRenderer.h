@@ -1,8 +1,6 @@
 #pragma once
 
 #include <glm/mat4x4.hpp>
-#include <vector>
-#include <memory>
 #include <string>
 #include "Core.h"
 
@@ -27,8 +25,6 @@ namespace sg::ogl::renderer
     class SG_OGL_API TerrainRenderer
     {
     public:
-        using TerrainContainer = std::vector<std::unique_ptr<terrain::Terrain>>;
-
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
@@ -53,8 +49,8 @@ namespace sg::ogl::renderer
         // Render
         //-------------------------------------------------
 
-        void Render(TerrainContainer& t_terrains, const std::string& t_shaderProgramName) const;
-        void RenderNormals(TerrainContainer& t_terrains, const std::string& t_shaderProgramName, float t_normalLength) const;
+        void Render(const terrain::Terrain& t_terrain, const std::string& t_shaderProgramName) const;
+        void RenderNormals(const terrain::Terrain& t_terrain, const std::string& t_shaderProgramName, float t_normalLength) const;
 
     protected:
 

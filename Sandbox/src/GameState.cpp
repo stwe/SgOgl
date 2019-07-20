@@ -53,8 +53,8 @@ bool GameState::Update(const float t_dt)
 
 void GameState::Render()
 {
-    m_terrainRenderer->Render(m_terrains, "terrain");
-    //m_terrainRenderer->RenderNormals(m_terrains, "normal", 1.0f);
+    m_terrainRenderer->Render(*m_terrain, "terrain");
+    //m_terrainRenderer->RenderNormals(*m_terrain, "normal", 1.0f);
 }
 
 //-------------------------------------------------
@@ -80,7 +80,7 @@ void GameState::Init()
     // set the camera position
     m_camera.SetPosition(glm::vec3(370.0f, 100.0f, 370.0f));
 
-    // create terrain renderer
+    // create new terrain renderer instance
     m_terrainRenderer = std::make_unique<sg::ogl::renderer::TerrainRenderer>(
         *GetApplicationContext()->GetShaderManager(),
         *GetApplicationContext()->GetTextureManager(),
@@ -88,31 +88,12 @@ void GameState::Init()
         m_projectionMatrix
         );
 
-    // setup normalmap
-    sg::ogl::resource::ComputeShaderTexture normalmap;
-    normalmap.computeShaderName = "normalmap";
-    normalmap.uniqueTextureName = "normalmapTexture";
-
-    // setup splatmap
-    sg::ogl::resource::ComputeShaderTexture splatmap;
-    splatmap.computeShaderName = "splatmap";
-    splatmap.uniqueTextureName = "splatmapTexture";
-
-    // set terrain texture pack
-    sg::ogl::terrain::Terrain::TexturePack texturePack;
-    texturePack.emplace("grass", "res/texture/Grass.jpg");
-    texturePack.emplace("sand", "res/texture/Sand.jpg");
-    texturePack.emplace("rock", "res/texture/Rock.jpg");
-
-    // load terrain
-    auto terrainUniquePtr{ std::make_unique<sg::ogl::terrain::Terrain>(
-        0.0f,
-        0.0f,
+    // create new terrain instance
+    m_terrain = std::make_unique<sg::ogl::terrain::Terrain>(
         *GetApplicationContext()->GetTextureManager(),
         *GetApplicationContext()->GetShaderManager(),
-        normalmap,
-        splatmap,
-        "res/heightmap/heightmap.png",
-        texturePack) };
-    m_terrains.push_back(std::move(terrainUniquePtr));
+        "res/config/Terrain.xml");
+
+    // generate terrain
+    m_terrain->GenerateTerrain();
 }

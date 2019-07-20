@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<terrain>
+    <position x="0.0" z="0.0"></position>
+    <scale xz="600.0" y="128.0"></scale>
+    <heightmapPath>res/heightmap/hm0.bmp</heightmapPath>
+    <textures>
+        <texture name="grass" path="res/texture/Grass.jpg"></texture>
+        <texture name="sand" path="res/texture/Sand.jpg"></texture>
+        <texture name="rock" path="res/texture/Rock.jpg"></texture>
+    </textures>
+    <normalmap shader="normalmap" texture="normalmapTexture"></normalmap>
+    <splatmap shader="splatmap" texture="splatmapTexture"></splatmap>
+    <normalStrength>60.0</normalStrength>
+</terrain>

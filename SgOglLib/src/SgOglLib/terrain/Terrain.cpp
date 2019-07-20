@@ -1,6 +1,3 @@
-#include <utility>
-#include <vector>
-#include <memory>
 #include "Terrain.h"
 #include "resource/Mesh.h"
 #include "resource/ShaderManager.h"
@@ -17,25 +14,14 @@
 //-------------------------------------------------
 
 sg::ogl::terrain::Terrain::Terrain(
-    const float t_posX,
-    const  float t_posZ,
     resource::TextureManager& t_textureManager,
     resource::ShaderManager& t_shaderManager,
-    resource::ComputeShaderTexture& t_normalmap,
-    resource::ComputeShaderTexture& t_splatmap,
-    const std::string& t_heightmapPath,
-    TexturePack t_texturePack
+    const std::string& t_configFileName
 )
     : m_textureManager{ t_textureManager }
     , m_shaderManager{ t_shaderManager }
-    , m_normalmap{ t_normalmap }
-    , m_splatmap{ t_splatmap }
-    , m_posX{ t_posX * SIZE }
-    , m_posZ{ t_posZ * SIZE }
-    , m_texturePack{ std::move(t_texturePack) }
 {
-    GenerateTerrain(t_heightmapPath);
-    GenerateMaps();
+    Config::LoadOptions(t_configFileName, m_terrainOptions);
 }
 
 sg::ogl::terrain::Terrain::~Terrain() noexcept
@@ -46,14 +32,9 @@ sg::ogl::terrain::Terrain::~Terrain() noexcept
 // Getter
 //-------------------------------------------------
 
-float sg::ogl::terrain::Terrain::GetPosX() const
+const sg::ogl::TerrainOptions& sg::ogl::terrain::Terrain::GetTerrainOptions() const
 {
-    return m_posX;
-}
-
-float sg::ogl::terrain::Terrain::GetPosZ() const
-{
-    return m_posZ;
+    return m_terrainOptions;
 }
 
 const sg::ogl::terrain::Terrain::MeshUniquePtr& sg::ogl::terrain::Terrain::GetMesh() const
@@ -66,38 +47,28 @@ sg::ogl::terrain::Terrain::MeshUniquePtr& sg::ogl::terrain::Terrain::GetMesh()
     return m_mesh;
 }
 
-const sg::ogl::terrain::Terrain::TexturePack& sg::ogl::terrain::Terrain::GetTexturePack() const
-{
-    return m_texturePack;
-}
-
-uint32_t sg::ogl::terrain::Terrain::GetHeightmapTextureId() const
-{
-    return m_heightmapTextureId;
-}
-
 //-------------------------------------------------
 // Generate
 //-------------------------------------------------
 
-void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPath)
+void sg::ogl::terrain::Terrain::GenerateTerrain()
 {
     // Generate a OpenGL texture handle for the heightmap.
-    m_heightmapTextureId = m_textureManager.GetTextureIdFromPath(t_heightmapPath);
+    const auto heightmapTextureId{ m_textureManager.GetTextureIdFromPath(m_terrainOptions.heightmapPath) };
 
     // Generate OpenGL texture handles for other textures.
-    for (const auto& entry : m_texturePack)
+    for (const auto& entry : m_terrainOptions.texturePack)
     {
         m_textureManager.GetTextureIdFromPath(entry.second);
     }
 
     // Load heightmap locally again as image.
-    SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] Load heightmap {}.", t_heightmapPath);
+    SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] Load heightmap {}.", m_terrainOptions.heightmapPath);
     int nrChannels, width, height;
-    const auto* const image{ stbi_load(t_heightmapPath.c_str(), &width, &height, &nrChannels, 0) };
+    const auto* const image{ stbi_load(m_terrainOptions.heightmapPath.c_str(), &width, &height, &nrChannels, 0) };
     if (!image)
     {
-        throw SG_OGL_EXCEPTION("[Terrain::GenerateTerrain()] Heightmap failed to load at path " + t_heightmapPath + ".");
+        throw SG_OGL_EXCEPTION("[Terrain::GenerateTerrain()] Heightmap failed to load at path " + m_terrainOptions.heightmapPath + ".");
     }
 
     // Width and height should have the same value.
@@ -106,14 +77,11 @@ void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPa
         throw SG_OGL_EXCEPTION("[Terrain::GenerateTerrain()] Width and height should have the same value.");
     }
 
-    SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] The heightmap {} was successfully loaded.", t_heightmapPath);
+    SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] The heightmap {} was successfully loaded.", m_terrainOptions.heightmapPath);
     SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] Heightmap width: {}, height: {}.", width, height);
 
     // width = height -> can use one of them as a counter
     const auto count{ width };
-
-    // ... and store the width
-    m_heightmapWidth = width;
 
     // Create the terrain vertices.
     VerticesContainer vertices;
@@ -137,9 +105,9 @@ void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPa
             SG_OGL_CORE_ASSERT(y >= 0.0f && y <= 1.0f, "[Terrain::GenerateTerrain()] Invalid height.")
 
             // position (3 floats)
-            vertices.push_back(static_cast<float>(x) / (static_cast<float>(count) - 1) * SIZE);
-            vertices.push_back(y * SCALE_HEIGHT);
-            vertices.push_back(static_cast<float>(z) / (static_cast<float>(count) - 1) * SIZE);
+            vertices.push_back(static_cast<float>(x) / (static_cast<float>(count) - 1) * m_terrainOptions.scaleXz);
+            vertices.push_back(y * m_terrainOptions.scaleY);
+            vertices.push_back(static_cast<float>(z) / (static_cast<float>(count) - 1) * m_terrainOptions.scaleXz);
 
             // normal (3 floats)
             auto normal{ CalculateNormal(x, z, count, nrChannels, image) };
@@ -185,27 +153,26 @@ void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPa
 
     // Allocate the data to the mesh.
     m_mesh->Allocate(bufferLayout, &vertices, count * count, &indices);
-}
 
-void sg::ogl::terrain::Terrain::GenerateMaps()
-{
-    m_normalmap.m_textureId = renderer::NormalmapRenderer::ComputeNormalmap(
+    // Generate normalmap.
+    m_terrainOptions.normalmap.m_textureId = renderer::NormalmapRenderer::ComputeNormalmap(
         m_textureManager,
         m_shaderManager,
-        m_normalmap.uniqueTextureName,
-        m_normalmap.computeShaderName,
-        m_heightmapTextureId,
-        m_heightmapWidth,
-        60.0f // todo
+        m_terrainOptions.normalmap.uniqueTextureName,
+        m_terrainOptions.normalmap.computeShaderName,
+        heightmapTextureId,
+        width,
+        m_terrainOptions.normalStrength
     );
 
-    m_splatmap.m_textureId = renderer::SplatmapRenderer::ComputeSplatmap(
+    // Generate splatmap.
+    m_terrainOptions.splatmap.m_textureId = renderer::SplatmapRenderer::ComputeSplatmap(
         m_textureManager,
         m_shaderManager,
-        m_splatmap.uniqueTextureName,
-        m_splatmap.computeShaderName,
-        m_normalmap.GetTextureId(),
-        m_heightmapWidth
+        m_terrainOptions.splatmap.uniqueTextureName,
+        m_terrainOptions.splatmap.computeShaderName,
+        m_terrainOptions.normalmap.GetTextureId(),
+        width
     );
 }
 

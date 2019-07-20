@@ -7,7 +7,6 @@ class GameState : public sg::ogl::state::State
 public:
     using TerrainUniquePtr = std::unique_ptr<sg::ogl::terrain::Terrain>;
     using TerrainRendererUniquePtr = std::unique_ptr<sg::ogl::renderer::TerrainRenderer>;
-    using TerrainContainer = std::vector<TerrainUniquePtr>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -43,12 +42,12 @@ protected:
 
 private:
     /**
-     * @brief Our terrains.
+     * @brief Our terrain.
      */
-    TerrainContainer m_terrains;
+    TerrainUniquePtr m_terrain;
 
     /**
-     * @brief A Renderer for the terrains.
+     * @brief A Renderer for the terrain.
      */
     TerrainRendererUniquePtr m_terrainRenderer;
 

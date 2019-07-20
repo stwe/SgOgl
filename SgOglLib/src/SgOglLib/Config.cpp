@@ -86,3 +86,101 @@ void sg::ogl::Config::LoadOptions(
         throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <init> element could not be found.");
     }
 }
+
+void sg::ogl::Config::LoadOptions(const std::string& t_fileName, TerrainOptions& t_terrainOptions)
+{
+    SG_OGL_CORE_LOG_DEBUG("[Config::LoadOptions()] Loading terrain options from {}.", t_fileName);
+
+    tinyxml2::XMLDocument document;
+
+    const auto result{ document.LoadFile(t_fileName.c_str()) };
+    if (result != tinyxml2::XML_SUCCESS)
+    {
+        throw SG_OGL_EXCEPTION("[Config::LoadOptions()] Error while loading Xml-Config file " + t_fileName + ".");
+    }
+
+    const auto* root{ document.FirstChildElement("terrain") };
+    if (root)
+    {
+        const auto* position{ root->FirstChildElement("position") };
+        if (position)
+        {
+            t_terrainOptions.xPos = position->FloatAttribute("x");
+            t_terrainOptions.zPos = position->FloatAttribute("z");
+        }
+        else
+        {
+            throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <position> element could not be found.");
+        }
+
+        const auto* scale{ root->FirstChildElement("scale") };
+        if (scale)
+        {
+            t_terrainOptions.scaleXz = scale->FloatAttribute("xz");
+            t_terrainOptions.scaleY = scale->FloatAttribute("y");
+        }
+        else
+        {
+            throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <scale> element could not be found.");
+        }
+
+        const auto* heightmap{ root->FirstChildElement("heightmapPath") };
+        if (heightmap)
+        {
+            t_terrainOptions.heightmapPath = root->FirstChildElement("heightmapPath")->GetText();
+        }
+        else
+        {
+            throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <heightmap> element could not be found.");
+        }
+
+        const auto* textures{ root->FirstChildElement("textures") };
+        if (textures)
+        {
+            for (auto* texture{ textures->FirstChildElement() }; texture != nullptr; texture = texture->NextSiblingElement())
+            {
+                t_terrainOptions.texturePack.emplace(texture->Attribute("name"), texture->Attribute("path"));
+            }
+        }
+        else
+        {
+            throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <textures> element could not be found.");
+        }
+
+        const auto* normalmap{ root->FirstChildElement("normalmap") };
+        if (normalmap)
+        {
+            t_terrainOptions.normalmap.computeShaderName = normalmap->Attribute("shader");
+            t_terrainOptions.normalmap.uniqueTextureName = normalmap->Attribute("texture");
+        }
+        else
+        {
+            throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <normalmap> element could not be found.");
+        }
+
+        const auto* splatmap{ root->FirstChildElement("splatmap") };
+        if (splatmap)
+        {
+            t_terrainOptions.splatmap.computeShaderName = splatmap->Attribute("shader");
+            t_terrainOptions.splatmap.uniqueTextureName = splatmap->Attribute("texture");
+        }
+        else
+        {
+            throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <splatmap> element could not be found.");
+        }
+
+        const auto* strength{ root->FirstChildElement("normalStrength") };
+        if (strength)
+        {
+            t_terrainOptions.normalStrength = static_cast<float>(std::strtod(root->FirstChildElement("normalStrength")->GetText(), nullptr));
+        }
+        else
+        {
+            throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <normalStrength> element could not be found.");
+        }
+    }
+    else
+    {
+        throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <terrain> element could not be found.");
+    }
+}

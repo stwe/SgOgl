@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <map>
+#include "resource/ComputeShaderTexture.h"
 
 namespace sg::ogl
 {
@@ -45,6 +47,27 @@ namespace sg::ogl
     };
 
     //-------------------------------------------------
+    // Terrain options
+    //-------------------------------------------------
+
+    struct TerrainOptions
+    {
+        using TextureName = std::string;
+        using TexturePath = std::string;
+        using TexturePack = std::map<TextureName, TexturePath>;
+
+        float xPos{ 0.0f };
+        float zPos{ 0.0f };
+        float scaleXz{ 1.0f };
+        float scaleY{ 1.0f };
+        std::string heightmapPath;
+        TexturePack texturePack;
+        resource::ComputeShaderTexture normalmap;
+        resource::ComputeShaderTexture splatmap;
+        float normalStrength{ 60.0f };
+    };
+
+    //-------------------------------------------------
     // Config
     //-------------------------------------------------
 
@@ -52,12 +75,15 @@ namespace sg::ogl
     {
     public:
         static bool ToBool(const std::string& t_value);
+
         static void LoadOptions(
             const std::string& t_fileName,
             WindowOptions& t_windowOptions,
             ProjectionOptions& t_projectionOptions,
             PlatformOptions& t_platformOptions
         );
+
+        static void LoadOptions(const std::string& t_fileName, TerrainOptions& t_terrainOptions);
 
     protected:
 

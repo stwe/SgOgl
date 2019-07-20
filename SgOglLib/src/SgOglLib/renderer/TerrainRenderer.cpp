@@ -29,7 +29,7 @@ sg::ogl::renderer::TerrainRenderer::TerrainRenderer(
 // Render
 //-------------------------------------------------
 
-void sg::ogl::renderer::TerrainRenderer::Render(TerrainContainer& t_terrains, const std::string& t_shaderProgramName) const
+void sg::ogl::renderer::TerrainRenderer::Render(const terrain::Terrain& t_terrain, const std::string& t_shaderProgramName) const
 {
     // get ShaderProgram
     auto& shaderProgram{ m_shaderManager.GetShaderProgram(t_shaderProgramName) };
@@ -37,46 +37,45 @@ void sg::ogl::renderer::TerrainRenderer::Render(TerrainContainer& t_terrains, co
     // bind ShaderProgram
     shaderProgram->Bind();
 
-    // for each terrain
-    for (auto& terrain : t_terrains)
+    // get terrain options
+    const auto& terrainOptions{ t_terrain.GetTerrainOptions() };
+
+    // set transform
+    math::Transform transform;
+    transform.position = glm::vec3(terrainOptions.xPos, 0.0f, terrainOptions.zPos);
+    const auto mvp{ m_projectionMatrix * m_camera.GetViewMatrix() * transform.GetModelMatrix() };
+    shaderProgram->SetUniform("transform", mvp);
+
+    // set textures
+    int32_t counter{ 0 };
+    for (const auto& entry : terrainOptions.texturePack)
     {
-        // set transform
-        math::Transform transform;
-        transform.position = glm::vec3(terrain->GetPosX(), 0.0f, terrain->GetPosZ());
-        const auto mvp{ m_projectionMatrix * m_camera.GetViewMatrix() * transform.GetModelMatrix() };
-        shaderProgram->SetUniform("transform", mvp);
-
-        // get terrain Mesh
-        auto& mesh{ terrain->GetMesh() };
-
-        // set textures
-        int32_t counter{ 0 };
-        for (const auto& entry : terrain->GetTexturePack())
-        {
-            shaderProgram->SetUniform(entry.first, counter);
-            resource::TextureManager::BindForReading(m_textureManager.GetTextureIdFromPath(entry.second), GL_TEXTURE0 + counter);
-            counter++;
-        }
-
-        // bind normalmap
-        shaderProgram->SetUniform("normalmap", counter);
-        resource::TextureManager::BindForReading(m_textureManager.GetTextureId("normalmapTexture"), GL_TEXTURE0 + counter);
+        shaderProgram->SetUniform(entry.first, counter);
+        resource::TextureManager::BindForReading(m_textureManager.GetTextureIdFromPath(entry.second), GL_TEXTURE0 + counter);
         counter++;
-
-        // bind splatmap
-        shaderProgram->SetUniform("splatmap", counter);
-        resource::TextureManager::BindForReading(m_textureManager.GetTextureId("splatmapTexture"), GL_TEXTURE0 + counter);
-
-        // render Mesh
-        mesh->InitDraw();
-        mesh->DrawPrimitives();
-        mesh->EndDraw();
     }
+
+    // bind normalmap
+    shaderProgram->SetUniform("normalmap", counter);
+    resource::TextureManager::BindForReading(terrainOptions.normalmap.GetTextureId(), GL_TEXTURE0 + counter);
+    counter++;
+
+    // bind splatmap
+    shaderProgram->SetUniform("splatmap", counter);
+    resource::TextureManager::BindForReading(terrainOptions.splatmap.GetTextureId(), GL_TEXTURE0 + counter);
+
+    // get terrain Mesh
+    const auto& mesh{ t_terrain.GetMesh() };
+
+    // render Mesh
+    mesh->InitDraw();
+    mesh->DrawPrimitives();
+    mesh->EndDraw();
 
     shaderProgram->Unbind();
 }
 
-void sg::ogl::renderer::TerrainRenderer::RenderNormals(TerrainContainer& t_terrains, const std::string& t_shaderProgramName, const float t_normalLength) const
+void sg::ogl::renderer::TerrainRenderer::RenderNormals(const terrain::Terrain& t_terrain, const std::string& t_shaderProgramName, const float t_normalLength) const
 {
     // get ShaderProgram
     auto& shaderProgram{ m_shaderManager.GetShaderProgram(t_shaderProgramName) };
@@ -84,26 +83,25 @@ void sg::ogl::renderer::TerrainRenderer::RenderNormals(TerrainContainer& t_terra
     // bind ShaderProgram
     shaderProgram->Bind();
 
-    // for each terrain
-    for (auto& terrain : t_terrains)
-    {
-        // set transform uniform
-        math::Transform transform;
-        transform.position = glm::vec3(terrain->GetPosX(), 0.0f, terrain->GetPosZ());
-        const auto mvp{ m_projectionMatrix * m_camera.GetViewMatrix() * transform.GetModelMatrix() };
-        shaderProgram->SetUniform("transform", mvp);
+    // get terrain options
+    const auto& terrainOptions{ t_terrain.GetTerrainOptions() };
 
-        // set normalLength uniform
-        shaderProgram->SetUniform("normalLength", t_normalLength);
+    // set transform uniform
+    math::Transform transform;
+    transform.position = glm::vec3(terrainOptions.xPos, 0.0f, terrainOptions.zPos);
+    const auto mvp{ m_projectionMatrix * m_camera.GetViewMatrix() * transform.GetModelMatrix() };
+    shaderProgram->SetUniform("transform", mvp);
 
-        // get terrain Mesh
-        auto& mesh{ terrain->GetMesh() };
+    // set normalLength uniform
+    shaderProgram->SetUniform("normalLength", t_normalLength);
 
-        // render Mesh
-        mesh->InitDraw();
-        mesh->DrawPrimitives();
-        mesh->EndDraw();
-    }
+    // get terrain Mesh
+    const auto& mesh{ t_terrain.GetMesh() };
+
+    // render Mesh
+    mesh->InitDraw();
+    mesh->DrawPrimitives();
+    mesh->EndDraw();
 
     shaderProgram->Unbind();
 }
