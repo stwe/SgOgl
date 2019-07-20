@@ -30,6 +30,8 @@ set(LIB_INPUT_SRC_FILES
 
 set(LIB_RENDERER_SRC_FILES
     src/SgOglLib/renderer/ModelRenderer.cpp
+    src/SgOglLib/renderer/NormalmapRenderer.cpp
+    src/SgOglLib/renderer/SplatmapRenderer.cpp
     src/SgOglLib/renderer/TerrainRenderer.cpp
 )
 

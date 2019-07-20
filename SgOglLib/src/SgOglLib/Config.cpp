@@ -66,10 +66,10 @@ void sg::ogl::Config::LoadOptions(
         const auto* platform{ root->FirstChildElement("platform") };
         if (platform)
         {
-            const auto* linux{ platform->FirstChildElement("linux") };
-            if (linux)
+            const auto* linuxPlatform{ platform->FirstChildElement("linux") };
+            if (linuxPlatform)
             {
-                t_platformOptions.path = linux->FirstChildElement("path")->GetText();
+                t_platformOptions.path = linuxPlatform->FirstChildElement("path")->GetText();
             }
             else
             {
