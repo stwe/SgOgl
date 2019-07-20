@@ -6,6 +6,7 @@
 #include <map>
 #include "Color.h"
 #include "Core.h"
+#include "resource/ComputeShaderTexture.h"
 
 namespace sg::ogl::resource
 {
@@ -25,7 +26,7 @@ namespace sg::ogl::terrain
 
         using TextureName = std::string;
         using TexturePath = std::string;
-        using TextureMap = std::map<TextureName, TexturePath>;
+        using TexturePack = std::map<TextureName, TexturePath>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -38,8 +39,10 @@ namespace sg::ogl::terrain
             float t_posZ,
             resource::TextureManager& t_textureManager,
             resource::ShaderManager& t_shaderManager,
+            resource::ComputeShaderTexture& t_normalmap,
+            resource::ComputeShaderTexture& t_splatmap,
             const std::string& t_heightmapPath,
-            TextureMap t_textureMap
+            TexturePack t_texturePack
         );
 
         Terrain(const Terrain& t_other) = delete;
@@ -59,7 +62,7 @@ namespace sg::ogl::terrain
         const MeshUniquePtr& GetMesh() const;
         MeshUniquePtr& GetMesh();
 
-        const TextureMap& GetTextureMap() const;
+        const TexturePack& GetTexturePack() const;
 
         uint32_t GetHeightmapTextureId() const;
 
@@ -73,18 +76,18 @@ namespace sg::ogl::terrain
         resource::TextureManager& m_textureManager;
         resource::ShaderManager& m_shaderManager;
 
+        resource::ComputeShaderTexture m_normalmap;
+        resource::ComputeShaderTexture m_splatmap;
+
         float m_posX;
         float m_posZ;
 
         MeshUniquePtr m_mesh;
 
-        TextureMap m_textureMap;
+        TexturePack m_texturePack;
 
         int m_heightmapWidth{ 0 };
         uint32_t m_heightmapTextureId{ 0 };
-
-        uint32_t m_normalmapTextureId{ 0 };
-        uint32_t m_splatmapTextureId{ 0 };
 
         //-------------------------------------------------
         // Generate

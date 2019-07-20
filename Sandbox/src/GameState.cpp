@@ -78,7 +78,7 @@ void GameState::Init()
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
 
     // set the camera position
-    m_camera.SetPosition(glm::vec3(370.0f, 20.0f, 370.0f));
+    m_camera.SetPosition(glm::vec3(370.0f, 100.0f, 370.0f));
 
     // create terrain renderer
     m_terrainRenderer = std::make_unique<sg::ogl::renderer::TerrainRenderer>(
@@ -88,11 +88,21 @@ void GameState::Init()
         m_projectionMatrix
         );
 
-    // set terrain textures
-    sg::ogl::terrain::Terrain::TextureMap textureMap;
-    textureMap.emplace("grass", "res/texture/Grass.jpg");
-    textureMap.emplace("sand", "res/texture/Sand.jpg");
-    textureMap.emplace("rock", "res/texture/Rock.jpg");
+    // setup normalmap
+    sg::ogl::resource::ComputeShaderTexture normalmap;
+    normalmap.computeShaderName = "normalmap";
+    normalmap.uniqueTextureName = "normalmapTexture";
+
+    // setup splatmap
+    sg::ogl::resource::ComputeShaderTexture splatmap;
+    splatmap.computeShaderName = "splatmap";
+    splatmap.uniqueTextureName = "splatmapTexture";
+
+    // set terrain texture pack
+    sg::ogl::terrain::Terrain::TexturePack texturePack;
+    texturePack.emplace("grass", "res/texture/Grass.jpg");
+    texturePack.emplace("sand", "res/texture/Sand.jpg");
+    texturePack.emplace("rock", "res/texture/Rock.jpg");
 
     // load terrain
     auto terrainUniquePtr{ std::make_unique<sg::ogl::terrain::Terrain>(
@@ -100,7 +110,9 @@ void GameState::Init()
         0.0f,
         *GetApplicationContext()->GetTextureManager(),
         *GetApplicationContext()->GetShaderManager(),
+        normalmap,
+        splatmap,
         "res/heightmap/heightmap.png",
-        textureMap) };
+        texturePack) };
     m_terrains.push_back(std::move(terrainUniquePtr));
 }

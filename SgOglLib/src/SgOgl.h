@@ -27,6 +27,7 @@
 #include "SgOglLib/renderer/SplatmapRenderer.h"
 
 // resource
+#include "SgOglLib/resource/ComputeShaderTexture.h"
 #include "SgOglLib/resource/Material.h"
 #include "SgOglLib/resource/Mesh.h"
 #include "SgOglLib/resource/Model.h"

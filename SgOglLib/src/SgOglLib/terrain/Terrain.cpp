@@ -21,14 +21,18 @@ sg::ogl::terrain::Terrain::Terrain(
     const  float t_posZ,
     resource::TextureManager& t_textureManager,
     resource::ShaderManager& t_shaderManager,
+    resource::ComputeShaderTexture& t_normalmap,
+    resource::ComputeShaderTexture& t_splatmap,
     const std::string& t_heightmapPath,
-    TextureMap t_textureMap
+    TexturePack t_texturePack
 )
     : m_textureManager{ t_textureManager }
     , m_shaderManager{ t_shaderManager }
+    , m_normalmap{ t_normalmap }
+    , m_splatmap{ t_splatmap }
     , m_posX{ t_posX * SIZE }
     , m_posZ{ t_posZ * SIZE }
-    , m_textureMap{ std::move(t_textureMap) }
+    , m_texturePack{ std::move(t_texturePack) }
 {
     GenerateTerrain(t_heightmapPath);
     GenerateMaps();
@@ -62,9 +66,9 @@ sg::ogl::terrain::Terrain::MeshUniquePtr& sg::ogl::terrain::Terrain::GetMesh()
     return m_mesh;
 }
 
-const sg::ogl::terrain::Terrain::TextureMap& sg::ogl::terrain::Terrain::GetTextureMap() const
+const sg::ogl::terrain::Terrain::TexturePack& sg::ogl::terrain::Terrain::GetTexturePack() const
 {
-    return m_textureMap;
+    return m_texturePack;
 }
 
 uint32_t sg::ogl::terrain::Terrain::GetHeightmapTextureId() const
@@ -82,7 +86,7 @@ void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPa
     m_heightmapTextureId = m_textureManager.GetTextureIdFromPath(t_heightmapPath);
 
     // Generate OpenGL texture handles for other textures.
-    for (const auto& entry : m_textureMap)
+    for (const auto& entry : m_texturePack)
     {
         m_textureManager.GetTextureIdFromPath(entry.second);
     }
@@ -185,22 +189,22 @@ void sg::ogl::terrain::Terrain::GenerateTerrain(const std::string& t_heightmapPa
 
 void sg::ogl::terrain::Terrain::GenerateMaps()
 {
-    m_normalmapTextureId = renderer::NormalmapRenderer::ComputeNormalmap(
+    m_normalmap.m_textureId = renderer::NormalmapRenderer::ComputeNormalmap(
         m_textureManager,
         m_shaderManager,
-        "normalmapTexture",
-        "normalmap",
+        m_normalmap.uniqueTextureName,
+        m_normalmap.computeShaderName,
         m_heightmapTextureId,
         m_heightmapWidth,
-        60.0f
+        60.0f // todo
     );
 
-    m_splatmapTextureId = renderer::SplatmapRenderer::ComputeSplatmap(
+    m_splatmap.m_textureId = renderer::SplatmapRenderer::ComputeSplatmap(
         m_textureManager,
         m_shaderManager,
-        "splatmapTexture",
-        "splatmap",
-        m_normalmapTextureId,
+        m_splatmap.uniqueTextureName,
+        m_splatmap.computeShaderName,
+        m_normalmap.GetTextureId(),
         m_heightmapWidth
     );
 }

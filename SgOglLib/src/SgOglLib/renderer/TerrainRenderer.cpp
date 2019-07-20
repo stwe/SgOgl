@@ -51,7 +51,7 @@ void sg::ogl::renderer::TerrainRenderer::Render(TerrainContainer& t_terrains, co
 
         // set textures
         int32_t counter{ 0 };
-        for (const auto& entry : terrain->GetTextureMap())
+        for (const auto& entry : terrain->GetTexturePack())
         {
             shaderProgram->SetUniform(entry.first, counter);
             resource::TextureManager::BindForReading(m_textureManager.GetTextureIdFromPath(entry.second), GL_TEXTURE0 + counter);
