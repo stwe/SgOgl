@@ -48,7 +48,7 @@ namespace sg::ogl::state
         //-------------------------------------------------
 
         virtual bool Input() = 0;
-        virtual bool Update(float t_dt) = 0;
+        virtual bool Update(double t_dt) = 0;
         virtual void Render() = 0;
 
     protected:

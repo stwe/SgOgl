@@ -14,9 +14,9 @@ bool GameState::Input()
     return true;
 }
 
-bool GameState::Update(const float t_dt)
+bool GameState::Update(const double t_dt)
 {
-    const auto vel{ 6.0f };
+    const auto vel{ 32.0f };
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
     {

@@ -9,7 +9,7 @@
         <antialiasing>1</antialiasing>
         <faceCulling>0</faceCulling>
         <frustumCulling>0</frustumCulling>
-        <printFrameRate>0</printFrameRate>
+        <printFrameRate>1</printFrameRate>
         <glMajor>3</glMajor>
         <glMinor>3</glMinor>
     </window>

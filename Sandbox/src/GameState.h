@@ -35,7 +35,7 @@ public:
     //-------------------------------------------------
 
     bool Input() override;
-    bool Update(float t_dt) override;
+    bool Update(double t_dt) override;
     void Render() override;
 
 protected:

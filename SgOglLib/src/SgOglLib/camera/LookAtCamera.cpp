@@ -21,7 +21,7 @@ sg::ogl::camera::LookAtCamera::LookAtCamera(const glm::vec3 t_position, const fl
 // Setter
 //-------------------------------------------------
 
-void sg::ogl::camera::LookAtCamera::SetCameraSpeed(const float t_speed)
+void sg::ogl::camera::LookAtCamera::SetCameraSpeed(const double t_speed)
 {
     m_movementSpeed = t_speed;
 }
@@ -77,9 +77,9 @@ void sg::ogl::camera::LookAtCamera::Update()
 // Keyboard && Mouse
 //-------------------------------------------------
 
-void sg::ogl::camera::LookAtCamera::ProcessKeyboard(const CameraMovement t_direction, const float t_dt)
+void sg::ogl::camera::LookAtCamera::ProcessKeyboard(const CameraMovement t_direction, const double t_dt)
 {
-    const auto velocity{ m_movementSpeed * t_dt };
+    const auto velocity{ static_cast<float>(m_movementSpeed * t_dt) };
 
     if (t_direction == FORWARD)
         m_position += m_front * velocity;

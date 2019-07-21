@@ -56,7 +56,7 @@ void sg::ogl::state::StateStack::Input()
     ApplyPendingChanges();
 }
 
-void sg::ogl::state::StateStack::Update(const float t_dt)
+void sg::ogl::state::StateStack::Update(const double t_dt)
 {
     // Iterate from top to bottom, stop as soon as Update() returns false.
     for (auto itr{ m_stack.rbegin() }; itr != m_stack.rend(); ++itr)

@@ -74,7 +74,7 @@ namespace sg::ogl::state
         }
 
         void Input();
-        void Update(float t_dt);
+        void Update(double t_dt);
         void Render();
 
         void PushState(StateId t_stateId);

@@ -141,7 +141,7 @@ namespace sg::ogl
         //-------------------------------------------------
 
         void Input(event::CircularEventQueue& t_circularEventQueue);
-        void Update(float t_dt, event::CircularEventQueue& t_circularEventQueue);
+        void Update(double t_dt, event::CircularEventQueue& t_circularEventQueue);
         void Render();
     };
 

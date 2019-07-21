@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "Application.h"
 #include "Log.h"
 #include "Window.h"
@@ -181,13 +183,57 @@ void sg::ogl::Application::ClientInit()
 
 void sg::ogl::Application::GameLoop()
 {
-    static constexpr auto DT{ 1.0f / 60.0f };
+    static constexpr auto FPS{ 1.0 / 60.0 };
+
+    auto lastTime{ glfwGetTime() };
+    auto timer{ lastTime };
+
+    auto deltaTime = 0.0;
+    auto nowTime = 0.0;
+
+    auto frames = 0;
+    auto updates = 0;
 
     while (m_window->WindowIsNotClosed())
     {
+        // measure time
+        nowTime = glfwGetTime();
+        deltaTime += (nowTime - lastTime) / FPS;
+        lastTime = nowTime;
+
         Input(*m_circularEventQueue);
-        Update(DT, *m_circularEventQueue);
+
+        // only update at 60 frames/s
+        while (deltaTime >= 1.0)
+        {
+            Update(FPS, *m_circularEventQueue);
+            updates++;
+            deltaTime--;
+        }
+
+        // render at maximum possible frames
         Render();
+        frames++;
+
+        // reset after one second
+        if (glfwGetTime() - timer > 1.0)
+        {
+            timer++;
+
+            if (m_windowOptions.printFrameRate)
+            {
+                std::stringstream ss;
+#ifdef _DEBUG
+                ss << m_windowOptions.title << " [DEBUG BUILD] " << "   |   Fps: " << frames << "   |   Updates: " << updates;
+#else
+                ss << m_windowOptions.title << " [RELEASE BUILD] " << "   |   Fps: " << frames << "   |   Updates: " << updates;
+#endif
+                glfwSetWindowTitle(m_window->GetWindowHandle(), ss.str().c_str());
+            }
+
+            updates = 0;
+            frames = 0;
+        }
 
         // m_window->Update():
         //     (1) Swap front and back buffers: glfwSwapBuffers(m_windowHandle)
@@ -285,7 +331,7 @@ void sg::ogl::Application::Input(event::CircularEventQueue& t_circularEventQueue
     m_stateStack->Input();
 }
 
-void sg::ogl::Application::Update(const float t_dt, event::CircularEventQueue& t_circularEventQueue)
+void sg::ogl::Application::Update(const double t_dt, event::CircularEventQueue& t_circularEventQueue)
 {
     // handle core update
     m_mouseInput->Update();

@@ -40,7 +40,7 @@ namespace sg::ogl::camera
         // Setter
         //-------------------------------------------------
 
-        void SetCameraSpeed(float t_speed);
+        void SetCameraSpeed(double t_speed);
         void SetMouseSensitivity(float t_sensitivity);
         void SetPosition(const glm::vec3& t_position);
 
@@ -65,13 +65,13 @@ namespace sg::ogl::camera
         // Keyboard && Mouse
         //-------------------------------------------------
 
-        void ProcessKeyboard(CameraMovement t_direction, float t_dt);
+        void ProcessKeyboard(CameraMovement t_direction, double t_dt);
         void ProcessMouse(const glm::vec2& t_displVec);
 
     protected:
 
     private:
-        float m_movementSpeed{ 1.0f };
+        double m_movementSpeed{ 1.0 };
         float m_mouseSensitivity{ 0.2f };
 
         glm::vec3 m_position{ glm::vec3(0.0f, 0.0f, 0.0f) };
