@@ -55,6 +55,13 @@ void GameState::Render()
 {
     m_terrainRenderer->Render(*m_terrain, "terrain");
     //m_terrainRenderer->RenderNormals(*m_terrain, "normal", 1.0f);
+
+    // render skybox as last
+    m_skyboxRenderer->Render(
+        m_skybox->GetCubemapId(),
+        *m_skybox->GetMesh(),
+        "skybox"
+    );
 }
 
 //-------------------------------------------------
@@ -67,6 +74,7 @@ void GameState::Init()
     sg::ogl::Window::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
     // load shader
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram("skybox");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("terrain");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("normal", true);
 
@@ -79,6 +87,28 @@ void GameState::Init()
 
     // set the camera position
     m_camera.SetPosition(glm::vec3(370.0f, 100.0f, 370.0f));
+
+    // skybox textures
+    const std::vector<std::string> textureFileNames
+    {
+        "res/texture/sky/sRight.png",
+        "res/texture/sky/sLeft.png",
+        "res/texture/sky/sUp.png",
+        "res/texture/sky/sDown.png",
+        "res/texture/sky/sBack.png",
+        "res/texture/sky/sFront.png"
+    };
+
+    // create new skybox instance
+    m_skybox = std::make_unique<sg::ogl::resource::Skybox>(*GetApplicationContext()->GetTextureManager(), textureFileNames);
+
+    // create new skybox renderer instance
+    m_skyboxRenderer = std::make_unique<sg::ogl::renderer::SkyboxRenderer>(
+        *GetApplicationContext()->GetShaderManager(),
+        *GetApplicationContext()->GetTextureManager(),
+        m_camera,
+        m_projectionMatrix
+        );
 
     // create new terrain renderer instance
     m_terrainRenderer = std::make_unique<sg::ogl::renderer::TerrainRenderer>(

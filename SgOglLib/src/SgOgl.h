@@ -23,8 +23,8 @@
 
 // renderer
 #include "SgOglLib/renderer/ModelRenderer.h"
+#include "SgOglLib/renderer/SkyboxRenderer.h"
 #include "SgOglLib/renderer/TerrainRenderer.h"
-#include "SgOglLib/renderer/SplatmapRenderer.h"
 
 // resource
 #include "SgOglLib/resource/Material.h"
@@ -32,6 +32,7 @@
 #include "SgOglLib/resource/Model.h"
 #include "SgOglLib/resource/ShaderManager.h"
 #include "SgOglLib/resource/ShaderProgram.h"
+#include "SgOglLib/resource/Skybox.h"
 #include "SgOglLib/resource/TextureManager.h"
 
 // state
