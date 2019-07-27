@@ -35,6 +35,10 @@
 #include "SgOglLib/resource/Skybox.h"
 #include "SgOglLib/resource/TextureManager.h"
 
+// scene
+#include "SgOglLib/scene/Renderer.h"
+#include "SgOglLib/scene/Scene.h"
+
 // state
 #include "SgOglLib/state/State.h"
 #include "SgOglLib/state/StateStack.h"

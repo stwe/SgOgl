@@ -70,8 +70,11 @@ void GameState::Render()
 
 void GameState::Init()
 {
+    m_renderer = std::make_unique<sg::ogl::scene::Renderer>();
+    m_scene = std::make_unique<sg::ogl::scene::Scene>("test", m_renderer.get());
+
     // set clear color
-    sg::ogl::Window::SetClearColor(sg::ogl::Color::CornflowerBlue());
+     sg::ogl::Window::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
     // load shader
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("skybox");

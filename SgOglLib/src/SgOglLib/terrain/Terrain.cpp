@@ -65,7 +65,7 @@ void sg::ogl::terrain::Terrain::GenerateTerrain()
     // Load heightmap locally again as image.
     SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] Load heightmap {}.", m_terrainOptions.heightmapPath);
     int nrChannels, width, height;
-    const auto* const image{ stbi_load(m_terrainOptions.heightmapPath.c_str(), &width, &height, &nrChannels, 0) };
+    auto* const image{ stbi_load(m_terrainOptions.heightmapPath.c_str(), &width, &height, &nrChannels, 0) };
     if (!image)
     {
         throw SG_OGL_EXCEPTION("[Terrain::GenerateTerrain()] Heightmap failed to load at path " + m_terrainOptions.heightmapPath + ".");
@@ -120,6 +120,9 @@ void sg::ogl::terrain::Terrain::GenerateTerrain()
             vertices.push_back(static_cast<float>(z) / (static_cast<float>(count) - 1));
         }
     }
+
+    // Free the image memory.
+    stbi_image_free(image);
 
     // Create the terrain indices.
     IndicesContainer indices;

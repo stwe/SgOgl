@@ -5,6 +5,9 @@
 class GameState : public sg::ogl::state::State
 {
 public:
+    using RendererUniquePtr = std::unique_ptr<sg::ogl::scene::Renderer>;
+    using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
+
     using SkyboxUniquePtr = std::unique_ptr<sg::ogl::resource::Skybox>;
     using SkyboxRendererUniquePtr = std::unique_ptr<sg::ogl::renderer::SkyboxRenderer>;
     using TerrainUniquePtr = std::unique_ptr<sg::ogl::terrain::Terrain>;
@@ -43,6 +46,9 @@ public:
 protected:
 
 private:
+    RendererUniquePtr m_renderer;
+    SceneUniquePtr m_scene;
+
     /**
      * @brief Our Skybox.
      */

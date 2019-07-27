@@ -210,7 +210,7 @@ void sg::ogl::resource::TextureManager::LoadTextureFromFile(const std::string& t
     SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::LoadTextureFromFile()] Invalid texture Id.")
 
     int nrChannels, width, height;
-    const auto image{ stbi_load(t_path.c_str(), &width, &height, &nrChannels, 0) };
+    auto* const image{ stbi_load(t_path.c_str(), &width, &height, &nrChannels, 0) };
     if (image)
     {
         uint32_t format{ 0 };
@@ -258,7 +258,7 @@ void sg::ogl::resource::TextureManager::LoadTextureFromFile(const std::vector<st
     for (auto i{ 0u }; i < count; ++i)
     {
         const auto& fileName{ t_pathNames[i].c_str() };
-        const auto image{ stbi_load(fileName, &width, &height, &nrChannels, 0) };
+        auto* const image{ stbi_load(fileName, &width, &height, &nrChannels, 0) };
         if (image)
         {
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
