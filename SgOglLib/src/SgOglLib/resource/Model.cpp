@@ -33,14 +33,19 @@ sg::ogl::resource::Model::~Model() noexcept
 // Getter
 //-------------------------------------------------
 
-const sg::ogl::resource::Model::Meshes& sg::ogl::resource::Model::GetMeshes() const
+const sg::ogl::resource::Model::MeshContainer& sg::ogl::resource::Model::GetMeshes() const
 {
     return m_meshes;
 }
 
-sg::ogl::resource::Model::Meshes& sg::ogl::resource::Model::GetMeshes()
+sg::ogl::resource::Model::MeshContainer& sg::ogl::resource::Model::GetMeshes()
 {
     return m_meshes;
+}
+
+std::string sg::ogl::resource::Model::GetFullFilePath() const
+{
+    return m_fullFilePath;
 }
 
 //-------------------------------------------------

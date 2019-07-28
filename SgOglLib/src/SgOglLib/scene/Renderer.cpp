@@ -35,9 +35,6 @@ void sg::ogl::scene::Renderer::RemoveScene(Scene* t_scene)
 
 void sg::ogl::scene::Renderer::RenderScenes()
 {
-    // glClearColor
-    // glClear GL_COLOR_BUFFER_BIT etc.
-
     for (auto* const scene : m_scenes)
     {
         scene->Render();

@@ -1,12 +1,13 @@
 #pragma once
 
 #include <vector>
+#include "Core.h"
 
 namespace sg::ogl::scene
 {
     class Scene;
 
-    class Renderer
+    class SG_OGL_API Renderer
     {
     public:
         friend Scene;

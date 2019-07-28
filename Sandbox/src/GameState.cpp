@@ -56,6 +56,9 @@ void GameState::Render()
     m_terrainRenderer->Render(*m_terrain, "terrain");
     //m_terrainRenderer->RenderNormals(*m_terrain, "normal", 1.0f);
 
+    // render models
+    m_renderer->RenderScenes();
+
     // render skybox as last
     m_skyboxRenderer->Render(
         m_skybox->GetCubemapId(),
@@ -70,15 +73,13 @@ void GameState::Render()
 
 void GameState::Init()
 {
-    m_renderer = std::make_unique<sg::ogl::scene::Renderer>();
-    m_scene = std::make_unique<sg::ogl::scene::Scene>("test", m_renderer.get());
-
     // set clear color
      sg::ogl::Window::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
     // load shader
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("skybox");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("terrain");
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram("model");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("normal", true);
 
     // load compute shader
@@ -89,7 +90,27 @@ void GameState::Init()
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
 
     // set the camera position
-    m_camera.SetPosition(glm::vec3(370.0f, 100.0f, 370.0f));
+    m_camera.SetPosition(glm::vec3(370.0f, 10.0f, 370.0f));
+
+    ///////////////////////
+
+    m_renderer = std::make_unique<sg::ogl::scene::Renderer>();
+    m_scene = std::make_unique<sg::ogl::scene::Scene>(
+        "SandboxScene",
+        "model",
+        *GetApplicationContext()->GetShaderManager(),
+        m_camera,
+        m_projectionMatrix,
+        m_renderer.get()
+        );
+
+    m_bushModel = std::make_unique<sg::ogl::resource::Model>("res/model/Bush_01/Bush_01.obj", *GetApplicationContext()->GetTextureManager());
+    m_treeModel = std::make_unique<sg::ogl::resource::Model>("res/model/Tree_02/tree02.obj", *GetApplicationContext()->GetTextureManager());
+
+    m_scene->AddModel(*m_bushModel);
+    //m_scene->AddModel(*m_treeModel);
+
+    //////////////////////////
 
     // skybox textures
     const std::vector<std::string> textureFileNames

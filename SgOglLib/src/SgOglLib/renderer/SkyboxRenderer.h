@@ -2,6 +2,7 @@
 
 #include <glm/mat4x4.hpp>
 #include <string>
+#include "Core.h"
 
 namespace sg::ogl::resource
 {
@@ -17,7 +18,7 @@ namespace sg::ogl::camera
 
 namespace sg::ogl::renderer
 {
-    class SkyboxRenderer
+    class SG_OGL_API SkyboxRenderer
     {
     public:
         //-------------------------------------------------

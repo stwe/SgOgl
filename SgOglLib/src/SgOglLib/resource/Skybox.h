@@ -4,13 +4,14 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include "Core.h"
 
 namespace sg::ogl::resource
 {
     class TextureManager;
     class Mesh;
 
-    class Skybox
+    class SG_OGL_API Skybox
     {
     public:
         using MeshUniquePtr = std::unique_ptr<Mesh>;

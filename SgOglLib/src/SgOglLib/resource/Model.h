@@ -17,7 +17,7 @@ namespace sg::ogl::resource
         using IndicesContainer = std::vector<uint32_t>;
         using TexturesContainer = std::vector<uint32_t>;
         using MeshUniquePtr = std::unique_ptr<Mesh>;
-        using Meshes = std::vector<MeshUniquePtr>;
+        using MeshContainer = std::vector<MeshUniquePtr>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -38,13 +38,15 @@ namespace sg::ogl::resource
         // Getter
         //-------------------------------------------------
 
-        const Meshes& GetMeshes() const;
-        Meshes& GetMeshes();
+        const MeshContainer& GetMeshes() const;
+        MeshContainer& GetMeshes();
+
+        std::string GetFullFilePath() const;
 
     protected:
 
     private:
-        Meshes m_meshes;
+        MeshContainer m_meshes;
 
         std::string m_fullFilePath;
         std::string m_directory;
