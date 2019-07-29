@@ -22,7 +22,7 @@
     </projection>
     <platform>
         <linux>
-          <path>/home/steffen/Dev/SgOgl/Sandbox/</path>
+          <path>/home/steffen/dev/SgOgl/Sandbox/</path>
         </linux>
     </platform>
 </init>

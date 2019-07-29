@@ -31,6 +31,7 @@ set(LIB_INPUT_SRC_FILES
 set(LIB_RENDERER_SRC_FILES
     src/SgOglLib/renderer/ModelRenderer.cpp
     src/SgOglLib/renderer/NormalmapRenderer.cpp
+    src/SgOglLib/renderer/SkyboxRenderer.cpp
     src/SgOglLib/renderer/SplatmapRenderer.cpp
     src/SgOglLib/renderer/TerrainRenderer.cpp
 )
@@ -41,8 +42,14 @@ set(LIB_RES_SRC_FILES
     src/SgOglLib/resource/Model.cpp
     src/SgOglLib/resource/ShaderManager.cpp
     src/SgOglLib/resource/ShaderProgram.cpp
+    src/SgOglLib/resource/Skybox.cpp
     src/SgOglLib/resource/StbImage.cpp
     src/SgOglLib/resource/TextureManager.cpp
+)
+
+set(LIB_SCENE_SRC_FILES
+    src/SgOglLib/scene/Renderer.cpp
+    src/SgOglLib/scene/Scene.cpp
 )
 
 set(LIB_STATE_SRC_FILES
@@ -62,6 +69,7 @@ set(LIB_SRC_FILES
     ${LIB_INPUT_SRC_FILES}
     ${LIB_RENDERER_SRC_FILES}
     ${LIB_RES_SRC_FILES}
+    ${LIB_SCENE_SRC_FILES}
     ${LIB_STATE_SRC_FILES}
     ${LIB_TERRAIN_SRC_FILES}
 )
