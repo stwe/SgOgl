@@ -18,8 +18,7 @@ void sg::ogl::resource::DeleteShaderProgram::operator()(ShaderProgram* t_shaderP
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::resource::ShaderManager::ShaderManager(const PlatformOptions& t_platformOptions)
-    : m_linuxPath{ t_platformOptions.path }
+sg::ogl::resource::ShaderManager::ShaderManager()
 {
     SG_OGL_CORE_LOG_DEBUG("[ShaderManager::ShaderManager()] Create ShaderManager.");
 }

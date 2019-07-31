@@ -13,8 +13,7 @@ bool sg::ogl::Config::ToBool(const std::string& t_value)
 void sg::ogl::Config::LoadOptions(
     const std::string& t_fileName,
     WindowOptions& t_windowOptions,
-    ProjectionOptions& t_projectionOptions,
-    PlatformOptions& t_platformOptions
+    ProjectionOptions& t_projectionOptions
 )
 {
     SG_OGL_CORE_LOG_DEBUG("[Config::LoadOptions()] Loading options from {}.", t_fileName);
@@ -61,24 +60,6 @@ void sg::ogl::Config::LoadOptions(
         else
         {
             throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <projection> element could not be found.");
-        }
-
-        const auto* platform{ root->FirstChildElement("platform") };
-        if (platform)
-        {
-            const auto* linuxPlatform{ platform->FirstChildElement("linux") };
-            if (linuxPlatform)
-            {
-                t_platformOptions.path = linuxPlatform->FirstChildElement("path")->GetText();
-            }
-            else
-            {
-                throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <linux> element could not be found.");
-            }
-        }
-        else
-        {
-            throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <platform> element could not be found.");
         }
     }
     else

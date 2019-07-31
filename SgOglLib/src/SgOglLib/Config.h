@@ -20,7 +20,7 @@ namespace sg::ogl
         bool faceCulling{ true };
         bool frustumCulling{ false };
         bool printFrameRate{ false };
-        int glMajor{ 3 };
+        int glMajor{ 4 };
         int glMinor{ 3 };
     };
 
@@ -35,15 +35,6 @@ namespace sg::ogl
         int height{ 0 };
         float nearPlane{ 0.0f };
         float farPlane{ 0.0f };
-    };
-
-    //-------------------------------------------------
-    // Platform options
-    //-------------------------------------------------
-
-    struct PlatformOptions
-    {
-        std::string path{"" };
     };
 
     //-------------------------------------------------
@@ -79,8 +70,7 @@ namespace sg::ogl
         static void LoadOptions(
             const std::string& t_fileName,
             WindowOptions& t_windowOptions,
-            ProjectionOptions& t_projectionOptions,
-            PlatformOptions& t_platformOptions
+            ProjectionOptions& t_projectionOptions
         );
 
         static void LoadOptions(const std::string& t_fileName, TerrainOptions& t_terrainOptions);

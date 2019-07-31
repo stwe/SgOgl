@@ -94,9 +94,6 @@ namespace sg::ogl
         const ProjectionOptions& GetProjectionOptions() const noexcept;
         ProjectionOptions& GetProjectionOptions() noexcept;
 
-        const PlatformOptions& GetPlatformOptions() const noexcept;
-        PlatformOptions& GetPlatformOptions() noexcept;
-
         WindowUniquePtr& GetWindow() noexcept;
         ShaderManagerUniquePtr& GetShaderManager() noexcept;
         TextureManagerUniquePtr& GetTextureManager() noexcept;
@@ -126,7 +123,6 @@ namespace sg::ogl
     private:
         WindowOptions m_windowOptions{};
         ProjectionOptions m_projectionOptions{};
-        PlatformOptions m_platformOptions{};
 
         //-------------------------------------------------
         // Init && GameLoop

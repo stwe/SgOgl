@@ -29,9 +29,7 @@ namespace sg::ogl::resource
         // Ctors. / Dtor.
         //-------------------------------------------------
 
-        ShaderManager() = delete;
-
-        explicit ShaderManager(const PlatformOptions& t_platformOptions);
+        ShaderManager();
 
         ShaderManager(const ShaderManager& t_other) = delete;
         ShaderManager(ShaderManager&& t_other) noexcept = delete;
