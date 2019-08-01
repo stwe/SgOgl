@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "Core.h"
 
 namespace sg::ogl::resource
 {
@@ -10,7 +11,7 @@ namespace sg::ogl::resource
 
 namespace sg::ogl::renderer
 {
-    class SplatmapRenderer
+    class SG_OGL_LOCAL SplatmapRenderer
     {
     public:
         static uint32_t ComputeSplatmap(

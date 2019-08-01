@@ -8,7 +8,7 @@
 
 namespace sg::ogl::resource
 {
-    class ShaderUtil
+    class SG_OGL_LOCAL ShaderUtil
     {
     public:
         static auto ReadShaderFile(const std::string& t_fileName)

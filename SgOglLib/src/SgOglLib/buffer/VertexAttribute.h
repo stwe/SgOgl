@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "Core.h"
 
 namespace sg::ogl::buffer
 {
@@ -9,7 +10,7 @@ namespace sg::ogl::buffer
         NONE, POSITION, POSITION_2D, COLOR, UV, NORMAL, TANGENT, BITANGENT
     };
 
-    struct VertexAttribute
+    struct SG_OGL_LOCAL VertexAttribute
     {
         VertexAttributeType vertexAttributeType{ VertexAttributeType::NONE };
         std::string name;

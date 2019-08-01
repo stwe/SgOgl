@@ -9,7 +9,7 @@ namespace sg::ogl::terrain
 
 namespace sg::ogl::resource
 {
-    class ComputeShaderTexture
+    class SG_OGL_LOCAL ComputeShaderTexture
     {
     public:
         friend terrain::Terrain;

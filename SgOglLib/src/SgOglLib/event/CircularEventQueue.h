@@ -34,7 +34,7 @@ namespace sg::ogl::event
         using Ts::operator()...;
     };
 
-    class CircularEventQueue
+    class SG_OGL_LOCAL CircularEventQueue
     {
     public:
         //-------------------------------------------------

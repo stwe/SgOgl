@@ -2,6 +2,7 @@
 
 #include <string>
 #include <map>
+#include "Core.h"
 #include "resource/ComputeShaderTexture.h"
 
 namespace sg::ogl
@@ -62,7 +63,7 @@ namespace sg::ogl
     // Config
     //-------------------------------------------------
 
-    class Config
+    class SG_OGL_LOCAL Config
     {
     public:
         static bool ToBool(const std::string& t_value);

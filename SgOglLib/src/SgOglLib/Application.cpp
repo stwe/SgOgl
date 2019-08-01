@@ -213,7 +213,7 @@ void sg::ogl::Application::GameLoop()
             if (m_windowOptions.printFrameRate)
             {
                 std::stringstream ss;
-#ifdef _DEBUG
+#ifdef SG_OGL_DEBUG_BUILD
                 ss << m_windowOptions.title << " [DEBUG BUILD] " << "   |   Fps: " << frames << "   |   Updates: " << updates;
 #else
                 ss << m_windowOptions.title << " [RELEASE BUILD] " << "   |   Fps: " << frames << "   |   Updates: " << updates;
