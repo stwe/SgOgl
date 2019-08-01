@@ -11,7 +11,7 @@ namespace sg::ogl
     // Window options
     //-------------------------------------------------
 
-    struct WindowOptions
+    struct SG_OGL_LOCAL WindowOptions
     {
         std::string title{ "" };
         bool showTriangles{ false };
@@ -29,7 +29,7 @@ namespace sg::ogl
     // Projection options
     //-------------------------------------------------
 
-    struct ProjectionOptions
+    struct SG_OGL_LOCAL ProjectionOptions
     {
         float fovDeg{ 0.0f };
         int width{ 0 };
@@ -42,7 +42,7 @@ namespace sg::ogl
     // Terrain options
     //-------------------------------------------------
 
-    struct TerrainOptions
+    struct SG_OGL_LOCAL TerrainOptions
     {
         using TextureName = std::string;
         using TexturePath = std::string;
