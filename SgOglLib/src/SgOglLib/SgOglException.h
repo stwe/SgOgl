@@ -6,7 +6,7 @@
 
 namespace sg::ogl
 {
-    class SG_OGL_API SgOglException : public std::exception
+    class SG_OGL_LOCAL SgOglException : public std::exception
     {
     public:
         SgOglException(int t_line, const char* t_file, std::string t_message);

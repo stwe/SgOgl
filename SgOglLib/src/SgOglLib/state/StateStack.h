@@ -13,7 +13,7 @@ namespace sg::ogl
 
 namespace sg::ogl::state
 {
-    struct DeleteState
+    struct SG_OGL_API DeleteState
     {
         void operator()(State* t_state) const;
     };

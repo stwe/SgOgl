@@ -46,23 +46,9 @@ project "SgOglLib"
         "%{prj.name}/vendor/assimp/include"
     }
 
-    libdirs
+    linkoptions
     {
-        "%{prj.name}/vendor/glew/lib/static/win",
-        "%{prj.name}/vendor/glfw/lib/static/win",
-        "%{prj.name}/vendor/tinyxml2/lib/static/win",
-        "%{prj.name}/vendor/assimp/lib/static/win"
-    }
-
-    links
-    {
-        "tinyxml2",
-        "glew32s",
-        "glfw3",
-        "opengl32",
-        "assimp-vc140-mt",
-        "IrrXML",
-        "zlibstaticd"
+        "/IGNORE:4099"
     }
 
     filter "system:windows"
@@ -70,12 +56,6 @@ project "SgOglLib"
         defines
         {
             "GLFW_INCLUDE_NONE"
-        }
-        linkoptions
-        {
-            "/NODEFAULTLIB:MSVCRT",
-            "/NODEFAULTLIB:LIBCMT",
-            "/IGNORE:4099"
         }
 
     filter "platforms:StaticLib"
@@ -93,10 +73,44 @@ project "SgOglLib"
         defines "SG_OGL_DEBUG_BUILD"
         runtime "Debug"
         symbols "on"
+        libdirs
+        {
+            "%{prj.name}/vendor/glew/lib/static/win",
+            "%{prj.name}/vendor/glfw/lib/static/win",
+            "%{prj.name}/vendor/tinyxml2/lib/static/win/debug",
+            "%{prj.name}/vendor/assimp/lib/static/win/debug"
+        }
+        links
+        {
+            "tinyxml2",
+            "glew32s",
+            "glfw3",
+            "opengl32",
+            "IrrXML",
+            "zlibstaticd",
+            "assimp-vc140-mt"
+        }
 
     filter "configurations:Release"
         runtime "Release"
         optimize "on"
+        libdirs
+        {
+            "%{prj.name}/vendor/glew/lib/static/win",
+            "%{prj.name}/vendor/glfw/lib/static/win",
+            "%{prj.name}/vendor/tinyxml2/lib/static/win/release",
+            "%{prj.name}/vendor/assimp/lib/static/win/release"
+        }
+        links
+        {
+            "tinyxml2",
+            "glew32s",
+            "glfw3",
+            "opengl32",
+            "IrrXML",
+            "zlibstatic",
+            "assimp-vc140-mt"
+        }
 
 project "Sandbox"
     location "Sandbox"
@@ -130,14 +144,13 @@ project "Sandbox"
         "SgOglLib"
     }
 
+    linkoptions
+    {
+        "/IGNORE:4099"
+    }
+
     filter "system:windows"
         systemversion "latest"
-        linkoptions
-        {
-            "/NODEFAULTLIB:MSVCRT",
-            "/NODEFAULTLIB:LIBCMT",
-            "/IGNORE:4099"
-        }
 
     filter "configurations:Debug"
         defines "SG_OGL_DEBUG_BUILD"
