@@ -1,3 +1,4 @@
+#include <uuid.h>
 #include "Node.h"
 
 //-------------------------------------------------
@@ -6,6 +7,8 @@
 
 sg::ogl::scene::Node::Node()
 {
+	auto const uuid{ uuids::uuid_system_generator{}() };
+	m_uuid = to_string(uuid);
 }
 
 sg::ogl::scene::Node::~Node() noexcept
@@ -16,19 +19,28 @@ sg::ogl::scene::Node::~Node() noexcept
 // Getter
 //-------------------------------------------------
 
-std::string sg::ogl::scene::Node::GetName() const
+std::string sg::ogl::scene::Node::GetUuid() const
 {
-    return m_name;
+	return m_uuid;
 }
 
 sg::ogl::scene::Node* sg::ogl::scene::Node::GetParent() const
 {
-    return m_parent;
+	return m_parent;
 }
 
-sg::ogl::scene::Node::NodeChildren& sg::ogl::scene::Node::GetChildren()
+const sg::ogl::scene::Node::ChildrenContainer& sg::ogl::scene::Node::GetChildren() const
 {
-    return m_children;
+	return m_children;
+}
+
+//-------------------------------------------------
+// Setter
+//-------------------------------------------------
+
+void sg::ogl::scene::Node::SetParent(Node* t_parentNode)
+{
+	m_parent = t_parentNode;
 }
 
 //-------------------------------------------------
@@ -37,6 +49,6 @@ sg::ogl::scene::Node::NodeChildren& sg::ogl::scene::Node::GetChildren()
 
 void sg::ogl::scene::Node::AddChild(Node* t_childNode)
 {
-    t_childNode->m_parent = this;
-    m_children.push_back(t_childNode);
+	t_childNode->SetParent(this);
+	m_children.push_back(t_childNode);
 }

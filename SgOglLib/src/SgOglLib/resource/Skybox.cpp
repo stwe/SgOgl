@@ -20,7 +20,7 @@ sg::ogl::resource::Skybox::Skybox(TextureManager& t_textureManager, const std::v
         { buffer::VertexAttributeType::POSITION, "vPosition" },
     };
 
-    m_mesh->Allocate(bufferLayout, &vertices, vertices.size());
+    m_mesh->Allocate(bufferLayout, &vertices, static_cast<int32_t>(vertices.size()));
 }
 
 sg::ogl::resource::Skybox::~Skybox() noexcept

@@ -57,7 +57,7 @@ void GameState::Render()
     //m_terrainRenderer->RenderNormals(*m_terrain, "normal", 1.0f);
 
     // render models
-    m_renderer->RenderScenes();
+
 
     // render skybox as last
     m_skyboxRenderer->Render(
@@ -94,21 +94,11 @@ void GameState::Init()
 
     ///////////////////////
 
-    m_renderer = std::make_unique<sg::ogl::scene::Renderer>();
-    m_scene = std::make_unique<sg::ogl::scene::Scene>(
-        "SandboxScene",
-        "model",
-        *GetApplicationContext()->GetShaderManager(),
-        m_camera,
-        m_projectionMatrix,
-        m_renderer.get()
-        );
+	m_meshLoader = std::make_unique<sg::ogl::scene::MeshLoader>(*GetApplicationContext()->GetTextureManager());
+	auto node = m_meshLoader->LoadMesh("res/model/nanosuit/nanosuit.obj");
 
-    m_bushModel = std::make_unique<sg::ogl::resource::Model>("res/model/Bush_01/Bush_01.obj", *GetApplicationContext()->GetTextureManager());
-    m_treeModel = std::make_unique<sg::ogl::resource::Model>("res/model/Tree_02/tree02.obj", *GetApplicationContext()->GetTextureManager());
-
-    m_scene->AddModel(*m_bushModel);
-    //m_scene->AddModel(*m_treeModel);
+	m_scene = std::make_unique<sg::ogl::scene::Scene>();
+	m_scene->AddObject(node);
 
     //////////////////////////
 

@@ -43,7 +43,9 @@ project "SgOglLib"
         "%{prj.name}/vendor/glfw/include",
         "%{prj.name}/vendor/tinyxml2/include",
         "%{prj.name}/vendor/glm",
-        "%{prj.name}/vendor/assimp/include"
+        "%{prj.name}/vendor/assimp/include",
+		"%{prj.name}/vendor/stduuid",
+		"%{prj.name}/vendor/stduuid/include"
     }
 
     linkoptions

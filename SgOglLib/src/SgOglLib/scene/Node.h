@@ -1,20 +1,29 @@
 #pragma once
 
-#include <string>
+// todo delete raw pointer
+
 #include <vector>
+#include <string>
+#include "Core.h"
 
 namespace sg::ogl::resource
 {
     class Mesh;
-    class Material;
+    struct Material;
 }
 
 namespace sg::ogl::scene
 {
-    class Node
+	class MeshLoader;
+	class Scene;
+
+	class SG_OGL_API Node
     {
     public:
-        using NodeChildren = std::vector<Node*>;
+		friend MeshLoader; // to use private functions in MeshLoader
+		friend Scene;      // to use private functions in Scene
+
+		using ChildrenContainer = std::vector<Node*>;
 
         resource::Mesh* mesh{ nullptr };
         resource::Material* material{ nullptr };
@@ -23,7 +32,7 @@ namespace sg::ogl::scene
         // Ctors. / Dtor.
         //-------------------------------------------------
 
-        Node();
+		Node();
 
         Node(const Node& t_other) = delete;
         Node(Node&& t_other) noexcept = delete;
@@ -36,21 +45,28 @@ namespace sg::ogl::scene
         // Getter
         //-------------------------------------------------
 
-        std::string GetName() const;
-        Node* GetParent() const;
-        NodeChildren& GetChildren();
-
-        //-------------------------------------------------
-        // Children
-        //-------------------------------------------------
-
-        void AddChild(Node* t_childNode);
+		std::string GetUuid() const;
+		Node* GetParent() const;
+		const ChildrenContainer& GetChildren() const;
 
     protected:
 
     private:
-        std::string m_name;
-        Node* m_parent{ nullptr };
-        NodeChildren m_children;
+		std::string m_uuid;
+
+		Node* m_parent{ nullptr };
+		ChildrenContainer m_children;
+
+		//-------------------------------------------------
+		// Setter
+		//-------------------------------------------------
+
+		void SetParent(Node* t_parentNode);
+
+		//-------------------------------------------------
+		// Children
+		//-------------------------------------------------
+
+		void AddChild(Node* t_childNode);
     };
 }

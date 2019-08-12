@@ -36,7 +36,8 @@
 #include "SgOglLib/resource/TextureManager.h"
 
 // scene
-#include "SgOglLib/scene/Renderer.h"
+#include "SgOglLib/scene/MeshLoader.h"
+#include "SgOglLib/scene/Node.h"
 #include "SgOglLib/scene/Scene.h"
 
 // state
