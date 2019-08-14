@@ -15,12 +15,13 @@
 //-------------------------------------------------
 
 sg::ogl::scene::MeshLoader::MeshLoader(resource::TextureManager& t_textureManager)
-	: m_textureManager{ t_textureManager }
+    : m_textureManager{ t_textureManager }
 {
 }
 
 sg::ogl::scene::MeshLoader::~MeshLoader() noexcept
 {
+    // todo
 }
 
 //-------------------------------------------------
@@ -52,7 +53,7 @@ sg::ogl::scene::Node* sg::ogl::scene::MeshLoader::LoadMesh(const std::string& t_
 
 sg::ogl::scene::Node* sg::ogl::scene::MeshLoader::ProcessNode(aiNode* t_aNode, const aiScene* t_aScene, const std::string& t_directory, const bool t_setDefaultMaterial)
 {
-	auto* node{ new Node };
+    auto* node{ new Node };
 
     // Process each mesh located at the current node.
     for (auto i{ 0u }; i < t_aNode->mNumMeshes; ++i)
@@ -90,7 +91,7 @@ sg::ogl::scene::Node* sg::ogl::scene::MeshLoader::ProcessNode(aiNode* t_aNode, c
     // After we've processed all of the meshes (if any) we then recursively process each of the children nodes.
     for (auto i{ 0u }; i < t_aNode->mNumChildren; ++i)
     {
-		auto* c{ ProcessNode(t_aNode->mChildren[i], t_aScene, t_directory, t_setDefaultMaterial) };
+        auto* c{ ProcessNode(t_aNode->mChildren[i], t_aScene, t_directory, t_setDefaultMaterial) };
         node->AddChild(c);
     }
 

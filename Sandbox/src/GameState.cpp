@@ -56,8 +56,8 @@ void GameState::Render()
     m_terrainRenderer->Render(*m_terrain, "terrain");
     //m_terrainRenderer->RenderNormals(*m_terrain, "normal", 1.0f);
 
-    // render models
-
+    // render scene
+    m_scene->Render();
 
     // render skybox as last
     m_skyboxRenderer->Render(
@@ -94,11 +94,17 @@ void GameState::Init()
 
     ///////////////////////
 
-	m_meshLoader = std::make_unique<sg::ogl::scene::MeshLoader>(*GetApplicationContext()->GetTextureManager());
-	auto node = m_meshLoader->LoadMesh("res/model/nanosuit/nanosuit.obj");
+    m_meshLoader = std::make_unique<sg::ogl::scene::MeshLoader>(*GetApplicationContext()->GetTextureManager());
+    auto* node{ m_meshLoader->LoadMesh("res/model/nanosuit/nanosuit.obj") };
 
-	m_scene = std::make_unique<sg::ogl::scene::Scene>();
-	m_scene->AddObject(node);
+    m_renderer = std::make_unique<sg::ogl::scene::Renderer>(
+        *GetApplicationContext()->GetShaderManager(),
+        *GetApplicationContext()->GetTextureManager(),
+        m_projectionMatrix
+        );
+
+    m_scene = std::make_unique<sg::ogl::scene::Scene>(*m_renderer, m_camera);
+    m_scene->AddObject(node);
 
     //////////////////////////
 

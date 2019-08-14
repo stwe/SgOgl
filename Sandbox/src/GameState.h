@@ -5,8 +5,9 @@
 class GameState : public sg::ogl::state::State
 {
 public:
+    using MeshLoaderUniquePtr = std::unique_ptr<sg::ogl::scene::MeshLoader>;
+    using RendererUniquePtr = std::unique_ptr<sg::ogl::scene::Renderer>;
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
-    using ModelUniquePtr = std::unique_ptr<sg::ogl::resource::Model>;
 
     using SkyboxUniquePtr = std::unique_ptr<sg::ogl::resource::Skybox>;
     using SkyboxRendererUniquePtr = std::unique_ptr<sg::ogl::renderer::SkyboxRenderer>;
@@ -46,9 +47,9 @@ public:
 protected:
 
 private:
+    MeshLoaderUniquePtr m_meshLoader;
+    RendererUniquePtr m_renderer;
     SceneUniquePtr m_scene;
-
-	std::unique_ptr<sg::ogl::scene::MeshLoader> m_meshLoader;
 
     /**
      * @brief Our Skybox.

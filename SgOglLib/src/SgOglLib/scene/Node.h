@@ -14,16 +14,16 @@ namespace sg::ogl::resource
 
 namespace sg::ogl::scene
 {
-	class MeshLoader;
-	class Scene;
+    class MeshLoader;
+    class Scene;
 
-	class SG_OGL_API Node
+    class SG_OGL_API Node
     {
     public:
-		friend MeshLoader; // to use private functions in MeshLoader
-		friend Scene;      // to use private functions in Scene
+        friend MeshLoader; // to use private functions in MeshLoader
+        friend Scene;      // to use private functions in Scene
 
-		using ChildrenContainer = std::vector<Node*>;
+        using ChildrenContainer = std::vector<Node*>;
 
         resource::Mesh* mesh{ nullptr };
         resource::Material* material{ nullptr };
@@ -32,7 +32,7 @@ namespace sg::ogl::scene
         // Ctors. / Dtor.
         //-------------------------------------------------
 
-		Node();
+        Node();
 
         Node(const Node& t_other) = delete;
         Node(Node&& t_other) noexcept = delete;
@@ -45,28 +45,28 @@ namespace sg::ogl::scene
         // Getter
         //-------------------------------------------------
 
-		std::string GetUuid() const;
-		Node* GetParent() const;
-		const ChildrenContainer& GetChildren() const;
+        std::string GetUuid() const;
+        Node* GetParent() const;
+        const ChildrenContainer& GetChildren() const;
 
     protected:
 
     private:
-		std::string m_uuid;
+        std::string m_uuid;
 
-		Node* m_parent{ nullptr };
-		ChildrenContainer m_children;
+        Node* m_parent{ nullptr };
+        ChildrenContainer m_children;
 
-		//-------------------------------------------------
-		// Setter
-		//-------------------------------------------------
+        //-------------------------------------------------
+        // Setter
+        //-------------------------------------------------
 
-		void SetParent(Node* t_parentNode);
+        void SetParent(Node* t_parentNode);
 
-		//-------------------------------------------------
-		// Children
-		//-------------------------------------------------
+        //-------------------------------------------------
+        // Children
+        //-------------------------------------------------
 
-		void AddChild(Node* t_childNode);
+        void AddChild(Node* t_childNode);
     };
 }
