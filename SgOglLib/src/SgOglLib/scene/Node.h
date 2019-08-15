@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include "Core.h"
+#include "math/Transform.h"
 
 namespace sg::ogl::resource
 {
@@ -20,9 +21,6 @@ namespace sg::ogl::scene
     class SG_OGL_API Node
     {
     public:
-        friend MeshLoader; // to use private functions in MeshLoader
-        friend Scene;      // to use private functions in Scene
-
         using ChildrenContainer = std::vector<Node*>;
 
         resource::Mesh* mesh{ nullptr };
@@ -47,15 +45,11 @@ namespace sg::ogl::scene
 
         std::string GetUuid() const;
         Node* GetParent() const;
-        const ChildrenContainer& GetChildren() const;
+        const ChildrenContainer& GetChildren() const noexcept;
+        math::Transform& GetLocalTransform() noexcept;
+        math::Transform& GetWorldTransform() noexcept;
 
-    protected:
-
-    private:
-        std::string m_uuid;
-
-        Node* m_parent{ nullptr };
-        ChildrenContainer m_children;
+        glm::mat4 GetTransform() const;
 
         //-------------------------------------------------
         // Setter
@@ -68,5 +62,47 @@ namespace sg::ogl::scene
         //-------------------------------------------------
 
         void AddChild(Node* t_childNode);
+
+        //-------------------------------------------------
+        // Transform
+        //-------------------------------------------------
+
+        void UpdateTransform();
+
+    protected:
+
+    private:
+        /**
+         * @brief Each node is uniquely identified by a stringified UUID.
+         */
+        std::string m_uuid;
+
+        /**
+         * @brief The parent node.
+         */
+        Node* m_parent{ nullptr };
+
+        /**
+         * @brief Each node can have any number of children.
+         */
+        ChildrenContainer m_children;
+
+        /**
+         * @brief Local transform.
+         */
+        math::Transform m_localTransform;
+
+        /**
+         * @brief World transform.
+         */
+        math::Transform m_worldTransform;
+
+        glm::mat4 m_transform{ glm::mat4(1.0f) };
+
+        /**
+         * @brief Mark the current node's tranform as dirty if it needs
+         *        to be re-calculated this frame.
+         */
+        bool m_dirty{ false };
     };
 }

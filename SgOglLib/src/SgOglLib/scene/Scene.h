@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Node.h"
 #include "Core.h"
 
 namespace sg::ogl::camera
@@ -10,9 +9,10 @@ namespace sg::ogl::camera
 
 namespace sg::ogl::scene
 {
+    class Node;
     class Renderer;
 
-    class SG_OGL_API Scene : public Node
+    class SG_OGL_API Scene
     {
     public:
         //-------------------------------------------------
@@ -34,8 +34,11 @@ namespace sg::ogl::scene
         // Getter
         //-------------------------------------------------
 
-        Renderer& GetRenderer();
-        camera::LookAtCamera& GetCamera();
+        Renderer& GetRenderer() noexcept;
+        const Renderer& GetRenderer() const noexcept;
+
+        camera::LookAtCamera& GetCamera() noexcept;
+        const camera::LookAtCamera& GetCamera() const noexcept;
 
         //-------------------------------------------------
         // Scene objects

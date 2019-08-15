@@ -16,6 +16,10 @@ bool GameState::Input()
 
 bool GameState::Update(const double t_dt)
 {
+    // update scene
+    m_scene->Update();
+
+    // update camera
     const auto vel{ 32.0f };
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
@@ -53,7 +57,7 @@ bool GameState::Update(const double t_dt)
 
 void GameState::Render()
 {
-    m_terrainRenderer->Render(*m_terrain, "terrain");
+    //m_terrainRenderer->Render(*m_terrain, "terrain");
     //m_terrainRenderer->RenderNormals(*m_terrain, "normal", 1.0f);
 
     // render scene
@@ -78,13 +82,13 @@ void GameState::Init()
 
     // load shader
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("skybox");
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram("terrain");
+    //GetApplicationContext()->GetShaderManager()->AddShaderProgram("terrain");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("model");
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram("normal", true);
+    //GetApplicationContext()->GetShaderManager()->AddShaderProgram("normal", true);
 
     // load compute shader
-    GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("normalmap");
-    GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("splatmap");
+    //GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("normalmap");
+    //GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("splatmap");
 
     // get projection matrix
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
@@ -96,6 +100,7 @@ void GameState::Init()
 
     m_meshLoader = std::make_unique<sg::ogl::scene::MeshLoader>(*GetApplicationContext()->GetTextureManager());
     auto* node{ m_meshLoader->LoadMesh("res/model/nanosuit/nanosuit.obj") };
+    node->GetLocalTransform().position = glm::vec3(370.0f, 0.0f, 400.0f);
 
     m_renderer = std::make_unique<sg::ogl::scene::Renderer>(
         *GetApplicationContext()->GetShaderManager(),
@@ -131,19 +136,23 @@ void GameState::Init()
         );
 
     // create new terrain renderer instance
+    /*
     m_terrainRenderer = std::make_unique<sg::ogl::renderer::TerrainRenderer>(
         *GetApplicationContext()->GetShaderManager(),
         *GetApplicationContext()->GetTextureManager(),
         m_camera,
         m_projectionMatrix
         );
+    */
 
     // create new terrain instance
+    /*
     m_terrain = std::make_unique<sg::ogl::terrain::Terrain>(
         *GetApplicationContext()->GetTextureManager(),
         *GetApplicationContext()->GetShaderManager(),
         "res/config/Terrain.xml");
+    */
 
     // generate terrain
-    m_terrain->GenerateTerrain();
+    //m_terrain->GenerateTerrain();
 }

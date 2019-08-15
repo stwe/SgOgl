@@ -56,6 +56,8 @@ void sg::ogl::scene::Renderer::SetParentScene(Scene* t_scene)
 
 void sg::ogl::scene::Renderer::Render(Node& t_node) const
 {
+    SG_OGL_CORE_ASSERT(m_parentScene, "[Renderer::Render()] Null pointer.")
+
     if (t_node.mesh && t_node.material)
     {
         // todo transparency
@@ -70,11 +72,7 @@ void sg::ogl::scene::Renderer::Render(Node& t_node) const
         // t_transform.GetModelMatrix()
 
         // todo
-        math::Transform transfom;
-        transfom.position = glm::vec3(370, 10, 370);
-        transfom.scale = glm::vec3(1.0f);
-
-        const auto mvp{ m_projectionMatrix * m_parentScene->GetCamera().GetViewMatrix() * transfom.GetModelMatrix() };
+        const auto mvp{ m_projectionMatrix * m_parentScene->GetCamera().GetViewMatrix() * t_node.GetTransform() };
         shaderProgram->SetUniform("transform", mvp);
 
         // set ambient intensity
