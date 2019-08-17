@@ -94,34 +94,55 @@ void GameState::Init()
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
 
     // set the camera position
-    m_camera.SetPosition(glm::vec3(370.0f, 10.0f, 370.0f));
+    m_camera.SetPosition(glm::vec3(0.0f, 0.0f, 6.0f));
 
-    ///////////////////////
+    // load models
+    m_sphereModel = GetApplicationContext()->GetModelManager()->GetModelFromPath("res/model/sphere/sphere.obj");
 
-    m_meshLoader = std::make_unique<sg::ogl::scene::MeshLoader>(*GetApplicationContext()->GetTextureManager());
-    auto* node{ m_meshLoader->LoadMesh("res/model/nanosuit/nanosuit.obj") };
-    node->GetLocalTransform().position = glm::vec3(370.0f, 0.0f, 400.0f);
-
+    // create renderer
     m_renderer = std::make_unique<sg::ogl::scene::Renderer>(
         *GetApplicationContext()->GetShaderManager(),
         *GetApplicationContext()->GetTextureManager(),
         m_projectionMatrix
         );
 
+    // create scene
     m_scene = std::make_unique<sg::ogl::scene::Scene>(*m_renderer, m_camera);
-    m_scene->AddObject(node);
 
-    //////////////////////////
+    // create materials
+    auto moon{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/moon.jpg") };
+    auto earth{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/earth.jpg") };
+    auto sun{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/sun.jpg") };
+
+    auto* moonMaterial = new sg::ogl::resource::Material;
+    auto* earthMaterial = new sg::ogl::resource::Material;
+    auto* sunMaterial = new sg::ogl::resource::Material;
+
+    moonMaterial->mapKd = moon;
+    earthMaterial->mapKd = earth;
+    sunMaterial->mapKd = sun;
+
+    // create scene nodes
+    auto* sunNode = m_scene->Add(m_sphereModel, sunMaterial);
+    sunNode->GetLocalTransform().position = glm::vec3(0.0f, 0.0f, 0.0f);
+    sunNode->GetLocalTransform().scale = glm::vec3(2.0f);
+
+    auto* earthNode = m_scene->Add(m_sphereModel, earthMaterial);
+    earthNode->GetLocalTransform().position = glm::vec3(10.0f, 0.0f, 0.0f);
+
+    auto* moonNode = m_scene->Add(m_sphereModel, moonMaterial);
+    moonNode->GetLocalTransform().position = glm::vec3(8.0f, 0.0f, 0.0f);
+    moonNode->GetLocalTransform().scale = glm::vec3(0.25f);
 
     // skybox textures
     const std::vector<std::string> textureFileNames
     {
-        "res/texture/sky/sRight.png",
-        "res/texture/sky/sLeft.png",
-        "res/texture/sky/sUp.png",
-        "res/texture/sky/sDown.png",
-        "res/texture/sky/sBack.png",
-        "res/texture/sky/sFront.png"
+        "res/texture/starfield/starfield_rt.jpg",
+        "res/texture/starfield/starfield_lf.jpg",
+        "res/texture/starfield/starfield_up.jpg",
+        "res/texture/starfield/starfield_dn.jpg",
+        "res/texture/starfield/starfield_bk.jpg",
+        "res/texture/starfield/starfield_ft.jpg"
     };
 
     // create new skybox instance

@@ -22,23 +22,26 @@ sg::ogl::resource::Mesh::~Mesh() noexcept
 // Getter
 //-------------------------------------------------
 
-sg::ogl::resource::Mesh::MaterialUniquePtr& sg::ogl::resource::Mesh::GetMaterial() noexcept
+sg::ogl::resource::Material& sg::ogl::resource::Mesh::GetDefaultMaterial()
 {
-    return m_material; // todo if null
+    SG_OGL_CORE_ASSERT(m_defaultMaterial, "[Mesh::GetDefaultMaterial()] Null pointer.")
+    return *m_defaultMaterial;
 }
 
-const sg::ogl::resource::Mesh::MaterialUniquePtr& sg::ogl::resource::Mesh::GetMaterial() const noexcept
+const sg::ogl::resource::Material& sg::ogl::resource::Mesh::GetDefaultMaterial() const
 {
-    return m_material; // todo if null
+    SG_OGL_CORE_ASSERT(m_defaultMaterial, "[Mesh::GetDefaultMaterial()] Null pointer.")
+    return *m_defaultMaterial;
 }
 
 //-------------------------------------------------
 // Setter
 //-------------------------------------------------
 
-void sg::ogl::resource::Mesh::SetMaterial(MaterialUniquePtr t_material)
+void sg::ogl::resource::Mesh::SetDefaultMaterial(MaterialUniquePtr t_defaultMaterial)
 {
-    m_material = std::move(t_material);
+    SG_OGL_CORE_ASSERT(!m_defaultMaterial, "[Mesh::SetDefaultMaterial()] Default material already exist.")
+    m_defaultMaterial = std::move(t_defaultMaterial);
 }
 
 //-------------------------------------------------

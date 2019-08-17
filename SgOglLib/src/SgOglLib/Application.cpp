@@ -8,6 +8,7 @@
 #include "resource/ShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "resource/TextureManager.h"
+#include "resource/ModelManager.h"
 #include "input/MouseInput.h"
 #include "event/CircularEventQueue.h"
 
@@ -31,6 +32,12 @@ void sg::ogl::DeleteTextureManager::operator()(resource::TextureManager* t_textu
 {
     SG_OGL_CORE_LOG_DEBUG("[DeleteTextureManager::operator()] Delete TextureManager.");
     delete t_textureManager;
+}
+
+void sg::ogl::DeleteModelManager::operator()(resource::ModelManager* t_modelManager) const
+{
+    SG_OGL_CORE_LOG_DEBUG("[DeleteModelManager::operator()] Delete ModelManager.");
+    delete t_modelManager;
 }
 
 void sg::ogl::DeleteStateStack::operator()(state::StateStack* t_stateStack) const
@@ -106,6 +113,11 @@ sg::ogl::Application::TextureManagerUniquePtr& sg::ogl::Application::GetTextureM
     return m_textureManager;
 }
 
+sg::ogl::Application::ModelManagerUniquePtr& sg::ogl::Application::GetModelManager() noexcept
+{
+    return m_modelManager;
+}
+
 sg::ogl::Application::MouseInputUniquePtr& sg::ogl::Application::GetMouseInput() noexcept
 {
     return m_mouseInput;
@@ -151,6 +163,9 @@ void sg::ogl::Application::CoreInit()
 
     m_textureManager.reset(new resource::TextureManager);
     SG_OGL_CORE_ASSERT(m_textureManager, "[Application::CoreInit()] Null pointer.")
+
+    m_modelManager.reset(new resource::ModelManager(*m_textureManager));
+    SG_OGL_CORE_ASSERT(m_modelManager, "[Application::CoreInit()] Null pointer.")
 
     m_stateStack.reset(new state::StateStack{ this });
     SG_OGL_CORE_ASSERT(m_stateStack, "[Application::CoreInit()] Null pointer.")

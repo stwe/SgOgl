@@ -28,13 +28,14 @@
 // resource
 #include "SgOglLib/resource/Material.h"
 #include "SgOglLib/resource/Mesh.h"
+#include "SgOglLib/resource/Model.h"
+#include "SgOglLib/resource/ModelManager.h"
 #include "SgOglLib/resource/ShaderManager.h"
 #include "SgOglLib/resource/ShaderProgram.h"
 #include "SgOglLib/resource/Skybox.h"
 #include "SgOglLib/resource/TextureManager.h"
 
 // scene
-#include "SgOglLib/scene/MeshLoader.h"
 #include "SgOglLib/scene/Node.h"
 #include "SgOglLib/scene/Renderer.h"
 #include "SgOglLib/scene/Scene.h"

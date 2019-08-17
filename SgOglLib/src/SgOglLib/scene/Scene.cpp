@@ -1,4 +1,7 @@
 #include "Scene.h"
+#include "resource/Model.h"
+#include "resource/Mesh.h"
+#include "resource/Material.h"
 #include "Node.h"
 #include "Renderer.h"
 #include "camera/LookAtCamera.h"
@@ -14,6 +17,7 @@ sg::ogl::scene::Scene::Scene(Renderer& t_renderer, camera::LookAtCamera& t_camer
     m_renderer.SetParentScene(this);
 
     m_rootNode = new Node;
+    SG_OGL_CORE_ASSERT(m_rootNode, "[Scene::Scene()] Null pointer.")
 }
 
 sg::ogl::scene::Scene::~Scene() noexcept
@@ -49,9 +53,28 @@ const sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCamera() const no
 // Scene objects
 //-------------------------------------------------
 
-void sg::ogl::scene::Scene::AddObject(Node* t_node) const
+sg::ogl::scene::Node* sg::ogl::scene::Scene::Add(resource::Model* t_model, resource::Material* t_material)
 {
-    m_rootNode->AddChild(t_node);
+    // create node
+    auto* node{ new Node };
+    SG_OGL_CORE_ASSERT(node, "[Scene::Add()] Null pointer.")
+
+    // add meshes as children
+    for (auto& modelMesh: t_model->GetMeshes())
+    {
+        auto* childNode{ new Node };
+        SG_OGL_CORE_ASSERT(childNode, "[Scene::Add()] Null pointer.")
+
+        childNode->mesh = modelMesh.get();
+        childNode->material = t_material;
+
+        node->AddChild(childNode);
+    }
+
+    // add node to root
+    m_rootNode->AddChild(node);
+
+    return node;
 }
 
 //-------------------------------------------------

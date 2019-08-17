@@ -34,8 +34,8 @@ namespace sg::ogl::resource
         // Getter
         //-------------------------------------------------
 
-        MaterialUniquePtr& GetMaterial() noexcept;
-        const MaterialUniquePtr& GetMaterial() const noexcept;
+        Material& GetDefaultMaterial();
+        const Material& GetDefaultMaterial() const;
 
         //-------------------------------------------------
         // Allocate
@@ -70,7 +70,7 @@ namespace sg::ogl::resource
         // Setter
         //-------------------------------------------------
 
-        void SetMaterial(MaterialUniquePtr t_material);
+        void SetDefaultMaterial(MaterialUniquePtr t_defaultMaterial);
 
         //-------------------------------------------------
         // Draw mesh
@@ -95,6 +95,6 @@ namespace sg::ogl::resource
 
     private:
         VaoUniquePtr m_vao;
-        MaterialUniquePtr m_material;
+        MaterialUniquePtr m_defaultMaterial;
     };
 }

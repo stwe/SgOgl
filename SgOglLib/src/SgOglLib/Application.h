@@ -8,6 +8,7 @@ namespace sg::ogl::resource
 {
     class ShaderManager;
     class TextureManager;
+    class ModelManager;
 }
 
 namespace sg::ogl::state
@@ -44,6 +45,11 @@ namespace sg::ogl
         void operator()(resource::TextureManager* t_textureManager) const;
     };
 
+    struct DeleteModelManager
+    {
+        void operator()(resource::ModelManager* t_modelManager) const;
+    };
+
     struct DeleteStateStack
     {
         void operator()(state::StateStack* t_stateStack) const;
@@ -65,6 +71,7 @@ namespace sg::ogl
         using WindowUniquePtr = std::unique_ptr<Window, DeleteWindow>;
         using ShaderManagerUniquePtr = std::unique_ptr<resource::ShaderManager, DeleteShaderManager>;
         using TextureManagerUniquePtr = std::unique_ptr<resource::TextureManager, DeleteTextureManager>;
+        using ModelManagerUniquePtr = std::unique_ptr<resource::ModelManager, DeleteModelManager>;
         using StateStackUniquePtr = std::unique_ptr<state::StateStack, DeleteStateStack>;
         using CircularEventQueueUniquePtr = std::unique_ptr<event::CircularEventQueue, DeleteCircularEventQueue>;
         using MouseInputUniquePtr = std::unique_ptr<input::MouseInput, DeleteMouseInput>;
@@ -97,6 +104,7 @@ namespace sg::ogl
         WindowUniquePtr& GetWindow() noexcept;
         ShaderManagerUniquePtr& GetShaderManager() noexcept;
         TextureManagerUniquePtr& GetTextureManager() noexcept;
+        ModelManagerUniquePtr& GetModelManager() noexcept;
         MouseInputUniquePtr& GetMouseInput() noexcept;
 
         //-------------------------------------------------
@@ -109,6 +117,7 @@ namespace sg::ogl
         WindowUniquePtr m_window;
         ShaderManagerUniquePtr m_shaderManager;
         TextureManagerUniquePtr m_textureManager;
+        ModelManagerUniquePtr m_modelManager;
         StateStackUniquePtr m_stateStack;
         CircularEventQueueUniquePtr m_circularEventQueue;
         MouseInputUniquePtr m_mouseInput;

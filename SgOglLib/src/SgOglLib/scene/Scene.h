@@ -2,6 +2,12 @@
 
 #include "Core.h"
 
+namespace sg::ogl::resource
+{
+    class Model;
+    struct Material;
+}
+
 namespace sg::ogl::camera
 {
     class LookAtCamera;
@@ -44,7 +50,7 @@ namespace sg::ogl::scene
         // Scene objects
         //-------------------------------------------------
 
-        void AddObject(Node* t_node) const;
+        Node* Add(resource::Model* t_model, resource::Material* t_material);
 
         //-------------------------------------------------
         // Logic

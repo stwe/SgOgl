@@ -5,7 +5,6 @@
 class GameState : public sg::ogl::state::State
 {
 public:
-    using MeshLoaderUniquePtr = std::unique_ptr<sg::ogl::scene::MeshLoader>;
     using RendererUniquePtr = std::unique_ptr<sg::ogl::scene::Renderer>;
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
 
@@ -47,7 +46,12 @@ public:
 protected:
 
 private:
-    MeshLoaderUniquePtr m_meshLoader;
+    sg::ogl::resource::Model* m_sphereModel{ nullptr };
+
+    sg::ogl::resource::Material* m_moonMaterial{ nullptr };
+    sg::ogl::resource::Material* m_earthMaterial{ nullptr };
+    sg::ogl::resource::Material* m_sunMaterial{ nullptr };
+
     RendererUniquePtr m_renderer;
     SceneUniquePtr m_scene;
 
