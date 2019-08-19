@@ -50,7 +50,8 @@ namespace sg::ogl::scene
         // Scene objects
         //-------------------------------------------------
 
-        Node* Add(resource::Model* t_model, resource::Material* t_material);
+        Node* CreateNode(resource::Model* t_model, resource::Material* t_material);
+        void AddNode(Node* t_node);
 
         //-------------------------------------------------
         // Logic

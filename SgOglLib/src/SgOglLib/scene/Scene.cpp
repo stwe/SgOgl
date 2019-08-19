@@ -50,20 +50,20 @@ const sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCamera() const no
 }
 
 //-------------------------------------------------
-// Scene objects
+// Scene objects (Nodes)
 //-------------------------------------------------
 
-sg::ogl::scene::Node* sg::ogl::scene::Scene::Add(resource::Model* t_model, resource::Material* t_material)
+sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateNode(resource::Model* t_model, resource::Material* t_material)
 {
     // create node
     auto* node{ new Node };
-    SG_OGL_CORE_ASSERT(node, "[Scene::Add()] Null pointer.")
+    SG_OGL_CORE_ASSERT(node, "[Scene::CreateNode()] Null pointer.")
 
     // add meshes as children
     for (auto& modelMesh: t_model->GetMeshes())
     {
         auto* childNode{ new Node };
-        SG_OGL_CORE_ASSERT(childNode, "[Scene::Add()] Null pointer.")
+        SG_OGL_CORE_ASSERT(childNode, "[Scene::CreateNode()] Null pointer.")
 
         childNode->mesh = modelMesh.get();
         childNode->material = t_material;
@@ -71,10 +71,15 @@ sg::ogl::scene::Node* sg::ogl::scene::Scene::Add(resource::Model* t_model, resou
         node->AddChild(childNode);
     }
 
-    // add node to root
-    m_rootNode->AddChild(node);
-
     return node;
+}
+
+void sg::ogl::scene::Scene::AddNode(Node* t_node)
+{
+    SG_OGL_CORE_ASSERT(t_node, "[Scene::AddNode()] Null pointer.")
+
+    // add node to root
+    m_rootNode->AddChild(t_node);
 }
 
 //-------------------------------------------------
