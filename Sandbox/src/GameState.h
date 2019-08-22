@@ -52,6 +52,10 @@ private:
     sg::ogl::resource::Material* m_earthMaterial{ nullptr };
     sg::ogl::resource::Material* m_sunMaterial{ nullptr };
 
+    sg::ogl::scene::Node* m_sunNode{ nullptr };
+    sg::ogl::scene::Node* m_earthNode{ nullptr };
+    sg::ogl::scene::Node* m_moonNode{ nullptr };
+
     RendererUniquePtr m_renderer;
     SceneUniquePtr m_scene;
 

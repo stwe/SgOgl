@@ -18,6 +18,7 @@ sg::ogl::scene::Scene::Scene(Renderer& t_renderer, camera::LookAtCamera& t_camer
 
     m_rootNode = new Node;
     SG_OGL_CORE_ASSERT(m_rootNode, "[Scene::Scene()] Null pointer.")
+        m_rootNode->SetDebugName("root");
 }
 
 sg::ogl::scene::Scene::~Scene() noexcept
@@ -49,6 +50,11 @@ const sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCamera() const no
     return m_camera;
 }
 
+sg::ogl::scene::Node* sg::ogl::scene::Scene::GetRoot() const
+{
+    return m_rootNode;
+}
+
 //-------------------------------------------------
 // Scene objects (Nodes)
 //-------------------------------------------------
@@ -59,27 +65,27 @@ sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateNode(resource::Model* t_model
     auto* node{ new Node };
     SG_OGL_CORE_ASSERT(node, "[Scene::CreateNode()] Null pointer.")
 
-    // add meshes as children
-    for (auto& modelMesh: t_model->GetMeshes())
+    // add meshes
+    if (t_model->GetMeshes().size() > 1)
     {
-        auto* childNode{ new Node };
-        SG_OGL_CORE_ASSERT(childNode, "[Scene::CreateNode()] Null pointer.")
+        for (auto& modelMesh : t_model->GetMeshes())
+        {
+            auto* childNode{ new Node };
+            SG_OGL_CORE_ASSERT(childNode, "[Scene::CreateNode()] Null pointer.")
 
-        childNode->mesh = modelMesh.get();
-        childNode->material = t_material;
+            childNode->mesh = modelMesh.get();
+            childNode->material = t_material;
 
-        node->AddChild(childNode);
+            node->AddChild(childNode);
+        }
+    }
+    else
+    {
+        node->mesh = t_model->GetMeshes()[0].get();
+        node->material = t_material;
     }
 
     return node;
-}
-
-void sg::ogl::scene::Scene::AddNode(Node* t_node)
-{
-    SG_OGL_CORE_ASSERT(t_node, "[Scene::AddNode()] Null pointer.")
-
-    // add node to root
-    m_rootNode->AddChild(t_node);
 }
 
 //-------------------------------------------------
@@ -88,7 +94,7 @@ void sg::ogl::scene::Scene::AddNode(Node* t_node)
 
 void sg::ogl::scene::Scene::Update()
 {
-    m_rootNode->UpdateTransform();
+    m_rootNode->CalcWorldMatrix();
 }
 
 void sg::ogl::scene::Scene::Render()

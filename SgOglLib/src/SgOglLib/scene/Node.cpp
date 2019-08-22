@@ -46,19 +46,19 @@ sg::ogl::math::Transform& sg::ogl::scene::Node::GetLocalTransform() noexcept
     return m_localTransform;
 }
 
-sg::ogl::math::Transform& sg::ogl::scene::Node::GetWorldTransform() noexcept
+glm::mat4 sg::ogl::scene::Node::GetWorldMatrix() const
 {
-    return m_worldTransform;
-}
-
-glm::mat4 sg::ogl::scene::Node::GetTransform() const
-{
-    return m_transform;
+    return m_worldMatrix;
 }
 
 //-------------------------------------------------
 // Setter
 //-------------------------------------------------
+
+void sg::ogl::scene::Node::SetDebugName(const std::string& t_debugName)
+{
+    m_debugName = t_debugName;
+}
 
 void sg::ogl::scene::Node::SetParent(Node* t_parentNode)
 {
@@ -81,17 +81,19 @@ void sg::ogl::scene::Node::AddChild(Node* t_childNode)
 // Transform
 //-------------------------------------------------
 
-void sg::ogl::scene::Node::UpdateTransform()
+void sg::ogl::scene::Node::CalcWorldMatrix()
 {
-    m_transform = m_localTransform.GetModelMatrix();
-
     if (m_parent)
     {
-        m_transform = m_parent->GetTransform() * m_transform;
+        m_worldMatrix = m_parent->GetWorldMatrix() * m_localTransform.GetModelMatrix();
+    }
+    else
+    {
+        m_worldMatrix = m_localTransform.GetModelMatrix();
     }
 
     for (auto* child : m_children)
     {
-        child->UpdateTransform();
+        child->CalcWorldMatrix();
     }
 }

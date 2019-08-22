@@ -47,14 +47,13 @@ namespace sg::ogl::scene
         Node* GetParent() const;
         const ChildrenContainer& GetChildren() const noexcept;
         math::Transform& GetLocalTransform() noexcept;
-        math::Transform& GetWorldTransform() noexcept;
-
-        glm::mat4 GetTransform() const;
+        glm::mat4 GetWorldMatrix() const;
 
         //-------------------------------------------------
         // Setter
         //-------------------------------------------------
 
+        void SetDebugName(const std::string& t_debugName);
         void SetParent(Node* t_parentNode);
 
         //-------------------------------------------------
@@ -67,7 +66,7 @@ namespace sg::ogl::scene
         // Transform
         //-------------------------------------------------
 
-        void UpdateTransform();
+        void CalcWorldMatrix();
 
     protected:
 
@@ -76,6 +75,8 @@ namespace sg::ogl::scene
          * @brief Each node is uniquely identified by a stringified UUID.
          */
         std::string m_uuid;
+
+        std::string m_debugName;
 
         /**
          * @brief The parent node.
@@ -92,12 +93,7 @@ namespace sg::ogl::scene
          */
         math::Transform m_localTransform;
 
-        /**
-         * @brief World transform.
-         */
-        math::Transform m_worldTransform;
-
-        glm::mat4 m_transform{ glm::mat4(1.0f) };
+        glm::mat4 m_worldMatrix{ glm::mat4(1.0f) };
 
         /**
          * @brief Mark the current node's tranform as dirty if it needs

@@ -45,13 +45,13 @@ namespace sg::ogl::scene
 
         camera::LookAtCamera& GetCamera() noexcept;
         const camera::LookAtCamera& GetCamera() const noexcept;
+        Node* GetRoot() const;
 
         //-------------------------------------------------
         // Scene objects
         //-------------------------------------------------
 
         Node* CreateNode(resource::Model* t_model, resource::Material* t_material);
-        void AddNode(Node* t_node);
 
         //-------------------------------------------------
         // Logic

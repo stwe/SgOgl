@@ -72,7 +72,7 @@ void sg::ogl::scene::Renderer::Render(Node& t_node) const
         // t_transform.GetModelMatrix()
 
         // todo
-        const auto mvp{ m_projectionMatrix * m_parentScene->GetCamera().GetViewMatrix() * t_node.GetTransform() };
+        const auto mvp{ m_projectionMatrix * m_parentScene->GetCamera().GetViewMatrix() * t_node.GetWorldMatrix() };
         shaderProgram->SetUniform("transform", mvp);
 
         // set ambient intensity
