@@ -101,8 +101,9 @@ void GameState::Init()
     // set the camera position
     m_camera.SetPosition(glm::vec3(0.0f, 0.0f, 6.0f));
 
-    // load sphere model
+    // load models
     m_sphereModel = GetApplicationContext()->GetModelManager()->GetModelFromPath("res/model/sphere/sphere.obj");
+    m_nanoModel = GetApplicationContext()->GetModelManager()->GetModelFromPath("res/model/nanosuit/nanosuit.obj");
 
     // create renderer
     m_renderer = std::make_unique<sg::ogl::scene::Renderer>(
@@ -120,35 +121,53 @@ void GameState::Init()
     auto sunId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/sun.jpg") };
 
     // create materials
-    auto* moonMaterial{ new sg::ogl::resource::Material };
-    auto* earthMaterial{ new sg::ogl::resource::Material };
-    auto* sunMaterial{ new sg::ogl::resource::Material };
+    m_moonMaterial = new sg::ogl::resource::Material;
+    m_earthMaterial = new sg::ogl::resource::Material;
+    m_sunMaterial = new sg::ogl::resource::Material;
 
-    moonMaterial->mapKd = moonId;
-    earthMaterial->mapKd = earthId;
-    sunMaterial->mapKd = sunId;
+    m_moonMaterial->mapKd = moonId;
+    m_earthMaterial->mapKd = earthId;
+    m_sunMaterial->mapKd = sunId;
 
     // create scene nodes
-    m_sunNode = m_scene->CreateNode(m_sphereModel, sunMaterial);
+    m_sunNode = m_scene->CreateNode(m_sphereModel, m_sunMaterial);
     m_sunNode->GetLocalTransform().position = glm::vec3(0.0f, 0.0f, 0.0f); // sun at center
     m_sunNode->GetLocalTransform().scale = glm::vec3(2.0f);
     m_sunNode->SetDebugName("Sun");
 
-    m_earthNode = m_scene->CreateNode(m_sphereModel, earthMaterial);
+    m_earthNode = m_scene->CreateNode(m_sphereModel, m_earthMaterial);
     m_earthNode->GetLocalTransform().position = glm::vec3(10.0f, 0.0f, 0.0f); // earth 10 units from the sun
     m_earthNode->SetDebugName("Earth");
 
-    m_moonNode = m_scene->CreateNode(m_sphereModel, moonMaterial);
+    m_moonNode = m_scene->CreateNode(m_sphereModel, m_moonMaterial);
     m_moonNode->GetLocalTransform().position = glm::vec3(2.0f, 0.0f, 0.0f); // moon 2 units from the earth
     m_moonNode->GetLocalTransform().scale = glm::vec3(0.25f);
     m_moonNode->SetDebugName("Moon");
 
-    m_sunNode->AddChild(m_earthNode);
-    m_earthNode->AddChild(m_moonNode);
+    // AddChild()
+    //m_sunNode->AddChild(m_earthNode);
+    //m_earthNode->AddChild(m_moonNode);
 
-    // add sun node to scene
-    auto* root{ m_scene->GetRoot() };
-    root->AddChild(m_sunNode);
+    // or SetParent()
+    m_moonNode->SetParent(m_earthNode);
+    m_earthNode->SetParent(m_sunNode);
+
+    // add the sun node to scene
+    m_scene->AddNodeToRoot(m_sunNode);
+
+    // add a Nanosuit with default material to the scene
+    m_nano1Node = m_scene->CreateNode(m_nanoModel);
+    m_nano1Node->GetLocalTransform().position = glm::vec3(30.0f, 0.0f, 0.0f);
+    m_nano1Node->GetLocalTransform().scale = glm::vec3(0.25f);
+    m_nano1Node->SetDebugName("Nano1");
+    m_scene->AddNodeToRoot(m_nano1Node);
+
+    // add an other Nanosuit to the scene
+    m_nano2Node = m_scene->CreateNode(m_nanoModel, m_moonMaterial);
+    m_nano2Node->GetLocalTransform().position = glm::vec3(60.0f, 0.0f, 0.0f);
+    m_nano2Node->GetLocalTransform().scale = glm::vec3(0.25f);
+    m_nano2Node->SetDebugName("Nano2");
+    m_scene->AddNodeToRoot(m_nano2Node);
 
     // skybox textures
     const std::vector<std::string> textureFileNames

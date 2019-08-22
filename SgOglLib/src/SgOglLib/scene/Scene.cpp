@@ -18,7 +18,7 @@ sg::ogl::scene::Scene::Scene(Renderer& t_renderer, camera::LookAtCamera& t_camer
 
     m_rootNode = new Node;
     SG_OGL_CORE_ASSERT(m_rootNode, "[Scene::Scene()] Null pointer.")
-        m_rootNode->SetDebugName("root");
+    m_rootNode->SetDebugName("root");
 }
 
 sg::ogl::scene::Scene::~Scene() noexcept
@@ -68,24 +68,31 @@ sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateNode(resource::Model* t_model
     // add meshes
     if (t_model->GetMeshes().size() > 1)
     {
+        // for each mesh
         for (auto& modelMesh : t_model->GetMeshes())
         {
             auto* childNode{ new Node };
             SG_OGL_CORE_ASSERT(childNode, "[Scene::CreateNode()] Null pointer.")
 
-            childNode->mesh = modelMesh.get();
-            childNode->material = t_material;
+            childNode->mesh = modelMesh.get(); // get raw pointer from unique_ptr
+            childNode->material = t_material ? t_material : &modelMesh.get()->GetDefaultMaterial();
 
             node->AddChild(childNode);
         }
     }
     else
     {
-        node->mesh = t_model->GetMeshes()[0].get();
-        node->material = t_material;
+        node->mesh = t_model->GetMeshes()[0].get(); // get raw pointer from unique_ptr
+        node->material = t_material ? t_material : &t_model->GetMeshes()[0].get()->GetDefaultMaterial();
     }
 
     return node;
+}
+
+void sg::ogl::scene::Scene::AddNodeToRoot(Node* t_node)
+{
+    SG_OGL_CORE_ASSERT(t_node, "[Scene::AddNodeToRoot()] Null pointer.")
+    m_rootNode->AddChild(t_node);
 }
 
 //-------------------------------------------------

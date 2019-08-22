@@ -56,6 +56,10 @@ private:
     sg::ogl::scene::Node* m_earthNode{ nullptr };
     sg::ogl::scene::Node* m_moonNode{ nullptr };
 
+    sg::ogl::resource::Model* m_nanoModel{ nullptr };
+    sg::ogl::scene::Node* m_nano1Node{ nullptr };
+    sg::ogl::scene::Node* m_nano2Node{ nullptr };
+
     RendererUniquePtr m_renderer;
     SceneUniquePtr m_scene;
 

@@ -43,7 +43,7 @@ sg::ogl::resource::Model::~Model() noexcept
 // Getter
 //-------------------------------------------------
 
-const sg::ogl::resource::Model::MeshContainer& sg::ogl::resource::Model::GetMeshes() const
+const sg::ogl::resource::Model::MeshContainer& sg::ogl::resource::Model::GetMeshes() const noexcept
 {
     return m_meshes;
 }

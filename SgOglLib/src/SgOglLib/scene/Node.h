@@ -45,6 +45,7 @@ namespace sg::ogl::scene
 
         std::string GetUuid() const;
         Node* GetParent() const;
+        ChildrenContainer& GetChildren() noexcept;
         const ChildrenContainer& GetChildren() const noexcept;
         math::Transform& GetLocalTransform() noexcept;
         glm::mat4 GetWorldMatrix() const;
@@ -54,12 +55,12 @@ namespace sg::ogl::scene
         //-------------------------------------------------
 
         void SetDebugName(const std::string& t_debugName);
+
+        //-------------------------------------------------
+        // Parent - Children
+        //-------------------------------------------------
+
         void SetParent(Node* t_parentNode);
-
-        //-------------------------------------------------
-        // Children
-        //-------------------------------------------------
-
         void AddChild(Node* t_childNode);
 
         //-------------------------------------------------
@@ -76,6 +77,9 @@ namespace sg::ogl::scene
          */
         std::string m_uuid;
 
+        /**
+         * @brief A debug name.
+         */
         std::string m_debugName;
 
         /**
@@ -93,6 +97,9 @@ namespace sg::ogl::scene
          */
         math::Transform m_localTransform;
 
+        /**
+         * @brief The world matrix places the node in the world.
+         */
         glm::mat4 m_worldMatrix{ glm::mat4(1.0f) };
 
         /**
