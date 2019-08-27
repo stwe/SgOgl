@@ -15,9 +15,6 @@ namespace sg::ogl::resource
 
 namespace sg::ogl::scene
 {
-    class MeshLoader;
-    class Scene;
-
     class SG_OGL_API Node
     {
     public:
