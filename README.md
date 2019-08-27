@@ -33,3 +33,9 @@ Install Assimp
 ```bash
 sudo apt install libassimp-dev libassimp4
 ```
+
+Install UUID-DEV
+
+```bash
+sudo apt install uuid-dev
+```

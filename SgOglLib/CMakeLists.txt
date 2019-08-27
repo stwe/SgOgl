@@ -29,7 +29,6 @@ set(LIB_INPUT_SRC_FILES
 )
 
 set(LIB_RENDERER_SRC_FILES
-    src/SgOglLib/renderer/ModelRenderer.cpp
     src/SgOglLib/renderer/NormalmapRenderer.cpp
     src/SgOglLib/renderer/SkyboxRenderer.cpp
     src/SgOglLib/renderer/SplatmapRenderer.cpp
@@ -40,6 +39,7 @@ set(LIB_RES_SRC_FILES
     src/SgOglLib/resource/Material.cpp
     src/SgOglLib/resource/Mesh.cpp
     src/SgOglLib/resource/Model.cpp
+    src/SgOglLib/resource/ModelManager.cpp
     src/SgOglLib/resource/ShaderManager.cpp
     src/SgOglLib/resource/ShaderProgram.cpp
     src/SgOglLib/resource/Skybox.cpp
@@ -48,6 +48,7 @@ set(LIB_RES_SRC_FILES
 )
 
 set(LIB_SCENE_SRC_FILES
+    src/SgOglLib/scene/Node.cpp
     src/SgOglLib/scene/Renderer.cpp
     src/SgOglLib/scene/Scene.cpp
 )
@@ -99,6 +100,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src/SgOg
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/spdlog/include)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/glm)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/tinyxml2/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/stduuid)
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/stduuid/include)
+
+# add uuid lib
+target_link_libraries(${PROJECT_NAME} PUBLIC uuid)
 
 # add tinyxml2 lib
 target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/vendor/tinyxml2/lib/static/linux/libtinyxml2.a)
