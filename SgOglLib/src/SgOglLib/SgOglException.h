@@ -6,8 +6,15 @@
 
 namespace sg::ogl
 {
+#if defined(_WIN64) && defined(_MSC_VER)
+    #pragma warning(push)
+    #pragma warning(disable: 4275)
+#endif
     class SG_OGL_API SgOglException : public std::exception
     {
+#if defined(_WIN64) && defined(_MSC_VER)
+    #pragma warning(pop)
+#endif
     public:
         SgOglException(int t_line, const char* t_file, std::string t_message);
 
