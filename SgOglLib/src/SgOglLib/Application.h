@@ -105,6 +105,8 @@ namespace sg::ogl
         ShaderManagerUniquePtr& GetShaderManager() noexcept;
         TextureManagerUniquePtr& GetTextureManager() noexcept;
         ModelManagerUniquePtr& GetModelManager() noexcept;
+        StateStackUniquePtr& GetStateStack() noexcept;
+        CircularEventQueueUniquePtr& GetCircularEventQueue() noexcept;
         MouseInputUniquePtr& GetMouseInput() noexcept;
 
         //-------------------------------------------------
@@ -114,14 +116,6 @@ namespace sg::ogl
         void Run();
 
     protected:
-        WindowUniquePtr m_window;
-        ShaderManagerUniquePtr m_shaderManager;
-        TextureManagerUniquePtr m_textureManager;
-        ModelManagerUniquePtr m_modelManager;
-        StateStackUniquePtr m_stateStack;
-        CircularEventQueueUniquePtr m_circularEventQueue;
-        MouseInputUniquePtr m_mouseInput;
-
         //-------------------------------------------------
         // Override
         //-------------------------------------------------
@@ -132,6 +126,14 @@ namespace sg::ogl
     private:
         WindowOptions m_windowOptions{};
         ProjectionOptions m_projectionOptions{};
+
+        WindowUniquePtr m_window;
+        ShaderManagerUniquePtr m_shaderManager;
+        TextureManagerUniquePtr m_textureManager;
+        ModelManagerUniquePtr m_modelManager;
+        StateStackUniquePtr m_stateStack;
+        CircularEventQueueUniquePtr m_circularEventQueue;
+        MouseInputUniquePtr m_mouseInput;
 
         //-------------------------------------------------
         // Init && GameLoop

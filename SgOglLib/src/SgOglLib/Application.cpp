@@ -118,6 +118,16 @@ sg::ogl::Application::ModelManagerUniquePtr& sg::ogl::Application::GetModelManag
     return m_modelManager;
 }
 
+sg::ogl::Application::StateStackUniquePtr& sg::ogl::Application::GetStateStack() noexcept
+{
+    return m_stateStack;
+}
+
+sg::ogl::Application::CircularEventQueueUniquePtr& sg::ogl::Application::GetCircularEventQueue() noexcept
+{
+    return m_circularEventQueue;
+}
+
 sg::ogl::Application::MouseInputUniquePtr& sg::ogl::Application::GetMouseInput() noexcept
 {
     return m_mouseInput;

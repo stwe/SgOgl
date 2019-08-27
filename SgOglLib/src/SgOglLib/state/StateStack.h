@@ -100,7 +100,7 @@ namespace sg::ogl::state
         };
 
         /**
-         * @brief Pointer to the parent application.
+         * @brief Pointer to the parent Application.
          */
         Application* m_application{ nullptr };
 
