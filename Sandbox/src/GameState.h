@@ -5,6 +5,9 @@
 class GameState : public sg::ogl::state::State
 {
 public:
+    using ModelSharedPtr = std::shared_ptr<sg::ogl::resource::Model>;
+    using MaterialSharedPtr = std::shared_ptr<sg::ogl::resource::Material>;
+
     using RendererUniquePtr = std::unique_ptr<sg::ogl::scene::Renderer>;
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
 
@@ -46,17 +49,17 @@ public:
 protected:
 
 private:
-    sg::ogl::resource::Model* m_sphereModel{ nullptr };
+    ModelSharedPtr m_sphereModel;
+    ModelSharedPtr m_nanoModel;
 
-    sg::ogl::resource::Material* m_moonMaterial{ nullptr };
-    sg::ogl::resource::Material* m_earthMaterial{ nullptr };
-    sg::ogl::resource::Material* m_sunMaterial{ nullptr };
+    MaterialSharedPtr m_moonMaterial;
+    MaterialSharedPtr m_earthMaterial;
+    MaterialSharedPtr m_sunMaterial;
 
     sg::ogl::scene::Node* m_sunNode{ nullptr };
     sg::ogl::scene::Node* m_earthNode{ nullptr };
     sg::ogl::scene::Node* m_moonNode{ nullptr };
 
-    sg::ogl::resource::Model* m_nanoModel{ nullptr };
     sg::ogl::scene::Node* m_nano1Node{ nullptr };
     sg::ogl::scene::Node* m_nano2Node{ nullptr };
 

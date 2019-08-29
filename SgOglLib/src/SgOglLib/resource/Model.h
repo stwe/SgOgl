@@ -11,22 +11,18 @@ namespace sg::ogl::resource
     class TextureManager;
     class Mesh;
 
-    struct DeleteMesh
-    {
-        void operator()(Mesh* t_mesh) const;
-    };
-
     class SG_OGL_API Model
     {
     public:
         // private Model Ctor. -> Use the ModelManager to create a new Model
         friend class ModelManager;
 
-        using VerticesContainer = std::vector<float>;
-        using IndicesContainer = std::vector<uint32_t>;
-        using TexturesContainer = std::vector<uint32_t>;
-        using MeshUniquePtr = std::unique_ptr<Mesh, DeleteMesh>;
-        using MeshContainer = std::vector<MeshUniquePtr>;
+        using VertexContainer = std::vector<float>;
+        using IndexContainer = std::vector<uint32_t>;
+        using TextureContainer = std::vector<uint32_t>;
+        using MeshUniquePtr = std::unique_ptr<Mesh>;
+        using MeshSharedPtr = std::shared_ptr<Mesh>;
+        using MeshContainer = std::vector<MeshSharedPtr>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -70,6 +66,6 @@ namespace sg::ogl::resource
         void LoadModel();
         void ProcessNode(aiNode* t_node, const aiScene* t_scene);
         MeshUniquePtr ProcessMesh(aiMesh* t_mesh, const aiScene* t_scene) const;
-        TexturesContainer LoadMaterialTextures(aiMaterial* t_mat, aiTextureType t_type) const;
+        TextureContainer LoadMaterialTextures(aiMaterial* t_mat, aiTextureType t_type) const;
     };
 }

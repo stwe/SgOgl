@@ -22,15 +22,17 @@ sg::ogl::resource::ModelManager::~ModelManager() noexcept
 // Load && Create
 //-------------------------------------------------
 
-sg::ogl::resource::Model* sg::ogl::resource::ModelManager::GetModelFromPath(const std::string& t_path)
+sg::ogl::resource::ModelManager::ModelSharedPtr sg::ogl::resource::ModelManager::GetModelFromPath(const std::string& t_fullFilePath)
 {
-    if (m_models.count(t_path) == 0)
+    // create Model only if necessary
+    if (m_models.count(t_fullFilePath) == 0)
     {
-        auto modelUniquePtr{ std::unique_ptr<Model>(new Model(t_path, m_textureManager)) };
-        SG_OGL_CORE_ASSERT(modelUniquePtr, "[ModelManager::GetModelFromPath()] Null pointer.")
+        auto modelSharedPtr{ std::shared_ptr<Model>(new Model(t_fullFilePath, m_textureManager)) };
+        SG_OGL_CORE_ASSERT(modelSharedPtr, "[ModelManager::GetModelFromPath()] Null pointer.")
 
-        m_models.emplace(t_path, std::move(modelUniquePtr));
+        m_models.emplace(t_fullFilePath, modelSharedPtr);
     }
 
-    return m_models.at(t_path).get();
+    // return existing Model
+    return m_models.at(t_fullFilePath);
 }

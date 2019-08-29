@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "Core.h"
 
 namespace sg::ogl::resource
@@ -21,6 +22,9 @@ namespace sg::ogl::scene
     class SG_OGL_API Scene
     {
     public:
+        using ModelSharedPtr = std::shared_ptr<resource::Model>;
+        using MaterialSharedPtr = std::shared_ptr<resource::Material>;
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
@@ -52,8 +56,12 @@ namespace sg::ogl::scene
         // Scene objects (Nodes)
         //-------------------------------------------------
 
-        Node* CreateNode(resource::Model* t_model, resource::Material* t_material = nullptr);
-        void AddNodeToRoot(Node* t_node);
+        // Should we pass a shared_ptr by reference or by value?
+        // https://stackoverflow.com/questions/3310737/should-we-pass-a-shared-ptr-by-reference-or-by-value/8741626
+
+        static Node* CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material = nullptr);
+
+        void AddNodeToRoot(Node* t_node) const;
 
         //-------------------------------------------------
         // Logic

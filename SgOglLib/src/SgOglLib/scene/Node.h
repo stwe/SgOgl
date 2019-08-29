@@ -19,9 +19,15 @@ namespace sg::ogl::scene
     {
     public:
         using ChildrenContainer = std::vector<Node*>;
+        using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
+        using MaterialSharedPtr = std::shared_ptr<resource::Material>;
 
-        resource::Mesh* mesh{ nullptr };
-        resource::Material* material{ nullptr };
+        //-------------------------------------------------
+        // Public member
+        //-------------------------------------------------
+
+        MeshSharedPtr mesh;
+        MaterialSharedPtr material;
 
         //-------------------------------------------------
         // Ctors. / Dtor.

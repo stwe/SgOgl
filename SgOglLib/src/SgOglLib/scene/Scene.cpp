@@ -1,7 +1,6 @@
 #include "Scene.h"
 #include "resource/Model.h"
 #include "resource/Mesh.h"
-#include "resource/Material.h"
 #include "Node.h"
 #include "Renderer.h"
 #include "camera/LookAtCamera.h"
@@ -59,37 +58,43 @@ sg::ogl::scene::Node* sg::ogl::scene::Scene::GetRoot() const
 // Scene objects (Nodes)
 //-------------------------------------------------
 
-sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateNode(resource::Model* t_model, resource::Material* t_material)
+sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material)
 {
     // create node
     auto* node{ new Node };
     SG_OGL_CORE_ASSERT(node, "[Scene::CreateNode()] Null pointer.")
 
-    // add meshes
-    if (t_model->GetMeshes().size() > 1)
+    // get model meshes container as const reference
+    const auto& meshes{ t_model->GetMeshes() };
+
+    // create a child node for each mesh
+    if (meshes.size() > 1)
     {
-        // for each mesh
-        for (auto& modelMesh : t_model->GetMeshes())
+        // get each mesh as const reference
+        for (const auto& mesh : meshes)
         {
+            // create a child node
             auto* childNode{ new Node };
             SG_OGL_CORE_ASSERT(childNode, "[Scene::CreateNode()] Null pointer.")
 
-            childNode->mesh = modelMesh.get(); // get raw pointer from unique_ptr
-            childNode->material = t_material ? t_material : &modelMesh.get()->GetDefaultMaterial();
+            // make a copy of the mesh and material shared_ptr
+            childNode->mesh = mesh;
+            childNode->material = t_material ? t_material : mesh->GetDefaultMaterial();
 
+            // add node as child
             node->AddChild(childNode);
         }
     }
     else
     {
-        node->mesh = t_model->GetMeshes()[0].get(); // get raw pointer from unique_ptr
-        node->material = t_material ? t_material : &t_model->GetMeshes()[0].get()->GetDefaultMaterial();
+        node->mesh = meshes[0];
+        node->material = t_material ? t_material : meshes[0]->GetDefaultMaterial();
     }
 
     return node;
 }
 
-void sg::ogl::scene::Scene::AddNodeToRoot(Node* t_node)
+void sg::ogl::scene::Scene::AddNodeToRoot(Node* t_node) const
 {
     SG_OGL_CORE_ASSERT(t_node, "[Scene::AddNodeToRoot()] Null pointer.")
     m_rootNode->AddChild(t_node);

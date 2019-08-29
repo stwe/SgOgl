@@ -22,16 +22,10 @@ sg::ogl::resource::Mesh::~Mesh() noexcept
 // Getter
 //-------------------------------------------------
 
-sg::ogl::resource::Material& sg::ogl::resource::Mesh::GetDefaultMaterial()
+sg::ogl::resource::Mesh::MaterialSharedPtr sg::ogl::resource::Mesh::GetDefaultMaterial() const
 {
     SG_OGL_CORE_ASSERT(m_defaultMaterial, "[Mesh::GetDefaultMaterial()] Null pointer.")
-    return *m_defaultMaterial;
-}
-
-const sg::ogl::resource::Material& sg::ogl::resource::Mesh::GetDefaultMaterial() const
-{
-    SG_OGL_CORE_ASSERT(m_defaultMaterial, "[Mesh::GetDefaultMaterial()] Null pointer.")
-    return *m_defaultMaterial;
+    return m_defaultMaterial;
 }
 
 //-------------------------------------------------

@@ -116,14 +116,14 @@ void GameState::Init()
     m_scene = std::make_unique<sg::ogl::scene::Scene>(*m_renderer, m_camera);
 
     // load textures
-    auto moonId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/moon.jpg") };
-    auto earthId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/earth.jpg") };
-    auto sunId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/sun.jpg") };
+    const auto moonId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/moon.jpg") };
+    const auto earthId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/earth.jpg") };
+    const auto sunId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/sun.jpg") };
 
     // create materials
-    m_moonMaterial = new sg::ogl::resource::Material;
-    m_earthMaterial = new sg::ogl::resource::Material;
-    m_sunMaterial = new sg::ogl::resource::Material;
+    m_moonMaterial = std::make_shared<sg::ogl::resource::Material>();
+    m_earthMaterial = std::make_shared<sg::ogl::resource::Material>();
+    m_sunMaterial = std::make_shared<sg::ogl::resource::Material>();
 
     m_moonMaterial->mapKd = moonId;
     m_earthMaterial->mapKd = earthId;

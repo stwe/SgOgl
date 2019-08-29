@@ -10,16 +10,6 @@
 #include "buffer/BufferLayout.h"
 
 //-------------------------------------------------
-// Custom Deleter
-//-------------------------------------------------
-
-void sg::ogl::resource::DeleteMesh::operator()(Mesh* t_mesh) const
-{
-    SG_OGL_CORE_LOG_DEBUG("[DeleteMesh::operator()] Delete Mesh.");
-    delete t_mesh;
-}
-
-//-------------------------------------------------
 // Ctors. / Dtor.
 //-------------------------------------------------
 
@@ -88,12 +78,8 @@ void sg::ogl::resource::Model::ProcessNode(aiNode* t_node, const aiScene* t_scen
 sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(aiMesh* t_mesh, const aiScene* t_scene) const
 {
     // Data to fill.
-    VerticesContainer vertices;
-    IndicesContainer indices;
-
-    // Create a Material instance.
-    auto materialUniquePtr{ std::make_unique<Material>() };
-    SG_OGL_CORE_ASSERT(materialUniquePtr, "[Model::ProcessMesh()] Null pointer.")
+    VertexContainer vertices;
+    IndexContainer indices;
 
     // Walk through each of the mesh's vertices.
     for (auto i{ 0u }; i < t_mesh->mNumVertices; ++i)
@@ -168,6 +154,10 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
 
     // Process materials.
     auto* aiMeshMaterial{ t_scene->mMaterials[t_mesh->mMaterialIndex] };
+
+    // Create a unique_ptr Material instance.
+    auto materialUniquePtr{ std::make_unique<Material>() };
+    SG_OGL_CORE_ASSERT(materialUniquePtr, "[Model::ProcessMesh()] Null pointer.")
 
     // Set material name.
     aiString name;
@@ -258,9 +248,8 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
         { buffer::VertexAttributeType::BITANGENT, "aBiTangent" },
     };
 
-    // Create a Mesh instance.
-    MeshUniquePtr meshUniquePtr;
-    meshUniquePtr.reset(new Mesh);
+    // Create a unique_ptr Mesh instance.
+    auto meshUniquePtr{ std::make_unique<Mesh>() };
     SG_OGL_CORE_ASSERT(meshUniquePtr, "[Model::ProcessMesh()] Null pointer.")
 
     // Allocate the data to the mesh.
@@ -273,9 +262,9 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
     return meshUniquePtr;
 }
 
-sg::ogl::resource::Model::TexturesContainer sg::ogl::resource::Model::LoadMaterialTextures(aiMaterial* t_mat, const aiTextureType t_type) const
+sg::ogl::resource::Model::TextureContainer sg::ogl::resource::Model::LoadMaterialTextures(aiMaterial* t_mat, const aiTextureType t_type) const
 {
-    TexturesContainer textures;
+    TextureContainer textures;
 
     for (auto i{ 0u }; i < t_mat->GetTextureCount(t_type); ++i)
     {
