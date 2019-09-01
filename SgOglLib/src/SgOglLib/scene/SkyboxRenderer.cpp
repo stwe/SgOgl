@@ -7,18 +7,23 @@
 #include "resource/Mesh.h"
 #include "camera/LookAtCamera.h"
 
-sg::ogl::renderer::SkyboxRenderer::SkyboxRenderer(
+//-------------------------------------------------
+// Ctors. / Dtor.
+//-------------------------------------------------
+
+sg::ogl::scene::SkyboxRenderer::SkyboxRenderer(
     resource::ShaderManager& t_shaderManager,
-    scene::Scene& t_scene,
     glm::mat4& t_projection
 )
-    : m_shaderManager{ t_shaderManager }
-    , m_scene{ t_scene }
-    , m_projectionMatrix{ t_projection }
+    : BaseRenderer(t_shaderManager, t_projection)
 {
 }
 
-void sg::ogl::renderer::SkyboxRenderer::Render(const uint32_t t_textureId, resource::Mesh& t_mesh, const std::string& t_shaderProgramName) const
+//-------------------------------------------------
+// Render
+//-------------------------------------------------
+
+void sg::ogl::scene::SkyboxRenderer::Render(const uint32_t t_textureId, resource::Mesh& t_mesh, const std::string& t_shaderProgramName) const
 {
     // get ShaderProgram
     auto& shaderProgram{ m_shaderManager.GetShaderProgram(t_shaderProgramName) };
@@ -26,8 +31,8 @@ void sg::ogl::renderer::SkyboxRenderer::Render(const uint32_t t_textureId, resou
     // bind ShaderProgram
     shaderProgram->Bind();
 
-    // remove translation from the view matrix;
-    const auto skyboxViewMatrix{ glm::mat4(glm::mat3(m_scene.GetCurrentCamera().GetViewMatrix())) };
+    // remove translation from the view matrix
+    const auto skyboxViewMatrix{ glm::mat4(glm::mat3(m_parentScene->GetCurrentCamera().GetViewMatrix())) };
 
     // set shader uniforms
     shaderProgram->SetUniform("projectionMatrix", m_projectionMatrix);

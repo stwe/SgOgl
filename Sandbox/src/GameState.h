@@ -12,8 +12,8 @@ public:
     using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
 
-    using SkyboxUniquePtr = std::unique_ptr<sg::ogl::resource::Skybox>;
-    using SkyboxRendererUniquePtr = std::unique_ptr<sg::ogl::renderer::SkyboxRenderer>;
+    using SkyboxSharedPtr = std::shared_ptr<sg::ogl::resource::Skybox>;
+    using SkyboxRendererSharedPtr = std::shared_ptr<sg::ogl::scene::SkyboxRenderer>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -65,8 +65,8 @@ private:
     CameraSharedPtr m_camera2;
     SceneUniquePtr m_scene;
 
-    SkyboxUniquePtr m_skybox;
-    SkyboxRendererUniquePtr m_skyboxRenderer;
+    SkyboxSharedPtr m_skybox;
+    SkyboxRendererSharedPtr m_skyboxRenderer;
 
     //-------------------------------------------------
     // Init

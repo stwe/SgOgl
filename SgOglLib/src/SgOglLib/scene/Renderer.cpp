@@ -17,32 +17,8 @@ sg::ogl::scene::Renderer::Renderer(
     resource::ShaderManager& t_shaderManager,
     glm::mat4& t_projection
 )
-    : m_shaderManager{ t_shaderManager }
-    , m_projectionMatrix{ t_projection }
+    : BaseRenderer(t_shaderManager, t_projection)
 {
-}
-
-sg::ogl::scene::Renderer::~Renderer() noexcept
-{
-    // todo
-}
-
-//-------------------------------------------------
-// Getter
-//-------------------------------------------------
-
-sg::ogl::scene::Scene* sg::ogl::scene::Renderer::GetParentScene() const
-{
-    return m_parentScene;
-}
-
-//-------------------------------------------------
-// Setter
-//-------------------------------------------------
-
-void sg::ogl::scene::Renderer::SetParentScene(Scene* t_scene)
-{
-    m_parentScene = t_scene;
 }
 
 //-------------------------------------------------

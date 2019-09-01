@@ -10,6 +10,7 @@ namespace sg::ogl::resource
 {
     class Model;
     struct Material;
+    class Skybox;
 }
 
 namespace sg::ogl::camera
@@ -21,6 +22,7 @@ namespace sg::ogl::scene
 {
     class Node;
     class Renderer;
+    class SkyboxRenderer;
 
     class SG_OGL_API Scene
     {
@@ -29,6 +31,8 @@ namespace sg::ogl::scene
         using MaterialSharedPtr = std::shared_ptr<resource::Material>;
         using CameraSharedPtr = std::shared_ptr<camera::LookAtCamera>;
         using RendererSharedPtr = std::shared_ptr<Renderer>;
+        using SkyboxRendererSharedPtr = std::shared_ptr<SkyboxRenderer>;
+        using SkyboxSharedPtr = std::shared_ptr<resource::Skybox>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -36,7 +40,7 @@ namespace sg::ogl::scene
 
         Scene() = delete;
 
-        explicit Scene(const RendererSharedPtr& t_renderer);
+        Scene(const RendererSharedPtr& t_renderer, const SkyboxRendererSharedPtr& t_skyboxRenderer);
 
         Scene(const Scene& t_other) = delete;
         Scene(Scene&& t_other) noexcept = delete;
@@ -52,6 +56,9 @@ namespace sg::ogl::scene
         Renderer& GetRenderer() noexcept;
         const Renderer& GetRenderer() const noexcept;
 
+        SkyboxRenderer& GetSkyboxRenderer() noexcept;
+        const SkyboxRenderer& GetSkyboxRenderer() const noexcept;
+
         camera::LookAtCamera& GetCurrentCamera() noexcept;
         const camera::LookAtCamera& GetCurrentCamera() const noexcept;
 
@@ -62,6 +69,12 @@ namespace sg::ogl::scene
         //-------------------------------------------------
 
         void SetCurrentCamera(const CameraSharedPtr& t_camera);
+
+        //-------------------------------------------------
+        // Skybox
+        //-------------------------------------------------
+
+        void SetSkybox(const SkyboxSharedPtr& t_skybox);
 
         //-------------------------------------------------
         // Scene objects (Nodes)
@@ -81,7 +94,10 @@ namespace sg::ogl::scene
 
     private:
         RendererSharedPtr m_renderer;
+        SkyboxRendererSharedPtr m_skyboxRenderer;
+
         CameraSharedPtr m_currentCamera;
+        SkyboxSharedPtr m_skybox;
 
         Node* m_rootNode{ nullptr };
     };

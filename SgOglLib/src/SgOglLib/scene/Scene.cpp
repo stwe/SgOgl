@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "Node.h"
 #include "Renderer.h"
+#include "SkyboxRenderer.h"
+#include "resource/Skybox.h"
 #include "resource/Model.h"
 #include "resource/Mesh.h"
 #include "camera/LookAtCamera.h"
@@ -9,11 +11,20 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::scene::Scene::Scene(const RendererSharedPtr& t_renderer)
+sg::ogl::scene::Scene::Scene(
+    const RendererSharedPtr& t_renderer,
+    const SkyboxRendererSharedPtr& t_skyboxRenderer
+)
     : m_renderer{ t_renderer }
+    , m_skyboxRenderer{ t_skyboxRenderer }
 {
     // set this scene as parent for the renderer
+    SG_OGL_CORE_ASSERT(m_renderer, "[Scene::Scene()] Null pointer.")
     m_renderer->SetParentScene(this);
+
+    // set this scene as parent for the skybox renderer
+    SG_OGL_CORE_ASSERT(m_skyboxRenderer, "[Scene::Scene()] Null pointer.")
+    m_skyboxRenderer->SetParentScene(this);
 
     // create a camera with default values
     m_currentCamera = std::make_shared<camera::LookAtCamera>();
@@ -44,6 +55,16 @@ const sg::ogl::scene::Renderer& sg::ogl::scene::Scene::GetRenderer() const noexc
     return *m_renderer;
 }
 
+sg::ogl::scene::SkyboxRenderer& sg::ogl::scene::Scene::GetSkyboxRenderer() noexcept
+{
+    return *m_skyboxRenderer;
+}
+
+const sg::ogl::scene::SkyboxRenderer& sg::ogl::scene::Scene::GetSkyboxRenderer() const noexcept
+{
+    return *m_skyboxRenderer;
+}
+
 sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCurrentCamera() noexcept
 {
     return *m_currentCamera;
@@ -65,10 +86,25 @@ sg::ogl::scene::Node* sg::ogl::scene::Scene::GetRoot() const
 
 void sg::ogl::scene::Scene::SetCurrentCamera(const CameraSharedPtr& t_camera)
 {
+    // the Ctor. creates a default camera, so m_currentCamera should never be null
     SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::SetCurrentCamera()] Null pointer.")
     m_currentCamera.reset();
 
     m_currentCamera = t_camera;
+}
+
+//-------------------------------------------------
+// Skybox
+//-------------------------------------------------
+
+void sg::ogl::scene::Scene::SetSkybox(const SkyboxSharedPtr& t_skybox)
+{
+    if (m_skybox)
+    {
+        m_skybox.reset();
+    }
+
+    m_skybox = t_skybox;
 }
 
 //-------------------------------------------------
@@ -128,8 +164,19 @@ void sg::ogl::scene::Scene::Update()
 
 void sg::ogl::scene::Scene::Render()
 {
+    // render nodes
     for (auto* rootChildren : m_rootNode->GetChildren())
     {
         m_renderer->Render(*rootChildren);
+    }
+
+    // render skybox as last
+    if (m_skybox)
+    {
+        m_skyboxRenderer->Render(
+            m_skybox->GetCubemapId(),
+            *m_skybox->GetMesh(),
+            "skybox"
+        );
     }
 }

@@ -22,7 +22,6 @@
 #include "SgOglLib/math/Transform.h"
 
 // renderer
-#include "SgOglLib/renderer/SkyboxRenderer.h"
 #include "SgOglLib/renderer/TerrainRenderer.h"
 
 // resource
@@ -36,9 +35,11 @@
 #include "SgOglLib/resource/TextureManager.h"
 
 // scene
+#include "SgOglLib/scene/BaseRenderer.h"
 #include "SgOglLib/scene/Node.h"
 #include "SgOglLib/scene/Renderer.h"
 #include "SgOglLib/scene/Scene.h"
+#include "SgOglLib/scene/SkyboxRenderer.h"
 
 // state
 #include "SgOglLib/state/State.h"

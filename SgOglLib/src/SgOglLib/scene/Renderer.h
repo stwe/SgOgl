@@ -1,19 +1,12 @@
 #pragma once
 
-#include <glm/mat4x4.hpp>
-#include "Core.h"
-
-namespace sg::ogl::resource
-{
-    class ShaderManager;
-}
+#include "BaseRenderer.h"
 
 namespace sg::ogl::scene
 {
     class Node;
-    class Scene;
 
-    class SG_OGL_API Renderer
+    class SG_OGL_API Renderer : public BaseRenderer
     {
     public:
         //-------------------------------------------------
@@ -32,19 +25,7 @@ namespace sg::ogl::scene
         Renderer& operator=(const Renderer& t_other) = delete;
         Renderer& operator=(Renderer&& t_other) noexcept = delete;
 
-        ~Renderer() noexcept;
-
-        //-------------------------------------------------
-        // Getter
-        //-------------------------------------------------
-
-        Scene* GetParentScene() const;
-
-        //-------------------------------------------------
-        // Setter
-        //-------------------------------------------------
-
-        void SetParentScene(Scene* t_scene);
+        ~Renderer() noexcept override = default;
 
         //-------------------------------------------------
         // Render
@@ -55,9 +36,6 @@ namespace sg::ogl::scene
     protected:
 
     private:
-        resource::ShaderManager& m_shaderManager;
-        glm::mat4 m_projectionMatrix;
 
-        Scene* m_parentScene{ nullptr };
     };
 }

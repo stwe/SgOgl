@@ -73,15 +73,7 @@ bool GameState::Update(const double t_dt)
 
 void GameState::Render()
 {
-    // render scene
     m_scene->Render();
-
-    // render skybox as last
-    m_skyboxRenderer->Render(
-        m_skybox->GetCubemapId(),
-        *m_skybox->GetMesh(),
-        "skybox"
-    );
 }
 
 //-------------------------------------------------
@@ -123,6 +115,12 @@ void GameState::Init()
         m_projectionMatrix
         );
 
+    // create skybox renderer
+    m_skyboxRenderer = std::make_shared<sg::ogl::scene::SkyboxRenderer>(
+        *GetApplicationContext()->GetShaderManager(),
+        m_projectionMatrix
+        );
+
     // create a camera1
     m_camera1 = std::make_shared<sg::ogl::camera::LookAtCamera>();
     m_camera1->SetPosition(glm::vec3(0.0f, 0.0f, 6.0f));
@@ -131,9 +129,26 @@ void GameState::Init()
     m_camera2 = std::make_shared<sg::ogl::camera::LookAtCamera>();
     m_camera2->SetPosition(glm::vec3(0.0f, 0.0f, 100.0f));
 
-    // create scene and add camera1 as current
-    m_scene = std::make_unique<sg::ogl::scene::Scene>(m_renderer);
+    // create scene, pass the renderer and set camera1 as current
+    m_scene = std::make_unique<sg::ogl::scene::Scene>(m_renderer, m_skyboxRenderer);
     m_scene->SetCurrentCamera(m_camera1);
+
+    // skybox textures
+    const std::vector<std::string> textureFileNames
+    {
+        "res/texture/starfield/starfield_rt.jpg",
+        "res/texture/starfield/starfield_lf.jpg",
+        "res/texture/starfield/starfield_up.jpg",
+        "res/texture/starfield/starfield_dn.jpg",
+        "res/texture/starfield/starfield_bk.jpg",
+        "res/texture/starfield/starfield_ft.jpg"
+    };
+
+    // create a skybox
+    m_skybox = std::make_shared<sg::ogl::resource::Skybox>(*GetApplicationContext()->GetTextureManager(), textureFileNames);
+
+    // add the skybox to the scene
+    m_scene->SetSkybox(m_skybox);
 
     // create scene nodes
     m_sunNode = m_scene->CreateNode(m_sphereModel, m_sunMaterial);
@@ -160,25 +175,4 @@ void GameState::Init()
 
     // add the sun node to scene
     m_scene->AddNodeToRoot(m_sunNode);
-
-    // skybox textures
-    const std::vector<std::string> textureFileNames
-    {
-        "res/texture/starfield/starfield_rt.jpg",
-        "res/texture/starfield/starfield_lf.jpg",
-        "res/texture/starfield/starfield_up.jpg",
-        "res/texture/starfield/starfield_dn.jpg",
-        "res/texture/starfield/starfield_bk.jpg",
-        "res/texture/starfield/starfield_ft.jpg"
-    };
-
-    // create new skybox instance
-    m_skybox = std::make_unique<sg::ogl::resource::Skybox>(*GetApplicationContext()->GetTextureManager(), textureFileNames);
-
-    // create new skybox renderer instance
-    m_skyboxRenderer = std::make_unique<sg::ogl::renderer::SkyboxRenderer>(
-        *GetApplicationContext()->GetShaderManager(),
-        *m_scene,
-        m_projectionMatrix
-        );
 }
