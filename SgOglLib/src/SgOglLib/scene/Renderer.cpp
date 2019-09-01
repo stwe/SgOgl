@@ -1,16 +1,13 @@
 #include "Renderer.h"
-
-// todo
 #include "OpenGl.h"
+#include "Node.h"
+#include "Scene.h"
 #include "resource/ShaderManager.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
 #include "resource/Mesh.h"
 #include "resource/Material.h"
 #include "camera/LookAtCamera.h"
-#include "math/Transform.h"
-#include "Node.h"
-#include "Scene.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -18,11 +15,9 @@
 
 sg::ogl::scene::Renderer::Renderer(
     resource::ShaderManager& t_shaderManager,
-    resource::TextureManager& t_textureManager,
     glm::mat4& t_projection
 )
     : m_shaderManager{ t_shaderManager }
-    , m_textureManager{ t_textureManager }
     , m_projectionMatrix{ t_projection }
 {
 }
@@ -68,18 +63,15 @@ void sg::ogl::scene::Renderer::Render(Node& t_node) const
         // bind ShaderProgram
         shaderProgram->Bind();
 
-        // set transform
-        // t_transform.GetModelMatrix()
-
-        // todo
-        const auto mvp{ m_projectionMatrix * m_parentScene->GetCamera().GetViewMatrix() * t_node.GetWorldMatrix() };
+        // calc and set mvp
+        const auto mvp{ m_projectionMatrix * m_parentScene->GetCurrentCamera().GetViewMatrix() * t_node.GetWorldMatrix() };
         shaderProgram->SetUniform("transform", mvp);
 
         // set ambient intensity
         shaderProgram->SetUniform("ambientIntensity", glm::vec3(1.0f));
 
         // get Material
-        auto& material{ t_node.material };
+        const auto& material{ t_node.material };
 
         // set diffuse map
         shaderProgram->SetUniform("diffuseMap", 0);

@@ -8,12 +8,11 @@ namespace sg::ogl::resource
 {
     class Mesh;
     class ShaderManager;
-    class TextureManager;
 }
 
-namespace sg::ogl::camera
+namespace sg::ogl::scene
 {
-    class LookAtCamera;
+    class Scene;
 }
 
 namespace sg::ogl::renderer
@@ -29,8 +28,7 @@ namespace sg::ogl::renderer
 
         SkyboxRenderer(
             resource::ShaderManager& t_shaderManager,
-            resource::TextureManager& t_textureManager,
-            camera::LookAtCamera& t_camera,
+            scene::Scene& t_scene,
             glm::mat4& t_projection
         );
 
@@ -51,8 +49,7 @@ namespace sg::ogl::renderer
 
     private:
         resource::ShaderManager& m_shaderManager;
-        resource::TextureManager& m_textureManager;
-        camera::LookAtCamera& m_camera;
+        scene::Scene& m_scene;
         glm::mat4 m_projectionMatrix;
     };
 }

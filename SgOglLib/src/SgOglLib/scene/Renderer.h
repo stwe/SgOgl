@@ -6,7 +6,6 @@
 namespace sg::ogl::resource
 {
     class ShaderManager;
-    class TextureManager;
 }
 
 namespace sg::ogl::scene
@@ -25,7 +24,6 @@ namespace sg::ogl::scene
 
         Renderer(
             resource::ShaderManager& t_shaderManager,
-            resource::TextureManager& t_textureManager,
             glm::mat4& t_projection
         );
 
@@ -58,7 +56,6 @@ namespace sg::ogl::scene
 
     private:
         resource::ShaderManager& m_shaderManager;
-        resource::TextureManager& m_textureManager;
         glm::mat4 m_projectionMatrix;
 
         Scene* m_parentScene{ nullptr };

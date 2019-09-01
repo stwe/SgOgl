@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 #include "Core.h"
 #include "math/Transform.h"
 

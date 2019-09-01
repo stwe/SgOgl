@@ -8,13 +8,12 @@ public:
     using ModelSharedPtr = std::shared_ptr<sg::ogl::resource::Model>;
     using MaterialSharedPtr = std::shared_ptr<sg::ogl::resource::Material>;
 
-    using RendererUniquePtr = std::unique_ptr<sg::ogl::scene::Renderer>;
+    using RendererSharedPtr = std::shared_ptr<sg::ogl::scene::Renderer>;
+    using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
 
     using SkyboxUniquePtr = std::unique_ptr<sg::ogl::resource::Skybox>;
     using SkyboxRendererUniquePtr = std::unique_ptr<sg::ogl::renderer::SkyboxRenderer>;
-    using TerrainUniquePtr = std::unique_ptr<sg::ogl::terrain::Terrain>;
-    using TerrainRendererUniquePtr = std::unique_ptr<sg::ogl::renderer::TerrainRenderer>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -49,8 +48,9 @@ public:
 protected:
 
 private:
+    glm::mat4 m_projectionMatrix{ glm::mat4() };
+
     ModelSharedPtr m_sphereModel;
-    ModelSharedPtr m_nanoModel;
 
     MaterialSharedPtr m_moonMaterial;
     MaterialSharedPtr m_earthMaterial;
@@ -60,48 +60,17 @@ private:
     sg::ogl::scene::Node* m_earthNode{ nullptr };
     sg::ogl::scene::Node* m_moonNode{ nullptr };
 
-    sg::ogl::scene::Node* m_nano1Node{ nullptr };
-    sg::ogl::scene::Node* m_nano2Node{ nullptr };
-
-    RendererUniquePtr m_renderer;
+    RendererSharedPtr m_renderer;
+    CameraSharedPtr m_camera1;
+    CameraSharedPtr m_camera2;
     SceneUniquePtr m_scene;
 
-    /**
-     * @brief Our Skybox.
-     */
     SkyboxUniquePtr m_skybox;
-
-    /**
-     * @brief A renderer for the Skybox.
-     */
     SkyboxRendererUniquePtr m_skyboxRenderer;
-
-    /**
-     * @brief Our terrain.
-     */
-    TerrainUniquePtr m_terrain;
-
-    /**
-     * @brief A Renderer for the terrain.
-     */
-    TerrainRendererUniquePtr m_terrainRenderer;
-
-    /**
-     * @brief A camera to create and get a view matrix (Camera space).
-     */
-    sg::ogl::camera::LookAtCamera m_camera;
-
-    /**
-     * @brief The perspective projection matrix (Projection space).
-     */
-    glm::mat4 m_projectionMatrix{ glm::mat4() };
 
     //-------------------------------------------------
     // Init
     //-------------------------------------------------
 
-    /**
-     * @brief Performs all initializations.
-     */
     void Init();
 };

@@ -1,5 +1,6 @@
 #include "SkyboxRenderer.h"
 #include "OpenGl.h"
+#include "scene/Scene.h"
 #include "resource/ShaderManager.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
@@ -8,13 +9,11 @@
 
 sg::ogl::renderer::SkyboxRenderer::SkyboxRenderer(
     resource::ShaderManager& t_shaderManager,
-    resource::TextureManager& t_textureManager,
-    camera::LookAtCamera& t_camera,
+    scene::Scene& t_scene,
     glm::mat4& t_projection
 )
     : m_shaderManager{ t_shaderManager }
-    , m_textureManager{ t_textureManager }
-    , m_camera{ t_camera }
+    , m_scene{ t_scene }
     , m_projectionMatrix{ t_projection }
 {
 }
@@ -28,7 +27,7 @@ void sg::ogl::renderer::SkyboxRenderer::Render(const uint32_t t_textureId, resou
     shaderProgram->Bind();
 
     // remove translation from the view matrix;
-    const auto skyboxViewMatrix{ glm::mat4(glm::mat3(m_camera.GetViewMatrix())) };
+    const auto skyboxViewMatrix{ glm::mat4(glm::mat3(m_scene.GetCurrentCamera().GetViewMatrix())) };
 
     // set shader uniforms
     shaderProgram->SetUniform("projectionMatrix", m_projectionMatrix);

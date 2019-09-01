@@ -8,7 +8,7 @@ bool GameState::Input()
 {
     if (GetApplicationContext()->GetMouseInput()->IsRightButtonPressed())
     {
-        m_camera.ProcessMouse(GetApplicationContext()->GetMouseInput()->GetDisplVec());
+        m_scene->GetCurrentCamera().ProcessMouse(GetApplicationContext()->GetMouseInput()->GetDisplVec());
     }
 
     return true;
@@ -16,6 +16,17 @@ bool GameState::Input()
 
 bool GameState::Update(const double t_dt)
 {
+    // change current camera
+    if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_1))
+    {
+        m_scene->SetCurrentCamera(m_camera1);
+    }
+
+    if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_2))
+    {
+        m_scene->SetCurrentCamera(m_camera2);
+    }
+
     // update nodes local transform
     m_sunNode->GetLocalTransform().rotation += glm::vec3(0.0f, 0.25f, 0.0f);
     m_earthNode->GetLocalTransform().rotation += glm::vec3(0.0f, 0.25f, 0.0f);
@@ -24,37 +35,37 @@ bool GameState::Update(const double t_dt)
     // update scene - calc nodes world matrix
     m_scene->Update();
 
-    // update camera
-    const auto vel{ 16.0f };
+    // update current camera
+    const auto vel{ 8.0f };
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
     {
-        m_camera.ProcessKeyboard(sg::ogl::camera::FORWARD, t_dt * vel);
+        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::FORWARD, t_dt * vel);
     }
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_S))
     {
-        m_camera.ProcessKeyboard(sg::ogl::camera::BACKWARD, t_dt * vel);
+        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::BACKWARD, t_dt * vel);
     }
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_A))
     {
-        m_camera.ProcessKeyboard(sg::ogl::camera::LEFT, t_dt * vel);
+        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::LEFT, t_dt * vel);
     }
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_D))
     {
-        m_camera.ProcessKeyboard(sg::ogl::camera::RIGHT, t_dt * vel);
+        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::RIGHT, t_dt * vel);
     }
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_O))
     {
-        m_camera.ProcessKeyboard(sg::ogl::camera::UP, t_dt * vel);
+        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::UP, t_dt * vel);
     }
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_U))
     {
-        m_camera.ProcessKeyboard(sg::ogl::camera::DOWN, t_dt * vel);
+        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::DOWN, t_dt * vel);
     }
 
     return true;
@@ -62,9 +73,6 @@ bool GameState::Update(const double t_dt)
 
 void GameState::Render()
 {
-    //m_terrainRenderer->Render(*m_terrain, "terrain");
-    //m_terrainRenderer->RenderNormals(*m_terrain, "normal", 1.0f);
-
     // render scene
     m_scene->Render();
 
@@ -87,47 +95,45 @@ void GameState::Init()
 
     // load shader
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("skybox");
-    //GetApplicationContext()->GetShaderManager()->AddShaderProgram("terrain");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("model");
-    //GetApplicationContext()->GetShaderManager()->AddShaderProgram("normal", true);
-
-    // load compute shader
-    //GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("normalmap");
-    //GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("splatmap");
 
     // get projection matrix
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
 
-    // set the camera position
-    m_camera.SetPosition(glm::vec3(0.0f, 0.0f, 6.0f));
-
-    // load models
+    // load model
     m_sphereModel = GetApplicationContext()->GetModelManager()->GetModelFromPath("res/model/sphere/sphere.obj");
-    m_nanoModel = GetApplicationContext()->GetModelManager()->GetModelFromPath("res/model/nanosuit/nanosuit.obj");
-
-    // create renderer
-    m_renderer = std::make_unique<sg::ogl::scene::Renderer>(
-        *GetApplicationContext()->GetShaderManager(),
-        *GetApplicationContext()->GetTextureManager(),
-        m_projectionMatrix
-        );
-
-    // create scene
-    m_scene = std::make_unique<sg::ogl::scene::Scene>(*m_renderer, m_camera);
-
-    // load textures
-    const auto moonId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/moon.jpg") };
-    const auto earthId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/earth.jpg") };
-    const auto sunId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/sun.jpg") };
 
     // create materials
     m_moonMaterial = std::make_shared<sg::ogl::resource::Material>();
     m_earthMaterial = std::make_shared<sg::ogl::resource::Material>();
     m_sunMaterial = std::make_shared<sg::ogl::resource::Material>();
 
+    // load textures
+    const auto moonId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/moon.jpg") };
+    const auto earthId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/earth.jpg") };
+    const auto sunId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/sun.jpg") };
+
     m_moonMaterial->mapKd = moonId;
     m_earthMaterial->mapKd = earthId;
     m_sunMaterial->mapKd = sunId;
+
+    // create renderer
+    m_renderer = std::make_shared<sg::ogl::scene::Renderer>(
+        *GetApplicationContext()->GetShaderManager(),
+        m_projectionMatrix
+        );
+
+    // create a camera1
+    m_camera1 = std::make_shared<sg::ogl::camera::LookAtCamera>();
+    m_camera1->SetPosition(glm::vec3(0.0f, 0.0f, 6.0f));
+
+    // create a camera2
+    m_camera2 = std::make_shared<sg::ogl::camera::LookAtCamera>();
+    m_camera2->SetPosition(glm::vec3(0.0f, 0.0f, 100.0f));
+
+    // create scene and add camera1 as current
+    m_scene = std::make_unique<sg::ogl::scene::Scene>(m_renderer);
+    m_scene->SetCurrentCamera(m_camera1);
 
     // create scene nodes
     m_sunNode = m_scene->CreateNode(m_sphereModel, m_sunMaterial);
@@ -155,20 +161,6 @@ void GameState::Init()
     // add the sun node to scene
     m_scene->AddNodeToRoot(m_sunNode);
 
-    // add a Nanosuit with default material to the scene
-    m_nano1Node = m_scene->CreateNode(m_nanoModel);
-    m_nano1Node->GetLocalTransform().position = glm::vec3(30.0f, 0.0f, 0.0f);
-    m_nano1Node->GetLocalTransform().scale = glm::vec3(0.25f);
-    m_nano1Node->SetDebugName("Nano1");
-    m_scene->AddNodeToRoot(m_nano1Node);
-
-    // add an other Nanosuit to the scene
-    m_nano2Node = m_scene->CreateNode(m_nanoModel, m_moonMaterial);
-    m_nano2Node->GetLocalTransform().position = glm::vec3(60.0f, 0.0f, 0.0f);
-    m_nano2Node->GetLocalTransform().scale = glm::vec3(0.25f);
-    m_nano2Node->SetDebugName("Nano2");
-    m_scene->AddNodeToRoot(m_nano2Node);
-
     // skybox textures
     const std::vector<std::string> textureFileNames
     {
@@ -186,29 +178,7 @@ void GameState::Init()
     // create new skybox renderer instance
     m_skyboxRenderer = std::make_unique<sg::ogl::renderer::SkyboxRenderer>(
         *GetApplicationContext()->GetShaderManager(),
-        *GetApplicationContext()->GetTextureManager(),
-        m_camera,
+        *m_scene,
         m_projectionMatrix
         );
-
-    // create new terrain renderer instance
-    /*
-    m_terrainRenderer = std::make_unique<sg::ogl::renderer::TerrainRenderer>(
-        *GetApplicationContext()->GetShaderManager(),
-        *GetApplicationContext()->GetTextureManager(),
-        m_camera,
-        m_projectionMatrix
-        );
-    */
-
-    // create new terrain instance
-    /*
-    m_terrain = std::make_unique<sg::ogl::terrain::Terrain>(
-        *GetApplicationContext()->GetTextureManager(),
-        *GetApplicationContext()->GetShaderManager(),
-        "res/config/Terrain.xml");
-    */
-
-    // generate terrain
-    //m_terrain->GenerateTerrain();
 }

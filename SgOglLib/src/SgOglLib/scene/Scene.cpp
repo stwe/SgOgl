@@ -1,20 +1,25 @@
 #include "Scene.h"
-#include "resource/Model.h"
-#include "resource/Mesh.h"
 #include "Node.h"
 #include "Renderer.h"
+#include "resource/Model.h"
+#include "resource/Mesh.h"
 #include "camera/LookAtCamera.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::scene::Scene::Scene(Renderer& t_renderer, camera::LookAtCamera& t_camera)
+sg::ogl::scene::Scene::Scene(const RendererSharedPtr& t_renderer)
     : m_renderer{ t_renderer }
-    , m_camera{ t_camera }
 {
-    m_renderer.SetParentScene(this);
+    // set this scene as parent for the renderer
+    m_renderer->SetParentScene(this);
 
+    // create a camera with default values
+    m_currentCamera = std::make_shared<camera::LookAtCamera>();
+    SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::Scene()] Null pointer.")
+
+    // create the root node
     m_rootNode = new Node;
     SG_OGL_CORE_ASSERT(m_rootNode, "[Scene::Scene()] Null pointer.")
     m_rootNode->SetDebugName("root");
@@ -22,7 +27,7 @@ sg::ogl::scene::Scene::Scene(Renderer& t_renderer, camera::LookAtCamera& t_camer
 
 sg::ogl::scene::Scene::~Scene() noexcept
 {
-    delete m_rootNode; // todo
+    delete m_rootNode;
 }
 
 //-------------------------------------------------
@@ -31,27 +36,39 @@ sg::ogl::scene::Scene::~Scene() noexcept
 
 sg::ogl::scene::Renderer& sg::ogl::scene::Scene::GetRenderer() noexcept
 {
-    return m_renderer;
+    return *m_renderer;
 }
 
 const sg::ogl::scene::Renderer& sg::ogl::scene::Scene::GetRenderer() const noexcept
 {
-    return m_renderer;
+    return *m_renderer;
 }
 
-sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCamera() noexcept
+sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCurrentCamera() noexcept
 {
-    return m_camera;
+    return *m_currentCamera;
 }
 
-const sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCamera() const noexcept
+const sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCurrentCamera() const noexcept
 {
-    return m_camera;
+    return *m_currentCamera;
 }
 
 sg::ogl::scene::Node* sg::ogl::scene::Scene::GetRoot() const
 {
     return m_rootNode;
+}
+
+//-------------------------------------------------
+// Camera
+//-------------------------------------------------
+
+void sg::ogl::scene::Scene::SetCurrentCamera(const CameraSharedPtr& t_camera)
+{
+    SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::SetCurrentCamera()] Null pointer.")
+    m_currentCamera.reset();
+
+    m_currentCamera = t_camera;
 }
 
 //-------------------------------------------------
@@ -113,6 +130,6 @@ void sg::ogl::scene::Scene::Render()
 {
     for (auto* rootChildren : m_rootNode->GetChildren())
     {
-        m_renderer.Render(*rootChildren);
+        m_renderer->Render(*rootChildren);
     }
 }

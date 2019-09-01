@@ -3,6 +3,9 @@
 #include <memory>
 #include "Core.h"
 
+// Should we pass a shared_ptr by reference or by value?
+// https://stackoverflow.com/questions/3310737/should-we-pass-a-shared-ptr-by-reference-or-by-value/8741626
+
 namespace sg::ogl::resource
 {
     class Model;
@@ -24,6 +27,8 @@ namespace sg::ogl::scene
     public:
         using ModelSharedPtr = std::shared_ptr<resource::Model>;
         using MaterialSharedPtr = std::shared_ptr<resource::Material>;
+        using CameraSharedPtr = std::shared_ptr<camera::LookAtCamera>;
+        using RendererSharedPtr = std::shared_ptr<Renderer>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -31,7 +36,7 @@ namespace sg::ogl::scene
 
         Scene() = delete;
 
-        Scene(Renderer& t_renderer, camera::LookAtCamera& t_camera);
+        explicit Scene(const RendererSharedPtr& t_renderer);
 
         Scene(const Scene& t_other) = delete;
         Scene(Scene&& t_other) noexcept = delete;
@@ -47,20 +52,22 @@ namespace sg::ogl::scene
         Renderer& GetRenderer() noexcept;
         const Renderer& GetRenderer() const noexcept;
 
-        camera::LookAtCamera& GetCamera() noexcept;
-        const camera::LookAtCamera& GetCamera() const noexcept;
+        camera::LookAtCamera& GetCurrentCamera() noexcept;
+        const camera::LookAtCamera& GetCurrentCamera() const noexcept;
 
         Node* GetRoot() const;
+
+        //-------------------------------------------------
+        // Camera
+        //-------------------------------------------------
+
+        void SetCurrentCamera(const CameraSharedPtr& t_camera);
 
         //-------------------------------------------------
         // Scene objects (Nodes)
         //-------------------------------------------------
 
-        // Should we pass a shared_ptr by reference or by value?
-        // https://stackoverflow.com/questions/3310737/should-we-pass-a-shared-ptr-by-reference-or-by-value/8741626
-
         static Node* CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material = nullptr);
-
         void AddNodeToRoot(Node* t_node) const;
 
         //-------------------------------------------------
@@ -73,8 +80,8 @@ namespace sg::ogl::scene
     protected:
 
     private:
-        Renderer& m_renderer;
-        camera::LookAtCamera& m_camera;
+        RendererSharedPtr m_renderer;
+        CameraSharedPtr m_currentCamera;
 
         Node* m_rootNode{ nullptr };
     };

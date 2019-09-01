@@ -2,6 +2,14 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/499a4726db5844449126e0101ac1074f)](https://app.codacy.com/app/stwe/SgOgl?utm_source=github.com&utm_medium=referral&utm_content=stwe/SgOgl&utm_campaign=Badge_Grade_Dashboard)
 
+***
+
+1. [What is does](#what-is-does)
+2. [Installing](#installing)
+3. [Using](#using)
+
+***
+
 ## What it does
 
 Open Source, multi-platform GameEngine library for OpenGL.
@@ -241,8 +249,7 @@ The config file can look like this.
 </init>
 ```
 
-
-### 2. A simple sonar system
+### 2. Example: Making a simple solar system
 
 
 
