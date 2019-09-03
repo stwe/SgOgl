@@ -68,6 +68,8 @@ private:
     SkyboxSharedPtr m_skybox;
     SkyboxRendererSharedPtr m_skyboxRenderer;
 
+    bool m_stopRotation{ false };
+
     //-------------------------------------------------
     // Init
     //-------------------------------------------------

@@ -4,6 +4,9 @@
 #include "SgOglException.h"
 #include "OpenGl.h"
 #include "ShaderUtil.h"
+#include "Material.h"
+#include "light/DirectionalLight.h"
+#include "light/PointLight.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -171,14 +174,39 @@ void sg::ogl::resource::ShaderProgram::AddUniform(const std::string& t_uniformNa
     m_uniforms.emplace(t_uniformName, uniformId);
 }
 
+void sg::ogl::resource::ShaderProgram::AddDirectionalLightUniform(const std::string& t_uniformName)
+{
+    AddUniform(t_uniformName + ".direction");
+    AddUniform(t_uniformName + ".diffuseIntensity");
+    AddUniform(t_uniformName + ".specularIntensity");
+}
+
+void sg::ogl::resource::ShaderProgram::AddPointLightUniform(const std::string& t_uniformName)
+{
+    AddUniform(t_uniformName + ".position");
+    AddUniform(t_uniformName + ".ambientIntensity");
+    AddUniform(t_uniformName + ".diffuseIntensity");
+    AddUniform(t_uniformName + ".specularIntensity");
+    AddUniform(t_uniformName + ".constant");
+    AddUniform(t_uniformName + ".linear");
+    AddUniform(t_uniformName + ".quadratic");
+}
+
+void sg::ogl::resource::ShaderProgram::AddMaterialUniform(const std::string& t_uniformName)
+{
+    AddUniform(t_uniformName + ".diffuseColor");
+    AddUniform(t_uniformName + ".specularColor");
+    AddUniform(t_uniformName + ".shininess");
+    AddUniform(t_uniformName + ".hasDiffuseMap");
+    AddUniform(t_uniformName + ".hasSpecularMap");
+}
+
 void sg::ogl::resource::ShaderProgram::AddAllFoundUniforms()
 {
     for (const auto& uniform : m_foundUniforms)
     {
         if (uniform.isStruct)
         {
-            // todo
-            /*
             if (uniform.type == "DirectionalLight")
             {
                 AddDirectionalLightUniform(uniform.name);
@@ -193,12 +221,6 @@ void sg::ogl::resource::ShaderProgram::AddAllFoundUniforms()
             {
                 AddMaterialUniform(uniform.name);
             }
-
-            if (uniform.type == "TerrainMaterial")
-            {
-                AddTerrainMaterialUniform(uniform.name);
-            }
-            */
         }
         else
         {
@@ -267,6 +289,33 @@ void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformNa
 void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const glm::mat3& t_value)
 {
     glUniformMatrix3fv(GetUniformLocation(t_uniformName), 1, GL_FALSE, value_ptr(t_value));
+}
+
+void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const light::DirectionalLight& t_directionalLight)
+{
+    SetUniform(t_uniformName + ".direction", t_directionalLight.direction);
+    SetUniform(t_uniformName + ".diffuseIntensity", t_directionalLight.diffuseIntensity);
+    SetUniform(t_uniformName + ".specularIntensity", t_directionalLight.specularIntensity);
+}
+
+void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const light::PointLight& t_pointLight)
+{
+    SetUniform(t_uniformName + ".position", t_pointLight.position);
+    SetUniform(t_uniformName + ".ambientIntensity", t_pointLight.ambientIntensity);
+    SetUniform(t_uniformName + ".diffuseIntensity", t_pointLight.diffuseIntensity);
+    SetUniform(t_uniformName + ".specularIntensity", t_pointLight.specularIntensity);
+    SetUniform(t_uniformName + ".constant", t_pointLight.constant);
+    SetUniform(t_uniformName + ".linear", t_pointLight.linear);
+    SetUniform(t_uniformName + ".quadratic", t_pointLight.quadratic);
+}
+
+void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const Material& t_material)
+{
+    SetUniform(t_uniformName + ".diffuseColor", t_material.kd);
+    SetUniform(t_uniformName + ".specularColor", t_material.ks);
+    SetUniform(t_uniformName + ".shininess", t_material.ns);
+    SetUniform(t_uniformName + ".hasDiffuseMap", t_material.HasDiffuseMap());
+    SetUniform(t_uniformName + ".hasSpecularMap", t_material.HasSpecularMap());
 }
 
 //-------------------------------------------------

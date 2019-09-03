@@ -6,8 +6,16 @@
 #include <glm/glm.hpp>
 #include "Core.h"
 
+namespace sg::ogl::light
+{
+    struct DirectionalLight;
+    struct PointLight;
+}
+
 namespace sg::ogl::resource
 {
+    struct Material;
+
     class SG_OGL_API ShaderProgram
     {
     public:
@@ -52,6 +60,9 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         void AddUniform(const std::string& t_uniformName);
+        void AddDirectionalLightUniform(const std::string& t_uniformName);
+        void AddPointLightUniform(const std::string& t_uniformName);
+        void AddMaterialUniform(const std::string& t_uniformName);
         void AddAllFoundUniforms();
 
         //-------------------------------------------------
@@ -73,6 +84,9 @@ namespace sg::ogl::resource
         void SetUniform(const std::string& t_uniformName, const glm::vec4& t_value);
         void SetUniform(const std::string& t_uniformName, const glm::mat4& t_value);
         void SetUniform(const std::string& t_uniformName, const glm::mat3& t_value);
+        void SetUniform(const std::string& t_uniformName, const light::DirectionalLight& t_directionalLight);
+        void SetUniform(const std::string& t_uniformName, const light::PointLight& t_pointLight);
+        void SetUniform(const std::string& t_uniformName, const Material& t_material);
 
     protected:
 

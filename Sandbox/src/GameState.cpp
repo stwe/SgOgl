@@ -27,10 +27,18 @@ bool GameState::Update(const double t_dt)
         m_scene->SetCurrentCamera(m_camera2);
     }
 
-    // update nodes local transform
-    m_sunNode->GetLocalTransform().rotation += glm::vec3(0.0f, 0.25f, 0.0f);
-    m_earthNode->GetLocalTransform().rotation += glm::vec3(0.0f, 0.25f, 0.0f);
-    m_moonNode->GetLocalTransform().rotation += glm::vec3(0.0f, 0.25f, 0.0f);
+    if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_R))
+    {
+        m_stopRotation = !m_stopRotation;
+    }
+
+    if (!m_stopRotation)
+    {
+        // update nodes local transform
+        m_sunNode->GetLocalTransform().rotation += glm::vec3(0.0f, 0.0315f, 0.0f);
+        m_earthNode->GetLocalTransform().rotation += glm::vec3(0.0f, 0.125f, 0.0f);
+        m_moonNode->GetLocalTransform().rotation += glm::vec3(0.0f, 0.125f, 0.0f);
+    }
 
     // update scene - calc nodes world matrix
     m_scene->Update();
@@ -87,13 +95,13 @@ void GameState::Init()
 
     // load shader
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("skybox");
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram("model");
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram("light");
 
     // get projection matrix
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
 
     // load model
-    m_sphereModel = GetApplicationContext()->GetModelManager()->GetModelFromPath("res/model/sphere/sphere.obj");
+    m_sphereModel = GetApplicationContext()->GetModelManager()->GetModelFromPath("res/model/sphere/sphere2.obj");
 
     // create materials
     m_moonMaterial = std::make_shared<sg::ogl::resource::Material>();
@@ -108,6 +116,7 @@ void GameState::Init()
     m_moonMaterial->mapKd = moonId;
     m_earthMaterial->mapKd = earthId;
     m_sunMaterial->mapKd = sunId;
+    m_sunMaterial->newmtl = "sunMaterial";
 
     // create renderer
     m_renderer = std::make_shared<sg::ogl::scene::Renderer>(
@@ -121,13 +130,9 @@ void GameState::Init()
         m_projectionMatrix
         );
 
-    // create a camera1
+    // create camera1
     m_camera1 = std::make_shared<sg::ogl::camera::LookAtCamera>();
     m_camera1->SetPosition(glm::vec3(0.0f, 0.0f, 6.0f));
-
-    // create a camera2
-    m_camera2 = std::make_shared<sg::ogl::camera::LookAtCamera>();
-    m_camera2->SetPosition(glm::vec3(0.0f, 0.0f, 100.0f));
 
     // create scene, pass the renderer and set camera1 as current
     m_scene = std::make_unique<sg::ogl::scene::Scene>(m_renderer, m_skyboxRenderer);
@@ -175,4 +180,8 @@ void GameState::Init()
 
     // add the sun node to scene
     m_scene->AddNodeToRoot(m_sunNode);
+
+    // create 2nd camera
+    m_camera2 = std::make_shared<sg::ogl::camera::LookAtCamera>();
+    m_camera2->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
 }

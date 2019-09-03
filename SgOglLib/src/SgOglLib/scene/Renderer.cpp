@@ -8,6 +8,7 @@
 #include "resource/Mesh.h"
 #include "resource/Material.h"
 #include "camera/LookAtCamera.h"
+#include "light/PointLight.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -31,27 +32,47 @@ void sg::ogl::scene::Renderer::Render(Node& t_node) const
 
     if (t_node.mesh && t_node.material)
     {
-        // todo transparency
+        // todo verschiedene Shader
 
         // get ShaderProgram
-        auto& shaderProgram{ m_shaderManager.GetShaderProgram("model") };
+        auto& shaderProgram{ m_shaderManager.GetShaderProgram("light") };
 
         // bind ShaderProgram
         shaderProgram->Bind();
 
-        // calc and set mvp
-        const auto mvp{ m_projectionMatrix * m_parentScene->GetCurrentCamera().GetViewMatrix() * t_node.GetWorldMatrix() };
-        shaderProgram->SetUniform("transform", mvp);
+        // set model
+        shaderProgram->SetUniform("model", t_node.GetWorldMatrix());
 
-        // set ambient intensity
-        shaderProgram->SetUniform("ambientIntensity", glm::vec3(1.0f));
+        // set view
+        shaderProgram->SetUniform("view", m_parentScene->GetCurrentCamera().GetViewMatrix());
+
+        // set projection
+        shaderProgram->SetUniform("projection", m_projectionMatrix);
+
+        // set view position
+        shaderProgram->SetUniform("viewPos", m_parentScene->GetCurrentCamera().GetPosition());
 
         // get Material
-        const auto& material{ t_node.material };
+        auto& material{ *t_node.material };
+
+        material.ns = 32.0;
 
         // set diffuse map
         shaderProgram->SetUniform("diffuseMap", 0);
-        resource::TextureManager::BindForReading(material->mapKd, GL_TEXTURE0);
+        resource::TextureManager::BindForReading(material.mapKd, GL_TEXTURE0);
+
+        // set material
+        shaderProgram->SetUniform("material", material);
+
+        // set point light
+        light::PointLight light;
+        light.position = glm::vec3(0.0f);
+        light.ambientIntensity = material.newmtl == "sunMaterial" ? glm::vec3(0.9f) : glm::vec3(0.1f);
+        light.diffuseIntensity = glm::vec3(1.0f);
+        light.specularIntensity = glm::vec3(1.0f);
+        light.linear = 0.0014f;
+        light.quadratic = 0.000007f;
+        shaderProgram->SetUniform("pointLight", light);
 
         // render Mesh
         t_node.mesh->InitDraw();
