@@ -8,7 +8,6 @@
 #include "resource/Mesh.h"
 #include "resource/Material.h"
 #include "camera/LookAtCamera.h"
-#include "light/PointLight.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -32,54 +31,77 @@ void sg::ogl::scene::Renderer::Render(Node& t_node) const
 
     if (t_node.mesh && t_node.material)
     {
-        // todo verschiedene Shader
+        if (m_parentScene->IsPointLight() && t_node.material->newmtl != "sunMaterial")
+        {
+            // get shader
+            auto& shaderProgram{ m_shaderManager.GetShaderProgram("light") };
 
-        // get ShaderProgram
-        auto& shaderProgram{ m_shaderManager.GetShaderProgram("light") };
+            // bind shader
+            shaderProgram->Bind();
 
-        // bind ShaderProgram
-        shaderProgram->Bind();
+            // set model matrix
+            shaderProgram->SetUniform("model", t_node.GetWorldMatrix());
 
-        // set model
-        shaderProgram->SetUniform("model", t_node.GetWorldMatrix());
+            // set view matrix
+            shaderProgram->SetUniform("view", m_parentScene->GetCurrentCamera().GetViewMatrix());
 
-        // set view
-        shaderProgram->SetUniform("view", m_parentScene->GetCurrentCamera().GetViewMatrix());
+            // set projection matrix
+            shaderProgram->SetUniform("projection", m_projectionMatrix);
 
-        // set projection
-        shaderProgram->SetUniform("projection", m_projectionMatrix);
+            // set view (camera) position
+            shaderProgram->SetUniform("viewPos", m_parentScene->GetCurrentCamera().GetPosition());
 
-        // set view position
-        shaderProgram->SetUniform("viewPos", m_parentScene->GetCurrentCamera().GetPosition());
+            // get material
+            auto& material{ *t_node.material };
 
-        // get Material
-        auto& material{ *t_node.material };
+            // set and bind diffuse map
+            shaderProgram->SetUniform("diffuseMap", 0);
+            resource::TextureManager::BindForReading(material.mapKd, GL_TEXTURE0);
 
-        material.ns = 32.0;
+            // set material
+            shaderProgram->SetUniform("material", material);
 
-        // set diffuse map
-        shaderProgram->SetUniform("diffuseMap", 0);
-        resource::TextureManager::BindForReading(material.mapKd, GL_TEXTURE0);
+            // set point light
+            shaderProgram->SetUniform("pointLight", m_parentScene->GetPointLight());
 
-        // set material
-        shaderProgram->SetUniform("material", material);
+            // render Mesh
+            t_node.mesh->InitDraw();
+            t_node.mesh->DrawPrimitives();
+            t_node.mesh->EndDraw();
 
-        // set point light
-        light::PointLight light;
-        light.position = glm::vec3(0.0f);
-        light.ambientIntensity = material.newmtl == "sunMaterial" ? glm::vec3(0.9f) : glm::vec3(0.1f);
-        light.diffuseIntensity = glm::vec3(1.0f);
-        light.specularIntensity = glm::vec3(1.0f);
-        light.linear = 0.0014f;
-        light.quadratic = 0.000007f;
-        shaderProgram->SetUniform("pointLight", light);
+            // unbind shader
+            shaderProgram->Unbind();
+        }
+        else
+        {
+            // get shader
+            auto& shaderProgram{ m_shaderManager.GetShaderProgram("model") };
 
-        // render Mesh
-        t_node.mesh->InitDraw();
-        t_node.mesh->DrawPrimitives();
-        t_node.mesh->EndDraw();
+            // bind shader
+            shaderProgram->Bind();
 
-        shaderProgram->Unbind();
+            // calc mvp matrix
+            const auto mvp{ m_projectionMatrix * m_parentScene->GetCurrentCamera().GetViewMatrix() * t_node.GetWorldMatrix() };
+            shaderProgram->SetUniform("transform", mvp);
+
+            // set ambient intensity
+            shaderProgram->SetUniform("ambientIntensity", glm::vec3(0.9f));
+
+            // get material
+            auto& material{ t_node.material };
+
+            // set and bind diffuse map
+            shaderProgram->SetUniform("diffuseMap", 0);
+            resource::TextureManager::BindForReading(material->mapKd, GL_TEXTURE0);
+
+            // render mesh
+            t_node.mesh->InitDraw();
+            t_node.mesh->DrawPrimitives();
+            t_node.mesh->EndDraw();
+
+            // unbind shader
+            shaderProgram->Unbind();
+        }
     }
 
     for (auto* child : t_node.GetChildren())

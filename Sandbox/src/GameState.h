@@ -15,6 +15,8 @@ public:
     using SkyboxSharedPtr = std::shared_ptr<sg::ogl::resource::Skybox>;
     using SkyboxRendererSharedPtr = std::shared_ptr<sg::ogl::scene::SkyboxRenderer>;
 
+    using PointLightSharedPtr = std::shared_ptr<sg::ogl::light::PointLight>;
+
     //-------------------------------------------------
     // Ctors. / Dtor.
     //-------------------------------------------------
@@ -67,6 +69,8 @@ private:
 
     SkyboxSharedPtr m_skybox;
     SkyboxRendererSharedPtr m_skyboxRenderer;
+
+    PointLightSharedPtr m_pointLight;
 
     bool m_stopRotation{ false };
 

@@ -75,13 +75,43 @@ const sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCurrentCamera() c
     return *m_currentCamera;
 }
 
+sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetDirectionalLight() noexcept
+{
+    return *m_directionalLight;
+}
+
+const sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetDirectionalLight() const noexcept
+{
+    return *m_directionalLight;
+}
+
+sg::ogl::light::PointLight& sg::ogl::scene::Scene::GetPointLight() noexcept
+{
+    return *m_pointLight;
+}
+
+const sg::ogl::light::PointLight& sg::ogl::scene::Scene::GetPointLight() const noexcept
+{
+    return *m_pointLight;
+}
+
+bool sg::ogl::scene::Scene::IsDirectionalLight() const
+{
+    return m_directionalLight != nullptr;
+}
+
+bool sg::ogl::scene::Scene::IsPointLight() const
+{
+    return m_pointLight != nullptr;
+}
+
 sg::ogl::scene::Node* sg::ogl::scene::Scene::GetRoot() const
 {
     return m_rootNode;
 }
 
 //-------------------------------------------------
-// Camera
+// Setter
 //-------------------------------------------------
 
 void sg::ogl::scene::Scene::SetCurrentCamera(const CameraSharedPtr& t_camera)
@@ -93,10 +123,6 @@ void sg::ogl::scene::Scene::SetCurrentCamera(const CameraSharedPtr& t_camera)
     m_currentCamera = t_camera;
 }
 
-//-------------------------------------------------
-// Skybox
-//-------------------------------------------------
-
 void sg::ogl::scene::Scene::SetSkybox(const SkyboxSharedPtr& t_skybox)
 {
     if (m_skybox)
@@ -105,6 +131,26 @@ void sg::ogl::scene::Scene::SetSkybox(const SkyboxSharedPtr& t_skybox)
     }
 
     m_skybox = t_skybox;
+}
+
+void sg::ogl::scene::Scene::SetDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight)
+{
+    if (m_directionalLight)
+    {
+        m_directionalLight.reset();
+    }
+
+    m_directionalLight = t_directionalLight;
+}
+
+void sg::ogl::scene::Scene::SetPointLight(const PointLightSharedPtr& t_pointLight)
+{
+    if (m_pointLight)
+    {
+        m_pointLight.reset();
+    }
+
+    m_pointLight = t_pointLight;
 }
 
 //-------------------------------------------------
@@ -170,7 +216,7 @@ void sg::ogl::scene::Scene::Render()
         m_renderer->Render(*rootChildren);
     }
 
-    // render skybox as last
+    // if a skybox exists, it will be rendered
     if (m_skybox)
     {
         m_skyboxRenderer->Render(

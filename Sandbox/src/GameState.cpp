@@ -44,7 +44,7 @@ bool GameState::Update(const double t_dt)
     m_scene->Update();
 
     // update current camera
-    const auto vel{ 8.0f };
+    const auto vel{ 12.0f };
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
     {
@@ -96,6 +96,7 @@ void GameState::Init()
     // load shader
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("skybox");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("light");
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram("model");
 
     // get projection matrix
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
@@ -114,9 +115,14 @@ void GameState::Init()
     const auto sunId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/sun.jpg") };
 
     m_moonMaterial->mapKd = moonId;
+    m_moonMaterial->ns = 32.0f;
+
     m_earthMaterial->mapKd = earthId;
+    m_earthMaterial->ns = 32.0f;
+
     m_sunMaterial->mapKd = sunId;
     m_sunMaterial->newmtl = "sunMaterial";
+    m_sunMaterial->ns = 32.0f;
 
     // create renderer
     m_renderer = std::make_shared<sg::ogl::scene::Renderer>(
@@ -134,9 +140,23 @@ void GameState::Init()
     m_camera1 = std::make_shared<sg::ogl::camera::LookAtCamera>();
     m_camera1->SetPosition(glm::vec3(0.0f, 0.0f, 6.0f));
 
-    // create scene, pass the renderer and set camera1 as current
+    // create a point light
+    m_pointLight = std::make_shared<sg::ogl::light::PointLight>();
+    m_pointLight->position = glm::vec3(0.0f);
+    m_pointLight->ambientIntensity = glm::vec3(0.1f);
+    m_pointLight->diffuseIntensity = glm::vec3(1.0f);
+    m_pointLight->specularIntensity = glm::vec3(1.0f);
+    m_pointLight->linear = 0.0014f;
+    m_pointLight->quadratic = 0.000007f;
+
+    // create scene, pass the renderer
     m_scene = std::make_unique<sg::ogl::scene::Scene>(m_renderer, m_skyboxRenderer);
+
+    // set camera1 as current
     m_scene->SetCurrentCamera(m_camera1);
+
+    // set point light
+    m_scene->SetPointLight(m_pointLight);
 
     // skybox textures
     const std::vector<std::string> textureFileNames

@@ -18,6 +18,10 @@
 // input
 #include "SgOglLib/input/MouseInput.h"
 
+// light
+#include "SgOglLib/light/DirectionalLight.h"
+#include "SgOglLib/light/PointLight.h"
+
 // math
 #include "SgOglLib/math/Transform.h"
 

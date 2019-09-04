@@ -6,6 +6,12 @@
 // Should we pass a shared_ptr by reference or by value?
 // https://stackoverflow.com/questions/3310737/should-we-pass-a-shared-ptr-by-reference-or-by-value/8741626
 
+namespace sg::ogl::light
+{
+    struct DirectionalLight;
+    struct PointLight;
+}
+
 namespace sg::ogl::resource
 {
     class Model;
@@ -33,6 +39,8 @@ namespace sg::ogl::scene
         using RendererSharedPtr = std::shared_ptr<Renderer>;
         using SkyboxRendererSharedPtr = std::shared_ptr<SkyboxRenderer>;
         using SkyboxSharedPtr = std::shared_ptr<resource::Skybox>;
+        using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
+        using PointLightSharedPtr = std::shared_ptr<light::PointLight>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -62,19 +70,25 @@ namespace sg::ogl::scene
         camera::LookAtCamera& GetCurrentCamera() noexcept;
         const camera::LookAtCamera& GetCurrentCamera() const noexcept;
 
+        light::DirectionalLight& GetDirectionalLight() noexcept;
+        const light::DirectionalLight& GetDirectionalLight() const noexcept;
+
+        light::PointLight& GetPointLight() noexcept;
+        const light::PointLight& GetPointLight() const noexcept;
+
+        bool IsDirectionalLight() const;
+        bool IsPointLight() const;
+
         Node* GetRoot() const;
 
         //-------------------------------------------------
-        // Camera
+        // Setter
         //-------------------------------------------------
 
         void SetCurrentCamera(const CameraSharedPtr& t_camera);
-
-        //-------------------------------------------------
-        // Skybox
-        //-------------------------------------------------
-
         void SetSkybox(const SkyboxSharedPtr& t_skybox);
+        void SetDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
+        void SetPointLight(const PointLightSharedPtr& t_pointLight);
 
         //-------------------------------------------------
         // Scene objects (Nodes)
@@ -98,6 +112,9 @@ namespace sg::ogl::scene
 
         CameraSharedPtr m_currentCamera;
         SkyboxSharedPtr m_skybox;
+
+        DirectionalLightSharedPtr m_directionalLight;
+        PointLightSharedPtr m_pointLight;
 
         Node* m_rootNode{ nullptr };
     };
