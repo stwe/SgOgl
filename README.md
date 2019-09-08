@@ -254,7 +254,9 @@ The config file can look like this.
 #### The complete source code
 
 [Sandbox.cpp](https://github.com/stwe/SgOgl/blob/bc724e30922e6b13814546808cbddacdb48abde5/Sandbox/src/Sandbox.cpp)
+
 [GameState.h](https://github.com/stwe/SgOgl/blob/bc724e30922e6b13814546808cbddacdb48abde5/Sandbox/src/GameState.h)
+
 [GameState.cpp](https://github.com/stwe/SgOgl/blob/bc724e30922e6b13814546808cbddacdb48abde5/Sandbox/src/Sandbox.cpp)
 
 #### The scene graph
