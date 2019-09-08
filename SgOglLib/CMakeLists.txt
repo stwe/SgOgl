@@ -30,7 +30,6 @@ set(LIB_INPUT_SRC_FILES
 
 set(LIB_RENDERER_SRC_FILES
     src/SgOglLib/renderer/NormalmapRenderer.cpp
-    src/SgOglLib/renderer/SkyboxRenderer.cpp
     src/SgOglLib/renderer/SplatmapRenderer.cpp
     src/SgOglLib/renderer/TerrainRenderer.cpp
 )
@@ -48,9 +47,11 @@ set(LIB_RES_SRC_FILES
 )
 
 set(LIB_SCENE_SRC_FILES
+    src/SgOglLib/scene/BaseRenderer.cpp
     src/SgOglLib/scene/Node.cpp
     src/SgOglLib/scene/Renderer.cpp
     src/SgOglLib/scene/Scene.cpp
+    src/SgOglLib/scene/SkyboxRenderer.cpp
 )
 
 set(LIB_STATE_SRC_FILES
