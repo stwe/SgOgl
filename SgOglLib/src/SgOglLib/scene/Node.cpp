@@ -26,9 +26,14 @@ sg::ogl::scene::Node::~Node() noexcept
 // Getter
 //-------------------------------------------------
 
-std::string sg::ogl::scene::Node::GetUuid() const
+const std::string& sg::ogl::scene::Node::GetUuid() const noexcept
 {
     return m_uuid;
+}
+
+const std::string& sg::ogl::scene::Node::GetDebugName() const noexcept
+{
+    return m_debugName;
 }
 
 sg::ogl::scene::Node* sg::ogl::scene::Node::GetParent() const

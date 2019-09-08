@@ -242,6 +242,18 @@ void sg::ogl::buffer::Vao::DrawPrimitives() const
     }
 }
 
+void sg::ogl::buffer::Vao::DrawInstanced(const int32_t t_instanceCount) const
+{
+    if (HasIndexBuffer())
+    {
+        glDrawElementsInstanced(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, nullptr, t_instanceCount);
+    }
+    else
+    {
+        glDrawArraysInstanced(GL_TRIANGLES, 0, m_drawCount, t_instanceCount);
+    }
+}
+
 //-------------------------------------------------
 // CleanUp
 //-------------------------------------------------

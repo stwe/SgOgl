@@ -79,6 +79,7 @@ namespace sg::ogl::buffer
         //-------------------------------------------------
 
         void DrawPrimitives() const;
+        void DrawInstanced(int32_t t_instanceCount) const;
 
     protected:
 

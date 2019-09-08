@@ -2,6 +2,7 @@
 #include "Node.h"
 #include "Renderer.h"
 #include "SkyboxRenderer.h"
+#include "OpenGl.h"
 #include "resource/Skybox.h"
 #include "resource/Model.h"
 #include "resource/Mesh.h"
@@ -154,6 +155,55 @@ void sg::ogl::scene::Scene::SetPointLight(const PointLightSharedPtr& t_pointLigh
 }
 
 //-------------------------------------------------
+// Vertex attribute
+//-------------------------------------------------
+
+void sg::ogl::scene::Scene::SetNodeInstancePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node)
+{
+    // get vao of the mesh
+    auto& vao{ t_node->mesh->GetVao() };
+
+    // bind vao
+    vao->BindVao();
+
+    // generate a new vbo
+    const auto vboId{ vao->GenerateVbo() };
+
+    // bind the new vbo
+    vao->BindVbo(vboId);
+
+    // store data
+    glBufferData(GL_ARRAY_BUFFER, t_modelMatrices.size() * sizeof(glm::mat4), t_modelMatrices.data(), GL_STATIC_DRAW);
+
+
+
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+
+    glEnableVertexAttribArray(8);
+    glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
+    glVertexAttribDivisor(7, 1);
+    glVertexAttribDivisor(8, 1);
+
+
+
+    // unbind vbo
+    vao->UnbindVbo();
+
+    // unbind vao
+    vao->UnbindVao();
+}
+
+//-------------------------------------------------
 // Scene objects (Nodes)
 //-------------------------------------------------
 
@@ -208,7 +258,7 @@ void sg::ogl::scene::Scene::Update()
     m_rootNode->CalcWorldMatrix();
 }
 
-void sg::ogl::scene::Scene::Render()
+void sg::ogl::scene::Scene::Render() const
 {
     // render nodes
     for (auto* rootChildren : m_rootNode->GetChildren())
@@ -225,4 +275,9 @@ void sg::ogl::scene::Scene::Render()
             "skybox"
         );
     }
+}
+
+void sg::ogl::scene::Scene::Render(Node* t_node) const
+{
+    m_renderer->Render(*t_node, t_node->instanceCount);
 }

@@ -39,9 +39,15 @@ namespace sg::ogl::resource
          * @brief Get the default Material as shared_ptr. Mesh has
          *        ownership of Material. The Material is also used
          *        in a Node, so later Node has also ownership.
-         * @return 
+         * @return Material shared_ptr
          */
         MaterialSharedPtr GetDefaultMaterial() const;
+
+        /**
+         * @brief Get the Vao.
+         * @return Reference to the Vao.
+         */
+        VaoUniquePtr& GetVao();
 
         //-------------------------------------------------
         // Setter
@@ -97,6 +103,12 @@ namespace sg::ogl::resource
          * @brief Calls glDrawElements or glDrawArrays to render.
          */
         void DrawPrimitives() const;
+
+        /**
+         * @brief Calls glDrawElementsInstanced or glDrawArraysInstanced to render.
+         * @param t_instanceCount Specifies the number of instances to be rendered.
+         */
+        void DrawInstanced(int32_t t_instanceCount) const;
 
         /**
          * @brief Unbind VAO.

@@ -44,36 +44,34 @@ bool GameState::Update(const double t_dt)
     m_scene->Update();
 
     // update current camera
-    const auto vel{ 12.0f };
-
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
     {
-        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::FORWARD, t_dt * vel);
+        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::FORWARD, t_dt * CAMERA_VELOCITY);
     }
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_S))
     {
-        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::BACKWARD, t_dt * vel);
+        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::BACKWARD, t_dt * CAMERA_VELOCITY);
     }
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_A))
     {
-        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::LEFT, t_dt * vel);
+        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::LEFT, t_dt * CAMERA_VELOCITY);
     }
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_D))
     {
-        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::RIGHT, t_dt * vel);
+        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::RIGHT, t_dt * CAMERA_VELOCITY);
     }
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_O))
     {
-        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::UP, t_dt * vel);
+        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::UP, t_dt * CAMERA_VELOCITY);
     }
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_U))
     {
-        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::DOWN, t_dt * vel);
+        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::DOWN, t_dt * CAMERA_VELOCITY);
     }
 
     return true;
@@ -81,7 +79,11 @@ bool GameState::Update(const double t_dt)
 
 void GameState::Render()
 {
+    // render sun, earth, moon and skybox
     m_scene->Render();
+
+    // render asteroid field
+    m_scene->Render(m_asteroidNode);
 }
 
 //-------------------------------------------------
@@ -93,16 +95,18 @@ void GameState::Init()
     // set clear color
      sg::ogl::Window::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
-    // load shader
+    // load all needed shader
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("skybox");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("light");
     GetApplicationContext()->GetShaderManager()->AddShaderProgram("model");
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram("instancing");
 
     // get projection matrix
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
 
-    // load model
+    // load models
     m_sphereModel = GetApplicationContext()->GetModelManager()->GetModelFromPath("res/model/sphere/sphere2.obj");
+    m_asteroidModel = GetApplicationContext()->GetModelManager()->GetModelFromPath("res/model/rock/rock.obj");
 
     // create materials
     m_moonMaterial = std::make_shared<sg::ogl::resource::Material>();
@@ -114,6 +118,7 @@ void GameState::Init()
     const auto earthId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/earth.jpg") };
     const auto sunId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/sun.jpg") };
 
+    // config materials
     m_moonMaterial->mapKd = moonId;
     m_moonMaterial->ns = 32.0f;
 
@@ -121,7 +126,6 @@ void GameState::Init()
     m_earthMaterial->ns = 32.0f;
 
     m_sunMaterial->mapKd = sunId;
-    m_sunMaterial->newmtl = "sunMaterial";
     m_sunMaterial->ns = 32.0f;
 
     // create renderer
@@ -139,6 +143,10 @@ void GameState::Init()
     // create camera1
     m_camera1 = std::make_shared<sg::ogl::camera::LookAtCamera>();
     m_camera1->SetPosition(glm::vec3(0.0f, 0.0f, 6.0f));
+
+    // create a 2nd camera
+    m_camera2 = std::make_shared<sg::ogl::camera::LookAtCamera>();
+    m_camera2->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
 
     // create a point light
     m_pointLight = std::make_shared<sg::ogl::light::PointLight>();
@@ -190,6 +198,10 @@ void GameState::Init()
     m_moonNode->GetLocalTransform().scale = glm::vec3(0.25f);
     m_moonNode->SetDebugName("Moon");
 
+    m_asteroidNode = m_scene->CreateNode(m_asteroidModel);
+    m_asteroidNode->SetDebugName("Asteroid");
+    m_asteroidNode->instanceCount = 5000;
+
     // AddChild()
     //m_sunNode->AddChild(m_earthNode);
     //m_earthNode->AddChild(m_moonNode);
@@ -198,10 +210,45 @@ void GameState::Init()
     m_moonNode->SetParent(m_earthNode);
     m_earthNode->SetParent(m_sunNode);
 
-    // add the sun node to scene
+    // add (only) the sun node to scene root node
     m_scene->AddNodeToRoot(m_sunNode);
 
-    // create 2nd camera
-    m_camera2 = std::make_shared<sg::ogl::camera::LookAtCamera>();
-    m_camera2->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+    // create a model matrix for each asteroid instance
+    GenerateAsteroidPositions(100.0f, 20.0f, m_asteroidNode->instanceCount);
+
+    // update vao layout
+    sg::ogl::scene::Scene::SetNodeInstancePositions(m_asteroidModelMatrices, m_asteroidNode);
+}
+
+void GameState::GenerateAsteroidPositions(const float t_radius, const float t_offset, const int32_t t_instanceCount)
+{
+    const auto time{ glfwGetTime() };
+    srand(static_cast<unsigned>(time));
+
+    for (auto i{ 0 }; i < t_instanceCount; ++i)
+    {
+        sg::ogl::math::Transform transform;
+
+        // 1. translation: displace along circle with radius in range [-offset, offset]
+        const auto angle{ static_cast<float>(i) / static_cast<float>(t_instanceCount) * 360.0f };
+        auto displacement{ static_cast<float>(rand() % static_cast<int>(2 * t_offset * 100)) / 100.0f - t_offset };
+        const auto x{ sin(angle) * t_radius + displacement };
+        displacement = static_cast<float>(rand() % static_cast<int>(2 * t_offset * 100)) / 100.0f - t_offset;
+        const auto y{ displacement * 0.4f };
+        displacement = static_cast<float>(rand() % static_cast<int>(2 * t_offset * 100)) / 100.0f - t_offset;
+        const auto z{ cos(angle) * t_radius + displacement };
+        transform.position = glm::vec3(x, y, z);
+
+        // 2. scale: scale between 0.05 and 0.25f
+        const auto scale{ static_cast<float>(rand() % 20) / 100.0f + 0.05f };
+        transform.scale = glm::vec3(scale);
+
+        // 3. rotation
+        const auto rotAngle{ static_cast<float>(rand() % 360) };
+        transform.rotation.x = rotAngle * 0.4f;
+        transform.rotation.y = rotAngle * 0.6f;
+        transform.rotation.z = rotAngle * 0.8f;
+
+        m_asteroidModelMatrices.push_back(transform.GetModelMatrix());
+    }
 }

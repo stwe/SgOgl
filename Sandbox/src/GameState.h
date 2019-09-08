@@ -5,6 +5,8 @@
 class GameState : public sg::ogl::state::State
 {
 public:
+    static constexpr auto CAMERA_VELOCITY{ 12.0f };
+
     using ModelSharedPtr = std::shared_ptr<sg::ogl::resource::Model>;
     using MaterialSharedPtr = std::shared_ptr<sg::ogl::resource::Material>;
 
@@ -53,6 +55,7 @@ private:
     glm::mat4 m_projectionMatrix{ glm::mat4() };
 
     ModelSharedPtr m_sphereModel;
+    ModelSharedPtr m_asteroidModel;
 
     MaterialSharedPtr m_moonMaterial;
     MaterialSharedPtr m_earthMaterial;
@@ -61,6 +64,9 @@ private:
     sg::ogl::scene::Node* m_sunNode{ nullptr };
     sg::ogl::scene::Node* m_earthNode{ nullptr };
     sg::ogl::scene::Node* m_moonNode{ nullptr };
+    sg::ogl::scene::Node* m_asteroidNode{ nullptr };
+
+    std::vector<glm::mat4> m_asteroidModelMatrices;
 
     RendererSharedPtr m_renderer;
     CameraSharedPtr m_camera1;
@@ -79,4 +85,5 @@ private:
     //-------------------------------------------------
 
     void Init();
+    void GenerateAsteroidPositions(float t_radius, float t_offset, int32_t t_instanceCount);
 };

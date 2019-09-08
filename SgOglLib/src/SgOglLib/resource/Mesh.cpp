@@ -28,6 +28,11 @@ sg::ogl::resource::Mesh::MaterialSharedPtr sg::ogl::resource::Mesh::GetDefaultMa
     return m_defaultMaterial;
 }
 
+sg::ogl::resource::Mesh::VaoUniquePtr& sg::ogl::resource::Mesh::GetVao()
+{
+    return m_vao;
+}
+
 //-------------------------------------------------
 // Setter
 //-------------------------------------------------
@@ -50,6 +55,11 @@ void sg::ogl::resource::Mesh::InitDraw() const
 void sg::ogl::resource::Mesh::DrawPrimitives() const
 {
     m_vao->DrawPrimitives();
+}
+
+void sg::ogl::resource::Mesh::DrawInstanced(const int32_t t_instanceCount) const
+{
+    m_vao->DrawInstanced(t_instanceCount);
 }
 
 void sg::ogl::resource::Mesh::EndDraw()

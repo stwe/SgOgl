@@ -31,7 +31,7 @@ void sg::ogl::scene::Renderer::Render(Node& t_node) const
 
     if (t_node.mesh && t_node.material)
     {
-        if (m_parentScene->IsPointLight() && t_node.material->newmtl != "sunMaterial")
+        if (t_node.GetDebugName() == "Earth" || t_node.GetDebugName() == "Moon")
         {
             // get shader
             auto& shaderProgram{ m_shaderManager.GetShaderProgram("light") };
@@ -72,7 +72,7 @@ void sg::ogl::scene::Renderer::Render(Node& t_node) const
             // unbind shader
             shaderProgram->Unbind();
         }
-        else
+        else if (t_node.GetDebugName() == "Sun")
         {
             // get shader
             auto& shaderProgram{ m_shaderManager.GetShaderProgram("model") };
@@ -108,4 +108,37 @@ void sg::ogl::scene::Renderer::Render(Node& t_node) const
     {
         Render(*child);
     }
+}
+
+void sg::ogl::scene::Renderer::Render(Node& t_node, const int32_t t_instanceCount) const
+{
+    // get shader
+    auto& shaderProgram{ m_shaderManager.GetShaderProgram("instancing") };
+
+    // bind shader
+    shaderProgram->Bind();
+
+    // set projection matrix
+    shaderProgram->SetUniform("projection", m_projectionMatrix);
+
+    // set view matrix
+    shaderProgram->SetUniform("view", m_parentScene->GetCurrentCamera().GetViewMatrix());
+
+    // set ambient intensity
+    shaderProgram->SetUniform("ambientIntensity", glm::vec3(0.9f));
+
+    // get material of the node
+    auto& material{ *t_node.material };
+
+    // set and bind diffuse map
+    shaderProgram->SetUniform("diffuseMap", 0);
+    resource::TextureManager::BindForReading(material.mapKd, GL_TEXTURE0);
+
+    // render meshes
+    t_node.mesh->InitDraw();
+    t_node.mesh->DrawInstanced(t_instanceCount);
+    t_node.mesh->EndDraw();
+
+    // unbind shader
+    shaderProgram->Unbind();
 }

@@ -29,6 +29,7 @@ namespace sg::ogl::scene
 
         MeshSharedPtr mesh;
         MaterialSharedPtr material;
+        int32_t instanceCount{ 0 };
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -47,7 +48,8 @@ namespace sg::ogl::scene
         // Getter
         //-------------------------------------------------
 
-        std::string GetUuid() const;
+        const std::string& GetUuid() const noexcept;
+        const std::string& GetDebugName() const noexcept;
         Node* GetParent() const;
         ChildrenContainer& GetChildren() noexcept;
         const ChildrenContainer& GetChildren() const noexcept;
@@ -110,6 +112,6 @@ namespace sg::ogl::scene
          * @brief Mark the current node's tranform as dirty if it needs
          *        to be re-calculated this frame.
          */
-        bool m_dirty{ false };
+        bool m_dirty{ false }; // todo
     };
 }

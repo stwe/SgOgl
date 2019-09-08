@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <glm/mat4x4.hpp>
+#include <vector>
 #include "Core.h"
 
 // Should we pass a shared_ptr by reference or by value?
@@ -91,6 +93,12 @@ namespace sg::ogl::scene
         void SetPointLight(const PointLightSharedPtr& t_pointLight);
 
         //-------------------------------------------------
+        // Vertex attribute
+        //-------------------------------------------------
+
+        static void SetNodeInstancePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node);
+
+        //-------------------------------------------------
         // Scene objects (Nodes)
         //-------------------------------------------------
 
@@ -102,7 +110,8 @@ namespace sg::ogl::scene
         //-------------------------------------------------
 
         void Update();
-        void Render();
+        void Render() const;
+        void Render(Node* t_node) const;
 
     protected:
 
