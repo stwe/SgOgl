@@ -251,7 +251,7 @@ The config file can look like this.
 
 ### 2. Example: Making a simple solar system
 
-[Screenshot](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/screen/sun.png)
+![Screenshot](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/screen/sun.png)
 
 
 #### The complete source code
