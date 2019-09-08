@@ -118,21 +118,27 @@ void sg::ogl::scene::Renderer::Render(Node& t_node, const int32_t t_instanceCoun
     // bind shader
     shaderProgram->Bind();
 
-    // set projection matrix
-    shaderProgram->SetUniform("projection", m_projectionMatrix);
-
     // set view matrix
     shaderProgram->SetUniform("view", m_parentScene->GetCurrentCamera().GetViewMatrix());
 
-    // set ambient intensity
-    shaderProgram->SetUniform("ambientIntensity", glm::vec3(0.9f));
+    // set projection matrix
+    shaderProgram->SetUniform("projection", m_projectionMatrix);
 
-    // get material of the node
+    // set view (camera) position
+    shaderProgram->SetUniform("viewPos", m_parentScene->GetCurrentCamera().GetPosition());
+
+    // get material
     auto& material{ *t_node.material };
 
     // set and bind diffuse map
     shaderProgram->SetUniform("diffuseMap", 0);
     resource::TextureManager::BindForReading(material.mapKd, GL_TEXTURE0);
+
+    // set material
+    shaderProgram->SetUniform("material", material);
+
+    // set point light
+    shaderProgram->SetUniform("pointLight", m_parentScene->GetPointLight());
 
     // render meshes
     t_node.mesh->InitDraw();

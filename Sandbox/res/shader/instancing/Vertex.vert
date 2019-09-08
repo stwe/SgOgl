@@ -1,5 +1,7 @@
 #version 330
 
+// instancing/Vertex.vert
+
 // In
 
 layout (location = 0) in vec3 aPosition;
@@ -11,18 +13,22 @@ layout (location = 5) in mat4 aInstanceMatrix;
 
 // Out
 
+out vec3 vPosition;
+out vec3 vNormal;
 out vec2 vUv;
 
 // Uniforms
 
-uniform mat4 projection;
 uniform mat4 view;
+uniform mat4 projection;
 
 // Main
 
 void main()
 {
-    gl_Position = projection * view * aInstanceMatrix * vec4(aPosition, 1.0);
-
+    vPosition = vec3(aInstanceMatrix * vec4(aPosition, 1.0));
+    vNormal = mat3(transpose(inverse(aInstanceMatrix))) * aNormal;
     vUv = aUv;
+
+    gl_Position = projection * view * vec4(vPosition, 1.0);
 }

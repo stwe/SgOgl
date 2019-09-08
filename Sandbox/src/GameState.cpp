@@ -152,10 +152,10 @@ void GameState::Init()
     m_pointLight = std::make_shared<sg::ogl::light::PointLight>();
     m_pointLight->position = glm::vec3(0.0f);
     m_pointLight->ambientIntensity = glm::vec3(0.1f);
-    m_pointLight->diffuseIntensity = glm::vec3(1.0f);
+    m_pointLight->diffuseIntensity = glm::vec3(0.9f, 0.9f, 0.7f);
     m_pointLight->specularIntensity = glm::vec3(1.0f);
     m_pointLight->linear = 0.0014f;
-    m_pointLight->quadratic = 0.000007f;
+    m_pointLight->quadratic = 0.00004f;
 
     // create scene, pass the renderer
     m_scene = std::make_unique<sg::ogl::scene::Scene>(m_renderer, m_skyboxRenderer);
