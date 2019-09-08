@@ -251,5 +251,162 @@ The config file can look like this.
 
 ### 2. Example: Making a simple solar system
 
+#### The complete source code
+
+[Sandbox.cpp](https://github.com/stwe/SgOgl/blob/bc724e30922e6b13814546808cbddacdb48abde5/Sandbox/src/Sandbox.cpp)
+[GameState.h](https://github.com/stwe/SgOgl/blob/bc724e30922e6b13814546808cbddacdb48abde5/Sandbox/src/GameState.h)
+[GameState.cpp](https://github.com/stwe/SgOgl/blob/bc724e30922e6b13814546808cbddacdb48abde5/Sandbox/src/Sandbox.cpp)
+
+#### The scene graph
+
+We create the sun, the earth and the moon.
+
+```cpp
+// GameState.cpp
+
+void GameState::Init()
+{
+    // ...
+
+    // load model
+    m_sphereModel = GetApplicationContext()->GetModelManager()->GetModelFromPath("res/model/sphere/sphere2.obj");
+
+    // create materials
+    m_moonMaterial = std::make_shared<sg::ogl::resource::Material>();
+    m_earthMaterial = std::make_shared<sg::ogl::resource::Material>();
+    m_sunMaterial = std::make_shared<sg::ogl::resource::Material>();
+
+    // load textures
+    const auto moonId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/moon.jpg") };
+    const auto earthId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/earth.jpg") };
+    const auto sunId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/sun.jpg") };
+
+    // config materials
+    m_moonMaterial->mapKd = moonId;
+    m_moonMaterial->ns = 32.0f;
+
+    m_earthMaterial->mapKd = earthId;
+    m_earthMaterial->ns = 32.0f;
+
+    m_sunMaterial->mapKd = sunId;
+    m_sunMaterial->ns = 32.0f;
+
+    // create renderer
+    m_renderer = std::make_shared<sg::ogl::scene::Renderer>(
+        *GetApplicationContext()->GetShaderManager(),
+        m_projectionMatrix
+        );
+
+    // ...
+
+    // create scene, pass the renderer
+    m_scene = std::make_unique<sg::ogl::scene::Scene>(m_renderer, m_skyboxRenderer);
+
+    // ...
+
+    // create scene nodes
+    m_sunNode = m_scene->CreateNode(m_sphereModel, m_sunMaterial);
+    m_sunNode->GetLocalTransform().position = glm::vec3(0.0f, 0.0f, 0.0f); // sun at center
+    m_sunNode->GetLocalTransform().scale = glm::vec3(2.0f);
+    m_sunNode->SetDebugName("Sun");
+
+    m_earthNode = m_scene->CreateNode(m_sphereModel, m_earthMaterial);
+    m_earthNode->GetLocalTransform().position = glm::vec3(10.0f, 0.0f, 0.0f); // earth 10 units from the sun
+    m_earthNode->SetDebugName("Earth");
+
+    m_moonNode = m_scene->CreateNode(m_sphereModel, m_moonMaterial);
+    m_moonNode->GetLocalTransform().position = glm::vec3(2.0f, 0.0f, 0.0f); // moon 2 units from the earth
+    m_moonNode->GetLocalTransform().scale = glm::vec3(0.25f);
+    m_moonNode->SetDebugName("Moon");
+
+    // AddChild()
+    //m_sunNode->AddChild(m_earthNode);
+    //m_earthNode->AddChild(m_moonNode);
+
+    // or SetParent()
+    m_moonNode->SetParent(m_earthNode);
+    m_earthNode->SetParent(m_sunNode);
+
+    // add (only) the sun node to scene root node
+    m_scene->AddNodeToRoot(m_sunNode);
+
+    // ...
+}
+```
+
+In addition, an asteroid belt is to be created.
+
+```cpp
+// GameState.cpp
+
+// ...
+
+void GameState::Init()
+{
+    // ...
+
+    // load model
+    m_asteroidModel = GetApplicationContext()->GetModelManager()->GetModelFromPath("res/model/rock/rock.obj");
+
+    // create scene nodes
+    // ...
+    m_asteroidNode = m_scene->CreateNode(m_asteroidModel);
+    m_asteroidNode->SetDebugName("Asteroid");
+    m_asteroidNode->instanceCount = 5000;
+
+    // create a model matrix for each asteroid instance
+    GenerateAsteroidPositions(100.0f, 20.0f, m_asteroidNode->instanceCount);
+
+    // create a vbo
+    sg::ogl::scene::Scene::SetNodeInstancePositions(m_asteroidModelMatrices, m_asteroidNode);
+}
+```
+
+#### The GameState logic
+
+##### Input
+
+Here, e.g. the mouse will be updated. See source code.
+
+##### Update
+
+At update time we'll update each object's local matrix.
+
+```cpp
+// GameState.cpp
 
 
+bool GameState::Update(const double t_dt)
+{
+    // ...
+
+    // update nodes local transform
+    m_sunNode->GetLocalTransform().rotation += glm::vec3(0.0f, 0.0315f, 0.0f);
+    m_earthNode->GetLocalTransform().rotation += glm::vec3(0.0f, 0.125f, 0.0f);
+    m_moonNode->GetLocalTransform().rotation += glm::vec3(0.0f, 0.125f, 0.0f);
+
+    // update scene - calc nodes world matrix
+    m_scene->Update();
+
+    // ...
+
+    return true;
+}
+```
+
+##### Render
+
+Simply render the scene graph.
+
+```cpp
+// GameState.cpp
+
+void GameState::Render()
+{
+    // render sun, earth and the moon
+    m_scene->Render();
+
+    // render asteroid field
+    m_scene->Render(m_asteroidNode);
+}
+```
