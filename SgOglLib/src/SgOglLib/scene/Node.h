@@ -108,11 +108,5 @@ namespace sg::ogl::scene
          * @brief The world matrix places the node in the world.
          */
         glm::mat4 m_worldMatrix{ glm::mat4(1.0f) };
-
-        /**
-         * @brief Mark the current node's tranform as dirty if it needs
-         *        to be re-calculated this frame.
-         */
-        bool m_dirty{ false }; // todo
     };
 }

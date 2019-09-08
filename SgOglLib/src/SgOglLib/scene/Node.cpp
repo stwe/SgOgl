@@ -16,8 +16,6 @@ sg::ogl::scene::Node::~Node() noexcept
 {
     for (auto* child : m_children)
     {
-        // It should not be possible that a scene node is childed by more than one
-        // parent, thus we don't need to care about deleting dangling pointers.
         delete child;
     }
 }
