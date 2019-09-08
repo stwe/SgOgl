@@ -160,47 +160,20 @@ void sg::ogl::scene::Scene::SetPointLight(const PointLightSharedPtr& t_pointLigh
 
 void sg::ogl::scene::Scene::SetNodeInstancePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node)
 {
-    // get vao of the mesh
-    auto& vao{ t_node->mesh->GetVao() };
+    SG_OGL_CORE_ASSERT(t_node, "[Scene::SetNodeInstancePositions()] Null pointer.")
 
-    // bind vao
-    vao->BindVao();
+    if (t_node->mesh && !t_node->HasChildren())
+    {
+        StorePositions(t_modelMatrices, t_node);
+    }
 
-    // generate a new vbo
-    const auto vboId{ vao->GenerateVbo() };
-
-    // bind the new vbo
-    vao->BindVbo(vboId);
-
-    // store data
-    glBufferData(GL_ARRAY_BUFFER, t_modelMatrices.size() * sizeof(glm::mat4), t_modelMatrices.data(), GL_STATIC_DRAW);
-
-
-
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-
-    glEnableVertexAttribArray(6);
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
-
-    glEnableVertexAttribArray(7);
-    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
-
-    glEnableVertexAttribArray(8);
-    glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
-
-    glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(6, 1);
-    glVertexAttribDivisor(7, 1);
-    glVertexAttribDivisor(8, 1);
-
-
-
-    // unbind vbo
-    vao->UnbindVbo();
-
-    // unbind vao
-    vao->UnbindVao();
+    if (!t_node->mesh && t_node->HasChildren())
+    {
+        for (auto* child : t_node->GetChildren())
+        {
+            StorePositions(t_modelMatrices, child);
+        }
+    }
 }
 
 //-------------------------------------------------
@@ -279,5 +252,62 @@ void sg::ogl::scene::Scene::Render() const
 
 void sg::ogl::scene::Scene::Render(Node* t_node) const
 {
-    m_renderer->Render(*t_node, t_node->instanceCount);
+    if (t_node->mesh && !t_node->HasChildren())
+    {
+        m_renderer->Render(*t_node, t_node->instanceCount);
+    }
+
+    if (!t_node->mesh && t_node->HasChildren())
+    {
+        for (auto* child : t_node->GetChildren())
+        {
+            m_renderer->Render(*child, t_node->instanceCount);
+        }
+    }
+}
+
+//-------------------------------------------------
+// Helper
+//-------------------------------------------------
+
+void sg::ogl::scene::Scene::StorePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node)
+{
+    // get vao of the mesh
+    auto& vao{ t_node->mesh->GetVao() };
+
+    // bind vao
+    vao->BindVao();
+
+    // generate a new vbo
+    const auto vboId{ vao->GenerateVbo() };
+
+    // bind the new vbo
+    vao->BindVbo(vboId);
+
+    // store data
+    glBufferData(GL_ARRAY_BUFFER, t_modelMatrices.size() * sizeof(glm::mat4), t_modelMatrices.data(), GL_STATIC_DRAW);
+
+    // set layout
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+
+    glEnableVertexAttribArray(8);
+    glVertexAttribPointer(8, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+
+    glVertexAttribDivisor(5, 1);
+    glVertexAttribDivisor(6, 1);
+    glVertexAttribDivisor(7, 1);
+    glVertexAttribDivisor(8, 1);
+
+    // unbind vbo
+    vao->UnbindVbo();
+
+    // unbind vao
+    vao->UnbindVao();
 }

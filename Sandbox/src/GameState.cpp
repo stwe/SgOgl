@@ -216,7 +216,7 @@ void GameState::Init()
     // create a model matrix for each asteroid instance
     GenerateAsteroidPositions(100.0f, 20.0f, m_asteroidNode->instanceCount);
 
-    // update vao layout
+    // create a vbo
     sg::ogl::scene::Scene::SetNodeInstancePositions(m_asteroidModelMatrices, m_asteroidNode);
 }
 

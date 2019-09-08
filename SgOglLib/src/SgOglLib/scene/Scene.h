@@ -126,5 +126,11 @@ namespace sg::ogl::scene
         PointLightSharedPtr m_pointLight;
 
         Node* m_rootNode{ nullptr };
+
+        //-------------------------------------------------
+        // Helper
+        //-------------------------------------------------
+
+        static void StorePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node);
     };
 }

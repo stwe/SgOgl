@@ -61,6 +61,11 @@ glm::mat4 sg::ogl::scene::Node::GetWorldMatrix() const
     return m_worldMatrix;
 }
 
+bool sg::ogl::scene::Node::HasChildren() const
+{
+    return !m_children.empty();
+}
+
 //-------------------------------------------------
 // Setter
 //-------------------------------------------------

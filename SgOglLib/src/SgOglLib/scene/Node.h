@@ -55,6 +55,7 @@ namespace sg::ogl::scene
         const ChildrenContainer& GetChildren() const noexcept;
         math::Transform& GetLocalTransform() noexcept;
         glm::mat4 GetWorldMatrix() const;
+        bool HasChildren() const;
 
         //-------------------------------------------------
         // Setter
