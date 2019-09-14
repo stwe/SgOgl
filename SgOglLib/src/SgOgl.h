@@ -9,7 +9,6 @@
 
 // buffer
 #include "SgOglLib/buffer/Vao.h"
-#include "SgOglLib/buffer/VertexAttribute.h"
 #include "SgOglLib/buffer/BufferLayout.h"
 
 // camera
@@ -32,16 +31,14 @@
 #include "SgOglLib/resource/ModelManager.h"
 #include "SgOglLib/resource/ShaderManager.h"
 #include "SgOglLib/resource/ShaderProgram.h"
-#include "SgOglLib/resource/Skybox.h"
 #include "SgOglLib/resource/TextureManager.h"
 
 // scene
-#include "SgOglLib/scene/BaseRenderer.h"
+#include "SgOglLib/scene/Component.h"
+#include "SgOglLib/scene/Entity.h"
 #include "SgOglLib/scene/Node.h"
-#include "SgOglLib/scene/Renderer.h"
+#include "SgOglLib/scene/RenderComponent.h"
 #include "SgOglLib/scene/Scene.h"
-#include "SgOglLib/scene/SkyboxRenderer.h"
-#include "SgOglLib/scene/TerrainRenderer.h"
 
 // state
 #include "SgOglLib/state/State.h"

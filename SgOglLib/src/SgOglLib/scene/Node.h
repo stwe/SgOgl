@@ -76,6 +76,14 @@ namespace sg::ogl::scene
 
         void CalcWorldMatrix();
 
+        //-------------------------------------------------
+        // Logic
+        //-------------------------------------------------
+
+        virtual void Input();
+        virtual void Update();
+        virtual void Render();
+
     protected:
 
     private:

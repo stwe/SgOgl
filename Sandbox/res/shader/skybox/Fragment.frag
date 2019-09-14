@@ -1,12 +1,14 @@
 #version 330
 
+// skybox/Fragment.frag
+
 // In
 
 in vec3 vUv;
 
 // Out
 
-out vec4 fragColour;
+out vec4 fragColor;
 
 // Uniforms
 
@@ -16,5 +18,5 @@ uniform samplerCube cubeSampler;
 
 void main()
 {
-    fragColour = texture(cubeSampler, vUv);
+    fragColor = texture(cubeSampler, vUv);
 }

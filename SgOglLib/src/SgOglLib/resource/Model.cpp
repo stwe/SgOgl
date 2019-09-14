@@ -81,6 +81,11 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
     VertexContainer vertices;
     IndexContainer indices;
 
+    // Prevent duplicate warnings.
+    auto missingUv{ false };
+    auto missingTangent{ false };
+    auto missingBiTangent{ false };
+
     // Walk through each of the mesh's vertices.
     for (auto i{ 0u }; i < t_mesh->mNumVertices; ++i)
     {
@@ -106,7 +111,11 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
         {
             vertices.push_back(0.0f);
             vertices.push_back(0.0f);
-            SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing texture coords.");
+            if (!missingUv)
+            {
+                missingUv = true;
+                SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing texture coords.");
+            }
         }
 
         // tangent (3 floats)
@@ -121,7 +130,11 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
             vertices.push_back(0.0f);
             vertices.push_back(0.0f);
             vertices.push_back(0.0f);
-            SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing tangent coords.");
+            if (!missingTangent)
+            {
+                missingTangent = true;
+                SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing tangent coords.");
+            }
         }
 
         // bitangent (3 floats)
@@ -136,7 +149,11 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
             vertices.push_back(0.0f);
             vertices.push_back(0.0f);
             vertices.push_back(0.0f);
-            SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing bitangent coords.");
+            if (!missingBiTangent)
+            {
+                missingBiTangent = true;
+                SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing bitangent coords.");
+            }
         }
     }
 

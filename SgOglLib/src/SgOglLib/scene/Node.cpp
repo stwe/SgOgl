@@ -115,3 +115,40 @@ void sg::ogl::scene::Node::CalcWorldMatrix()
         child->CalcWorldMatrix();
     }
 }
+
+//-------------------------------------------------
+// Logic
+//-------------------------------------------------
+
+void sg::ogl::scene::Node::Input()
+{
+    for (auto* child : m_children)
+    {
+        child->Input();
+    }
+}
+
+void sg::ogl::scene::Node::Update()
+{
+    if (m_parent)
+    {
+        m_worldMatrix = m_parent->GetWorldMatrix() * m_localTransform.GetModelMatrix();
+    }
+    else
+    {
+        m_worldMatrix = m_localTransform.GetModelMatrix();
+    }
+
+    for (auto* child : m_children)
+    {
+        child->Update();
+    }
+}
+
+void sg::ogl::scene::Node::Render()
+{
+    for (auto* child : m_children)
+    {
+        child->Render();
+    }
+}

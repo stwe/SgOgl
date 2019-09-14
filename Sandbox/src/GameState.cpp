@@ -1,4 +1,6 @@
 #include "GameState.h"
+#include "DomeShaderProgram.h"
+#include "SkyboxShaderProgram.h"
 
 //-------------------------------------------------
 // Logic
@@ -16,8 +18,11 @@ bool GameState::Input()
 
 bool GameState::Update(const double t_dt)
 {
-    // update scene - calc nodes world matrix
-    m_scene->Update();
+#ifdef SKYDOME
+    m_skydomeEntity->Update();
+#else
+    m_skyboxEntity->Update();
+#endif
 
     // update current camera
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
@@ -55,8 +60,11 @@ bool GameState::Update(const double t_dt)
 
 void GameState::Render()
 {
-    // render nodes
-    m_scene->Render();
+#ifdef SKYDOME
+    m_skydomeEntity->Render();
+#else
+    m_skyboxEntity->Render();
+#endif
 }
 
 //-------------------------------------------------
@@ -68,15 +76,9 @@ void GameState::Init()
     // set clear color
      sg::ogl::Window::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
-    // load all needed shader
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram("dome");
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram("skybox");
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram("terrain");
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram("normal");
-
-    // load compute shader
-    GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("normalmap");
-    GetApplicationContext()->GetShaderManager()->AddComputeShaderProgram("splatmap");
+    // add all needed shader
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram<DomeShaderProgram>("dome");
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram<SkyboxShaderProgram>("skybox");
 
     // load skydome model
     m_skydomeModel = GetApplicationContext()->GetModelManager()->GetModelFromPath("res/model/dome/dome.obj");
@@ -84,74 +86,39 @@ void GameState::Init()
     // init projection matrix
     m_projectionMatrix = GetApplicationContext()->GetWindow()->GetProjectionMatrix();
 
-    // create renderer
-    m_renderer = std::make_shared<sg::ogl::scene::Renderer>(
-        *GetApplicationContext()->GetShaderManager(),
-        m_projectionMatrix
-        );
-
-    // create skybox renderer
-    m_skyboxRenderer = std::make_shared<sg::ogl::scene::SkyboxRenderer>(
-        *GetApplicationContext()->GetShaderManager(),
-        m_projectionMatrix
-        );
-
-    // create terrain renderer
-    m_terrainRenderer = std::make_shared<sg::ogl::scene::TerrainRenderer>(
-        *GetApplicationContext()->GetShaderManager(),
-        *GetApplicationContext()->GetTextureManager(),
-        m_projectionMatrix
-        );
-
     // create camera and set a camera position
     m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>();
     m_camera->SetPosition(glm::vec3(370.0f, 100.0f, 370.0f));
 
-    // create a terrain
-    m_terrain = std::make_shared<sg::ogl::terrain::Terrain>(
-        *GetApplicationContext()->GetTextureManager(),
-        *GetApplicationContext()->GetShaderManager(),
-        "res/config/Terrain.xml"
-        );
+    // create and setup scene
+    m_scene = std::make_unique<sg::ogl::scene::Scene>();
+    m_scene->SetCurrentCamera(m_camera);
+    m_scene->projectionMatrix = m_projectionMatrix;
 
-    // generate terrain
-    m_terrain->GenerateTerrain();
+    // create skydome entity
+    m_skydomeEntity = m_scene->CreateSkydomeEntity(
+        m_skydomeModel,
+        glm::vec3(GetApplicationContext()->GetProjectionOptions().farPlane * 0.5f),
+        GetApplicationContext()->GetShaderManager()->GetShaderProgram("dome")
+    );
 
     // skybox textures
     const std::vector<std::string> textureFileNames
     {
-        "res/texture/starfield/starfield_rt.jpg",
-        "res/texture/starfield/starfield_lf.jpg",
-        "res/texture/starfield/starfield_up.jpg",
-        "res/texture/starfield/starfield_dn.jpg",
-        "res/texture/starfield/starfield_bk.jpg",
-        "res/texture/starfield/starfield_ft.jpg"
+        "res/texture/sky/sRight.png",
+        "res/texture/sky/sLeft.png",
+        "res/texture/sky/sUp.png",
+        "res/texture/sky/sDown.png",
+        "res/texture/sky/sBack.png",
+        "res/texture/sky/sFront.png"
     };
 
-    // create a skybox
-    m_skybox = std::make_shared<sg::ogl::resource::Skybox>(*GetApplicationContext()->GetTextureManager(), textureFileNames);
+    const auto cubemapId{ GetApplicationContext()->GetTextureManager()->GetCubemapId(textureFileNames) };
 
-    // create a directional light
-    m_directionalLight = std::make_shared<sg::ogl::light::DirectionalLight>();
-
-    // create a point light
-    m_pointLight = std::make_shared<sg::ogl::light::PointLight>();
-    m_pointLight->position = glm::vec3(0.0f);
-    m_pointLight->ambientIntensity = glm::vec3(0.1f);
-    m_pointLight->diffuseIntensity = glm::vec3(0.9f, 0.9f, 0.7f);
-    m_pointLight->specularIntensity = glm::vec3(1.0f);
-
-    // create and setup scene
-    m_scene = std::make_unique<sg::ogl::scene::Scene>(m_renderer, m_skyboxRenderer, m_terrainRenderer);
-    m_scene->SetCurrentCamera(m_camera);
-    //m_scene->SetSkybox(m_skybox);
-    m_scene->SetTerrain(m_terrain);
-    m_scene->SetDirectionalLight(m_directionalLight);
-    m_scene->SetPointLight(m_pointLight);
-
-    // create scene nodes
-    m_skydomeNode = m_scene->CreateSkydomeNode(m_skydomeModel, glm::vec3(GetApplicationContext()->GetProjectionOptions().farPlane * 0.5f));
-    m_skydomeNode->SetDebugName("Skydome");
-
-    m_scene->AddNodeToRoot(m_skydomeNode);
+    // create skybox entity
+    m_skyboxEntity = m_scene->CreateSkyboxEntity(
+        cubemapId,
+        GetApplicationContext()->GetShaderManager()->GetShaderProgram("skybox"),
+        1500
+    );
 }

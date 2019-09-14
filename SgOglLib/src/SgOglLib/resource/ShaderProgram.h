@@ -12,6 +12,11 @@ namespace sg::ogl::light
     struct PointLight;
 }
 
+namespace sg::ogl::scene
+{
+    class Entity;
+}
+
 namespace sg::ogl::resource
 {
     struct Material;
@@ -30,7 +35,7 @@ namespace sg::ogl::resource
         ShaderProgram& operator=(const ShaderProgram& t_other) = delete;
         ShaderProgram& operator=(ShaderProgram&& t_other) noexcept = delete;
 
-        ~ShaderProgram() noexcept;
+        virtual ~ShaderProgram() noexcept;
 
         //-------------------------------------------------
         // Getter
@@ -87,6 +92,12 @@ namespace sg::ogl::resource
         void SetUniform(const std::string& t_uniformName, const light::DirectionalLight& t_directionalLight);
         void SetUniform(const std::string& t_uniformName, const light::PointLight& t_pointLight);
         void SetUniform(const std::string& t_uniformName, const Material& t_material);
+
+        //-------------------------------------------------
+        // Set uniforms
+        //-------------------------------------------------
+
+        virtual void UpdateUniforms(scene::Entity& t_entity) = 0;
 
     protected:
 

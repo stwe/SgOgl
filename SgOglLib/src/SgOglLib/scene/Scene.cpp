@@ -1,39 +1,22 @@
+#include <memory>
 #include "Scene.h"
 #include "Node.h"
-#include "Renderer.h"
-#include "SkyboxRenderer.h"
-#include "TerrainRenderer.h"
+#include "Entity.h"
 #include "OpenGl.h"
-#include "resource/Skybox.h"
+#include "RenderComponent.h"
+#include "resource/ShaderManager.h"
+#include "resource/ShaderProgram.h"
 #include "resource/Model.h"
 #include "resource/Mesh.h"
+#include "resource/Material.h"
 #include "camera/LookAtCamera.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::scene::Scene::Scene(
-    const RendererSharedPtr& t_renderer,
-    const SkyboxRendererSharedPtr& t_skyboxRenderer,
-    const TerrainRendererSharedPtr& t_terrainRenderer
-)
-    : m_renderer{ t_renderer }
-    , m_skyboxRenderer{ t_skyboxRenderer }
-    , m_terrainRenderer{ t_terrainRenderer }
+sg::ogl::scene::Scene::Scene()
 {
-    // set this scene as parent for the renderer
-    SG_OGL_CORE_ASSERT(m_renderer, "[Scene::Scene()] Null pointer.")
-    m_renderer->SetParentScene(this);
-
-    // set this scene as parent for the skybox renderer
-    SG_OGL_CORE_ASSERT(m_skyboxRenderer, "[Scene::Scene()] Null pointer.")
-    m_skyboxRenderer->SetParentScene(this);
-
-    // set this scene as parent for the terrain renderer
-    SG_OGL_CORE_ASSERT(m_terrainRenderer, "[Scene::Scene()] Null pointer.")
-    m_terrainRenderer->SetParentScene(this);
-
     // create a camera with default values
     m_currentCamera = std::make_shared<camera::LookAtCamera>();
     SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::Scene()] Null pointer.")
@@ -52,36 +35,6 @@ sg::ogl::scene::Scene::~Scene() noexcept
 //-------------------------------------------------
 // Getter
 //-------------------------------------------------
-
-sg::ogl::scene::Renderer& sg::ogl::scene::Scene::GetRenderer() noexcept
-{
-    return *m_renderer;
-}
-
-const sg::ogl::scene::Renderer& sg::ogl::scene::Scene::GetRenderer() const noexcept
-{
-    return *m_renderer;
-}
-
-sg::ogl::scene::SkyboxRenderer& sg::ogl::scene::Scene::GetSkyboxRenderer() noexcept
-{
-    return *m_skyboxRenderer;
-}
-
-const sg::ogl::scene::SkyboxRenderer& sg::ogl::scene::Scene::GetSkyboxRenderer() const noexcept
-{
-    return *m_skyboxRenderer;
-}
-
-sg::ogl::scene::TerrainRenderer& sg::ogl::scene::Scene::GetTerrainRenderer() noexcept
-{
-    return *m_terrainRenderer;
-}
-
-const sg::ogl::scene::TerrainRenderer& sg::ogl::scene::Scene::GetTerrainRenderer() const noexcept
-{
-    return *m_terrainRenderer;
-}
 
 sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCurrentCamera() noexcept
 {
@@ -141,26 +94,6 @@ void sg::ogl::scene::Scene::SetCurrentCamera(const CameraSharedPtr& t_camera)
     m_currentCamera = t_camera;
 }
 
-void sg::ogl::scene::Scene::SetSkybox(const SkyboxSharedPtr& t_skybox)
-{
-    if (m_skybox)
-    {
-        m_skybox.reset();
-    }
-
-    m_skybox = t_skybox;
-}
-
-void sg::ogl::scene::Scene::SetTerrain(const TerrainSharedPtr& t_terrain)
-{
-    if (m_terrain)
-    {
-        m_terrain.reset();
-    }
-
-    m_terrain = t_terrain;
-}
-
 void sg::ogl::scene::Scene::SetDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight)
 {
     if (m_directionalLight)
@@ -204,7 +137,7 @@ void sg::ogl::scene::Scene::SetNodeInstancePositions(const std::vector<glm::mat4
 }
 
 //-------------------------------------------------
-// Scene objects (Nodes)
+// Scene objects
 //-------------------------------------------------
 
 sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material)
@@ -243,25 +176,84 @@ sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateNode(const ModelSharedPtr& t_
     return node;
 }
 
-sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateSkydomeNode(const ModelSharedPtr& t_model, const glm::vec3& t_scale)
+sg::ogl::scene::Entity* sg::ogl::scene::Scene::CreateSkydomeEntity(
+    const ModelSharedPtr& t_model,
+    const glm::vec3& t_scale,
+    resource::ShaderProgram& t_shaderProgram
+)
 {
-    // create node
-    auto* node{ new Node };
-    SG_OGL_CORE_ASSERT(node, "[Scene::CreateSkydomeNode()] Null pointer.")
+    // create entity
 
-    SG_OGL_CORE_ASSERT(t_model->GetMeshes().size() == 1, "[Scene::CreateSkydomeNode()] Invalid number of meshes.")
+    auto* entity{ new Entity };
+    SG_OGL_CORE_ASSERT(entity, "[Scene::CreateSkydomeEntity()] Null pointer.")
 
-    node->mesh = t_model->GetMeshes()[0];
-    node->material = t_model->GetMeshes()[0]->GetDefaultMaterial();
+    SG_OGL_CORE_ASSERT(t_model->GetMeshes().size() == 1, "[Scene::CreateSkydomeEntity()] Invalid number of meshes.")
 
-    node->GetLocalTransform().scale = t_scale;
+    entity->mesh = t_model->GetMeshes()[0];
+    entity->material = t_model->GetMeshes()[0]->GetDefaultMaterial();
+    entity->GetLocalTransform().scale = t_scale;
+    entity->SetParentScene(this);
 
-    return node;
+    // add render component
+
+    auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
+    SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::CreateSkydomeEntity()] Null pointer.")
+
+    auto renderConfigUniquePtr{ std::make_unique<DefaultRenderConfig>(t_shaderProgram) };
+    SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::CreateSkydomeEntity()] Null pointer.")
+
+    renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
+
+    entity->AddComponent("Renderer", std::move(renderComponentUniquePtr));
+
+    return entity;
 }
 
-sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateSkyboxNode()
+sg::ogl::scene::Entity* sg::ogl::scene::Scene::CreateSkyboxEntity(
+    const uint32_t t_cubemapId,
+    resource::ShaderProgram& t_shaderProgram,
+    const float t_size
+)
 {
-    return nullptr;
+    // create entity
+
+    auto* entity{ new Entity };
+    SG_OGL_CORE_ASSERT(entity, "[Scene::CreateSkyboxEntity()] Null pointer.")
+
+    auto meshUniquePtr{ std::make_unique<resource::Mesh>() };
+    SG_OGL_CORE_ASSERT(meshUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
+
+    auto materialUniquePtr{ std::make_unique<resource::Material>() };
+    SG_OGL_CORE_ASSERT(materialUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
+
+    auto vertices{ CreateSkyboxVertices(t_size) };
+
+    const buffer::BufferLayout bufferLayout{
+        { buffer::VertexAttributeType::POSITION, "vPosition" },
+    };
+
+    meshUniquePtr->Allocate(bufferLayout, &vertices, static_cast<int32_t>(vertices.size()));
+
+    // set the cubemap id as mapKd
+    materialUniquePtr->mapKd = t_cubemapId;
+
+    entity->mesh = std::move(meshUniquePtr);
+    entity->material = std::move(materialUniquePtr);
+    entity->SetParentScene(this);
+
+    // add render component
+
+    auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
+    SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
+
+    auto renderConfigUniquePtr{ std::make_unique<SkyboxRenderConfig>(t_shaderProgram) };
+    SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
+
+    renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
+
+    entity->AddComponent("Renderer", std::move(renderComponentUniquePtr));
+
+    return entity;
 }
 
 void sg::ogl::scene::Scene::AddNodeToRoot(Node* t_node) const
@@ -284,23 +276,7 @@ void sg::ogl::scene::Scene::Render() const
     // render nodes
     for (auto* rootChildren : m_rootNode->GetChildren())
     {
-        m_renderer->Render(*rootChildren);
-    }
-
-    // if a terrain exists, it will be rendered
-    if (m_terrain)
-    {
-        m_terrainRenderer->Render(*m_terrain);
-    }
-
-    // if a skybox exists, it will be rendered
-    if (m_skybox)
-    {
-        m_skyboxRenderer->Render(
-            m_skybox->GetCubemapId(),
-            *m_skybox->GetMesh(),
-            "skybox"
-        );
+        //m_renderer->Render(*rootChildren);
     }
 }
 
@@ -308,14 +284,14 @@ void sg::ogl::scene::Scene::Render(Node* t_node) const
 {
     if (t_node->mesh && !t_node->HasChildren())
     {
-        m_renderer->Render(*t_node, t_node->instanceCount);
+        //m_renderer->Render(*t_node, t_node->instanceCount);
     }
 
     if (!t_node->mesh && t_node->HasChildren())
     {
         for (auto* child : t_node->GetChildren())
         {
-            m_renderer->Render(*child, t_node->instanceCount);
+            //m_renderer->Render(*child, t_node->instanceCount);
         }
     }
 }
@@ -364,4 +340,52 @@ void sg::ogl::scene::Scene::StorePositions(const std::vector<glm::mat4>& t_model
 
     // unbind vao
     vao->UnbindVao();
+}
+
+std::vector<glm::vec3> sg::ogl::scene::Scene::CreateSkyboxVertices(const float t_size)
+{
+    return std::vector<glm::vec3>
+    {
+        glm::vec3(-t_size, t_size, -t_size),
+        glm::vec3(-t_size, -t_size, -t_size),
+        glm::vec3(t_size, -t_size, -t_size),
+        glm::vec3(t_size, -t_size, -t_size),
+        glm::vec3(t_size, t_size, -t_size),
+        glm::vec3(-t_size, t_size, -t_size),
+
+        glm::vec3(-t_size, -t_size, t_size),
+        glm::vec3(-t_size, -t_size, -t_size),
+        glm::vec3(-t_size, t_size, -t_size),
+        glm::vec3(-t_size, t_size, -t_size),
+        glm::vec3(-t_size, t_size, t_size),
+        glm::vec3(-t_size, -t_size, t_size),
+
+        glm::vec3(t_size, -t_size, -t_size),
+        glm::vec3(t_size, -t_size, t_size),
+        glm::vec3(t_size, t_size, t_size),
+        glm::vec3(t_size, t_size, t_size),
+        glm::vec3(t_size, t_size, -t_size),
+        glm::vec3(t_size, -t_size, -t_size),
+
+        glm::vec3(-t_size, -t_size, t_size),
+        glm::vec3(-t_size, t_size, t_size),
+        glm::vec3(t_size, t_size, t_size),
+        glm::vec3(t_size, t_size, t_size),
+        glm::vec3(t_size, -t_size, t_size),
+        glm::vec3(-t_size, -t_size, t_size),
+
+        glm::vec3(-t_size, t_size, -t_size),
+        glm::vec3(t_size, t_size, -t_size),
+        glm::vec3(t_size, t_size, t_size),
+        glm::vec3(t_size, t_size, t_size),
+        glm::vec3(-t_size, t_size, t_size),
+        glm::vec3(-t_size, t_size, -t_size),
+
+        glm::vec3(-t_size, -t_size, -t_size),
+        glm::vec3(-t_size, -t_size, t_size),
+        glm::vec3(t_size, -t_size, -t_size),
+        glm::vec3(t_size, -t_size, -t_size),
+        glm::vec3(-t_size, -t_size, t_size),
+        glm::vec3(t_size, -t_size, t_size)
+    };
 }

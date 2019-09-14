@@ -24,13 +24,13 @@ uint32_t sg::ogl::compute::SplatmapRenderer::ComputeSplatmap(
 
     // Get the shader program by name.
     auto& computeShaderProgram{ t_shaderManager.GetComputeShaderProgram(t_splatmapShaderName) };
-    computeShaderProgram->Bind();
+    computeShaderProgram.Bind();
 
     // Render to splatmap texture.
     glActiveTexture(GL_TEXTURE0);
     resource::TextureManager::BindForReading(t_normalmapTextureId, GL_TEXTURE0);
-    computeShaderProgram->SetUniform("normalmap", 0);
-    computeShaderProgram->SetUniform("heightmapWidth", t_heightmapWidth);
+    computeShaderProgram.SetUniform("normalmap", 0);
+    computeShaderProgram.SetUniform("heightmapWidth", t_heightmapWidth);
 
     glBindImageTexture(0, splatmapTextureId, 0, false, 0, GL_WRITE_ONLY, GL_RGBA32F);
     glDispatchCompute(t_heightmapWidth / 16, t_heightmapWidth / 16, 1);

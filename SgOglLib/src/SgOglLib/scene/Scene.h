@@ -15,7 +15,7 @@ namespace sg::ogl::resource
 {
     class Model;
     struct Material;
-    class Skybox;
+    class ShaderProgram;
 }
 
 namespace sg::ogl::camera
@@ -23,47 +23,29 @@ namespace sg::ogl::camera
     class LookAtCamera;
 }
 
-namespace sg::ogl::terrain
-{
-    class Terrain;
-}
-
 namespace sg::ogl::scene
 {
     class Node;
-    class Renderer;
-    class SkyboxRenderer;
-    class TerrainRenderer;
+    class Entity;
 
     class SG_OGL_API Scene
     {
     public:
-        using RendererSharedPtr = std::shared_ptr<Renderer>;
-        using SkyboxRendererSharedPtr = std::shared_ptr<SkyboxRenderer>;
-        using TerrainRendererSharedPtr = std::shared_ptr<TerrainRenderer>;
-
         using ModelSharedPtr = std::shared_ptr<resource::Model>;
         using MaterialSharedPtr = std::shared_ptr<resource::Material>;
 
         using CameraSharedPtr = std::shared_ptr<camera::LookAtCamera>;
 
-        using SkyboxSharedPtr = std::shared_ptr<resource::Skybox>;
-        using TerrainSharedPtr = std::shared_ptr<terrain::Terrain>;
-
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
         using PointLightSharedPtr = std::shared_ptr<light::PointLight>;
+
+        glm::mat4 projectionMatrix{ glm::mat4(1.0f) };
 
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
 
-        Scene() = delete;
-
-        Scene(
-            const RendererSharedPtr& t_renderer,
-            const SkyboxRendererSharedPtr& t_skyboxRenderer,
-            const TerrainRendererSharedPtr& t_terrainRenderer
-        );
+        Scene();
 
         Scene(const Scene& t_other) = delete;
         Scene(Scene&& t_other) noexcept = delete;
@@ -75,15 +57,6 @@ namespace sg::ogl::scene
         //-------------------------------------------------
         // Getter
         //-------------------------------------------------
-
-        Renderer& GetRenderer() noexcept;
-        const Renderer& GetRenderer() const noexcept;
-
-        SkyboxRenderer& GetSkyboxRenderer() noexcept;
-        const SkyboxRenderer& GetSkyboxRenderer() const noexcept;
-
-        TerrainRenderer& GetTerrainRenderer() noexcept;
-        const TerrainRenderer& GetTerrainRenderer() const noexcept;
 
         camera::LookAtCamera& GetCurrentCamera() noexcept;
         const camera::LookAtCamera& GetCurrentCamera() const noexcept;
@@ -104,8 +77,6 @@ namespace sg::ogl::scene
         //-------------------------------------------------
 
         void SetCurrentCamera(const CameraSharedPtr& t_camera);
-        void SetSkybox(const SkyboxSharedPtr& t_skybox);
-        void SetTerrain(const TerrainSharedPtr& t_terrain);
         void SetDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
         void SetPointLight(const PointLightSharedPtr& t_pointLight);
 
@@ -116,12 +87,22 @@ namespace sg::ogl::scene
         static void SetNodeInstancePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node);
 
         //-------------------------------------------------
-        // Scene objects (Nodes)
+        // Scene objects
         //-------------------------------------------------
 
         static Node* CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material = nullptr);
-        static Node* CreateSkydomeNode(const ModelSharedPtr& t_model, const glm::vec3& t_scale);
-        static Node* CreateSkyboxNode();
+
+        Entity* CreateSkydomeEntity(
+            const ModelSharedPtr& t_model,
+            const glm::vec3& t_scale,
+            resource::ShaderProgram& t_shaderProgram
+        );
+
+        Entity* CreateSkyboxEntity(
+            uint32_t t_cubemapId,
+            resource::ShaderProgram& t_shaderProgram,
+            float t_size = 500.0f
+        );
 
         void AddNodeToRoot(Node* t_node) const;
 
@@ -136,14 +117,7 @@ namespace sg::ogl::scene
     protected:
 
     private:
-        RendererSharedPtr m_renderer;
-        SkyboxRendererSharedPtr m_skyboxRenderer;
-        TerrainRendererSharedPtr m_terrainRenderer;
-
         CameraSharedPtr m_currentCamera;
-
-        SkyboxSharedPtr m_skybox;
-        TerrainSharedPtr m_terrain;
 
         DirectionalLightSharedPtr m_directionalLight;
         PointLightSharedPtr m_pointLight;
@@ -155,5 +129,6 @@ namespace sg::ogl::scene
         //-------------------------------------------------
 
         static void StorePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node);
+        static std::vector<glm::vec3> CreateSkyboxVertices(float t_size);
     };
 }

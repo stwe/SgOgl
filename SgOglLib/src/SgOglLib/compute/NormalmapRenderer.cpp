@@ -25,14 +25,14 @@ uint32_t sg::ogl::compute::NormalmapRenderer::ComputeNormalmap(
 
     // Get the shader program by name.
     auto& computeShaderProgram{ t_shaderManager.GetComputeShaderProgram(t_normalmapShaderName) };
-    computeShaderProgram->Bind();
+    computeShaderProgram.Bind();
 
     // Render to normalmap texture.
     glActiveTexture(GL_TEXTURE0);
     resource::TextureManager::BindForReading(t_heightmapTextureId, GL_TEXTURE0);
-    computeShaderProgram->SetUniform("heightmap", 0);
-    computeShaderProgram->SetUniform("heightmapWidth", t_heightmapWidth);
-    computeShaderProgram->SetUniform("normalStrength", t_normalStrength);
+    computeShaderProgram.SetUniform("heightmap", 0);
+    computeShaderProgram.SetUniform("heightmapWidth", t_heightmapWidth);
+    computeShaderProgram.SetUniform("normalStrength", t_normalStrength);
 
     glBindImageTexture(0, normalmapTextureId, 0, false, 0, GL_WRITE_ONLY, GL_RGBA32F);
     glDispatchCompute(t_heightmapWidth / 16, t_heightmapWidth / 16, 1);
