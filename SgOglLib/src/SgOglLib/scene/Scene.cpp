@@ -2,6 +2,7 @@
 #include "Node.h"
 #include "Renderer.h"
 #include "SkyboxRenderer.h"
+#include "TerrainRenderer.h"
 #include "OpenGl.h"
 #include "resource/Skybox.h"
 #include "resource/Model.h"
@@ -14,10 +15,12 @@
 
 sg::ogl::scene::Scene::Scene(
     const RendererSharedPtr& t_renderer,
-    const SkyboxRendererSharedPtr& t_skyboxRenderer
+    const SkyboxRendererSharedPtr& t_skyboxRenderer,
+    const TerrainRendererSharedPtr& t_terrainRenderer
 )
     : m_renderer{ t_renderer }
     , m_skyboxRenderer{ t_skyboxRenderer }
+    , m_terrainRenderer{ t_terrainRenderer }
 {
     // set this scene as parent for the renderer
     SG_OGL_CORE_ASSERT(m_renderer, "[Scene::Scene()] Null pointer.")
@@ -26,6 +29,10 @@ sg::ogl::scene::Scene::Scene(
     // set this scene as parent for the skybox renderer
     SG_OGL_CORE_ASSERT(m_skyboxRenderer, "[Scene::Scene()] Null pointer.")
     m_skyboxRenderer->SetParentScene(this);
+
+    // set this scene as parent for the terrain renderer
+    SG_OGL_CORE_ASSERT(m_terrainRenderer, "[Scene::Scene()] Null pointer.")
+    m_terrainRenderer->SetParentScene(this);
 
     // create a camera with default values
     m_currentCamera = std::make_shared<camera::LookAtCamera>();
@@ -64,6 +71,16 @@ sg::ogl::scene::SkyboxRenderer& sg::ogl::scene::Scene::GetSkyboxRenderer() noexc
 const sg::ogl::scene::SkyboxRenderer& sg::ogl::scene::Scene::GetSkyboxRenderer() const noexcept
 {
     return *m_skyboxRenderer;
+}
+
+sg::ogl::scene::TerrainRenderer& sg::ogl::scene::Scene::GetTerrainRenderer() noexcept
+{
+    return *m_terrainRenderer;
+}
+
+const sg::ogl::scene::TerrainRenderer& sg::ogl::scene::Scene::GetTerrainRenderer() const noexcept
+{
+    return *m_terrainRenderer;
 }
 
 sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCurrentCamera() noexcept
@@ -132,6 +149,16 @@ void sg::ogl::scene::Scene::SetSkybox(const SkyboxSharedPtr& t_skybox)
     }
 
     m_skybox = t_skybox;
+}
+
+void sg::ogl::scene::Scene::SetTerrain(const TerrainSharedPtr& t_terrain)
+{
+    if (m_terrain)
+    {
+        m_terrain.reset();
+    }
+
+    m_terrain = t_terrain;
 }
 
 void sg::ogl::scene::Scene::SetDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight)
@@ -216,6 +243,27 @@ sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateNode(const ModelSharedPtr& t_
     return node;
 }
 
+sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateSkydomeNode(const ModelSharedPtr& t_model, const glm::vec3& t_scale)
+{
+    // create node
+    auto* node{ new Node };
+    SG_OGL_CORE_ASSERT(node, "[Scene::CreateSkydomeNode()] Null pointer.")
+
+    SG_OGL_CORE_ASSERT(t_model->GetMeshes().size() == 1, "[Scene::CreateSkydomeNode()] Invalid number of meshes.")
+
+    node->mesh = t_model->GetMeshes()[0];
+    node->material = t_model->GetMeshes()[0]->GetDefaultMaterial();
+
+    node->GetLocalTransform().scale = t_scale;
+
+    return node;
+}
+
+sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateSkyboxNode()
+{
+    return nullptr;
+}
+
 void sg::ogl::scene::Scene::AddNodeToRoot(Node* t_node) const
 {
     SG_OGL_CORE_ASSERT(t_node, "[Scene::AddNodeToRoot()] Null pointer.")
@@ -237,6 +285,12 @@ void sg::ogl::scene::Scene::Render() const
     for (auto* rootChildren : m_rootNode->GetChildren())
     {
         m_renderer->Render(*rootChildren);
+    }
+
+    // if a terrain exists, it will be rendered
+    if (m_terrain)
+    {
+        m_terrainRenderer->Render(*m_terrain);
     }
 
     // if a skybox exists, it will be rendered

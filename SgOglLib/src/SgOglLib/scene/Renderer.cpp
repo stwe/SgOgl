@@ -25,7 +25,7 @@ sg::ogl::scene::Renderer::Renderer(
 // Render
 //-------------------------------------------------
 
-void sg::ogl::scene::Renderer::Render(Node& t_node) const
+void sg::ogl::scene::Renderer::Render(const Node& t_node) const
 {
     SG_OGL_CORE_ASSERT(m_parentScene, "[Renderer::Render()] Null pointer.")
 
@@ -72,32 +72,29 @@ void sg::ogl::scene::Renderer::Render(Node& t_node) const
             // unbind shader
             shaderProgram->Unbind();
         }
-        else if (t_node.GetDebugName() == "Sun")
+        else if (t_node.GetDebugName() == "Skydome")
         {
             // get shader
-            auto& shaderProgram{ m_shaderManager.GetShaderProgram("model") };
+            auto& shaderProgram{ m_shaderManager.GetShaderProgram("dome") };
 
             // bind shader
             shaderProgram->Bind();
 
             // calc mvp matrix
             const auto mvp{ m_projectionMatrix * m_parentScene->GetCurrentCamera().GetViewMatrix() * t_node.GetWorldMatrix() };
-            shaderProgram->SetUniform("transform", mvp);
+            shaderProgram->SetUniform("mvpMatrix", mvp);
 
-            // set ambient intensity
-            shaderProgram->SetUniform("ambientIntensity", glm::vec3(0.9f));
+            // set world matrix
+            shaderProgram->SetUniform("worldMatrix", t_node.GetWorldMatrix());
 
-            // get material
-            auto& material{ t_node.material };
-
-            // set and bind diffuse map
-            shaderProgram->SetUniform("diffuseMap", 0);
-            resource::TextureManager::BindForReading(material->mapKd, GL_TEXTURE0);
+            glFrontFace(GL_CCW);
 
             // render mesh
             t_node.mesh->InitDraw();
             t_node.mesh->DrawPrimitives();
             t_node.mesh->EndDraw();
+
+            glFrontFace(GL_CW);
 
             // unbind shader
             shaderProgram->Unbind();
@@ -110,7 +107,7 @@ void sg::ogl::scene::Renderer::Render(Node& t_node) const
     }
 }
 
-void sg::ogl::scene::Renderer::Render(Node& t_node, const int32_t t_instanceCount) const
+void sg::ogl::scene::Renderer::Render(const Node& t_node, const int32_t t_instanceCount) const
 {
     // get shader
     auto& shaderProgram{ m_shaderManager.GetShaderProgram("instancing") };

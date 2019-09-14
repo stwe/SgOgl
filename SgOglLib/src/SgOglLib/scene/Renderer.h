@@ -31,8 +31,8 @@ namespace sg::ogl::scene
         // Render
         //-------------------------------------------------
 
-        void Render(Node& t_node) const;
-        void Render(Node& t_node, int32_t t_instanceCount) const;
+        void Render(const Node& t_node) const;
+        void Render(const Node& t_node, int32_t t_instanceCount) const;
 
     protected:
 

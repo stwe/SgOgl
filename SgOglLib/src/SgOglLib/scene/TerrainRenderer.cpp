@@ -1,5 +1,6 @@
 #include "TerrainRenderer.h"
 #include "OpenGl.h"
+#include "Scene.h"
 #include "resource/ShaderManager.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
@@ -12,16 +13,13 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::renderer::TerrainRenderer::TerrainRenderer(
+sg::ogl::scene::TerrainRenderer::TerrainRenderer(
     resource::ShaderManager& t_shaderManager,
     resource::TextureManager& t_textureManager,
-    camera::LookAtCamera& t_camera,
     glm::mat4& t_projection
 )
-    : m_shaderManager{ t_shaderManager }
+    : BaseRenderer(t_shaderManager, t_projection)
     , m_textureManager{ t_textureManager }
-    , m_camera{ t_camera }
-    , m_projectionMatrix{ t_projection }
 {
 }
 
@@ -29,12 +27,12 @@ sg::ogl::renderer::TerrainRenderer::TerrainRenderer(
 // Render
 //-------------------------------------------------
 
-void sg::ogl::renderer::TerrainRenderer::Render(const terrain::Terrain& t_terrain, const std::string& t_shaderProgramName) const
+void sg::ogl::scene::TerrainRenderer::Render(const terrain::Terrain& t_terrain) const
 {
-    // get ShaderProgram
-    auto& shaderProgram{ m_shaderManager.GetShaderProgram(t_shaderProgramName) };
+    // get shader
+    auto& shaderProgram{ m_shaderManager.GetShaderProgram("terrain") };
 
-    // bind ShaderProgram
+    // bind shader
     shaderProgram->Bind();
 
     // get terrain options
@@ -43,7 +41,7 @@ void sg::ogl::renderer::TerrainRenderer::Render(const terrain::Terrain& t_terrai
     // set transform
     math::Transform transform;
     transform.position = glm::vec3(terrainOptions.xPos, 0.0f, terrainOptions.zPos);
-    const auto mvp{ m_projectionMatrix * m_camera.GetViewMatrix() * transform.GetModelMatrix() };
+    const auto mvp{ m_projectionMatrix * m_parentScene->GetCurrentCamera().GetViewMatrix() * transform.GetModelMatrix() };
     shaderProgram->SetUniform("transform", mvp);
 
     // set textures
@@ -72,13 +70,14 @@ void sg::ogl::renderer::TerrainRenderer::Render(const terrain::Terrain& t_terrai
     mesh->DrawPrimitives();
     mesh->EndDraw();
 
+    // unbind shader
     shaderProgram->Unbind();
 }
 
-void sg::ogl::renderer::TerrainRenderer::RenderNormals(const terrain::Terrain& t_terrain, const std::string& t_shaderProgramName, const float t_normalLength) const
+void sg::ogl::scene::TerrainRenderer::RenderNormals(const terrain::Terrain& t_terrain, const float t_normalLength) const
 {
     // get ShaderProgram
-    auto& shaderProgram{ m_shaderManager.GetShaderProgram(t_shaderProgramName) };
+    auto& shaderProgram{ m_shaderManager.GetShaderProgram("normal") };
 
     // bind ShaderProgram
     shaderProgram->Bind();
@@ -89,7 +88,7 @@ void sg::ogl::renderer::TerrainRenderer::RenderNormals(const terrain::Terrain& t
     // set transform uniform
     math::Transform transform;
     transform.position = glm::vec3(terrainOptions.xPos, 0.0f, terrainOptions.zPos);
-    const auto mvp{ m_projectionMatrix * m_camera.GetViewMatrix() * transform.GetModelMatrix() };
+    const auto mvp{ m_projectionMatrix * m_parentScene->GetCurrentCamera().GetViewMatrix() * transform.GetModelMatrix() };
     shaderProgram->SetUniform("transform", mvp);
 
     // set normalLength uniform
@@ -103,5 +102,6 @@ void sg::ogl::renderer::TerrainRenderer::RenderNormals(const terrain::Terrain& t
     mesh->DrawPrimitives();
     mesh->EndDraw();
 
+    // unbind shader
     shaderProgram->Unbind();
 }

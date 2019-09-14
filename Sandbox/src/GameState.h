@@ -5,18 +5,31 @@
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 12.0f };
+    static constexpr auto CAMERA_VELOCITY{ 96.0f };
 
+    // model and material - shared
     using ModelSharedPtr = std::shared_ptr<sg::ogl::resource::Model>;
     using MaterialSharedPtr = std::shared_ptr<sg::ogl::resource::Material>;
 
-    using RendererSharedPtr = std::shared_ptr<sg::ogl::scene::Renderer>;
-    using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
+    // scene graph - unique
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
 
+    // default model renderer - shared
+    using RendererSharedPtr = std::shared_ptr<sg::ogl::scene::Renderer>;
+
+    // terrain and terrain renderer - shared
+    using TerrainSharedPtr = std::shared_ptr<sg::ogl::terrain::Terrain>;
+    using TerrainRendererSharedPtr = std::shared_ptr<sg::ogl::scene::TerrainRenderer>;
+
+    // camera - shared
+    using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
+
+    // skybox - shared
     using SkyboxSharedPtr = std::shared_ptr<sg::ogl::resource::Skybox>;
     using SkyboxRendererSharedPtr = std::shared_ptr<sg::ogl::scene::SkyboxRenderer>;
 
+    // lighting - shared
+    using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
     using PointLightSharedPtr = std::shared_ptr<sg::ogl::light::PointLight>;
 
     //-------------------------------------------------
@@ -52,38 +65,29 @@ public:
 protected:
 
 private:
-    glm::mat4 m_projectionMatrix{ glm::mat4() };
+    ModelSharedPtr m_skydomeModel;
+    sg::ogl::scene::Node* m_skydomeNode{ nullptr };
 
-    ModelSharedPtr m_sphereModel;
-    ModelSharedPtr m_asteroidModel;
-
-    MaterialSharedPtr m_moonMaterial;
-    MaterialSharedPtr m_earthMaterial;
-    MaterialSharedPtr m_sunMaterial;
-
-    sg::ogl::scene::Node* m_sunNode{ nullptr };
-    sg::ogl::scene::Node* m_earthNode{ nullptr };
-    sg::ogl::scene::Node* m_moonNode{ nullptr };
-    sg::ogl::scene::Node* m_asteroidNode{ nullptr };
-
-    std::vector<glm::mat4> m_asteroidModelMatrices;
+    SceneUniquePtr m_scene;
 
     RendererSharedPtr m_renderer;
-    CameraSharedPtr m_camera1;
-    CameraSharedPtr m_camera2;
-    SceneUniquePtr m_scene;
+
+    TerrainSharedPtr m_terrain;
+    TerrainRendererSharedPtr m_terrainRenderer;
+
+    CameraSharedPtr m_camera;
 
     SkyboxSharedPtr m_skybox;
     SkyboxRendererSharedPtr m_skyboxRenderer;
 
     PointLightSharedPtr m_pointLight;
+    DirectionalLightSharedPtr m_directionalLight;
 
-    bool m_stopRotation{ false };
+    glm::mat4 m_projectionMatrix{ glm::mat4(1.0f) };
 
     //-------------------------------------------------
     // Init
     //-------------------------------------------------
 
     void Init();
-    void GenerateAsteroidPositions(float t_radius, float t_offset, int32_t t_instanceCount);
 };

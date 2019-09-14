@@ -5,9 +5,9 @@
     <scale xz="600.0" y="128.0"/>
     <heightmapPath>res/heightmap/hm0.bmp</heightmapPath>
     <textures>
-        <texture name="grass" path="res/texture/Grass.jpg"/>
-        <texture name="sand" path="res/texture/Sand.jpg"/>
-        <texture name="rock" path="res/texture/Rock.jpg"/>
+        <texture name="grass" path="res/texture/grass3.jpg"/>
+        <texture name="sand" path="res/texture/ground.jpg"/>
+        <texture name="rock" path="res/texture/moss.jpg"/>
     </textures>
     <normalmap shader="normalmap" texture="normalmapTexture"/>
     <splatmap shader="splatmap" texture="splatmapTexture"/>
