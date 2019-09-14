@@ -4,7 +4,7 @@
 #include "resource/TextureManager.h"
 #include "OpenGl.h"
 
-uint32_t sg::ogl::renderer::NormalmapRenderer::ComputeNormalmap(
+uint32_t sg::ogl::compute::NormalmapRenderer::ComputeNormalmap(
     resource::TextureManager& t_textureManager,
     resource::ShaderManager& t_shaderManager,
     const std::string& t_normalmapTextureName,

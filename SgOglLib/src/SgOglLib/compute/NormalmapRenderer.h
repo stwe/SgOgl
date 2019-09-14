@@ -9,7 +9,7 @@ namespace sg::ogl::resource
     class ShaderManager;
 }
 
-namespace sg::ogl::renderer
+namespace sg::ogl::compute
 {
     class SG_OGL_LOCAL NormalmapRenderer
     {

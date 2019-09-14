@@ -4,7 +4,7 @@
 #include "resource/TextureManager.h"
 #include "OpenGl.h"
 
-uint32_t sg::ogl::renderer::SplatmapRenderer::ComputeSplatmap(
+uint32_t sg::ogl::compute::SplatmapRenderer::ComputeSplatmap(
     resource::TextureManager& t_textureManager,
     resource::ShaderManager& t_shaderManager,
     const std::string& t_splatmapTextureName,

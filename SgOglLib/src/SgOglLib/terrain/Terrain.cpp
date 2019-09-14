@@ -4,8 +4,8 @@
 #include "resource/TextureManager.h"
 #include "resource/stb_image.h"
 #include "buffer/BufferLayout.h"
-#include "renderer/NormalmapRenderer.h"
-#include "renderer/SplatmapRenderer.h"
+#include "compute/NormalmapRenderer.h"
+#include "compute/SplatmapRenderer.h"
 #include "Log.h"
 #include "SgOglException.h"
 
@@ -158,7 +158,7 @@ void sg::ogl::terrain::Terrain::GenerateTerrain()
     m_mesh->Allocate(bufferLayout, &vertices, count * count, &indices);
 
     // Generate normalmap.
-    m_terrainOptions.normalmap.m_textureId = renderer::NormalmapRenderer::ComputeNormalmap(
+    m_terrainOptions.normalmap.m_textureId = compute::NormalmapRenderer::ComputeNormalmap(
         m_textureManager,
         m_shaderManager,
         m_terrainOptions.normalmap.uniqueTextureName,
@@ -169,7 +169,7 @@ void sg::ogl::terrain::Terrain::GenerateTerrain()
     );
 
     // Generate splatmap.
-    m_terrainOptions.splatmap.m_textureId = renderer::SplatmapRenderer::ComputeSplatmap(
+    m_terrainOptions.splatmap.m_textureId = compute::SplatmapRenderer::ComputeSplatmap(
         m_textureManager,
         m_shaderManager,
         m_terrainOptions.splatmap.uniqueTextureName,
