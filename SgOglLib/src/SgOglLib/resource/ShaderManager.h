@@ -65,7 +65,29 @@ namespace sg::ogl::resource
             SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] All shader was added successfully to program {}.", t_folder);
         }
 
-        //void AddComputeShaderProgram(const std::string& t_fileName);
+        template <typename T>
+        void AddComputeShaderProgram(const std::string& t_fileName)
+        {
+            if (m_computeShaderPrograms.count(t_fileName) != 0)
+            {
+                throw SG_OGL_EXCEPTION("[ShaderManager::AddComputeShaderProgram()] Compute shader program " + t_fileName + " already exist.");
+            }
+
+            auto shaderProgram{ std::make_unique<T>() };
+            SG_OGL_CORE_ASSERT(shaderProgram, "[ShaderManager::AddComputeShaderProgram()] Null pointer.")
+
+            SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] Start adding compute shader to program: {}.", t_fileName);
+
+            const std::string shaderPath{ "res/shader/compute" };
+
+            shaderProgram->AddComputeShader(ShaderUtil::ReadShaderFile(shaderPath + "/" + t_fileName + ".comp"));
+            shaderProgram->LinkAndValidateProgram();
+            shaderProgram->AddAllFoundUniforms();
+
+            m_computeShaderPrograms.emplace(t_fileName, std::move(shaderProgram));
+
+            SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] A compute shader was added successfully to program {}.", t_fileName);
+        }
 
         //-------------------------------------------------
         // Getter

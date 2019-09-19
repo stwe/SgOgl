@@ -37,12 +37,7 @@ const sg::ogl::TerrainOptions& sg::ogl::terrain::Terrain::GetTerrainOptions() co
     return m_terrainOptions;
 }
 
-const sg::ogl::terrain::Terrain::MeshUniquePtr& sg::ogl::terrain::Terrain::GetMesh() const
-{
-    return m_mesh;
-}
-
-sg::ogl::terrain::Terrain::MeshUniquePtr& sg::ogl::terrain::Terrain::GetMesh()
+sg::ogl::terrain::Terrain::MeshSharedPtr& sg::ogl::terrain::Terrain::GetMesh()
 {
     return m_mesh;
 }

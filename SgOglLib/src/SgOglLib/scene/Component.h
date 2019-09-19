@@ -9,6 +9,11 @@ namespace sg::ogl::scene
     class SG_OGL_API Component
     {
     public:
+        enum class Type
+        {
+            RENDERER
+        };
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------

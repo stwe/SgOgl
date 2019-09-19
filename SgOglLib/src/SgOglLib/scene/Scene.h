@@ -3,19 +3,23 @@
 #include <memory>
 #include <glm/mat4x4.hpp>
 #include <vector>
-#include "Core.h"
+#include <string>
+#include "Application.h"
+#include "Log.h"
+#include "Entity.h"
+#include "RenderComponent.h"
+#include "resource/Model.h"
+#include "resource/Mesh.h"
+#include "resource/Material.h"
+#include "resource/ModelManager.h"
+#include "resource/ShaderManager.h"
+#include "resource/ShaderProgram.h"
+#include "resource/TextureManager.h"
 
 namespace sg::ogl::light
 {
     struct DirectionalLight;
     struct PointLight;
-}
-
-namespace sg::ogl::resource
-{
-    class Model;
-    struct Material;
-    class ShaderProgram;
 }
 
 namespace sg::ogl::camera
@@ -26,7 +30,6 @@ namespace sg::ogl::camera
 namespace sg::ogl::scene
 {
     class Node;
-    class Entity;
 
     class SG_OGL_API Scene
     {
@@ -39,13 +42,13 @@ namespace sg::ogl::scene
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
         using PointLightSharedPtr = std::shared_ptr<light::PointLight>;
 
-        glm::mat4 projectionMatrix{ glm::mat4(1.0f) };
-
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
 
-        Scene();
+        Scene() = delete;
+
+        explicit Scene(Application* t_application);
 
         Scene(const Scene& t_other) = delete;
         Scene(Scene&& t_other) noexcept = delete;
@@ -72,6 +75,8 @@ namespace sg::ogl::scene
 
         Node* GetRoot() const;
 
+        Application* GetApplicationContext() const;
+
         //-------------------------------------------------
         // Setter
         //-------------------------------------------------
@@ -92,17 +97,94 @@ namespace sg::ogl::scene
 
         static Node* CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material = nullptr);
 
-        Entity* CreateSkydomeEntity(
-            const ModelSharedPtr& t_model,
-            const glm::vec3& t_scale,
-            resource::ShaderProgram& t_shaderProgram
-        );
+        template <typename T>
+        Entity* CreateSkydomeEntity(const std::string& t_modelPath, const std::string& t_shaderName)
+        {
+            // add shader program to the ShaderManager
+            m_application->GetShaderManager()->AddShaderProgram<T>(t_shaderName);
 
+            // add model to the ModelManager
+            const auto model{ m_application->GetModelManager()->GetModelFromPath(t_modelPath) };
+            SG_OGL_CORE_ASSERT(model->GetMeshes().size() == 1, "[Scene::CreateSkydomeEntity()] Invalid number of meshes.")
+
+            // create entity
+
+            auto* entity{ new Entity };
+            SG_OGL_CORE_ASSERT(entity, "[Scene::CreateSkydomeEntity()] Null pointer.")
+
+            entity->mesh = model->GetMeshes()[0];
+            entity->material = model->GetMeshes()[0]->GetDefaultMaterial();
+            entity->GetLocalTransform().scale = glm::vec3(m_application->GetProjectionOptions().farPlane * 0.5f);
+            entity->SetParentScene(this);
+
+            // add render component
+
+            auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
+            SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::CreateSkydomeEntity()] Null pointer.")
+
+            auto renderConfigUniquePtr{ std::make_unique<DefaultRenderConfig>(m_application->GetShaderManager()->GetShaderProgram(t_shaderName)) };
+            SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::CreateSkydomeEntity()] Null pointer.")
+
+            renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
+
+            entity->AddComponent(Component::Type::RENDERER, std::move(renderComponentUniquePtr));
+
+            return entity;
+        }
+
+        template <typename T>
         Entity* CreateSkyboxEntity(
-            uint32_t t_cubemapId,
-            resource::ShaderProgram& t_shaderProgram,
-            float t_size = 500.0f
-        );
+            const std::vector<std::string>& t_textureFileNames,
+            const std::string& t_shaderName,
+            const float t_size = 500.0f
+        )
+        {
+            // add shader program to the ShaderManager
+            m_application->GetShaderManager()->AddShaderProgram<T>(t_shaderName);
+
+            // add a cubemap to the TextureManager
+            const auto cubemapId{ m_application->GetTextureManager()->GetCubemapId(t_textureFileNames) };
+
+            // create entity
+
+            auto* entity{ new Entity };
+            SG_OGL_CORE_ASSERT(entity, "[Scene::CreateSkyboxEntity()] Null pointer.")
+
+            auto meshUniquePtr{ std::make_unique<resource::Mesh>() };
+            SG_OGL_CORE_ASSERT(meshUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
+
+            auto materialUniquePtr{ std::make_unique<resource::Material>() };
+            SG_OGL_CORE_ASSERT(materialUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
+
+            auto vertices{ CreateSkyboxVertices(t_size) };
+
+            const buffer::BufferLayout bufferLayout{
+                { buffer::VertexAttributeType::POSITION, "vPosition" },
+            };
+
+            meshUniquePtr->Allocate(bufferLayout, &vertices, static_cast<int32_t>(vertices.size()));
+
+            // set the cubemap id as mapKd
+            materialUniquePtr->mapKd = cubemapId;
+
+            entity->mesh = std::move(meshUniquePtr);
+            entity->material = std::move(materialUniquePtr);
+            entity->SetParentScene(this);
+
+            // add render component
+
+            auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
+            SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
+
+            auto renderConfigUniquePtr{ std::make_unique<SkyboxRenderConfig>(m_application->GetShaderManager()->GetShaderProgram(t_shaderName)) };
+            SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
+
+            renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
+
+            entity->AddComponent(Component::Type::RENDERER, std::move(renderComponentUniquePtr));
+
+            return entity;
+        }
 
         void AddNodeToRoot(Node* t_node) const;
 
@@ -123,6 +205,8 @@ namespace sg::ogl::scene
         PointLightSharedPtr m_pointLight;
 
         Node* m_rootNode{ nullptr };
+
+        Application* m_application{ nullptr };
 
         //-------------------------------------------------
         // Helper

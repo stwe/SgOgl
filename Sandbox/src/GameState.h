@@ -7,16 +7,16 @@
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 96.0f };
-
-    // model and material - shared
-    using ModelSharedPtr = std::shared_ptr<sg::ogl::resource::Model>;
+    static constexpr auto CAMERA_VELOCITY{ 32.0f };
 
     // scene graph - unique
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
 
     // camera - shared
     using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
+
+    // terrain - shared
+    using TerrainSharedPtr = std::shared_ptr<sg::ogl::terrain::Terrain>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -51,19 +51,25 @@ public:
 protected:
 
 private:
-    ModelSharedPtr m_skydomeModel;
-
     sg::ogl::scene::Entity* m_skydomeEntity{ nullptr };
     sg::ogl::scene::Entity* m_skyboxEntity{ nullptr };
+    sg::ogl::scene::Entity* m_terrainEntity{ nullptr };
 
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
-
-    glm::mat4 m_projectionMatrix{ glm::mat4(1.0f) };
+    TerrainSharedPtr m_terrain;
 
     //-------------------------------------------------
     // Init
     //-------------------------------------------------
 
     void Init();
+
+    //-------------------------------------------------
+    // Helper
+    //-------------------------------------------------
+
+    void CreateSkydomeEntity();
+    void CreateSkyboxEntity();
+    void CreateTerrainEntity();
 };

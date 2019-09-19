@@ -21,7 +21,7 @@ namespace sg::ogl::terrain
     public:
         using VerticesContainer = std::vector<float>;
         using IndicesContainer = std::vector<uint32_t>;
-        using MeshUniquePtr = std::unique_ptr<resource::Mesh>;
+        using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -47,9 +47,7 @@ namespace sg::ogl::terrain
         //-------------------------------------------------
 
         const TerrainOptions& GetTerrainOptions() const;
-
-        const MeshUniquePtr& GetMesh() const;
-        MeshUniquePtr& GetMesh();
+        MeshSharedPtr& GetMesh();
 
         //-------------------------------------------------
         // Generate
@@ -67,7 +65,7 @@ namespace sg::ogl::terrain
 
         TerrainOptions m_terrainOptions{};
 
-        MeshUniquePtr m_mesh;
+        MeshSharedPtr m_mesh;
 
         //-------------------------------------------------
         // Helper

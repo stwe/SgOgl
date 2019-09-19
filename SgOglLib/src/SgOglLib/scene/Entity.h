@@ -1,35 +1,33 @@
 #pragma once
 
 #include <map>
-#include <string>
 #include <memory>
 #include "Node.h"
+#include "Component.h"
 
 namespace sg::ogl::scene
 {
-    class Component;
     class Scene;
 
     class SG_OGL_API Entity : public Node
     {
     public:
-        using ComponentKey = std::string;
         using ComponentSharedPtr = std::shared_ptr<Component>;
-        using ComponentContainer = std::map<ComponentKey, ComponentSharedPtr>;
+        using ComponentContainer = std::map<Component::Type, ComponentSharedPtr>;
 
         //-------------------------------------------------
         // Getter
         //-------------------------------------------------
 
         ComponentContainer& GetComponents();
-        Component& GetComponent(const ComponentKey& t_componentKey);
-        Scene* GetParentScene();
+        Component& GetComponent(Component::Type t_type);
+        Scene* GetParentScene() const;
 
         //-------------------------------------------------
         // Setter
         //-------------------------------------------------
 
-        void AddComponent(const ComponentKey& t_componentKey, const ComponentSharedPtr& t_component);
+        void AddComponent(Component::Type t_type, const ComponentSharedPtr& t_component);
         void SetParentScene(Scene* t_scene);
 
         //-------------------------------------------------

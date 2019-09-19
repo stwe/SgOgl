@@ -1,22 +1,17 @@
-#include <memory>
 #include "Scene.h"
 #include "Node.h"
-#include "Entity.h"
 #include "OpenGl.h"
-#include "RenderComponent.h"
-#include "resource/ShaderManager.h"
-#include "resource/ShaderProgram.h"
-#include "resource/Model.h"
-#include "resource/Mesh.h"
-#include "resource/Material.h"
 #include "camera/LookAtCamera.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::scene::Scene::Scene()
+sg::ogl::scene::Scene::Scene(Application* t_application)
+    : m_application{ t_application }
 {
+    SG_OGL_CORE_ASSERT(m_application, "[Scene::Scene()] Null pointer.")
+
     // create a camera with default values
     m_currentCamera = std::make_shared<camera::LookAtCamera>();
     SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::Scene()] Null pointer.")
@@ -79,6 +74,11 @@ bool sg::ogl::scene::Scene::IsPointLight() const
 sg::ogl::scene::Node* sg::ogl::scene::Scene::GetRoot() const
 {
     return m_rootNode;
+}
+
+sg::ogl::Application* sg::ogl::scene::Scene::GetApplicationContext() const
+{
+    return m_application;
 }
 
 //-------------------------------------------------
@@ -174,86 +174,6 @@ sg::ogl::scene::Node* sg::ogl::scene::Scene::CreateNode(const ModelSharedPtr& t_
     }
 
     return node;
-}
-
-sg::ogl::scene::Entity* sg::ogl::scene::Scene::CreateSkydomeEntity(
-    const ModelSharedPtr& t_model,
-    const glm::vec3& t_scale,
-    resource::ShaderProgram& t_shaderProgram
-)
-{
-    // create entity
-
-    auto* entity{ new Entity };
-    SG_OGL_CORE_ASSERT(entity, "[Scene::CreateSkydomeEntity()] Null pointer.")
-
-    SG_OGL_CORE_ASSERT(t_model->GetMeshes().size() == 1, "[Scene::CreateSkydomeEntity()] Invalid number of meshes.")
-
-    entity->mesh = t_model->GetMeshes()[0];
-    entity->material = t_model->GetMeshes()[0]->GetDefaultMaterial();
-    entity->GetLocalTransform().scale = t_scale;
-    entity->SetParentScene(this);
-
-    // add render component
-
-    auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
-    SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::CreateSkydomeEntity()] Null pointer.")
-
-    auto renderConfigUniquePtr{ std::make_unique<DefaultRenderConfig>(t_shaderProgram) };
-    SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::CreateSkydomeEntity()] Null pointer.")
-
-    renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
-
-    entity->AddComponent("Renderer", std::move(renderComponentUniquePtr));
-
-    return entity;
-}
-
-sg::ogl::scene::Entity* sg::ogl::scene::Scene::CreateSkyboxEntity(
-    const uint32_t t_cubemapId,
-    resource::ShaderProgram& t_shaderProgram,
-    const float t_size
-)
-{
-    // create entity
-
-    auto* entity{ new Entity };
-    SG_OGL_CORE_ASSERT(entity, "[Scene::CreateSkyboxEntity()] Null pointer.")
-
-    auto meshUniquePtr{ std::make_unique<resource::Mesh>() };
-    SG_OGL_CORE_ASSERT(meshUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
-
-    auto materialUniquePtr{ std::make_unique<resource::Material>() };
-    SG_OGL_CORE_ASSERT(materialUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
-
-    auto vertices{ CreateSkyboxVertices(t_size) };
-
-    const buffer::BufferLayout bufferLayout{
-        { buffer::VertexAttributeType::POSITION, "vPosition" },
-    };
-
-    meshUniquePtr->Allocate(bufferLayout, &vertices, static_cast<int32_t>(vertices.size()));
-
-    // set the cubemap id as mapKd
-    materialUniquePtr->mapKd = t_cubemapId;
-
-    entity->mesh = std::move(meshUniquePtr);
-    entity->material = std::move(materialUniquePtr);
-    entity->SetParentScene(this);
-
-    // add render component
-
-    auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
-    SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
-
-    auto renderConfigUniquePtr{ std::make_unique<SkyboxRenderConfig>(t_shaderProgram) };
-    SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
-
-    renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
-
-    entity->AddComponent("Renderer", std::move(renderComponentUniquePtr));
-
-    return entity;
 }
 
 void sg::ogl::scene::Scene::AddNodeToRoot(Node* t_node) const
