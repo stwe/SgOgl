@@ -3,7 +3,6 @@
 #include <memory>
 #include "Component.h"
 #include "Core.h"
-#include "OpenGl.h"
 
 namespace sg::ogl::resource
 {
@@ -63,29 +62,15 @@ namespace sg::ogl::scene
     class SG_OGL_API SkyboxRenderConfig : public RenderConfig
     {
     public:
-        explicit SkyboxRenderConfig(resource::ShaderProgram& t_shaderProgram)
-            : RenderConfig(t_shaderProgram)
-        {}
+        explicit SkyboxRenderConfig(resource::ShaderProgram& t_shaderProgram);
 
-        void Enable() override
-        {
-            // save old depth func mode
-            glGetIntegerv(GL_DEPTH_FUNC, &m_oldDepthFuncMode);
-
-            // change depth func
-            glDepthFunc(GL_LEQUAL);
-        }
-
-        void Disable() override
-        {
-            // restore old depth func mode
-            glDepthFunc(m_oldDepthFuncMode);
-        }
+        void Enable() override;
+        void Disable() override;
 
     protected:
 
     private:
-        int32_t m_oldDepthFuncMode{ GL_LESS };
+        int32_t m_oldDepthFuncMode;
     };
 
     class SG_OGL_API RenderComponent : public Component
