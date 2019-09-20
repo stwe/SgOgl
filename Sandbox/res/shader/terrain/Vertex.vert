@@ -15,13 +15,13 @@ out vec2 vUv;
 
 // Uniforms
 
-uniform mat4 transform;
+uniform mat4 mvpMatrix;
 
 // Main
 
 void main()
 {
-    gl_Position = transform * vec4(aPosition, 1.0);
+    gl_Position = mvpMatrix * vec4(aPosition, 1.0);
 
     vUvOrig = aUv;
     vUv = aUv * 40;

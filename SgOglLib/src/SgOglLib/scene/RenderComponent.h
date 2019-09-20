@@ -4,7 +4,11 @@
 #include "Component.h"
 #include "Core.h"
 #include "OpenGl.h"
-#include "resource/ShaderProgram.h"
+
+namespace sg::ogl::resource
+{
+    class ShaderProgram;
+}
 
 namespace sg::ogl::scene
 {
@@ -48,10 +52,7 @@ namespace sg::ogl::scene
         void Enable() override {}
         void Disable() override {}
 
-        void Init() override
-        {
-            // todo
-        }
+        void Init() override {}
 
     protected:
 
@@ -84,7 +85,7 @@ namespace sg::ogl::scene
     protected:
 
     private:
-        int32_t m_oldDepthFuncMode;
+        int32_t m_oldDepthFuncMode{ GL_LESS };
     };
 
     class SG_OGL_API RenderComponent : public Component

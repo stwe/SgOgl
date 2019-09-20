@@ -120,6 +120,14 @@ void sg::ogl::scene::Node::CalcWorldMatrix()
 // Logic
 //-------------------------------------------------
 
+void sg::ogl::scene::Node::Init()
+{
+    for (auto* child : m_children)
+    {
+        child->Init();
+    }
+}
+
 void sg::ogl::scene::Node::Input()
 {
     for (auto* child : m_children)

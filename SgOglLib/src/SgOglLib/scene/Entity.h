@@ -34,6 +34,7 @@ namespace sg::ogl::scene
         // Logic
         //-------------------------------------------------
 
+        void Init() override;
         void Input() override;
         void Update() override;
         void Render() override;

@@ -9,7 +9,6 @@
 
 namespace sg::ogl::resource
 {
-    class ShaderManager;
     class TextureManager;
     class Mesh;
 }
@@ -29,11 +28,7 @@ namespace sg::ogl::terrain
 
         Terrain() = delete;
 
-        Terrain(
-            resource::TextureManager& t_textureManager,
-            resource::ShaderManager& t_shaderManager,
-            const std::string& t_configFileName
-        );
+        Terrain(resource::TextureManager& t_textureManager, const std::string& t_configFileName);
 
         Terrain(const Terrain& t_other) = delete;
         Terrain(Terrain&& t_other) noexcept = delete;
@@ -47,6 +42,11 @@ namespace sg::ogl::terrain
         //-------------------------------------------------
 
         const TerrainOptions& GetTerrainOptions() const;
+
+        auto GetHeightmapTextureId() const { return m_heightmapTextureId; }
+        auto GetHeightmapWidth() const { return m_heightmapWidth; }
+        auto GetHeightmapHeight() const { return m_heightmapHeight; }
+
         MeshSharedPtr& GetMesh();
 
         //-------------------------------------------------
@@ -61,9 +61,12 @@ namespace sg::ogl::terrain
         static constexpr auto MAX_PIXEL_COLOUR{ 256.0f * 256.0f * 256.0f };
 
         resource::TextureManager& m_textureManager;
-        resource::ShaderManager& m_shaderManager;
 
         TerrainOptions m_terrainOptions{};
+
+        uint32_t m_heightmapTextureId{ 0 };
+        int32_t m_heightmapWidth{ 0 };
+        int32_t m_heightmapHeight{ 0 };
 
         MeshSharedPtr m_mesh;
 

@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "Entity.h"
 #include "RenderComponent.h"
+#include "TerrainComponent.h"
 #include "resource/Model.h"
 #include "resource/Mesh.h"
 #include "resource/Material.h"
@@ -15,6 +16,7 @@
 #include "resource/ShaderManager.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
+#include "terrain/Terrain.h"
 
 namespace sg::ogl::light
 {
@@ -182,6 +184,49 @@ namespace sg::ogl::scene
             renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
 
             entity->AddComponent(Component::Type::RENDERER, std::move(renderComponentUniquePtr));
+
+            return entity;
+        }
+
+        template <typename T, typename N, typename S>
+        Entity* CreateTerrainEntity(const std::shared_ptr<terrain::Terrain>& t_terrain, const std::string& t_shaderName)
+        {
+            // add shader program to the ShaderManager
+            m_application->GetShaderManager()->AddShaderProgram<T>(t_shaderName);
+
+            // add compute shader to the ShaderManager
+            m_application->GetShaderManager()->AddComputeShaderProgram<N>(t_terrain->GetTerrainOptions().normalmap.computeShaderName);
+            m_application->GetShaderManager()->AddComputeShaderProgram<S>(t_terrain->GetTerrainOptions().splatmap.computeShaderName);
+
+            // create entity
+
+            auto* entity{ new Entity };
+            SG_OGL_CORE_ASSERT(entity, "[Scene::CreateTerrainEntity()] Null pointer.")
+
+            entity->mesh = t_terrain->GetMesh();
+            SG_OGL_CORE_ASSERT(entity->mesh, "[Scene::CreateTerrainEntity()] Null pointer.")
+
+            entity->material = nullptr;
+            entity->SetParentScene(this);
+
+            // add render component
+
+            auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
+            SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::CreateTerrainEntity()] Null pointer.")
+
+            auto renderConfigUniquePtr{ std::make_unique<DefaultRenderConfig>(m_application->GetShaderManager()->GetShaderProgram(t_shaderName)) };
+            SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::CreateTerrainEntity()] Null pointer.")
+
+            renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
+
+            entity->AddComponent(Component::Type::RENDERER, std::move(renderComponentUniquePtr));
+
+            // add terrain component
+
+            auto terrainComponentUniquePtr{ std::make_unique<TerrainComponent>(t_terrain) };
+            SG_OGL_CORE_ASSERT(terrainComponentUniquePtr, "[Scene::CreateTerrainEntity()] Null pointer.")
+
+            entity->AddComponent(Component::Type::TERRAIN, std::move(terrainComponentUniquePtr));
 
             return entity;
         }

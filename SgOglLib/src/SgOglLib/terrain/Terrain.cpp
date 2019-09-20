@@ -4,8 +4,6 @@
 #include "resource/TextureManager.h"
 #include "resource/stb_image.h"
 #include "buffer/BufferLayout.h"
-#include "compute/NormalmapRenderer.h"
-#include "compute/SplatmapRenderer.h"
 #include "Log.h"
 #include "SgOglException.h"
 
@@ -13,13 +11,8 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::terrain::Terrain::Terrain(
-    resource::TextureManager& t_textureManager,
-    resource::ShaderManager& t_shaderManager,
-    const std::string& t_configFileName
-)
+sg::ogl::terrain::Terrain::Terrain(resource::TextureManager& t_textureManager, const std::string& t_configFileName)
     : m_textureManager{ t_textureManager }
-    , m_shaderManager{ t_shaderManager }
 {
     Config::LoadOptions(t_configFileName, m_terrainOptions);
 }
@@ -49,7 +42,7 @@ sg::ogl::terrain::Terrain::MeshSharedPtr& sg::ogl::terrain::Terrain::GetMesh()
 void sg::ogl::terrain::Terrain::GenerateTerrain()
 {
     // Generate a OpenGL texture handle for the heightmap.
-    const auto heightmapTextureId{ m_textureManager.GetTextureIdFromPath(m_terrainOptions.heightmapPath) };
+    m_heightmapTextureId = m_textureManager.GetTextureIdFromPath(m_terrainOptions.heightmapPath);
 
     // Generate OpenGL texture handles for other textures.
     for (const auto& entry : m_terrainOptions.texturePack)
@@ -59,24 +52,24 @@ void sg::ogl::terrain::Terrain::GenerateTerrain()
 
     // Load heightmap locally again as image.
     SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] Load heightmap {}.", m_terrainOptions.heightmapPath);
-    int nrChannels, width, height;
-    auto* const image{ stbi_load(m_terrainOptions.heightmapPath.c_str(), &width, &height, &nrChannels, 0) };
+    int nrChannels;
+    auto* const image{ stbi_load(m_terrainOptions.heightmapPath.c_str(), &m_heightmapWidth, &m_heightmapHeight, &nrChannels, 0) };
     if (!image)
     {
         throw SG_OGL_EXCEPTION("[Terrain::GenerateTerrain()] Heightmap failed to load at path " + m_terrainOptions.heightmapPath + ".");
     }
 
     // Width and height should have the same value.
-    if (width != height)
+    if (m_heightmapWidth != m_heightmapHeight)
     {
         throw SG_OGL_EXCEPTION("[Terrain::GenerateTerrain()] Width and height should have the same value.");
     }
 
     SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] The heightmap {} was successfully loaded.", m_terrainOptions.heightmapPath);
-    SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] Heightmap width: {}, height: {}.", width, height);
+    SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] Heightmap width: {}, height: {}.", m_heightmapWidth, m_heightmapHeight);
 
     // width = height -> can use one of them as a counter
-    const auto count{ width };
+    const auto count{ m_heightmapWidth };
 
     // Create the terrain vertices.
     VerticesContainer vertices;
@@ -151,27 +144,6 @@ void sg::ogl::terrain::Terrain::GenerateTerrain()
 
     // Allocate the data to the mesh.
     m_mesh->Allocate(bufferLayout, &vertices, count * count, &indices);
-
-    // Generate normalmap.
-    m_terrainOptions.normalmap.m_textureId = compute::NormalmapRenderer::ComputeNormalmap(
-        m_textureManager,
-        m_shaderManager,
-        m_terrainOptions.normalmap.uniqueTextureName,
-        m_terrainOptions.normalmap.computeShaderName,
-        heightmapTextureId,
-        width,
-        m_terrainOptions.normalStrength
-    );
-
-    // Generate splatmap.
-    m_terrainOptions.splatmap.m_textureId = compute::SplatmapRenderer::ComputeSplatmap(
-        m_textureManager,
-        m_shaderManager,
-        m_terrainOptions.splatmap.uniqueTextureName,
-        m_terrainOptions.splatmap.computeShaderName,
-        m_terrainOptions.normalmap.GetTextureId(),
-        width
-    );
 }
 
 //-------------------------------------------------

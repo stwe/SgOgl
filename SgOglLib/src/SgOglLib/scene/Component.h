@@ -11,7 +11,8 @@ namespace sg::ogl::scene
     public:
         enum class Type
         {
-            RENDERER
+            RENDERER,
+            TERRAIN
         };
 
         //-------------------------------------------------
@@ -43,13 +44,15 @@ namespace sg::ogl::scene
         // Logic
         //-------------------------------------------------
 
+        virtual void Init() {}
         virtual void Input() {}
         virtual void Update() {}
         virtual void Render() {}
 
     protected:
+        Entity* m_parentEntity{ nullptr };
 
     private:
-        Entity* m_parentEntity{ nullptr };
+
     };
 }

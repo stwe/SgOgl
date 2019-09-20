@@ -1,9 +1,9 @@
 #include "GameState.h"
 #include "DomeShaderProgram.h"
 #include "SkyboxShaderProgram.h"
-//#include "TerrainShaderProgram.h"
-//#include "ComputeNormalmap.h"
-//#include "ComputeSplatmap.h"
+#include "TerrainShaderProgram.h"
+#include "ComputeNormalmap.h"
+#include "ComputeSplatmap.h"
 
 //-------------------------------------------------
 // Logic
@@ -26,6 +26,8 @@ bool GameState::Update(const double t_dt)
 #else
     m_skyboxEntity->Update();
 #endif
+
+    m_terrainEntity->Update();
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
     {
@@ -62,6 +64,8 @@ bool GameState::Update(const double t_dt)
 
 void GameState::Render()
 {
+    m_terrainEntity->Render();
+
 #ifdef SKYDOME
     m_skydomeEntity->Render();
 #else
@@ -86,15 +90,18 @@ void GameState::Init()
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
+    // create a terrain
+    CreateTerrainEntity();
+
+    // create skydome / skybox
 #ifdef SKYDOME
     CreateSkydomeEntity();
 #else
     CreateSkyboxEntity();
 #endif
 
-    CreateTerrainEntity();
-
-    //m_terrainEntity->Init();
+    // init terrain entity components
+    m_terrainEntity->Init();
 }
 
 //-------------------------------------------------
@@ -123,18 +130,12 @@ void GameState::CreateSkyboxEntity()
 
 void GameState::CreateTerrainEntity()
 {
-    /*
     m_terrain = std::make_shared<sg::ogl::terrain::Terrain>(
         *GetApplicationContext()->GetTextureManager(),
-        *GetApplicationContext()->GetShaderManager(),
         "res/config/Terrain.xml"
         );
 
-    m_terrainEntity = m_scene->CreateTerrainEntity<TerrainShaderProgram, ComputeNormalmap, ComputeSplatmap>(
-        m_terrain,
-        "terrain",
-        "normalmap",
-        "splatmap"
-        );
-    */
+    m_terrain->GenerateTerrain();
+
+    m_terrainEntity = m_scene->CreateTerrainEntity<TerrainShaderProgram, ComputeNormalmap, ComputeSplatmap>(m_terrain, "terrain");
 }

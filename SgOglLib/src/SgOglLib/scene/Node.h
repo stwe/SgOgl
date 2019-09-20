@@ -80,6 +80,7 @@ namespace sg::ogl::scene
         // Logic
         //-------------------------------------------------
 
+        virtual void Init();
         virtual void Input();
         virtual void Update();
         virtual void Render();

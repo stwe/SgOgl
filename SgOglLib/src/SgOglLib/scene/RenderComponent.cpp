@@ -1,8 +1,8 @@
 #include "RenderComponent.h"
 #include "resource/ShaderProgram.h"
+#include "resource/Mesh.h"
 #include "Log.h"
 #include "Entity.h"
-#include "resource/Mesh.h"
 
 //-------------------------------------------------
 // Getter

@@ -39,6 +39,14 @@ void sg::ogl::scene::Entity::SetParentScene(Scene* t_scene)
 // Logic
 //-------------------------------------------------
 
+void sg::ogl::scene::Entity::Init()
+{
+    for (auto& component : m_components)
+    {
+        component.second->Init();
+    }
+}
+
 void sg::ogl::scene::Entity::Input()
 {
     for (auto& component : m_components)

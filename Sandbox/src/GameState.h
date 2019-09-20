@@ -2,12 +2,13 @@
 
 #include "SgOgl.h"
 
+// render a Skydome instead a Skybox
 #define SKYDOME
 
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 32.0f };
+    static constexpr auto CAMERA_VELOCITY{ 128.0f };
 
     // scene graph - unique
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
