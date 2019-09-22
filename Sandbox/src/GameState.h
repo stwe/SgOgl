@@ -3,7 +3,7 @@
 #include "SgOgl.h"
 
 // renders a skydome instead of a skybox
-#define SKYDOME
+//#define SKYDOME
 
 // creates a directional light and uses the corresponding shaders
 #define DIRECTIONAL_LIGHTING

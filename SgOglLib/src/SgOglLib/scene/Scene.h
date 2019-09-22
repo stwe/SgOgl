@@ -131,7 +131,7 @@ namespace sg::ogl::scene
                     child->SetParentScene(this);
 
                     // add a render component
-                    AddRenderComponent(child, t_shaderName);
+                    AddRenderComponent<RenderComponent, DefaultRenderConfig>(child, t_shaderName);
 
                     // add entity as child
                     entity->AddChild(child);
@@ -143,7 +143,7 @@ namespace sg::ogl::scene
                 entity->material = meshes[0]->GetDefaultMaterial();
                 entity->SetParentScene(this);
 
-                AddRenderComponent(entity, t_shaderName);
+                AddRenderComponent<RenderComponent, DefaultRenderConfig>(entity, t_shaderName);
             }
 
             return entity;
@@ -169,15 +169,7 @@ namespace sg::ogl::scene
             entity->SetParentScene(this);
 
             // add render component
-            auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
-            SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::CreateSkydomeEntity()] Null pointer.")
-
-            auto renderConfigUniquePtr{ std::make_unique<DefaultRenderConfig>(m_application->GetShaderManager()->GetShaderProgram(t_shaderName)) };
-            SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::CreateSkydomeEntity()] Null pointer.")
-
-            renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
-
-            entity->AddComponent(Component::Type::RENDERER, std::move(renderComponentUniquePtr));
+            AddRenderComponent<RenderComponent, DefaultRenderConfig>(entity, t_shaderName);
 
             return entity;
         }
@@ -221,16 +213,7 @@ namespace sg::ogl::scene
             entity->SetParentScene(this);
 
             // add render component
-
-            auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
-            SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
-
-            auto renderConfigUniquePtr{ std::make_unique<SkyboxRenderConfig>(m_application->GetShaderManager()->GetShaderProgram(t_shaderName)) };
-            SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
-
-            renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
-
-            entity->AddComponent(Component::Type::RENDERER, std::move(renderComponentUniquePtr));
+            AddRenderComponent<RenderComponent, SkyboxRenderConfig>(entity, t_shaderName);
 
             return entity;
         }
@@ -256,21 +239,10 @@ namespace sg::ogl::scene
             entity->SetParentScene(this);
 
             // add render component
-            auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
-            SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::CreateTerrainEntity()] Null pointer.")
-
-            auto renderConfigUniquePtr{ std::make_unique<DefaultRenderConfig>(m_application->GetShaderManager()->GetShaderProgram(t_shaderName)) };
-            SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::CreateTerrainEntity()] Null pointer.")
-
-            renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
-
-            entity->AddComponent(Component::Type::RENDERER, std::move(renderComponentUniquePtr));
+            AddRenderComponent<RenderComponent, DefaultRenderConfig>(entity, t_shaderName);
 
             // add terrain component
-            auto terrainComponentUniquePtr{ std::make_unique<TerrainComponent>(t_terrain) };
-            SG_OGL_CORE_ASSERT(terrainComponentUniquePtr, "[Scene::CreateTerrainEntity()] Null pointer.")
-
-            entity->AddComponent(Component::Type::TERRAIN, std::move(terrainComponentUniquePtr));
+            AddTerrainComponent(entity, t_terrain);
 
             return entity;
         }
@@ -304,17 +276,26 @@ namespace sg::ogl::scene
         static void StorePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node);
         static std::vector<glm::vec3> CreateSkyboxVertices(float t_size);
 
+        template <typename TRenderComponent, typename TRenderConfig>
         void AddRenderComponent(Entity* t_entity, const std::string& t_shaderName) const
         {
-            auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
+            auto renderComponentUniquePtr{ std::make_unique<TRenderComponent>() };
             SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::AddRenderComponent()] Null pointer.")
 
-            auto renderConfigUniquePtr{ std::make_unique<DefaultRenderConfig>(m_application->GetShaderManager()->GetShaderProgram(t_shaderName)) };
+            auto renderConfigUniquePtr{ std::make_unique<TRenderConfig>(m_application->GetShaderManager()->GetShaderProgram(t_shaderName)) };
             SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::AddRenderComponent()] Null pointer.")
 
             renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
 
             t_entity->AddComponent(Component::Type::RENDERER, std::move(renderComponentUniquePtr));
+        }
+
+        void AddTerrainComponent(Entity* t_entity, const std::shared_ptr<terrain::Terrain>& t_terrain) const
+        {
+            auto terrainComponentUniquePtr{ std::make_unique<TerrainComponent>(t_terrain) };
+            SG_OGL_CORE_ASSERT(terrainComponentUniquePtr, "[Scene::AddTerrainComponent()] Null pointer.")
+
+            t_entity->AddComponent(Component::Type::TERRAIN, std::move(terrainComponentUniquePtr));
         }
     };
 }
