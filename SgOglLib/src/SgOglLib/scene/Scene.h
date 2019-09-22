@@ -100,6 +100,56 @@ namespace sg::ogl::scene
         static Node* CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material = nullptr);
 
         template <typename T>
+        Entity* CreateModelEntity(const std::string& t_modelPath, const std::string& t_shaderName)
+        {
+            // add shader program to the ShaderManager
+            m_application->GetShaderManager()->AddShaderProgram<T>(t_shaderName);
+
+            // add model to the ModelManager
+            const auto model{ m_application->GetModelManager()->GetModelFromPath(t_modelPath) };
+
+            // create entity
+            auto* entity{ new Entity };
+            SG_OGL_CORE_ASSERT(entity, "[Scene::CreateModelEntity()] Null pointer.")
+
+            // get model meshes
+            const auto& meshes{ model->GetMeshes() };
+
+            // create a child entity for each mesh
+            if (meshes.size() > 1)
+            {
+                // for each mesh
+                for (const auto& mesh : meshes)
+                {
+                    // create a child
+                    auto* child{ new Entity };
+                    SG_OGL_CORE_ASSERT(child, "[Scene::CreateModelEntity()] Null pointer.")
+
+                    // set mesh && material
+                    child->mesh = mesh;
+                    child->material = mesh->GetDefaultMaterial();
+                    child->SetParentScene(this);
+
+                    // add a render component
+                    AddRenderComponent(child, t_shaderName);
+
+                    // add entity as child
+                    entity->AddChild(child);
+                }
+            }
+            else
+            {
+                entity->mesh = meshes[0];
+                entity->material = meshes[0]->GetDefaultMaterial();
+                entity->SetParentScene(this);
+
+                AddRenderComponent(entity, t_shaderName);
+            }
+
+            return entity;
+        }
+
+        template <typename T>
         Entity* CreateSkydomeEntity(const std::string& t_modelPath, const std::string& t_shaderName)
         {
             // add shader program to the ShaderManager
@@ -110,7 +160,6 @@ namespace sg::ogl::scene
             SG_OGL_CORE_ASSERT(model->GetMeshes().size() == 1, "[Scene::CreateSkydomeEntity()] Invalid number of meshes.")
 
             // create entity
-
             auto* entity{ new Entity };
             SG_OGL_CORE_ASSERT(entity, "[Scene::CreateSkydomeEntity()] Null pointer.")
 
@@ -120,7 +169,6 @@ namespace sg::ogl::scene
             entity->SetParentScene(this);
 
             // add render component
-
             auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
             SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::CreateSkydomeEntity()] Null pointer.")
 
@@ -148,7 +196,6 @@ namespace sg::ogl::scene
             const auto cubemapId{ m_application->GetTextureManager()->GetCubemapId(t_textureFileNames) };
 
             // create entity
-
             auto* entity{ new Entity };
             SG_OGL_CORE_ASSERT(entity, "[Scene::CreateSkyboxEntity()] Null pointer.")
 
@@ -199,7 +246,6 @@ namespace sg::ogl::scene
             m_application->GetShaderManager()->AddComputeShaderProgram<S>(t_terrain->GetTerrainOptions().splatmap.computeShaderName);
 
             // create entity
-
             auto* entity{ new Entity };
             SG_OGL_CORE_ASSERT(entity, "[Scene::CreateTerrainEntity()] Null pointer.")
 
@@ -210,7 +256,6 @@ namespace sg::ogl::scene
             entity->SetParentScene(this);
 
             // add render component
-
             auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
             SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::CreateTerrainEntity()] Null pointer.")
 
@@ -222,7 +267,6 @@ namespace sg::ogl::scene
             entity->AddComponent(Component::Type::RENDERER, std::move(renderComponentUniquePtr));
 
             // add terrain component
-
             auto terrainComponentUniquePtr{ std::make_unique<TerrainComponent>(t_terrain) };
             SG_OGL_CORE_ASSERT(terrainComponentUniquePtr, "[Scene::CreateTerrainEntity()] Null pointer.")
 
@@ -259,5 +303,18 @@ namespace sg::ogl::scene
 
         static void StorePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node);
         static std::vector<glm::vec3> CreateSkyboxVertices(float t_size);
+
+        void AddRenderComponent(Entity* t_entity, const std::string& t_shaderName) const
+        {
+            auto renderComponentUniquePtr{ std::make_unique<RenderComponent>() };
+            SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::AddRenderComponent()] Null pointer.")
+
+            auto renderConfigUniquePtr{ std::make_unique<DefaultRenderConfig>(m_application->GetShaderManager()->GetShaderProgram(t_shaderName)) };
+            SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::AddRenderComponent()] Null pointer.")
+
+            renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
+
+            t_entity->AddComponent(Component::Type::RENDERER, std::move(renderComponentUniquePtr));
+        }
     };
 }

@@ -2,8 +2,11 @@
 
 #include "SgOgl.h"
 
-// render a Skydome instead a Skybox
+// renders a skydome instead of a skybox
 #define SKYDOME
+
+// creates a directional light and uses the corresponding shaders
+#define DIRECTIONAL_LIGHTING
 
 class GameState : public sg::ogl::state::State
 {
@@ -18,6 +21,9 @@ public:
 
     // terrain - shared
     using TerrainSharedPtr = std::shared_ptr<sg::ogl::terrain::Terrain>;
+
+    // directional light - shared
+    using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -55,10 +61,14 @@ private:
     sg::ogl::scene::Entity* m_skydomeEntity{ nullptr };
     sg::ogl::scene::Entity* m_skyboxEntity{ nullptr };
     sg::ogl::scene::Entity* m_terrainEntity{ nullptr };
+    sg::ogl::scene::Entity* m_houseEntity{ nullptr };
+    sg::ogl::scene::Entity* m_heroEntity{ nullptr };
 
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
     TerrainSharedPtr m_terrain;
+
+    DirectionalLightSharedPtr m_directionalLight;
 
     //-------------------------------------------------
     // Init
@@ -73,4 +83,6 @@ private:
     void CreateSkydomeEntity();
     void CreateSkyboxEntity();
     void CreateTerrainEntity();
+    void CreateHouseEntity();
+    void CreateHeroEntity();
 };

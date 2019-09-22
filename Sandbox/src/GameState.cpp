@@ -1,7 +1,9 @@
 #include "GameState.h"
 #include "DomeShaderProgram.h"
 #include "SkyboxShaderProgram.h"
+#include "ModelShaderProgram.h"
 #include "TerrainShaderProgram.h"
+#include "TerrainLightingShaderProgram.h"
 #include "ComputeNormalmap.h"
 #include "ComputeSplatmap.h"
 
@@ -28,6 +30,8 @@ bool GameState::Update(const double t_dt)
 #endif
 
     m_terrainEntity->Update();
+    m_houseEntity->Update();
+    m_heroEntity->Update();
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
     {
@@ -65,6 +69,8 @@ bool GameState::Update(const double t_dt)
 void GameState::Render()
 {
     m_terrainEntity->Render();
+    m_houseEntity->Render();
+    m_heroEntity->Render();
 
 #ifdef SKYDOME
     m_skydomeEntity->Render();
@@ -90,8 +96,25 @@ void GameState::Init()
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
+    // create a directional light
+#ifdef DIRECTIONAL_LIGHTING
+    m_directionalLight = std::make_shared<sg::ogl::light::DirectionalLight>();
+    //m_directionalLight->direction = glm::vec3(0.5f, 0.7f, 1.0f);
+    m_directionalLight->diffuseIntensity = glm::vec3(0.8f, 0.8f, 0.8f);
+    m_scene->SetDirectionalLight(m_directionalLight);
+#endif
+
     // create a terrain
     CreateTerrainEntity();
+
+    // create a house entity on position
+    CreateHouseEntity();
+    m_houseEntity->GetLocalTransform().position = glm::vec3(100.0f, 15.0f, 100.0f);
+
+    // create a hero on position
+    CreateHeroEntity();
+    m_heroEntity->GetLocalTransform().position = glm::vec3(100.0f, 19.0f, 150.0f);
+    m_heroEntity->GetLocalTransform().scale = glm::vec3(2.0f);
 
     // create skydome / skybox
 #ifdef SKYDOME
@@ -137,5 +160,19 @@ void GameState::CreateTerrainEntity()
 
     m_terrain->GenerateTerrain();
 
+#ifdef DIRECTIONAL_LIGHTING
+    m_terrainEntity = m_scene->CreateTerrainEntity<TerrainLightingShaderProgram, ComputeNormalmap, ComputeSplatmap>(m_terrain, "terrain_with_lighting");
+#else
     m_terrainEntity = m_scene->CreateTerrainEntity<TerrainShaderProgram, ComputeNormalmap, ComputeSplatmap>(m_terrain, "terrain");
+#endif
+}
+
+void GameState::CreateHouseEntity()
+{
+    m_houseEntity = m_scene->CreateModelEntity<ModelShaderProgram>("res/model/House/farmhouse_obj.obj", "model");
+}
+
+void GameState::CreateHeroEntity()
+{
+    m_heroEntity = m_scene->CreateModelEntity<ModelShaderProgram>("res/model/panda/pandarenmale.obj", "model");
 }

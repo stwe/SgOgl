@@ -39,7 +39,8 @@ namespace sg::ogl::resource
         {
             if (m_shaderPrograms.count(t_folder) != 0)
             {
-                throw SG_OGL_EXCEPTION("[ShaderManager::AddShaderProgram()] Shader program " + t_folder + " already exist.");
+                SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] Shader program {} already exist.", t_folder);
+                return;
             }
 
             auto shaderProgram{ std::make_unique<T>() };

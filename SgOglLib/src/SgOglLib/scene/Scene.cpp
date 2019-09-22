@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "Node.h"
 #include "OpenGl.h"
+#include "light/DirectionalLight.h"
+#include "light/PointLight.h"
 #include "camera/LookAtCamera.h"
 
 //-------------------------------------------------
