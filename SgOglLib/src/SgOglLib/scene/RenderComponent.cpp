@@ -58,7 +58,16 @@ void sg::ogl::scene::RenderComponent::Render()
     m_renderConfig->GetShaderProgram().UpdateUniforms(*GetParentEntity());
 
     GetParentEntity()->mesh->InitDraw();
-    GetParentEntity()->mesh->DrawPrimitives();
+
+    if (GetParentEntity()->instanceCount > 0)
+    {
+        GetParentEntity()->mesh->DrawInstanced(GetParentEntity()->instanceCount);
+    }
+    else
+    {
+        GetParentEntity()->mesh->DrawPrimitives();
+    }
+
     GetParentEntity()->mesh->EndDraw();
 
     resource::ShaderProgram::Unbind();

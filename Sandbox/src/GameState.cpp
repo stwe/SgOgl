@@ -2,6 +2,7 @@
 #include "DomeShaderProgram.h"
 #include "SkyboxShaderProgram.h"
 #include "ModelShaderProgram.h"
+#include "InstancingShaderProgram.h"
 #include "TerrainShaderProgram.h"
 #include "TerrainLightingShaderProgram.h"
 #include "ComputeNormalmap.h"
@@ -71,6 +72,7 @@ void GameState::Render()
     m_terrainEntity->Render();
     m_houseEntity->Render();
     m_heroEntity->Render();
+    m_grassEntity->Render();
 
 #ifdef SKYDOME
     m_skydomeEntity->Render();
@@ -107,6 +109,12 @@ void GameState::Init()
     // create a terrain
     CreateTerrainEntity();
 
+    // create grass
+    CreateGrassEntity();
+    m_grassEntity->instanceCount = 15000;
+    GenerateGrassPositions(100.0f, 100.0f, m_grassEntity->instanceCount);
+    sg::ogl::scene::Scene::SetInstancePositions(m_grassModelMatrices, m_grassEntity);
+
     // create a house entity on position
     CreateHouseEntity();
     m_houseEntity->GetLocalTransform().position = glm::vec3(100.0f, 15.0f, 100.0f);
@@ -125,6 +133,35 @@ void GameState::Init()
 
     // init terrain entity components
     m_terrainEntity->Init();
+}
+
+void GameState::GenerateGrassPositions(const float t_radius, const float t_offset, const int32_t t_instanceCount)
+{
+    const auto time{ glfwGetTime() };
+    srand(static_cast<unsigned>(time));
+
+    for (auto i{ 0 }; i < t_instanceCount; ++i)
+    {
+        sg::ogl::math::Transform transform;
+
+        // 1. translation: displace along circle with radius in range [-offset, offset]
+        const auto angle{ static_cast<float>(i) / static_cast<float>(t_instanceCount) * 360.0f };
+        auto displacement{ static_cast<float>(rand() % static_cast<int>(2 * t_offset * 100)) / 100.0f - t_offset };
+        const auto x{ sin(angle) * t_radius + displacement };
+        displacement = static_cast<float>(rand() % static_cast<int>(2 * t_offset * 100)) / 100.0f - t_offset;
+        const auto z{ cos(angle) * t_radius + displacement };
+        transform.position = glm::vec3(x, 15.0f, z);
+
+        // 2. scale: scale between 0.05 and 0.25f
+        const auto scale{ static_cast<float>(rand() % 20) / 100.0f + 0.05f };
+        //transform.scale = glm::vec3(scale);
+        transform.scale = glm::vec3(4.0f);
+
+        // 3. rotation
+        transform.rotation = glm::vec3(180.0f, 0.0f, 0.0f);
+
+        m_grassModelMatrices.push_back(transform.GetModelMatrix());
+    }
 }
 
 //-------------------------------------------------
@@ -175,4 +212,9 @@ void GameState::CreateHouseEntity()
 void GameState::CreateHeroEntity()
 {
     m_heroEntity = m_scene->CreateModelEntity<ModelShaderProgram>("res/model/panda/pandarenmale.obj", "model");
+}
+
+void GameState::CreateGrassEntity()
+{
+    m_grassEntity = m_scene->CreateModelEntity<InstancingShaderProgram>("res/model/Grass_01/grassmodel.obj", "instancing");
 }

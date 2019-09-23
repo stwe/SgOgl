@@ -3,7 +3,7 @@
 #include "SgOgl.h"
 
 // renders a skydome instead of a skybox
-//#define SKYDOME
+#define SKYDOME
 
 // creates a directional light and uses the corresponding shaders
 #define DIRECTIONAL_LIGHTING
@@ -63,6 +63,7 @@ private:
     sg::ogl::scene::Entity* m_terrainEntity{ nullptr };
     sg::ogl::scene::Entity* m_houseEntity{ nullptr };
     sg::ogl::scene::Entity* m_heroEntity{ nullptr };
+    sg::ogl::scene::Entity* m_grassEntity{ nullptr };
 
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
@@ -70,11 +71,14 @@ private:
 
     DirectionalLightSharedPtr m_directionalLight;
 
+    std::vector<glm::mat4> m_grassModelMatrices;
+
     //-------------------------------------------------
     // Init
     //-------------------------------------------------
 
     void Init();
+    void GenerateGrassPositions(float t_radius, float t_offset, int32_t t_instanceCount);
 
     //-------------------------------------------------
     // Helper
@@ -85,4 +89,5 @@ private:
     void CreateTerrainEntity();
     void CreateHouseEntity();
     void CreateHeroEntity();
+    void CreateGrassEntity();
 };

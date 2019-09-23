@@ -120,20 +120,20 @@ void sg::ogl::scene::Scene::SetPointLight(const PointLightSharedPtr& t_pointLigh
 // Vertex attribute
 //-------------------------------------------------
 
-void sg::ogl::scene::Scene::SetNodeInstancePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node)
+void sg::ogl::scene::Scene::SetInstancePositions(const std::vector<glm::mat4>& t_modelMatrices, Entity* t_entity)
 {
-    SG_OGL_CORE_ASSERT(t_node, "[Scene::SetNodeInstancePositions()] Null pointer.")
+    SG_OGL_CORE_ASSERT(t_entity, "[Scene::SetNodeInstancePositions()] Null pointer.")
 
-    if (t_node->mesh && !t_node->HasChildren())
+    if (t_entity->mesh && !t_entity->HasChildren())
     {
-        StorePositions(t_modelMatrices, t_node);
+        StorePositions(t_modelMatrices, t_entity);
     }
 
-    if (!t_node->mesh && t_node->HasChildren())
+    if (!t_entity->mesh && t_entity->HasChildren())
     {
-        for (auto* child : t_node->GetChildren())
+        for (auto* child : t_entity->GetChildren())
         {
-            StorePositions(t_modelMatrices, child);
+            StorePositions(t_modelMatrices, dynamic_cast<Entity*>(child));
         }
     }
 }
@@ -222,10 +222,10 @@ void sg::ogl::scene::Scene::Render(Node* t_node) const
 // Helper
 //-------------------------------------------------
 
-void sg::ogl::scene::Scene::StorePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node)
+void sg::ogl::scene::Scene::StorePositions(const std::vector<glm::mat4>& t_modelMatrices, Entity* t_entity)
 {
     // get vao of the mesh
-    auto& vao{ t_node->mesh->GetVao() };
+    auto& vao{ t_entity->mesh->GetVao() };
 
     // bind vao
     vao->BindVao();

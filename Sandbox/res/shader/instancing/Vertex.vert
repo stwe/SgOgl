@@ -13,22 +13,19 @@ layout (location = 5) in mat4 aInstanceMatrix;
 
 // Out
 
-out vec3 vPosition;
-out vec3 vNormal;
 out vec2 vUv;
 
 // Uniforms
 
-uniform mat4 view;
-uniform mat4 projection;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 
 // Main
 
 void main()
 {
-    vPosition = vec3(aInstanceMatrix * vec4(aPosition, 1.0));
-    vNormal = mat3(transpose(inverse(aInstanceMatrix))) * aNormal;
+    vec3 position = vec3(aInstanceMatrix * vec4(aPosition, 1.0));
     vUv = aUv;
 
-    gl_Position = projection * view * vec4(vPosition, 1.0);
+    gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
 }

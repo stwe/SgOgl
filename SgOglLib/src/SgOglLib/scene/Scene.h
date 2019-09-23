@@ -91,7 +91,7 @@ namespace sg::ogl::scene
         // Vertex attribute
         //-------------------------------------------------
 
-        static void SetNodeInstancePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node);
+        static void SetInstancePositions(const std::vector<glm::mat4>& t_modelMatrices, Entity* t_entity);
 
         //-------------------------------------------------
         // Scene objects
@@ -273,7 +273,8 @@ namespace sg::ogl::scene
         // Helper
         //-------------------------------------------------
 
-        static void StorePositions(const std::vector<glm::mat4>& t_modelMatrices, Node* t_node);
+        static void StorePositions(const std::vector<glm::mat4>& t_modelMatrices, Entity* t_entity);
+
         static std::vector<glm::vec3> CreateSkyboxVertices(float t_size);
 
         template <typename TRenderComponent, typename TRenderConfig>
