@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <terrain>
-    <position x="-3000.0" z="-3000.0"/>
+    <position x="0.0" z="0.0"/>
     <scale xz="6000.0" y="600.0"/>
     <heightmapPath>res/heightmap/hm0.bmp</heightmapPath>
     <textures>

@@ -81,45 +81,44 @@ void sg::ogl::terrain::Terrain::GenerateTerrain()
         for (auto x{ 0 }; x < count; ++x)
         {
             // Get the height value from the heightmap.
-            auto y{ GetHeight(x, z, count, nrChannels, image) };
+            auto yPos{ GetHeight(x, z, count, nrChannels, image) };
 
             // Scale the height value into range <0.0, 1.0>.
             if (nrChannels == STBI_grey)
             {
-                y /= 256.0f;
+                yPos /= 256.0f;
             }
             else
             {
-                y /= MAX_PIXEL_COLOUR;
+                yPos /= MAX_PIXEL_COLOUR;
             }
 
-            SG_OGL_CORE_ASSERT(y >= 0.0f && y <= 1.0f, "[Terrain::GenerateTerrain()] Invalid height.")
+            SG_OGL_CORE_ASSERT(yPos >= 0.0f && yPos <= 1.0f, "[Terrain::GenerateTerrain()] Invalid height value.")
 
-            // save height
-            m_terrainHeights[x][z] = y;
+            // Save height value.
+            m_terrainHeights[x][z] = yPos;
 
-            // scale points into range <-0.5, 0.5> on x and z axis
-            /*
-            vertex.position = glm::vec3
-            (
-                -0.5f + x,
-                y,
-                -0.5f + z
-            );
-            */
+            // Scale points into range <-0.5, 0.5> on x and z axis
+            auto xPos{ static_cast<float>(x) / (static_cast<float>(count) - 1) };
+            auto zPos{ static_cast<float>(z) / (static_cast<float>(count) - 1) };
+            xPos = -0.5f + xPos;
+            zPos = -0.5f + zPos;
 
-            // position (3 floats)
-            vertices.push_back(static_cast<float>(x) / (static_cast<float>(count) - 1) * m_terrainOptions.scaleXz);
-            vertices.push_back(y * m_terrainOptions.scaleY);
-            vertices.push_back(static_cast<float>(z) / (static_cast<float>(count) - 1) * m_terrainOptions.scaleXz);
+            SG_OGL_CORE_ASSERT(xPos >= -0.5f && xPos <= 0.5f, "[Terrain::GenerateTerrain()] Invalid x value.")
+            SG_OGL_CORE_ASSERT(zPos >= -0.5f && zPos <= 0.5f, "[Terrain::GenerateTerrain()] Invalid z value.")
 
-            // normal (3 floats)
+            // save position (3 floats)
+            vertices.push_back(xPos * m_terrainOptions.scaleXz);
+            vertices.push_back(yPos * m_terrainOptions.scaleY);
+            vertices.push_back(zPos * m_terrainOptions.scaleXz);
+
+            // save normal (3 floats)
             auto normal{ CalculateNormal(x, z, count, nrChannels, image) };
             vertices.push_back(normal.x);
             vertices.push_back(normal.y);
             vertices.push_back(normal.z);
 
-            // uv (2 floats)
+            // save uv (2 floats)
             vertices.push_back(static_cast<float>(x) / (static_cast<float>(count) - 1));
             vertices.push_back(static_cast<float>(z) / (static_cast<float>(count) - 1));
         }
