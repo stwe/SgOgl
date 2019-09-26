@@ -45,6 +45,8 @@ public:
     ~GameState() noexcept override
     {
         SG_OGL_LOG_DEBUG("[GameState::~GameState()] Destruct GameState.");
+
+        // todo: delete raw pointer
     }
 
     //-------------------------------------------------
@@ -87,7 +89,7 @@ private:
     void CreateSkydomeEntity();
     void CreateSkyboxEntity();
     void CreateTerrainEntity();
-    void CreateHouseEntity();
-    void CreateHeroEntity();
-    void CreateGrassEntity();
+    void CreateHouseEntity(float t_worldX, float t_worldZ);
+    void CreateHeroEntity(float t_worldX, float t_worldZ);
+    void CreateGrassEntity(int32_t t_instanceCount, float t_radius, float t_offset);
 };

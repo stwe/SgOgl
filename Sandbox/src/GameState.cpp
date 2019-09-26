@@ -34,6 +34,8 @@ bool GameState::Update(const double t_dt)
     m_houseEntity->Update();
     m_heroEntity->Update();
 
+    // Camera
+
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
     {
         m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::FORWARD, t_dt * CAMERA_VELOCITY);
@@ -62,6 +64,44 @@ bool GameState::Update(const double t_dt)
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_U))
     {
         m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::DOWN, t_dt * CAMERA_VELOCITY);
+    }
+
+    // Hero
+
+    if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_UP))
+    {
+        m_heroEntity->GetLocalTransform().position = glm::vec3(
+            m_heroEntity->GetLocalTransform().position.x,
+            m_terrain->GetHeightAtWorldPosition(m_heroEntity->GetLocalTransform().position.x, m_heroEntity->GetLocalTransform().position.z),
+            m_heroEntity->GetLocalTransform().position.z + 0.5f
+        );
+    }
+
+    if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_DOWN))
+    {
+        m_heroEntity->GetLocalTransform().position = glm::vec3(
+            m_heroEntity->GetLocalTransform().position.x,
+            m_terrain->GetHeightAtWorldPosition(m_heroEntity->GetLocalTransform().position.x, m_heroEntity->GetLocalTransform().position.z),
+            m_heroEntity->GetLocalTransform().position.z - 0.5f
+        );
+    }
+
+    if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_LEFT))
+    {
+        m_heroEntity->GetLocalTransform().position = glm::vec3(
+            m_heroEntity->GetLocalTransform().position.x + 0.5f,
+            m_terrain->GetHeightAtWorldPosition(m_heroEntity->GetLocalTransform().position.x, m_heroEntity->GetLocalTransform().position.z),
+            m_heroEntity->GetLocalTransform().position.z
+        );
+    }
+
+    if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_RIGHT))
+    {
+        m_heroEntity->GetLocalTransform().position = glm::vec3(
+            m_heroEntity->GetLocalTransform().position.x - 0.5f,
+            m_terrain->GetHeightAtWorldPosition(m_heroEntity->GetLocalTransform().position.x, m_heroEntity->GetLocalTransform().position.z),
+            m_heroEntity->GetLocalTransform().position.z
+        );
     }
 
     return true;
@@ -106,25 +146,19 @@ void GameState::Init()
     m_scene->SetDirectionalLight(m_directionalLight);
 #endif
 
-    // create a terrain
+    // create terrain entity
     CreateTerrainEntity();
 
-    // create grass
-    CreateGrassEntity();
-    m_grassEntity->instanceCount = 15000;
-    GenerateGrassPositions(100.0f, 100.0f, m_grassEntity->instanceCount);
-    sg::ogl::scene::Scene::SetInstancePositions(m_grassModelMatrices, m_grassEntity);
+    // create grass entity
+    CreateGrassEntity(15000, 100.0f, 350.0f);
 
-    // create a house entity on position
-    CreateHouseEntity();
-    m_houseEntity->GetLocalTransform().position = glm::vec3(100.0f, 15.0f, 100.0f);
+    // create house entity
+    CreateHouseEntity(100.0f, 100.0f);
 
-    // create a hero on position
-    CreateHeroEntity();
-    m_heroEntity->GetLocalTransform().position = glm::vec3(100.0f, 19.0f, 150.0f);
-    m_heroEntity->GetLocalTransform().scale = glm::vec3(2.0f);
+    // create hero entity
+    CreateHeroEntity(100.0f, 150.0f);
 
-    // create skydome / skybox
+    // create skydome / skybox entity
 #ifdef SKYDOME
     CreateSkydomeEntity();
 #else
@@ -150,11 +184,10 @@ void GameState::GenerateGrassPositions(const float t_radius, const float t_offse
         const auto x{ sin(angle) * t_radius + displacement };
         displacement = static_cast<float>(rand() % static_cast<int>(2 * t_offset * 100)) / 100.0f - t_offset;
         const auto z{ cos(angle) * t_radius + displacement };
-        transform.position = glm::vec3(x, 15.0f, z);
+        transform.position = glm::vec3(x, m_terrain->GetHeightAtWorldPosition(x, z), z);
+        transform.position.y += 5.0f;
 
-        // 2. scale: scale between 0.05 and 0.25f
-        const auto scale{ static_cast<float>(rand() % 20) / 100.0f + 0.05f };
-        //transform.scale = glm::vec3(scale);
+        // 2. scale
         transform.scale = glm::vec3(4.0f);
 
         // 3. rotation
@@ -204,17 +237,23 @@ void GameState::CreateTerrainEntity()
 #endif
 }
 
-void GameState::CreateHouseEntity()
+void GameState::CreateHouseEntity(const float t_worldX, const float t_worldZ)
 {
     m_houseEntity = m_scene->CreateModelEntity<ModelShaderProgram>("res/model/House/farmhouse_obj.obj", "model");
+    m_houseEntity->GetLocalTransform().position = glm::vec3(t_worldX, m_terrain->GetHeightAtWorldPosition(t_worldX, t_worldZ), t_worldZ);
 }
 
-void GameState::CreateHeroEntity()
+void GameState::CreateHeroEntity(const float t_worldX, const float t_worldZ)
 {
     m_heroEntity = m_scene->CreateModelEntity<ModelShaderProgram>("res/model/panda/pandarenmale.obj", "model");
+    m_heroEntity->GetLocalTransform().position = glm::vec3(t_worldX, m_terrain->GetHeightAtWorldPosition(t_worldX, t_worldZ), t_worldZ);
+    m_heroEntity->GetLocalTransform().scale = glm::vec3(2.0f);
 }
 
-void GameState::CreateGrassEntity()
+void GameState::CreateGrassEntity(const int32_t t_instanceCount, const float t_radius, const float t_offset)
 {
     m_grassEntity = m_scene->CreateModelEntity<InstancingShaderProgram>("res/model/Grass_01/grassmodel.obj", "instancing");
+    m_grassEntity->instanceCount = t_instanceCount;
+    GenerateGrassPositions(t_radius, t_offset, m_grassEntity->instanceCount);
+    sg::ogl::scene::Scene::SetInstancePositions(m_grassModelMatrices, m_grassEntity);
 }

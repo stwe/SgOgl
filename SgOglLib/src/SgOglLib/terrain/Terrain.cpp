@@ -71,6 +71,9 @@ void sg::ogl::terrain::Terrain::GenerateTerrain()
     // width = height -> can use one of them as a counter
     const auto count{ m_heightmapWidth };
 
+    // to save the generated heights of the terrain
+    m_terrainHeights.resize(count, std::vector<float>(count));
+
     // Create the terrain vertices.
     VerticesContainer vertices;
     for (auto z{ 0 }; z < count; ++z)
@@ -91,6 +94,19 @@ void sg::ogl::terrain::Terrain::GenerateTerrain()
             }
 
             SG_OGL_CORE_ASSERT(y >= 0.0f && y <= 1.0f, "[Terrain::GenerateTerrain()] Invalid height.")
+
+            // save height
+            m_terrainHeights[x][z] = y;
+
+            // scale points into range <-0.5, 0.5> on x and z axis
+            /*
+            vertex.position = glm::vec3
+            (
+                -0.5f + x,
+                y,
+                -0.5f + z
+            );
+            */
 
             // position (3 floats)
             vertices.push_back(static_cast<float>(x) / (static_cast<float>(count) - 1) * m_terrainOptions.scaleXz);
@@ -149,6 +165,61 @@ void sg::ogl::terrain::Terrain::GenerateTerrain()
 //-------------------------------------------------
 // Helper
 //-------------------------------------------------
+
+float sg::ogl::terrain::Terrain::GetHeightAtWorldPosition(const float t_worldX, const float t_worldZ, const glm::vec3& t_scale)
+{
+    const auto newWorldX{ t_worldX + t_scale.x * 0.5f };
+    const auto newWorldZ{ t_worldZ + t_scale.z * 0.5f };
+
+    const auto scaleFactorX{ t_scale.x / m_heightmapWidth };
+    const auto scaleFactorZ{ t_scale.z / m_heightmapWidth };
+
+    const auto mapX{ static_cast<int>(newWorldX / scaleFactorX) };
+    const auto mapY{ static_cast<int>(newWorldZ / scaleFactorZ) };
+
+    if (
+        mapX >= m_heightmapWidth - 1 ||
+        mapY >= m_heightmapWidth - 1 ||
+        mapX < 0.0f ||
+        mapY < 0.0f
+    )
+    {
+        return 0.0f;
+    }
+
+    float result;
+    //result = m_terrainHeights[mapX][mapY];
+
+    const auto xCoord{ fmod(newWorldX, scaleFactorX) / scaleFactorX };
+    const auto zCoord{ fmod(newWorldZ, scaleFactorZ) / scaleFactorZ };
+
+    if (xCoord <= (1.0f - zCoord))
+    {
+        result = BarryCentric(
+            glm::vec3(0.0f, m_terrainHeights[mapX][mapY], 0.0f),
+            glm::vec3(1.0f, m_terrainHeights[mapX + 1][mapY], 0.0f),
+            glm::vec3(0.0f, m_terrainHeights[mapX][mapY + 1], 1.0f),
+            glm::vec2(xCoord, zCoord)
+        );
+    }
+    else
+    {
+        result = BarryCentric(
+            glm::vec3(1.0f, m_terrainHeights[mapX + 1][mapY], 0.0f),
+            glm::vec3(1.0f, m_terrainHeights[mapX + 1][mapY + 1], 1.0f),
+            glm::vec3(0.0f, m_terrainHeights[mapX][mapY + 1], 1.0f),
+            glm::vec2(xCoord, zCoord)
+        );
+    }
+
+    return result * t_scale.y;
+}
+
+float sg::ogl::terrain::Terrain::GetHeightAtWorldPosition(const float t_worldX, const float t_worldZ)
+{
+    const auto scale{ glm::vec3(m_terrainOptions.scaleXz, m_terrainOptions.scaleY, m_terrainOptions.scaleXz) };
+    return GetHeightAtWorldPosition(t_worldX, t_worldZ, scale);
+}
 
 sg::ogl::Color sg::ogl::terrain::Terrain::GetPixel(const int t_x, const int t_z, const int t_length, const int t_channels, const unsigned char* const t_image)
 {
@@ -213,4 +284,14 @@ glm::vec3 sg::ogl::terrain::Terrain::CalculateNormal(int t_x, int t_z, const int
     const auto normal{ glm::vec3(heightL - heightR, 2.0f, heightD - heightU) };
 
     return normalize(normal);
+}
+
+float sg::ogl::terrain::Terrain::BarryCentric(const glm::vec3& t_p1, const glm::vec3& t_p2, const glm::vec3& t_p3, const glm::vec2& t_pos)
+{
+    const auto det{ (t_p2.z - t_p3.z) * (t_p1.x - t_p3.x) + (t_p3.x - t_p2.x) * (t_p1.z - t_p3.z) };
+    const auto l1{ ((t_p2.z - t_p3.z) * (t_pos.x - t_p3.x) + (t_p3.x - t_p2.x) * (t_pos.y - t_p3.z)) / det };
+    const auto l2{ ((t_p3.z - t_p1.z) * (t_pos.x - t_p3.x) + (t_p1.x - t_p3.x) * (t_pos.y - t_p3.z)) / det };
+    const auto l3{ 1.0f - l1 - l2 };
+
+    return l1 * t_p1.y + l2 * t_p2.y + l3 * t_p3.y;
 }

@@ -21,6 +21,7 @@ namespace sg::ogl::terrain
         using VerticesContainer = std::vector<float>;
         using IndicesContainer = std::vector<uint32_t>;
         using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
+        using HeightContainer = std::vector<std::vector<float>>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -55,6 +56,13 @@ namespace sg::ogl::terrain
 
         void GenerateTerrain();
 
+        //-------------------------------------------------
+        // Helper
+        //-------------------------------------------------
+
+        float GetHeightAtWorldPosition(float t_worldX, float t_worldZ, const glm::vec3& t_scale);
+        float GetHeightAtWorldPosition(float t_worldX, float t_worldZ);
+
     protected:
 
     private:
@@ -70,6 +78,8 @@ namespace sg::ogl::terrain
 
         MeshSharedPtr m_mesh;
 
+        HeightContainer m_terrainHeights;
+
         //-------------------------------------------------
         // Helper
         //-------------------------------------------------
@@ -78,5 +88,7 @@ namespace sg::ogl::terrain
         static float GetHeight(int t_x, int t_z, int t_length, int t_channels, const unsigned char* t_image);
 
         glm::vec3 CalculateNormal(int t_x, int t_z, int t_length, int t_channels, const unsigned char* t_image) const;
+
+        static float BarryCentric(const glm::vec3& t_p1, const glm::vec3& t_p2, const glm::vec3& t_p3, const glm::vec2& t_pos);
     };
 }
