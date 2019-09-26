@@ -2,7 +2,9 @@
 #include "DomeShaderProgram.h"
 #include "SkyboxShaderProgram.h"
 #include "ModelShaderProgram.h"
+#include "ModelLightingShaderProgram.h"
 #include "InstancingShaderProgram.h"
+#include "InstancingLightingShader.h"
 #include "TerrainShaderProgram.h"
 #include "TerrainLightingShaderProgram.h"
 #include "ComputeNormalmap.h"
@@ -142,7 +144,7 @@ void GameState::Init()
 #ifdef DIRECTIONAL_LIGHTING
     m_directionalLight = std::make_shared<sg::ogl::light::DirectionalLight>();
     //m_directionalLight->direction = glm::vec3(0.5f, 0.7f, 1.0f);
-    m_directionalLight->diffuseIntensity = glm::vec3(0.8f, 0.8f, 0.8f);
+    m_directionalLight->diffuseIntensity = glm::vec3(0.9f, 0.9f, 0.9f);
     m_scene->SetDirectionalLight(m_directionalLight);
 #endif
 
@@ -239,20 +241,35 @@ void GameState::CreateTerrainEntity()
 
 void GameState::CreateHouseEntity(const float t_worldX, const float t_worldZ)
 {
+#ifdef DIRECTIONAL_LIGHTING
+    m_houseEntity = m_scene->CreateModelEntity<ModelLightingShaderProgram>("res/model/House/farmhouse_obj.obj", "model_with_lighting");
+#else
     m_houseEntity = m_scene->CreateModelEntity<ModelShaderProgram>("res/model/House/farmhouse_obj.obj", "model");
+#endif
+
     m_houseEntity->GetLocalTransform().position = glm::vec3(t_worldX, m_terrain->GetHeightAtWorldPosition(t_worldX, t_worldZ), t_worldZ);
 }
 
 void GameState::CreateHeroEntity(const float t_worldX, const float t_worldZ)
 {
+#ifdef DIRECTIONAL_LIGHTING
+    m_heroEntity = m_scene->CreateModelEntity<ModelLightingShaderProgram>("res/model/panda/pandarenmale.obj", "model_with_lighting");
+#else
     m_heroEntity = m_scene->CreateModelEntity<ModelShaderProgram>("res/model/panda/pandarenmale.obj", "model");
+#endif
+
     m_heroEntity->GetLocalTransform().position = glm::vec3(t_worldX, m_terrain->GetHeightAtWorldPosition(t_worldX, t_worldZ), t_worldZ);
     m_heroEntity->GetLocalTransform().scale = glm::vec3(2.0f);
 }
 
 void GameState::CreateGrassEntity(const int32_t t_instanceCount, const float t_radius, const float t_offset)
 {
+#ifdef DIRECTIONAL_LIGHTING
+    m_grassEntity = m_scene->CreateModelEntity<InstancingLightingShaderProgram>("res/model/Grass_01/grassmodel.obj", "instancing_with_lighting");
+#else
     m_grassEntity = m_scene->CreateModelEntity<InstancingShaderProgram>("res/model/Grass_01/grassmodel.obj", "instancing");
+#endif
+
     m_grassEntity->instanceCount = t_instanceCount;
     GenerateGrassPositions(t_radius, t_offset, m_grassEntity->instanceCount);
     sg::ogl::scene::Scene::SetInstancePositions(m_grassModelMatrices, m_grassEntity);

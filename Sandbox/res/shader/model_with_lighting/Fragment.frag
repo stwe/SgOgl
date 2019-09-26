@@ -1,12 +1,10 @@
 #version 330
 
-// terrain_with_lighting/Fragment.frag
+// model_with_lighting/Fragment.frag
 
 // In
 
-in vec3 vPosition;
 in vec3 vNormal;
-in vec2 vUvOrig;
 in vec2 vUv;
 
 // Out
@@ -24,34 +22,23 @@ struct DirectionalLight
 
 // Uniforms
 
-uniform vec3 cameraPosition;
-uniform float ambientIntensity;
+uniform vec3 ambientIntensity;
 uniform DirectionalLight directionalLight;
-uniform sampler2D grass;
-uniform sampler2D sand;
-uniform sampler2D rock;
-uniform sampler2D normalmap;
-uniform sampler2D splatmap;
+uniform sampler2D diffuseMap;
 
 // Main
 
 void main()
 {
-    vec3 normal = normalize(texture(normalmap, vUvOrig).rbg);
-    vec4 blendValues = texture(splatmap, vUvOrig).rgba;
-
-    vec3 grass = texture(grass, vUv).rgb * blendValues.r;
-    vec3 sand = texture(sand, vUv).rgb * blendValues.g;
-    vec3 rock = texture(rock, vUv).rgb * blendValues.b;
-
-    vec3 textureCol = grass + sand + rock;
+    vec3 textureCol = texture(diffuseMap, vUv).rgb;
 
     // ambient
     vec3 ambient = ambientIntensity * textureCol;
 
     // diffuse
+    vec3 norm = normalize(vNormal);
     vec3 lightDir = normalize(directionalLight.direction);
-    float diff = max(dot(normal, lightDir), 0.0);
+    float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = directionalLight.diffuseIntensity * diff * textureCol;
 
     // specular

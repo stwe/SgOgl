@@ -30,8 +30,11 @@ public:
         // set camera position
         SetUniform("cameraPosition", t_entity.GetParentScene()->GetCurrentCamera().GetPosition());
 
+        // set ambient intensity
+        SetUniform("ambientIntensity", 0.2f);
+
         // set directional light
-        auto light{ t_entity.GetParentScene()->GetDirectionalLight() };
+        const auto light{ t_entity.GetParentScene()->GetDirectionalLight() };
         SetUniform("directionalLight", light);
 
         // set and bind textures
