@@ -7,6 +7,7 @@
 #include "InstancingLightingShader.h"
 #include "TerrainShaderProgram.h"
 #include "TerrainLightingShaderProgram.h"
+#include "ParticleShaderProgram.h"
 #include "ComputeNormalmap.h"
 #include "ComputeSplatmap.h"
 
@@ -35,6 +36,7 @@ bool GameState::Update(const double t_dt)
     m_terrainEntity->Update();
     m_houseEntity->Update();
     m_heroEntity->Update();
+    m_particleGenerator->Update(t_dt);
 
     // Camera
 
@@ -70,6 +72,7 @@ bool GameState::Update(const double t_dt)
 
     // Hero
 
+    /*
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_UP))
     {
         m_heroEntity->GetLocalTransform().position = glm::vec3(
@@ -105,6 +108,7 @@ bool GameState::Update(const double t_dt)
             m_heroEntity->GetLocalTransform().position.z
         );
     }
+    */
 
     return true;
 }
@@ -115,6 +119,7 @@ void GameState::Render()
     m_houseEntity->Render();
     m_heroEntity->Render();
     m_grassEntity->Render();
+    m_particleGenerator->Render();
 
 #ifdef SKYDOME
     m_skydomeEntity->Render();
@@ -169,12 +174,16 @@ void GameState::Init()
 
     // init terrain entity components
     m_terrainEntity->Init();
+
+    // todo
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram<ParticleShaderProgram>("particle");
+    m_particleGenerator = std::make_shared<sg::ogl::particle::ParticleEmitter>(m_scene.get());
 }
 
 void GameState::GenerateGrassPositions(const float t_radius, const float t_offset, const int32_t t_instanceCount)
 {
-    const auto time{ glfwGetTime() };
-    srand(static_cast<unsigned>(time));
+    srand(time(nullptr));
+    rand();
 
     for (auto i{ 0 }; i < t_instanceCount; ++i)
     {
@@ -265,7 +274,8 @@ void GameState::CreateHeroEntity(const float t_worldX, const float t_worldZ)
 void GameState::CreateGrassEntity(const int32_t t_instanceCount, const float t_radius, const float t_offset)
 {
 #ifdef DIRECTIONAL_LIGHTING
-    m_grassEntity = m_scene->CreateModelEntity<InstancingLightingShaderProgram>("res/model/Grass_01/grassmodel.obj", "instancing_with_lighting");
+    //m_grassEntity = m_scene->CreateModelEntity<InstancingLightingShaderProgram>("res/model/Grass_01/grassmodel.obj", "instancing_with_lighting");
+    m_grassEntity = m_scene->CreateModelEntity<InstancingShaderProgram>("res/model/Grass_01/grassmodel.obj", "instancing");
 #else
     m_grassEntity = m_scene->CreateModelEntity<InstancingShaderProgram>("res/model/Grass_01/grassmodel.obj", "instancing");
 #endif

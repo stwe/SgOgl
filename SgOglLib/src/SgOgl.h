@@ -24,6 +24,10 @@
 // math
 #include "SgOglLib/math/Transform.h"
 
+// particle
+#include "SgOglLib/particle/Particle.h"
+#include "SgOglLib/particle/ParticleEmitter.h"
+
 // resource
 #include "SgOglLib/resource/Material.h"
 #include "SgOglLib/resource/Mesh.h"

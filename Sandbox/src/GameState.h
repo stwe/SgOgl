@@ -25,6 +25,9 @@ public:
     // directional light - shared
     using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
 
+    // particle generator - shared
+    using ParticleEmmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
+
     //-------------------------------------------------
     // Ctors. / Dtor.
     //-------------------------------------------------
@@ -71,6 +74,7 @@ private:
     CameraSharedPtr m_camera;
     TerrainSharedPtr m_terrain;
 
+    ParticleEmmitterSharedPtr m_particleGenerator;
     DirectionalLightSharedPtr m_directionalLight;
 
     std::vector<glm::mat4> m_grassModelMatrices;
