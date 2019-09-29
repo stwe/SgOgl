@@ -28,10 +28,8 @@ set(LIB_INPUT_SRC_FILES
     src/SgOglLib/input/MouseInput.cpp
 )
 
-set(LIB_RENDERER_SRC_FILES
-    src/SgOglLib/renderer/NormalmapRenderer.cpp
-    src/SgOglLib/renderer/SplatmapRenderer.cpp
-    src/SgOglLib/renderer/TerrainRenderer.cpp
+set(LIB_PARTICLE_SRC_FILES
+    src/SgOglLib/particle/ParticleEmitter.cpp
 )
 
 set(LIB_RES_SRC_FILES
@@ -41,17 +39,17 @@ set(LIB_RES_SRC_FILES
     src/SgOglLib/resource/ModelManager.cpp
     src/SgOglLib/resource/ShaderManager.cpp
     src/SgOglLib/resource/ShaderProgram.cpp
-    src/SgOglLib/resource/Skybox.cpp
     src/SgOglLib/resource/StbImage.cpp
     src/SgOglLib/resource/TextureManager.cpp
 )
 
 set(LIB_SCENE_SRC_FILES
-    src/SgOglLib/scene/BaseRenderer.cpp
+    src/SgOglLib/scene/Component.cpp
+    src/SgOglLib/scene/Entity.cpp
     src/SgOglLib/scene/Node.cpp
-    src/SgOglLib/scene/Renderer.cpp
+    src/SgOglLib/scene/RenderComponent.cpp
     src/SgOglLib/scene/Scene.cpp
-    src/SgOglLib/scene/SkyboxRenderer.cpp
+    src/SgOglLib/scene/TerrainComponent.cpp
 )
 
 set(LIB_STATE_SRC_FILES
@@ -69,7 +67,7 @@ set(LIB_SRC_FILES
     ${LIB_CAMERA_SRC_FILES}
     ${LIB_EVENT_SRC_FILES}
     ${LIB_INPUT_SRC_FILES}
-    ${LIB_RENDERER_SRC_FILES}
+    ${LIB_PARTICLE_SRC_FILES}
     ${LIB_RES_SRC_FILES}
     ${LIB_SCENE_SRC_FILES}
     ${LIB_STATE_SRC_FILES}
