@@ -71,6 +71,9 @@ namespace sg::ogl::buffer
         // Allocate
         //-------------------------------------------------
 
+        uint32_t AllocateMemory(uint32_t t_floatCount);
+        void AddInstancedAttribute(uint32_t t_vboId, uint32_t t_attr, int32_t t_dataSize, int32_t t_instancedDataLength, uint64_t t_offset) const;
+
         void AllocateIndices(const IndicesContainer& t_indices);
         void AllocateVertices(float* t_vertices, int32_t t_drawCount, uint32_t t_size, const BufferLayout& t_bufferLayout);
 

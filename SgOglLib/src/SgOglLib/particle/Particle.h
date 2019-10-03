@@ -5,25 +5,59 @@
 
 namespace sg::ogl::particle
 {
-    struct Particle
+    class ParticleGenerator;
+
+    class Particle
     {
+    private:
+        ParticleGenerator* m_parentParticleGenerator{ nullptr };
+        float m_elapsedTime{ 0.0f };
+
+    public:
+        //-------------------------------------------------
+        // Ctors. / Dtor.
+        //-------------------------------------------------
+
+        Particle() = default;
+
+        explicit Particle(ParticleGenerator* t_parentParticleGenerator);
+
+        Particle(
+            ParticleGenerator* t_parentParticleGenerator,
+            const glm::vec3& t_position,
+            const glm::vec3& t_velocity,
+            float t_gravity,
+            float t_lifeLength,
+            float t_rotation,
+            float t_scale
+        );
+
+        Particle(const Particle& t_other) = default;
+        Particle(Particle&& t_other) noexcept = default;
+        Particle& operator=(const Particle& t_other) = default;
+        Particle& operator=(Particle&& t_other) noexcept = default;
+
+        ~Particle() noexcept = default;
+
+        //-------------------------------------------------
+        // Member
+        //-------------------------------------------------
+
         glm::vec3 position{ glm::vec3(0.0f) };
         glm::vec3 velocity{ glm::vec3(0.0f) };
-        glm::vec4 color{ glm::vec4(1.0f) };
 
-        float size{ 0.0f };
+        float gravity{ 0.0f };
+        float lifeLength{ 0.0f };
+        float rotation{ 0.0f };
+        float scale{ 0.0f };
 
-        // if < 0.0f : dead and unused
-        float life{ -1.0f };
+        //-------------------------------------------------
+        // Logic
+        //-------------------------------------------------
 
-        // if dead : -1.0f
-        float cameraDistance{ -1.0f };
+        bool Update(double t_dt);
 
-        // std::sort will use operator< as comparison function by default
-        bool operator<(const Particle& t_other) const
-        {
-            // sort in reverse order: far particles drawn first
-            return cameraDistance > t_other.cameraDistance;
-        }
+    protected:
+
     };
 }

@@ -2,31 +2,19 @@
 
 #include "SgOgl.h"
 
-// renders a skydome instead of a skybox
-#define SKYDOME
-
-// creates a directional light and uses the corresponding shaders
-#define DIRECTIONAL_LIGHTING
-
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 128.0f };
+    static constexpr auto CAMERA_VELOCITY{ 16.0f };
 
-    // scene graph - unique
+    // scene graph
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
 
-    // camera - shared
+    // camera
     using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
 
-    // terrain - shared
-    using TerrainSharedPtr = std::shared_ptr<sg::ogl::terrain::Terrain>;
-
-    // directional light - shared
-    using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
-
-    // particle generator - shared
-    using ParticleEmmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
+    // particles
+    using ParticleSystemSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleSystem>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -64,36 +52,20 @@ protected:
 
 private:
     sg::ogl::scene::Entity* m_skydomeEntity{ nullptr };
-    sg::ogl::scene::Entity* m_skyboxEntity{ nullptr };
-    sg::ogl::scene::Entity* m_terrainEntity{ nullptr };
-    sg::ogl::scene::Entity* m_houseEntity{ nullptr };
-    sg::ogl::scene::Entity* m_heroEntity{ nullptr };
-    sg::ogl::scene::Entity* m_grassEntity{ nullptr };
 
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
-    TerrainSharedPtr m_terrain;
-
-    ParticleEmmitterSharedPtr m_particleGenerator;
-    DirectionalLightSharedPtr m_directionalLight;
-
-    std::vector<glm::mat4> m_grassModelMatrices;
+    ParticleSystemSharedPtr m_particleSystem;
 
     //-------------------------------------------------
     // Init
     //-------------------------------------------------
 
     void Init();
-    void GenerateGrassPositions(float t_radius, float t_offset, int32_t t_instanceCount);
 
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------
 
     void CreateSkydomeEntity();
-    void CreateSkyboxEntity();
-    void CreateTerrainEntity();
-    void CreateHouseEntity(float t_worldX, float t_worldZ);
-    void CreateHeroEntity(float t_worldX, float t_worldZ);
-    void CreateGrassEntity(int32_t t_instanceCount, float t_radius, float t_offset);
 };

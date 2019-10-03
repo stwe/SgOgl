@@ -162,6 +162,53 @@ void sg::ogl::buffer::Vao::DeleteEbo() const
 // Allocate
 //-------------------------------------------------
 
+uint32_t sg::ogl::buffer::Vao::AllocateMemory(const uint32_t t_floatCount)
+{
+    static_assert(sizeof(float) == 4);
+
+    // Bind our existing Vao.
+    BindVao();
+
+    // Generate and bind a new Vbo.
+    const auto vboId{ GenerateVbo() };
+    BindVbo(vboId);
+
+    // Specifies the target to which the buffer object is bound.
+    const auto target{ GL_ARRAY_BUFFER };
+
+    // Specifies the expected usage pattern of the data store.
+    const auto usage{ GL_STREAM_DRAW };
+
+    // Create and initialize an empty buffer.
+    glBufferData(target, t_floatCount * sizeof(float), nullptr, usage);
+
+    // Unbind buffers.
+    UnbindVbo();
+    UnbindVao();
+
+    return vboId;
+}
+
+void sg::ogl::buffer::Vao::AddInstancedAttribute(
+    const uint32_t t_vboId,
+    const uint32_t t_attr,
+    const int32_t t_dataSize,
+    const int32_t t_instancedDataLength,
+    const uint64_t t_offset
+) const
+{
+    // Bind buffers.
+    BindVao();
+    BindVbo(t_vboId);
+
+    glVertexAttribPointer(t_attr, t_dataSize, GL_FLOAT, GL_FALSE, t_instancedDataLength * sizeof(float), (void*)(t_offset * sizeof(float)));
+    glVertexAttribDivisor(t_attr, 1);
+
+    // Unbind buffers.
+    UnbindVbo();
+    UnbindVao();
+}
+
 void sg::ogl::buffer::Vao::AllocateIndices(const IndicesContainer& t_indices)
 {
     static constexpr auto ELEMENT_SIZE_IN_BYTES{ sizeof(uint32_t) };
