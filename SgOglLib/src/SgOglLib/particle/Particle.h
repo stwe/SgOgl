@@ -5,59 +5,29 @@
 
 namespace sg::ogl::particle
 {
-    class ParticleGenerator;
+    class ParticleEmitter;
 
     class Particle
     {
-    private:
-        ParticleGenerator* m_parentParticleGenerator{ nullptr };
-        float m_elapsedTime{ 0.0f };
-
     public:
-        //-------------------------------------------------
-        // Ctors. / Dtor.
-        //-------------------------------------------------
-
-        Particle() = default;
-
-        explicit Particle(ParticleGenerator* t_parentParticleGenerator);
-
-        Particle(
-            ParticleGenerator* t_parentParticleGenerator,
-            const glm::vec3& t_position,
-            const glm::vec3& t_velocity,
-            float t_gravity,
-            float t_lifeLength,
-            float t_rotation,
-            float t_scale
-        );
-
-        Particle(const Particle& t_other) = default;
-        Particle(Particle&& t_other) noexcept = default;
-        Particle& operator=(const Particle& t_other) = default;
-        Particle& operator=(Particle&& t_other) noexcept = default;
-
-        ~Particle() noexcept = default;
-
-        //-------------------------------------------------
-        // Member
-        //-------------------------------------------------
+        explicit Particle(ParticleEmitter* t_particleEmitter);
 
         glm::vec3 position{ glm::vec3(0.0f) };
         glm::vec3 velocity{ glm::vec3(0.0f) };
+        glm::vec4 color{ glm::vec4(1.0f) };
 
-        float gravity{ 0.0f };
-        float lifeLength{ 0.0f };
         float rotation{ 0.0f };
-        float scale{ 0.0f };
+        float scale{ 1.0f };
 
-        //-------------------------------------------------
-        // Logic
-        //-------------------------------------------------
+        float lifetime{ 5.0f };
+        bool life{ true };
 
-        bool Update(double t_dt);
+        void Update();
+        void Render() const;
 
     protected:
 
+    private:
+        ParticleEmitter* m_particleEmitter{ nullptr };
     };
 }

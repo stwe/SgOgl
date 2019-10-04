@@ -26,8 +26,7 @@
 
 // particle
 #include "SgOglLib/particle/Particle.h"
-#include "SgOglLib/particle/ParticleGenerator.h"
-#include "SgOglLib/particle/ParticleSystem.h"
+#include "SgOglLib/particle/ParticleEmitter.h"
 
 // resource
 #include "SgOglLib/resource/Material.h"

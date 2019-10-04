@@ -5,7 +5,9 @@
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 16.0f };
+    static constexpr auto CAMERA_VELOCITY{ 4.0f };
+    static constexpr auto MAX_PARTICLES{ 200 };
+    static constexpr auto NEW_PARTICLES{ 80 };
 
     // scene graph
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
@@ -14,7 +16,7 @@ public:
     using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
 
     // particles
-    using ParticleSystemSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleSystem>;
+    using ParticleEmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -36,8 +38,6 @@ public:
     ~GameState() noexcept override
     {
         SG_OGL_LOG_DEBUG("[GameState::~GameState()] Destruct GameState.");
-
-        // todo: delete raw pointer
     }
 
     //-------------------------------------------------
@@ -55,7 +55,7 @@ private:
 
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
-    ParticleSystemSharedPtr m_particleSystem;
+    ParticleEmitterSharedPtr m_particleEmitter;
 
     //-------------------------------------------------
     // Init
@@ -68,4 +68,5 @@ private:
     //-------------------------------------------------
 
     void CreateSkydomeEntity();
+    void BuildParticles() const;
 };
