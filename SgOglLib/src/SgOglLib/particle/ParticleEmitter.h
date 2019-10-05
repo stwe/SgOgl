@@ -3,6 +3,8 @@
 #include <vector>
 #include <algorithm>
 #include <memory>
+#include <string>
+#include <glm/vec2.hpp>
 
 namespace sg::ogl::scene
 {
@@ -16,13 +18,11 @@ namespace sg::ogl::buffer
 
 namespace sg::ogl::particle
 {
-    class Particle;
+    struct Particle;
 
     class ParticleEmitter
     {
     public:
-        ParticleEmitter(scene::Scene* t_scene, size_t t_maxParticles);
-
         using VaoUniquePtr = std::unique_ptr<buffer::Vao>;
         using ParticleContainer = std::vector<Particle>;
 
@@ -35,12 +35,32 @@ namespace sg::ogl::particle
              0.5f, -0.5f
         };
 
-        scene::Scene* GetParentScene() const;
-        VaoUniquePtr& GetVao();
+        //-------------------------------------------------
+        // Ctors. / Dtor.
+        //-------------------------------------------------
+
+        ParticleEmitter(
+            scene::Scene* t_scene,
+            size_t t_maxParticles,
+            const std::string& t_texturePath,
+            int t_nrOfTextureRows = 1
+        );
+
+        //-------------------------------------------------
+        // Getter
+        //-------------------------------------------------
+
         ParticleContainer& GetParticles();
-        uint32_t GetTextureId() const { return m_textureId; }
+
+        //-------------------------------------------------
+        // Add
+        //-------------------------------------------------
 
         bool AddParticle(Particle& t_particle);
+
+        //-------------------------------------------------
+        // Logic
+        //-------------------------------------------------
 
         void Update();
         void Render();
@@ -52,11 +72,27 @@ namespace sg::ogl::particle
         size_t m_maxParticles{ 0 };
         VaoUniquePtr m_vao;
         ParticleContainer m_particles;
+
+        int m_nrOfTextureRows{ 1 };
         uint32_t m_textureId{ 0 };
 
         bool m_emptyContainer{ false };
 
-        void Init();
+        //-------------------------------------------------
+        // Init
+        //-------------------------------------------------
+
+        void InitVao() const;
+
+        //-------------------------------------------------
+        // Helper
+        //-------------------------------------------------
+
+        glm::vec2 GetTextureOffset(int t_textureIndex) const;
+
+        //-------------------------------------------------
+        // Erase–Remove Idiom
+        //-------------------------------------------------
 
         template<class C, class F>
         void EraseRemoveIf(C&& t_c, F&& t_f)

@@ -80,11 +80,18 @@ void GameState::Init()
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
+    // create skydome
     CreateSkydomeEntity();
 
+    // create particles emitter
     GetApplicationContext()->GetShaderManager()->AddShaderProgram<ParticleShaderProgram>("particle");
-    m_particleEmitter = std::make_shared<sg::ogl::particle::ParticleEmitter>(m_scene.get(), MAX_PARTICLES);
+    m_particleEmitter = std::make_shared<sg::ogl::particle::ParticleEmitter>(
+        m_scene.get(),
+        MAX_PARTICLES,
+        "res/texture/snow.png", 2
+        );
 
+    // build snow particles
     BuildParticles();
 }
 
@@ -111,6 +118,8 @@ void GameState::BuildParticles() const
     const std::uniform_real_distribution<float> scale(0.25f, 1.5f);
     const std::uniform_real_distribution<float> lifetime(5.0f, 8.0f);
 
+    const std::uniform_int_distribution<int> textureIndex(0, 3);
+
     const auto nrOfparticles{ m_particleEmitter->GetParticles().size() };
 
     if (nrOfparticles < MAX_PARTICLES)
@@ -125,13 +134,14 @@ void GameState::BuildParticles() const
 
         for (auto i{ 0u }; i < newParticles; ++i)
         {
-            sg::ogl::particle::Particle particle{ m_particleEmitter.get() };
+            sg::ogl::particle::Particle particle;
 
             particle.position = glm::vec3(positionX(engine), positionY(engine), positionZ(engine));
             particle.velocity = glm::vec3(0.1f, velocityY(engine), 0.1f);
             particle.color = glm::vec4(0.8f);
             particle.scale = scale(engine);
             particle.lifetime = lifetime(engine);
+            particle.textureIndex = textureIndex(engine);
 
             m_particleEmitter->AddParticle(particle);
         }
