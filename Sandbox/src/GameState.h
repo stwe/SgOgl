@@ -51,8 +51,6 @@ public:
 protected:
 
 private:
-    sg::ogl::scene::Entity* m_skydomeEntity{ nullptr };
-
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
     ParticleEmitterSharedPtr m_particleEmitter;
@@ -67,6 +65,5 @@ private:
     // Helper
     //-------------------------------------------------
 
-    void CreateSkydomeEntity();
     void BuildParticles() const;
 };

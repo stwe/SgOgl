@@ -89,16 +89,12 @@ void sg::ogl::particle::ParticleEmitter::Update()
 
 void sg::ogl::particle::ParticleEmitter::Render()
 {
+    PrepareRendering();
+
     // render particles
     for (auto& particle : m_particles)
     {
         SG_OGL_CORE_ASSERT(particle.life, "[Particle::Render()] A dead particle should not be rendered.")
-
-        // get shader
-        auto& shader{ m_scene->GetApplicationContext()->GetShaderManager()->GetShaderProgram("particle") };
-
-        // bind shader
-        shader.Bind();
 
         // get projection matrix
         const auto projectionMatrix{ m_scene->GetApplicationContext()->GetWindow()->GetProjectionMatrix() };
@@ -118,28 +114,22 @@ void sg::ogl::particle::ParticleEmitter::Render()
         modelMatrix[2][1] = viewMatrix[1][2];
         modelMatrix[2][2] = viewMatrix[2][2];
 
-        rotate(modelMatrix, glm::radians(particle.rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+        //rotate(modelMatrix, glm::radians(particle.rotation), glm::vec3(0.0f, 0.0f, 1.0f));
         scale(modelMatrix, glm::vec3(particle.scale));
 
         // set uniforms
-        shader.SetUniform("projectionMatrix", projectionMatrix);
-        shader.SetUniform("modelViewMatrix", viewMatrix * modelMatrix);
-        shader.SetUniform("color", particle.color);
-        shader.SetUniform("particleTexture", 0);
-        shader.SetUniform("numberOfRows", static_cast<float>(m_nrOfTextureRows));
-        shader.SetUniform("offset", GetTextureOffset(particle.textureIndex));
-
-        // bind texture
-        resource::TextureManager::BindForReading(m_textureId, GL_TEXTURE0);
+        m_shaderProgram->SetUniform("projectionMatrix", projectionMatrix);
+        m_shaderProgram->SetUniform("modelViewMatrix", viewMatrix * modelMatrix);
+        m_shaderProgram->SetUniform("color", particle.color);
+        m_shaderProgram->SetUniform("particleTexture", 0);
+        m_shaderProgram->SetUniform("numberOfRows", static_cast<float>(m_nrOfTextureRows));
+        m_shaderProgram->SetUniform("offset", GetTextureOffset(particle.textureIndex));
 
         // render
-        m_vao->BindVao();
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        buffer::Vao::UnbindVao();
-
-        // unbind shader
-        resource::ShaderProgram::Unbind();
     }
+
+    FinishRendering();
 }
 
 //-------------------------------------------------
@@ -158,6 +148,25 @@ void sg::ogl::particle::ParticleEmitter::InitVao() const
         static_cast<uint32_t>(vertices.size()) * sizeof(float),
         bufferLayout
     );
+
+    // todo
+
+    // create an empty Vbo
+    //const auto vbo{ m_vao->AllocateMemory(NUMBER_OF_FLOATS_PER_INSTANCE * MAX_INSTANCES) };
+
+    /*   4     4     4     4     4       1       = 21 Floats
+     * [ColA][ColB][ColC][ColD][TexOff][Blend]
+     */
+
+     // set Vbo attributes                                                     21 x 4 byte = 84 bytes
+    /*
+    m_vao->AddInstancedAttribute(vbo, 1, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 0);
+    m_vao->AddInstancedAttribute(vbo, 2, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 4);
+    m_vao->AddInstancedAttribute(vbo, 3, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 8);
+    m_vao->AddInstancedAttribute(vbo, 4, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 12);
+    m_vao->AddInstancedAttribute(vbo, 5, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 16);
+    m_vao->AddInstancedAttribute(vbo, 6, 1, NUMBER_OF_FLOATS_PER_INSTANCE, 20); // 20 x 4 = offset 80
+    */
 }
 
 //-------------------------------------------------
@@ -173,4 +182,29 @@ glm::vec2 sg::ogl::particle::ParticleEmitter::GetTextureOffset(const int t_textu
     const auto rows{ static_cast<float>(m_nrOfTextureRows) };
 
     return glm::vec2(col / rows, row / rows);
+}
+
+void sg::ogl::particle::ParticleEmitter::PrepareRendering()
+{
+    m_vao->BindVao();
+
+    m_shaderProgram = &m_scene->GetApplicationContext()->GetShaderManager()->GetShaderProgram("particle");
+    SG_OGL_CORE_ASSERT(m_shaderProgram, "[ParticleEmitter::PrepareRendering()] Null pointer.")
+    m_shaderProgram->Bind();
+
+    glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glDepthMask(false);
+
+    resource::TextureManager::BindForReading(m_textureId, GL_TEXTURE0);
+}
+
+void sg::ogl::particle::ParticleEmitter::FinishRendering()
+{
+    buffer::Vao::UnbindVao();
+    resource::ShaderProgram::Unbind();
+
+    glDepthMask(true);
+    glDisable(GL_BLEND);
 }

@@ -20,8 +20,6 @@ bool GameState::Input()
 bool GameState::Update(const double t_dt)
 {
     m_particleEmitter->Update();
-    m_skydomeEntity->Update();
-
     BuildParticles();
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
@@ -60,7 +58,6 @@ bool GameState::Update(const double t_dt)
 void GameState::Render()
 {
     m_particleEmitter->Render();
-    m_skydomeEntity->Render();
 }
 
 //-------------------------------------------------
@@ -70,7 +67,7 @@ void GameState::Render()
 void GameState::Init()
 {
     // set clear color
-    sg::ogl::Window::SetClearColor(sg::ogl::Color::CornflowerBlue());
+    sg::ogl::Window::SetClearColor(sg::ogl::Color::Black());
 
     // create camera and set a camera position
     m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>();
@@ -80,15 +77,12 @@ void GameState::Init()
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
-    // create skydome
-    CreateSkydomeEntity();
-
     // create particles emitter
     GetApplicationContext()->GetShaderManager()->AddShaderProgram<ParticleShaderProgram>("particle");
     m_particleEmitter = std::make_shared<sg::ogl::particle::ParticleEmitter>(
         m_scene.get(),
         MAX_PARTICLES,
-        "res/texture/snow.png", 2
+        "res/texture/particle/particleStar.png", 1
         );
 
     // build snow particles
@@ -98,11 +92,6 @@ void GameState::Init()
 //-------------------------------------------------
 // Helper
 //-------------------------------------------------
-
-void GameState::CreateSkydomeEntity()
-{
-    m_skydomeEntity = m_scene->CreateSkydomeEntity<DomeShaderProgram>("res/model/dome/dome.obj", "dome");
-}
 
 void GameState::BuildParticles() const
 {
@@ -141,7 +130,7 @@ void GameState::BuildParticles() const
             particle.color = glm::vec4(0.8f);
             particle.scale = scale(engine);
             particle.lifetime = lifetime(engine);
-            particle.textureIndex = textureIndex(engine);
+            particle.textureIndex = 0;//textureIndex(engine);
 
             m_particleEmitter->AddParticle(particle);
         }

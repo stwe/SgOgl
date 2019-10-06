@@ -16,6 +16,11 @@ namespace sg::ogl::buffer
     class Vao;
 }
 
+namespace sg::ogl::resource
+{
+    class ShaderProgram;
+}
+
 namespace sg::ogl::particle
 {
     struct Particle;
@@ -78,6 +83,8 @@ namespace sg::ogl::particle
 
         bool m_emptyContainer{ false };
 
+        resource::ShaderProgram* m_shaderProgram{ nullptr };
+
         //-------------------------------------------------
         // Init
         //-------------------------------------------------
@@ -89,6 +96,8 @@ namespace sg::ogl::particle
         //-------------------------------------------------
 
         glm::vec2 GetTextureOffset(int t_textureIndex) const;
+        void PrepareRendering();
+        static void FinishRendering();
 
         //-------------------------------------------------
         // Erase–Remove Idiom

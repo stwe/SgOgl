@@ -20,12 +20,5 @@ uniform sampler2D particleTexture;
 void main()
 {
     vec4 mapColor = texture(particleTexture, vUv);
-
-    if (mapColor.a < 0.5)
-    {
-        discard;
-    }
-
     fragColor = mapColor;
-    //fragColor = color;
 }
