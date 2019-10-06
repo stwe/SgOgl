@@ -1,3 +1,4 @@
+#include <glm/gtx/norm.hpp>
 #include "ParticleEmitter.h"
 #include "Particle.h"
 #include "Log.h"
@@ -53,6 +54,11 @@ bool sg::ogl::particle::ParticleEmitter::AddParticle(Particle& t_particle)
         // make sure that the remaining lifetime has a valid value
         t_particle.remainingLifetime = t_particle.lifetime;
 
+        /*
+        t_particle.cameraDistance = length2(m_scene->GetCurrentCamera().GetPosition() - t_particle.position);
+        std::sort(m_particles.begin(), m_particles.end());
+        */
+
         m_particles.push_back(t_particle);
 
         return true;
@@ -67,28 +73,41 @@ bool sg::ogl::particle::ParticleEmitter::AddParticle(Particle& t_particle)
 
 void sg::ogl::particle::ParticleEmitter::Update()
 {
+    // get current camera position
+    const auto& cameraPosition{ m_scene->GetCurrentCamera().GetPosition() };
+
     // update particles
     for (auto& particle : m_particles)
     {
+        // check if the lifetime of the particle has expired
         if (particle.remainingLifetime < 0.0f)
         {
-            //SG_OGL_LOG_DEBUG("[Particle::Update()] A particle was mark as died.");
-
+            // mark as dead - the particle is removed below by the EraseRemoveIf function
             particle.life = false;
-
-            continue;
         }
+        // particle is alive, thus update
+        else
+        {
+            SG_OGL_CORE_ASSERT(particle.life, "[ParticleEmitter::Update()] Trying to update a dead particle.")
 
-        SG_OGL_CORE_ASSERT(particle.life, "[Particle::Update()] Trying to update a dead particle.")
+            particle.remainingLifetime -= FRAME_TIME;
 
-        // particle is alive, thus update - the lifetime can be negative at this point
-        particle.remainingLifetime -= FRAME_TIME;
-        //particle.velocity.y += -50.0 * 0.2f * FRAME_TIME;
-        particle.velocity.y += -0.5f * FRAME_TIME;
-        particle.position += particle.velocity * FRAME_TIME;
+            // the lifetime can be negative at this point
+            if (particle.remainingLifetime < 0.0f)
+            {
+                particle.cameraDistance = -1.0f;
+            }
+            else
+            {
+                particle.cameraDistance = length2(cameraPosition - particle.position);
+            }
 
-        // update texture info
-        UpdateTextureInfo(particle);
+            particle.velocity.y += -10 * 0.3f * FRAME_TIME;
+            particle.position += particle.velocity * FRAME_TIME;
+
+            // update texture info
+            UpdateTextureInfo(particle);
+        }
     }
 
     // remove dead particles
@@ -97,6 +116,9 @@ void sg::ogl::particle::ParticleEmitter::Update()
             return !t_particle.life;
         }
     );
+
+    // sort particles
+    std::sort(m_particles.begin(), m_particles.end());
 }
 
 void sg::ogl::particle::ParticleEmitter::Render()
@@ -106,7 +128,7 @@ void sg::ogl::particle::ParticleEmitter::Render()
     // render particles
     for (auto& particle : m_particles)
     {
-        SG_OGL_CORE_ASSERT(particle.life, "[Particle::Render()] A dead particle should not be rendered.")
+        SG_OGL_CORE_ASSERT(particle.life, "[ParticleEmitter::Render()] A dead particle should not be rendered.")
 
         // get projection matrix
         const auto projectionMatrix{ m_scene->GetApplicationContext()->GetWindow()->GetProjectionMatrix() };

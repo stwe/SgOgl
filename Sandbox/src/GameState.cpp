@@ -82,8 +82,8 @@ void GameState::Init()
     m_particleEmitter = std::make_shared<sg::ogl::particle::ParticleEmitter>(
         m_scene.get(),
         MAX_PARTICLES,
-        "res/texture/particle/fire.png",
-        8                                           // number of rows
+        "res/texture/particle/particleAtlas.png",
+        4                                           // number of rows
         );
 
     // build particles
@@ -99,10 +99,10 @@ void GameState::BuildParticles() const
     std::random_device seeder;
     std::mt19937 engine(seeder());
 
-    const std::uniform_real_distribution<float> velocityX(-0.5f, 0.5f);
-    const std::uniform_real_distribution<float> velocityZ(-0.5f, 0.5f);
-    const std::uniform_real_distribution<float> scale(0.5f, 0.8f);
-    const std::uniform_real_distribution<float> lifetime(1.0f, 3.0f);
+    const std::uniform_real_distribution<float> velocityX(-1.0f, 1.0f);
+    const std::uniform_real_distribution<float> velocityZ(-1.0f, 1.0f);
+    const std::uniform_real_distribution<float> scale(0.5f, 1.0f);
+    const std::uniform_real_distribution<float> lifetime(2.0f, 4.0f);
 
     const auto nrOfparticles{ m_particleEmitter->GetParticles().size() };
 
@@ -121,7 +121,7 @@ void GameState::BuildParticles() const
             sg::ogl::particle::Particle particle;
 
             particle.position = glm::vec3(0.0f);
-            particle.velocity = glm::vec3(velocityX(engine), 0.5f, velocityZ(engine));
+            particle.velocity = glm::vec3(velocityX(engine), 1.0f, velocityZ(engine));
             particle.scale = scale(engine);
             particle.lifetime = lifetime(engine);
 

@@ -21,5 +21,13 @@ namespace sg::ogl::particle
         int textureIndex{ 0 };
         int nextTextureIndex{ 0 };
         float blendFactor{ 0.0f };
+
+        float cameraDistance{ 0.0f };
+
+        bool operator<(const Particle& t_particle) const
+        {
+            // Sort in reverse order, far particles drawn first.
+            return cameraDistance > t_particle.cameraDistance;
+        }
     };
 }
