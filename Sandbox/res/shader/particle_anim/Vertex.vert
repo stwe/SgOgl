@@ -6,6 +6,12 @@
 
 layout (location = 0) in vec2 aPosition;
 
+// In  - per instance vars
+
+layout (location = 1) in mat4 modelViewMatrix;
+layout (location = 5) in vec4 texOffsets;
+layout (location = 6) in float blendFactor;
+
 // Out
 
 out vec2 vUv1;
@@ -15,11 +21,7 @@ out float vBlend;
 // Uniforms
 
 uniform mat4 projectionMatrix;
-uniform mat4 modelViewMatrix;
 uniform float numberOfRows;
-uniform float blendFactor;
-uniform vec2 offset1;
-uniform vec2 offset2;
 
 // Main
 
@@ -29,8 +31,8 @@ void main()
     textureCoords.y = 1.0 - textureCoords.y;
     textureCoords /= numberOfRows;
 
-    vUv1 = textureCoords + offset1;
-    vUv2 = textureCoords + offset2;
+    vUv1 = textureCoords + texOffsets.xy;
+    vUv2 = textureCoords + texOffsets.zw;
 
     vBlend = blendFactor;
 

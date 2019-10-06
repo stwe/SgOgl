@@ -31,7 +31,12 @@ sg::ogl::particle::ParticleEmitter::ParticleEmitter(
 
     InitVao();
 
+    // get texture handle for the given texture path
     m_textureId = m_scene->GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath(t_texturePath);
+
+    // get a pointer to the shader program
+    m_shaderProgram = &m_scene->GetApplicationContext()->GetShaderManager()->GetShaderProgram("particle_anim");
+    SG_OGL_CORE_ASSERT(m_shaderProgram, "[ParticleEmitter::ParticleEmitter()] Null pointer.")
 }
 
 //-------------------------------------------------
@@ -125,16 +130,24 @@ void sg::ogl::particle::ParticleEmitter::Render()
 {
     PrepareRendering();
 
-    // render particles
-    for (auto& particle : m_particles)
+    // set uniforms
+    m_shaderProgram->SetUniform("projectionMatrix", m_scene->GetApplicationContext()->GetWindow()->GetProjectionMatrix());
+    m_shaderProgram->SetUniform("numberOfRows", static_cast<float>(m_nrOfTextureRows));
+    m_shaderProgram->SetUniform("particleTexture", 0);
+
+    // get view matrix
+    const auto viewMatrix{ m_scene->GetCurrentCamera().GetViewMatrix() };
+
+    // init counter
+    auto counter{ 0 };
+
+    // resize float buffer
+    m_instancedData.resize(m_particles.size() * NUMBER_OF_FLOATS_PER_INSTANCE);
+
+    // set instanced data
+    for (const auto& particle : m_particles)
     {
-        SG_OGL_CORE_ASSERT(particle.life, "[ParticleEmitter::Render()] A dead particle should not be rendered.")
-
-        // get projection matrix
-        const auto projectionMatrix{ m_scene->GetApplicationContext()->GetWindow()->GetProjectionMatrix() };
-
-        // get view matrix
-        const auto viewMatrix{ m_scene->GetCurrentCamera().GetViewMatrix() };
+        SG_OGL_CORE_ASSERT(particle.life, "[ParticleEmitter::Render()] The particle should be alive.")
 
         // create model matrix
         auto modelMatrix = translate(glm::mat4(1.0f), particle.position);
@@ -151,18 +164,45 @@ void sg::ogl::particle::ParticleEmitter::Render()
         //rotate(modelMatrix, glm::radians(particle.rotation), glm::vec3(0.0f, 0.0f, 1.0f));
         scale(modelMatrix, glm::vec3(particle.scale));
 
-        // set uniforms
-        m_shaderProgram->SetUniform("projectionMatrix", projectionMatrix);
-        m_shaderProgram->SetUniform("modelViewMatrix", viewMatrix * modelMatrix);
-        m_shaderProgram->SetUniform("numberOfRows", static_cast<float>(m_nrOfTextureRows));
-        m_shaderProgram->SetUniform("blendFactor", particle.blendFactor);
-        m_shaderProgram->SetUniform("offset1", GetTextureOffset(particle.textureIndex));
-        m_shaderProgram->SetUniform("offset2", GetTextureOffset(particle.nextTextureIndex));
-        m_shaderProgram->SetUniform("particleTexture", 0);
+        // create modelView matrix
+        const auto matrix{ viewMatrix * modelMatrix };
 
-        // render
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        // fill buffer - modelView matrix
+        m_instancedData[counter++] = matrix[0][0];
+        m_instancedData[counter++] = matrix[0][1];
+        m_instancedData[counter++] = matrix[0][2];
+        m_instancedData[counter++] = matrix[0][3];
+
+        m_instancedData[counter++] = matrix[1][0];
+        m_instancedData[counter++] = matrix[1][1];
+        m_instancedData[counter++] = matrix[1][2];
+        m_instancedData[counter++] = matrix[1][3];
+
+        m_instancedData[counter++] = matrix[2][0];
+        m_instancedData[counter++] = matrix[2][1];
+        m_instancedData[counter++] = matrix[2][2];
+        m_instancedData[counter++] = matrix[2][3];
+
+        m_instancedData[counter++] = matrix[3][0];
+        m_instancedData[counter++] = matrix[3][1];
+        m_instancedData[counter++] = matrix[3][2];
+        m_instancedData[counter++] = matrix[3][3];
+
+        // fill buffer - texture offsets
+        m_instancedData[counter++] = GetTextureOffset(particle.textureIndex).x;
+        m_instancedData[counter++] = GetTextureOffset(particle.textureIndex).y;
+        m_instancedData[counter++] = GetTextureOffset(particle.nextTextureIndex).x;
+        m_instancedData[counter++] = GetTextureOffset(particle.nextTextureIndex).y;
+
+        // fill buffer - blend factor
+        m_instancedData[counter++] = particle.blendFactor;
     }
+
+    // update vbo
+    UpdateVbo();
+
+    // render
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, VERTEX_COUNT, static_cast<int32_t>(m_particles.size()));
 
     FinishRendering();
 }
@@ -171,12 +211,13 @@ void sg::ogl::particle::ParticleEmitter::Render()
 // Init
 //-------------------------------------------------
 
-void sg::ogl::particle::ParticleEmitter::InitVao() const
+void sg::ogl::particle::ParticleEmitter::InitVao()
 {
     const buffer::BufferLayout bufferLayout{
         { buffer::VertexAttributeType::POSITION_2D, "vPosition" },
     };
 
+    // create a Vbo for the particle vertices
     m_vao->AllocateVertices(
         vertices.data(),
         static_cast<int32_t>(vertices.size()),
@@ -184,24 +225,16 @@ void sg::ogl::particle::ParticleEmitter::InitVao() const
         bufferLayout
     );
 
-    // todo
+    // create an empty Vbo for instanced data
+    m_vbo = m_vao->AllocateMemory(NUMBER_OF_FLOATS_PER_INSTANCE * static_cast<uint32_t>(m_maxParticles));
 
-    // create an empty Vbo
-    //const auto vbo{ m_vao->AllocateMemory(NUMBER_OF_FLOATS_PER_INSTANCE * MAX_INSTANCES) };
-
-    /*   4     4     4     4     4       1       = 21 Floats
-     * [ColA][ColB][ColC][ColD][TexOff][Blend]
-     */
-
-     // set Vbo attributes                                                     21 x 4 byte = 84 bytes
-    /*
-    m_vao->AddInstancedAttribute(vbo, 1, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 0);
-    m_vao->AddInstancedAttribute(vbo, 2, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 4);
-    m_vao->AddInstancedAttribute(vbo, 3, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 8);
-    m_vao->AddInstancedAttribute(vbo, 4, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 12);
-    m_vao->AddInstancedAttribute(vbo, 5, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 16);
-    m_vao->AddInstancedAttribute(vbo, 6, 1, NUMBER_OF_FLOATS_PER_INSTANCE, 20); // 20 x 4 = offset 80
-    */
+    // set Vbo attributes
+    m_vao->AddInstancedAttribute(m_vbo, 1, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 0);
+    m_vao->AddInstancedAttribute(m_vbo, 2, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 4);
+    m_vao->AddInstancedAttribute(m_vbo, 3, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 8);
+    m_vao->AddInstancedAttribute(m_vbo, 4, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 12);
+    m_vao->AddInstancedAttribute(m_vbo, 5, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 16);
+    m_vao->AddInstancedAttribute(m_vbo, 6, 1, NUMBER_OF_FLOATS_PER_INSTANCE, 20);
 }
 
 //-------------------------------------------------
@@ -217,12 +250,18 @@ glm::vec2 sg::ogl::particle::ParticleEmitter::GetTextureOffset(const int t_textu
     return glm::vec2(col / rows, row / rows);
 }
 
-void sg::ogl::particle::ParticleEmitter::PrepareRendering()
+void sg::ogl::particle::ParticleEmitter::PrepareRendering() const
 {
     m_vao->BindVao();
 
-    m_shaderProgram = &m_scene->GetApplicationContext()->GetShaderManager()->GetShaderProgram("particle_anim");
-    SG_OGL_CORE_ASSERT(m_shaderProgram, "[ParticleEmitter::PrepareRendering()] Null pointer.")
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
+    glEnableVertexAttribArray(4);
+    glEnableVertexAttribArray(5);
+    glEnableVertexAttribArray(6);
+
     m_shaderProgram->Bind();
 
     glEnable(GL_BLEND);
@@ -235,6 +274,14 @@ void sg::ogl::particle::ParticleEmitter::PrepareRendering()
 
 void sg::ogl::particle::ParticleEmitter::FinishRendering()
 {
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
+    glDisableVertexAttribArray(3);
+    glDisableVertexAttribArray(4);
+    glDisableVertexAttribArray(5);
+    glDisableVertexAttribArray(6);
+
     buffer::Vao::UnbindVao();
     resource::ShaderProgram::Unbind();
 
@@ -260,4 +307,17 @@ void sg::ogl::particle::ParticleEmitter::UpdateTextureInfo(Particle& t_particle)
     t_particle.textureIndex = static_cast<int>(floor(atlasProgression));
     t_particle.nextTextureIndex = t_particle.textureIndex < texturesCount - 1 ? t_particle.textureIndex + 1 : t_particle.textureIndex;
     t_particle.blendFactor = fmod(atlasProgression, 1.0f);
+}
+
+void sg::ogl::particle::ParticleEmitter::UpdateVbo() const
+{
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBufferData(GL_ARRAY_BUFFER, NUMBER_OF_FLOATS_PER_INSTANCE * m_maxParticles * sizeof(float), nullptr, GL_STREAM_DRAW);
+
+    glBufferSubData(
+        GL_ARRAY_BUFFER,
+        0,
+        NUMBER_OF_FLOATS_PER_INSTANCE * m_particles.size() * sizeof(float),
+        &m_instancedData[0]
+    );
 }
