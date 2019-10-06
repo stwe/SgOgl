@@ -71,21 +71,22 @@ void GameState::Init()
 
     // create camera and set a camera position
     m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>();
-    m_camera->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    m_camera->SetPosition(glm::vec3(0.0f, 10.0f, 10.0f));
 
     // create scene and set a camera
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
     // create particles emitter
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram<ParticleShaderProgram>("particle");
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram<ParticleShaderProgram>("particle_anim");
     m_particleEmitter = std::make_shared<sg::ogl::particle::ParticleEmitter>(
         m_scene.get(),
         MAX_PARTICLES,
-        "res/texture/particle/particleStar.png", 1
+        "res/texture/particle/fire.png",
+        8                                           // number of rows
         );
 
-    // build snow particles
+    // build particles
     BuildParticles();
 }
 
@@ -98,16 +99,10 @@ void GameState::BuildParticles() const
     std::random_device seeder;
     std::mt19937 engine(seeder());
 
-    const std::uniform_real_distribution<float> positionX(-50.0f, 50.0f);
-    const std::uniform_real_distribution<float> positionY(30.0f, 60.0f);
-    const std::uniform_real_distribution<float> positionZ(-100.0f, -10.0f);
-
-    const std::uniform_real_distribution<float> velocityY(-5.0f, -1.0f);
-
-    const std::uniform_real_distribution<float> scale(0.25f, 1.5f);
-    const std::uniform_real_distribution<float> lifetime(5.0f, 8.0f);
-
-    const std::uniform_int_distribution<int> textureIndex(0, 3);
+    const std::uniform_real_distribution<float> velocityX(-0.5f, 0.5f);
+    const std::uniform_real_distribution<float> velocityZ(-0.5f, 0.5f);
+    const std::uniform_real_distribution<float> scale(0.5f, 0.8f);
+    const std::uniform_real_distribution<float> lifetime(1.0f, 3.0f);
 
     const auto nrOfparticles{ m_particleEmitter->GetParticles().size() };
 
@@ -125,12 +120,10 @@ void GameState::BuildParticles() const
         {
             sg::ogl::particle::Particle particle;
 
-            particle.position = glm::vec3(positionX(engine), positionY(engine), positionZ(engine));
-            particle.velocity = glm::vec3(0.1f, velocityY(engine), 0.1f);
-            particle.color = glm::vec4(0.8f);
+            particle.position = glm::vec3(0.0f);
+            particle.velocity = glm::vec3(velocityX(engine), 0.5f, velocityZ(engine));
             particle.scale = scale(engine);
             particle.lifetime = lifetime(engine);
-            particle.textureIndex = 0;//textureIndex(engine);
 
             m_particleEmitter->AddParticle(particle);
         }

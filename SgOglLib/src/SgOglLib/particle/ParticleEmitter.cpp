@@ -50,12 +50,13 @@ bool sg::ogl::particle::ParticleEmitter::AddParticle(Particle& t_particle)
 {
     if (m_particles.size() < m_maxParticles)
     {
+        // make sure that the remaining lifetime has a valid value
+        t_particle.remainingLifetime = t_particle.lifetime;
+
         m_particles.push_back(t_particle);
 
         return true;
     }
-
-    //SG_OGL_LOG_DEBUG("[ParticleEmitter::AddParticle()] A particle could not be added.");
 
     return false;
 }
@@ -69,7 +70,25 @@ void sg::ogl::particle::ParticleEmitter::Update()
     // update particles
     for (auto& particle : m_particles)
     {
-        particle.Update();
+        if (particle.remainingLifetime < 0.0f)
+        {
+            //SG_OGL_LOG_DEBUG("[Particle::Update()] A particle was mark as died.");
+
+            particle.life = false;
+
+            continue;
+        }
+
+        SG_OGL_CORE_ASSERT(particle.life, "[Particle::Update()] Trying to update a dead particle.")
+
+        // particle is alive, thus update - the lifetime can be negative at this point
+        particle.remainingLifetime -= FRAME_TIME;
+        //particle.velocity.y += -50.0 * 0.2f * FRAME_TIME;
+        particle.velocity.y += -0.5f * FRAME_TIME;
+        particle.position += particle.velocity * FRAME_TIME;
+
+        // update texture info
+        UpdateTextureInfo(particle);
     }
 
     // remove dead particles
@@ -78,13 +97,6 @@ void sg::ogl::particle::ParticleEmitter::Update()
             return !t_particle.life;
         }
     );
-
-    // debug output
-    if (m_particles.empty() && !m_emptyContainer)
-    {
-        m_emptyContainer = true;
-        SG_OGL_LOG_DEBUG("[ParticleEmitter::Update()] The particles container is empty.");
-    }
 }
 
 void sg::ogl::particle::ParticleEmitter::Render()
@@ -120,10 +132,11 @@ void sg::ogl::particle::ParticleEmitter::Render()
         // set uniforms
         m_shaderProgram->SetUniform("projectionMatrix", projectionMatrix);
         m_shaderProgram->SetUniform("modelViewMatrix", viewMatrix * modelMatrix);
-        m_shaderProgram->SetUniform("color", particle.color);
-        m_shaderProgram->SetUniform("particleTexture", 0);
         m_shaderProgram->SetUniform("numberOfRows", static_cast<float>(m_nrOfTextureRows));
-        m_shaderProgram->SetUniform("offset", GetTextureOffset(particle.textureIndex));
+        m_shaderProgram->SetUniform("blendFactor", particle.blendFactor);
+        m_shaderProgram->SetUniform("offset1", GetTextureOffset(particle.textureIndex));
+        m_shaderProgram->SetUniform("offset2", GetTextureOffset(particle.nextTextureIndex));
+        m_shaderProgram->SetUniform("particleTexture", 0);
 
         // render
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -177,8 +190,6 @@ glm::vec2 sg::ogl::particle::ParticleEmitter::GetTextureOffset(const int t_textu
 {
     const auto col{ t_textureIndex % m_nrOfTextureRows };
     const auto row{ t_textureIndex / m_nrOfTextureRows };
-
-    // only need to cast one integer to float
     const auto rows{ static_cast<float>(m_nrOfTextureRows) };
 
     return glm::vec2(col / rows, row / rows);
@@ -188,13 +199,13 @@ void sg::ogl::particle::ParticleEmitter::PrepareRendering()
 {
     m_vao->BindVao();
 
-    m_shaderProgram = &m_scene->GetApplicationContext()->GetShaderManager()->GetShaderProgram("particle");
+    m_shaderProgram = &m_scene->GetApplicationContext()->GetShaderManager()->GetShaderProgram("particle_anim");
     SG_OGL_CORE_ASSERT(m_shaderProgram, "[ParticleEmitter::PrepareRendering()] Null pointer.")
     m_shaderProgram->Bind();
 
     glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     glDepthMask(false);
 
     resource::TextureManager::BindForReading(m_textureId, GL_TEXTURE0);
@@ -207,4 +218,24 @@ void sg::ogl::particle::ParticleEmitter::FinishRendering()
 
     glDepthMask(true);
     glDisable(GL_BLEND);
+}
+
+void sg::ogl::particle::ParticleEmitter::UpdateTextureInfo(Particle& t_particle) const
+{
+    auto lifeFactor{ t_particle.remainingLifetime / t_particle.lifetime };
+
+    // workaround for t_particle.remainingLifetime < 0.0f
+    if (lifeFactor < 0.0f)
+    {
+        lifeFactor = 0.0f;
+    }
+
+    SG_OGL_CORE_ASSERT(lifeFactor >= 0.0f && lifeFactor <= 1.0f, "[ParticleEmitter::UpdateTextureInfo()] Invalid value.")
+
+    const auto texturesCount{ m_nrOfTextureRows * m_nrOfTextureRows };
+    const auto atlasProgression{ lifeFactor * texturesCount };
+
+    t_particle.textureIndex = static_cast<int>(floor(atlasProgression));
+    t_particle.nextTextureIndex = t_particle.textureIndex < texturesCount - 1 ? t_particle.textureIndex + 1 : t_particle.textureIndex;
+    t_particle.blendFactor = fmod(atlasProgression, 1.0f);
 }

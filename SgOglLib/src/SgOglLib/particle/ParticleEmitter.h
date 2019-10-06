@@ -81,8 +81,6 @@ namespace sg::ogl::particle
         int m_nrOfTextureRows{ 1 };
         uint32_t m_textureId{ 0 };
 
-        bool m_emptyContainer{ false };
-
         resource::ShaderProgram* m_shaderProgram{ nullptr };
 
         //-------------------------------------------------
@@ -98,6 +96,7 @@ namespace sg::ogl::particle
         glm::vec2 GetTextureOffset(int t_textureIndex) const;
         void PrepareRendering();
         static void FinishRendering();
+        void UpdateTextureInfo(Particle& t_particle) const;
 
         //-------------------------------------------------
         // Erase–Remove Idiom
