@@ -267,9 +267,8 @@ void sg::ogl::particle::ParticleEmitter::PrepareRendering() const
 
     m_shaderProgram->Bind();
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    OpenGl::EnableAlphaBlending();
+
     glDepthMask(false);
 
     resource::TextureManager::BindForReading(m_textureId, GL_TEXTURE0);
@@ -289,7 +288,8 @@ void sg::ogl::particle::ParticleEmitter::FinishRendering()
     resource::ShaderProgram::Unbind();
 
     glDepthMask(true);
-    glDisable(GL_BLEND);
+
+    OpenGl::DisableBlending();
 }
 
 void sg::ogl::particle::ParticleEmitter::UpdateTextureInfo(Particle& t_particle) const
