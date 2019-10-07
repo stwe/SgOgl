@@ -19,7 +19,7 @@ bool GameState::Input()
 
 bool GameState::Update(const double t_dt)
 {
-    m_particleEmitter->Update();
+    m_particleEmitter->Update(t_dt);
     BuildParticles();
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))

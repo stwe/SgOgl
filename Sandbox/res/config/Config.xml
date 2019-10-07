@@ -12,6 +12,7 @@
         <printFrameRate>1</printFrameRate>
         <glMajor>4</glMajor>
         <glMinor>3</glMinor>
+        <fps>60.0</fps>
     </window>
     <projection>
         <fovDeg>70.0</fovDeg>

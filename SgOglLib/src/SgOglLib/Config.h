@@ -23,6 +23,7 @@ namespace sg::ogl
         bool printFrameRate{ false };
         int glMajor{ 4 };
         int glMinor{ 3 };
+        double fps{ 60.0 };
     };
 
     //-------------------------------------------------

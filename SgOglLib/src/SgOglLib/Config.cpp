@@ -42,6 +42,7 @@ void sg::ogl::Config::LoadOptions(
             t_windowOptions.printFrameRate = ToBool(window->FirstChildElement("printFrameRate")->GetText());
             t_windowOptions.glMajor = std::strtol(window->FirstChildElement("glMajor")->GetText(), nullptr, 10);
             t_windowOptions.glMinor = std::strtol(window->FirstChildElement("glMinor")->GetText(), nullptr, 10);
+            t_windowOptions.fps = std::strtod(window->FirstChildElement("fps")->GetText(), nullptr);
         }
         else
         {

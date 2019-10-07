@@ -58,7 +58,6 @@ namespace sg::ogl::particle
 
         */
 
-        static constexpr auto FRAME_TIME{ 0.016f };
         static constexpr auto NUMBER_OF_FLOATS_PER_INSTANCE{ 21 };
 
         inline static std::vector<float> vertices{
@@ -104,7 +103,7 @@ namespace sg::ogl::particle
         // Logic
         //-------------------------------------------------
 
-        void Update();
+        void Update(double t_dt);
         void Render();
 
     protected:

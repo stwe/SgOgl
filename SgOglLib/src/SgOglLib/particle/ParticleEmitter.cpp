@@ -76,10 +76,13 @@ bool sg::ogl::particle::ParticleEmitter::AddParticle(Particle& t_particle)
 // Logic
 //-------------------------------------------------
 
-void sg::ogl::particle::ParticleEmitter::Update()
+void sg::ogl::particle::ParticleEmitter::Update(double t_dt)
 {
     // get current camera position
     const auto& cameraPosition{ m_scene->GetCurrentCamera().GetPosition() };
+
+    // cast only once
+    const auto frametime{ static_cast<float>(t_dt) };
 
     // update particles
     for (auto& particle : m_particles)
@@ -95,7 +98,7 @@ void sg::ogl::particle::ParticleEmitter::Update()
         {
             SG_OGL_CORE_ASSERT(particle.life, "[ParticleEmitter::Update()] Trying to update a dead particle.")
 
-            particle.remainingLifetime -= FRAME_TIME;
+            particle.remainingLifetime -= frametime;
 
             // the lifetime can be negative at this point
             if (particle.remainingLifetime < 0.0f)
@@ -107,8 +110,8 @@ void sg::ogl::particle::ParticleEmitter::Update()
                 particle.cameraDistance = length2(cameraPosition - particle.position);
             }
 
-            particle.velocity.y += -10 * 0.3f * FRAME_TIME;
-            particle.position += particle.velocity * FRAME_TIME;
+            particle.velocity.y += -10 * 0.3f * frametime;
+            particle.position += particle.velocity * frametime;
 
             // update texture info
             UpdateTextureInfo(particle);

@@ -198,7 +198,9 @@ void sg::ogl::Application::ClientInit()
 
 void sg::ogl::Application::GameLoop()
 {
-    static constexpr auto FPS{ 1.0 / 60.0 };
+    // by default run at a constant rate of 60 frames per second
+    // this results in a frametime of 0.016 (16ms)
+    const auto frametime{ 1.0 / m_windowOptions.fps };
 
     auto lastTime{ glfwGetTime() };
     auto timer{ lastTime };
@@ -213,15 +215,15 @@ void sg::ogl::Application::GameLoop()
     {
         // measure time
         nowTime = glfwGetTime();
-        deltaTime += (nowTime - lastTime) / FPS;
+        deltaTime += (nowTime - lastTime) / frametime;
         lastTime = nowTime;
 
         Input(*m_circularEventQueue);
 
-        // only update at 60 frames/s
+        // only update at 60 frames per second (default)
         while (deltaTime >= 1.0)
         {
-            Update(FPS, *m_circularEventQueue);
+            Update(frametime, *m_circularEventQueue);
             updates++;
             deltaTime--;
         }
