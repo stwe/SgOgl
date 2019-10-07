@@ -18,8 +18,6 @@ namespace sg::ogl
         bool compatibleProfile{ false };
         bool debugContext{ false };
         bool antialiasing{ false };
-        bool faceCulling{ true };
-        bool frustumCulling{ false };
         bool printFrameRate{ false };
         int glMajor{ 4 };
         int glMinor{ 3 };

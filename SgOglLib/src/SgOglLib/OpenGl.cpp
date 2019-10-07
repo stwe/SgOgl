@@ -1,5 +1,7 @@
 #include <iostream>
 #include "OpenGl.h"
+#include "Log.h"
+#include "Color.h"
 
 void APIENTRY gl_debug_output(
     const uint32_t t_source,
@@ -52,4 +54,61 @@ void APIENTRY gl_debug_output(
     } std::cout << std::endl;
 
     std::cout << std::endl;
+}
+
+//-------------------------------------------------
+// OpenGL states
+//-------------------------------------------------
+
+void sg::ogl::OpenGl::SetClearColor(const Color& t_color)
+{
+    glClearColor(
+        static_cast<float>(t_color.r) / 255.0f,
+        static_cast<float>(t_color.g) / 255.0f,
+        static_cast<float>(t_color.b) / 255.0f,
+        static_cast<float>(t_color.a) / 255.0f
+    );
+}
+
+void sg::ogl::OpenGl::Clear()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+}
+
+void sg::ogl::OpenGl::EnableDepthAndStencilTesting()
+{
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
+    glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
+
+    SG_OGL_CORE_LOG_DEBUG("[OpenGl::EnableDepthAndStencilTesting()] Depth and Stencil testing enabled.");
+}
+
+void sg::ogl::OpenGl::EnableFaceCulling()
+{
+    // On a freshly created OpenGL Context, the default front face is GL_CCW.
+    // All the faces that are not front-faces are discarded.
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
+
+    SG_OGL_CORE_LOG_DEBUG("[OpenGl::EnableFaceCulling()] Face culling enabled (front = ccw).");
+}
+
+void sg::ogl::OpenGl::DisableFaceCulling()
+{
+    glDisable(GL_CULL_FACE);
+
+    SG_OGL_CORE_LOG_DEBUG("[OpenGl::DisableFaceCulling()] Face culling disabled.");
+}
+
+void sg::ogl::OpenGl::EnableAlphaBlending()
+{
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void sg::ogl::OpenGl::DisableBlending()
+{
+    glDisable(GL_BLEND);
 }

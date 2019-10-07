@@ -37,8 +37,6 @@ void sg::ogl::Config::LoadOptions(
             t_windowOptions.compatibleProfile = ToBool(window->FirstChildElement("compatibleProfile")->GetText());
             t_windowOptions.debugContext = ToBool(window->FirstChildElement("debugContext")->GetText());
             t_windowOptions.antialiasing = ToBool(window->FirstChildElement("antialiasing")->GetText());
-            t_windowOptions.faceCulling = ToBool(window->FirstChildElement("faceCulling")->GetText());
-            t_windowOptions.frustumCulling = ToBool(window->FirstChildElement("frustumCulling")->GetText());
             t_windowOptions.printFrameRate = ToBool(window->FirstChildElement("printFrameRate")->GetText());
             t_windowOptions.glMajor = std::strtol(window->FirstChildElement("glMajor")->GetText(), nullptr, 10);
             t_windowOptions.glMinor = std::strtol(window->FirstChildElement("glMinor")->GetText(), nullptr, 10);

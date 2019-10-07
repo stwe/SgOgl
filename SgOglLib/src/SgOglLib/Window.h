@@ -9,7 +9,6 @@ struct GLFWwindow;
 namespace sg::ogl
 {
     class Application;
-    struct Color;
 
     struct GlfwDeleteWindow
     {
@@ -72,18 +71,6 @@ namespace sg::ogl
         void Update() const;
         void UpdateProjectionMatrix();
         void UpdateOrthographicProjectionMatrix();
-
-        //-------------------------------------------------
-        // OpenGL
-        //-------------------------------------------------
-
-        static void SetClearColor(const Color& t_color);
-        static void Clear();
-        static void EnableFaceCulling();
-        static void DisableFaceCulling();
-        static void EnableBlending();
-        static void DisableBlending();
-        void RestoreInitialGlStates() const;
 
     protected:
 

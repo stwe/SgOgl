@@ -67,7 +67,7 @@ void GameState::Render()
 void GameState::Init()
 {
     // set clear color
-    sg::ogl::Window::SetClearColor(sg::ogl::Color::Black());
+    sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::Black());
 
     // create camera and set a camera position
     m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>();

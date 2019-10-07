@@ -3,7 +3,6 @@
 #include "OpenGl.h"
 #include "Application.h"
 #include "SgOglException.h"
-#include "Color.h"
 #include "Log.h"
 
 //-------------------------------------------------
@@ -168,8 +167,8 @@ void sg::ogl::Window::Init()
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     }
 
-    // Set default states.
-    RestoreInitialGlStates();
+    // Enable Depth and Stencil buffer.
+    OpenGl::EnableDepthAndStencilTesting();
 
     // Antialiasing.
     if (windowOptions.antialiasing)
@@ -247,61 +246,4 @@ void sg::ogl::Window::UpdateOrthographicProjectionMatrix()
         0.0f,
         static_cast<float>(projectionOptions.height)
     );
-}
-
-//-------------------------------------------------
-// OpenGL
-//-------------------------------------------------
-
-void sg::ogl::Window::SetClearColor(const Color& t_color)
-{
-    glClearColor(static_cast<float>(t_color.r) / 255.0f, static_cast<float>(t_color.g) / 255.0f, static_cast<float>(t_color.b) / 255.0f, static_cast<float>(t_color.a) / 255.0f);
-}
-
-void sg::ogl::Window::Clear()
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-}
-
-void sg::ogl::Window::EnableFaceCulling()
-{
-    // On a freshly created OpenGL Context, the default front face is GL_CCW.
-    // All the faces that are not front-faces are discarded.
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
-    glEnable(GL_CULL_FACE);
-
-    SG_OGL_CORE_LOG_DEBUG("[Window::EnableFaceCulling()] Face culling enabled (front = ccw).");
-}
-
-void sg::ogl::Window::DisableFaceCulling()
-{
-    glDisable(GL_CULL_FACE);
-
-    SG_OGL_CORE_LOG_DEBUG("[Window::DisableFaceCulling()] Face culling disabled.");
-}
-
-void sg::ogl::Window::EnableBlending()
-{
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    SG_OGL_CORE_LOG_DEBUG("[Window::EnableBlending()] Blending enabled.");
-}
-
-void sg::ogl::Window::DisableBlending()
-{
-    glDisable(GL_BLEND);
-
-    SG_OGL_CORE_LOG_DEBUG("[Window::DisableBlending()] Blending disabled.");
-}
-
-void sg::ogl::Window::RestoreInitialGlStates() const
-{
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_STENCIL_TEST);
-    glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
-
-    auto& windowOptions{ m_application->GetWindowOptions() };
-    windowOptions.faceCulling ? EnableFaceCulling() : DisableFaceCulling();
 }

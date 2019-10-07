@@ -334,13 +334,6 @@ void sg::ogl::Application::Input(event::CircularEventQueue& t_circularEventQueue
                 m_windowOptions.showTriangles = !m_windowOptions.showTriangles;
                 m_windowOptions.showTriangles ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             }
-
-            // Face Culling
-            if (t_event.eventType == event::EventType::KEY_PRESSED && t_event.key == GLFW_KEY_C)
-            {
-                m_windowOptions.faceCulling = !m_windowOptions.faceCulling;
-                m_windowOptions.faceCulling ? m_window->EnableFaceCulling() : m_window->DisableFaceCulling();
-            }
         })
     );
 
@@ -359,7 +352,8 @@ void sg::ogl::Application::Update(const double t_dt, event::CircularEventQueue& 
 
 void sg::ogl::Application::Render()
 {
-    Window::Clear();
+    // clear color, depth and stencil buffer
+    OpenGl::Clear();
 
     // handle states render
     m_stateStack->Render();

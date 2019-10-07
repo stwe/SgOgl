@@ -39,3 +39,31 @@ void APIENTRY gl_debug_output(
     const char* t_message,
     const void* t_userParam
 );
+
+//-------------------------------------------------
+// OpenGL States
+//-------------------------------------------------
+
+namespace sg::ogl
+{
+    struct Color;
+
+    class OpenGl
+    {
+    public:
+        static void SetClearColor(const Color& t_color);
+        static void Clear();
+        static void EnableDepthAndStencilTesting();
+
+        static void EnableFaceCulling();
+        static void DisableFaceCulling();
+
+        static void EnableAlphaBlending();
+        static void DisableBlending();
+
+    protected:
+
+    private:
+
+    };
+}
