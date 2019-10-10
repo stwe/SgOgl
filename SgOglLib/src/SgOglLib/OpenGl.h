@@ -55,6 +55,9 @@ namespace sg::ogl
         static void Clear();
         static void EnableDepthAndStencilTesting();
 
+        static void EnableWritingIntoDepthBuffer();
+        static void DisableWritingIntoDepthBuffer();
+
         static void EnableFaceCulling();
         static void DisableFaceCulling();
 

@@ -84,6 +84,16 @@ void sg::ogl::OpenGl::EnableDepthAndStencilTesting()
     SG_OGL_CORE_LOG_DEBUG("[OpenGl::EnableDepthAndStencilTesting()] Depth and Stencil testing enabled.");
 }
 
+void sg::ogl::OpenGl::EnableWritingIntoDepthBuffer()
+{
+    glDepthMask(GL_TRUE);
+}
+
+void sg::ogl::OpenGl::DisableWritingIntoDepthBuffer()
+{
+    glDepthMask(GL_FALSE);
+}
+
 void sg::ogl::OpenGl::EnableFaceCulling()
 {
     // On a freshly created OpenGL Context, the default front face is GL_CCW.

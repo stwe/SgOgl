@@ -70,7 +70,7 @@ namespace sg::ogl::scene
     protected:
 
     private:
-        int32_t m_oldDepthFuncMode;
+
     };
 
     class SG_OGL_API RenderComponent : public Component

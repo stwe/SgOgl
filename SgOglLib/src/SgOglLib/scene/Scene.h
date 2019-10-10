@@ -100,7 +100,11 @@ namespace sg::ogl::scene
         static Node* CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material = nullptr);
 
         template <typename T>
-        Entity* CreateModelEntity(const std::string& t_modelPath, const std::string& t_shaderName)
+        Entity* CreateModelEntity(
+            const std::string& t_modelPath,
+            const std::string& t_shaderName,
+            const MaterialSharedPtr t_alternativeMaterial = nullptr
+        )
         {
             // add shader program to the ShaderManager
             m_application->GetShaderManager()->AddShaderProgram<T>(t_shaderName);
@@ -127,7 +131,7 @@ namespace sg::ogl::scene
 
                     // set mesh && material
                     child->mesh = mesh;
-                    child->material = mesh->GetDefaultMaterial();
+                    child->material = t_alternativeMaterial ? t_alternativeMaterial : mesh->GetDefaultMaterial();
                     child->SetParentScene(this);
 
                     // add a render component
@@ -140,7 +144,7 @@ namespace sg::ogl::scene
             else
             {
                 entity->mesh = meshes[0];
-                entity->material = meshes[0]->GetDefaultMaterial();
+                entity->material = t_alternativeMaterial ? t_alternativeMaterial : meshes[0]->GetDefaultMaterial();
                 entity->SetParentScene(this);
 
                 AddRenderComponent<RenderComponent, DefaultRenderConfig>(entity, t_shaderName);

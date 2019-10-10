@@ -256,7 +256,9 @@ glm::vec2 sg::ogl::particle::ParticleEmitter::GetTextureOffset(const int t_textu
 void sg::ogl::particle::ParticleEmitter::PrepareRendering() const
 {
     m_vao->BindVao();
+    m_shaderProgram->Bind();
 
+    // todo -> during Vao creation
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
@@ -265,17 +267,15 @@ void sg::ogl::particle::ParticleEmitter::PrepareRendering() const
     glEnableVertexAttribArray(5);
     glEnableVertexAttribArray(6);
 
-    m_shaderProgram->Bind();
-
     OpenGl::EnableAlphaBlending();
-
-    glDepthMask(false);
+    OpenGl::DisableWritingIntoDepthBuffer();
 
     resource::TextureManager::BindForReading(m_textureId, GL_TEXTURE0);
 }
 
 void sg::ogl::particle::ParticleEmitter::FinishRendering()
 {
+    // todo
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
@@ -284,12 +284,11 @@ void sg::ogl::particle::ParticleEmitter::FinishRendering()
     glDisableVertexAttribArray(5);
     glDisableVertexAttribArray(6);
 
-    buffer::Vao::UnbindVao();
-    resource::ShaderProgram::Unbind();
-
-    glDepthMask(true);
-
+    OpenGl::EnableWritingIntoDepthBuffer();
     OpenGl::DisableBlending();
+
+    resource::ShaderProgram::Unbind();
+    buffer::Vao::UnbindVao();
 }
 
 void sg::ogl::particle::ParticleEmitter::UpdateTextureInfo(Particle& t_particle) const

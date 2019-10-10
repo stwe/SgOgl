@@ -5,7 +5,7 @@
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 4.0f };
+    static constexpr auto CAMERA_VELOCITY{ 16.0f };
     static constexpr auto MAX_PARTICLES{ 200 };
     static constexpr auto NEW_PARTICLES{ 80 };
 
@@ -38,6 +38,10 @@ public:
     ~GameState() noexcept override
     {
         SG_OGL_LOG_DEBUG("[GameState::~GameState()] Destruct GameState.");
+
+        delete m_skydomeEntity;
+        delete m_skyboxEntity;
+        delete m_planeEntity;
     }
 
     //-------------------------------------------------
@@ -54,6 +58,12 @@ private:
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
     ParticleEmitterSharedPtr m_particleEmitter;
+
+    std::shared_ptr<sg::ogl::resource::Material> m_planeMaterial;
+
+    sg::ogl::scene::Entity* m_skydomeEntity{ nullptr };
+    sg::ogl::scene::Entity* m_skyboxEntity{ nullptr };
+    sg::ogl::scene::Entity* m_planeEntity{ nullptr };
 
     //-------------------------------------------------
     // Init

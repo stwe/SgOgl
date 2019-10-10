@@ -11,22 +11,16 @@
 
 sg::ogl::scene::SkyboxRenderConfig::SkyboxRenderConfig(resource::ShaderProgram& t_shaderProgram)
     : RenderConfig(t_shaderProgram)
-    , m_oldDepthFuncMode{ GL_LESS }
 {}
 
 void sg::ogl::scene::SkyboxRenderConfig::Enable()
 {
-    // save old depth func mode
-    glGetIntegerv(GL_DEPTH_FUNC, &m_oldDepthFuncMode);
-
-    // change depth func
     glDepthFunc(GL_LEQUAL);
 }
 
 void sg::ogl::scene::SkyboxRenderConfig::Disable()
 {
-    // restore old depth func mode
-    glDepthFunc(m_oldDepthFuncMode);
+    glDepthFunc(GL_LESS);
 }
 
 const sg::ogl::scene::RenderConfig& sg::ogl::scene::RenderComponent::GetRenderConfig() const
