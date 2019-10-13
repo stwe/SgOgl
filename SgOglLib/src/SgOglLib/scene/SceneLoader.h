@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include "Core.h"
 
 namespace sg::ogl
 {
@@ -21,7 +22,7 @@ namespace sg::ogl::scene
     class Entity;
     class Scene;
 
-    class SceneLoader
+    class SG_OGL_API SceneLoader
     {
     public:
         // atmosphere

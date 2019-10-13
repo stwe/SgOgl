@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <glm/vec2.hpp>
+#include "Core.h"
 
 namespace sg::ogl::scene
 {
@@ -25,7 +26,7 @@ namespace sg::ogl::particle
 {
     struct Particle;
 
-    class ParticleEmitter
+    class SG_OGL_API ParticleEmitter
     {
     public:
         using VaoUniquePtr = std::unique_ptr<buffer::Vao>;

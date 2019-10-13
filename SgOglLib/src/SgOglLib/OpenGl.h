@@ -44,11 +44,13 @@ void APIENTRY gl_debug_output(
 // OpenGL States
 //-------------------------------------------------
 
+#include "Core.h"
+
 namespace sg::ogl
 {
     struct Color;
 
-    class OpenGl
+    class SG_OGL_API OpenGl
     {
     public:
         static void SetClearColor(const Color& t_color);
