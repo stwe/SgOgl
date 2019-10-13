@@ -1,9 +1,9 @@
 #include <random>
 #include "GameState.h"
-#include "ParticleShaderProgram.h"
-#include "SkyboxShaderProgram.h"
-#include "DomeShaderProgram.h"
-#include "ModelShaderProgram.h"
+#include "shader/ParticleShaderProgram.h"
+#include "shader/DomeShaderProgram.h"
+#include "shader/SkyboxShaderProgram.h"
+#include "shader/ModelShaderProgram.h"
 
 //-------------------------------------------------
 // Logic
@@ -21,13 +21,16 @@ bool GameState::Input()
 
 bool GameState::Update(const double t_dt)
 {
-    m_particleEmitter->Update(t_dt);
-    BuildParticles();
+    //m_particleEmitter->Update(t_dt);
+    //BuildParticles();
 
-    m_planeEntity->Update();
+    for (auto* entity : m_entities)
+    {
+        entity->Update();
+    }
 
-    //m_skydomeEntity->Update();
-    m_skyboxEntity->Update();
+    //m_atmosphere.at("skydome")->Update();
+    m_atmosphere.at("skybox")->Update();
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
     {
@@ -64,12 +67,15 @@ bool GameState::Update(const double t_dt)
 
 void GameState::Render()
 {
-    m_planeEntity->Render();
+    for (auto* entity : m_entities)
+    {
+        entity->Render();
+    }
 
-    //m_skydomeEntity->Render();
-    m_skyboxEntity->Render();
+    //m_atmosphere.at("skydome")->Render();
+    m_atmosphere.at("skybox")->Render();
 
-    m_particleEmitter->Render(); // todo render before skybox
+    //m_particleEmitter->Render(); // todo render before skybox
 }
 
 //-------------------------------------------------
@@ -88,44 +94,34 @@ void GameState::Init()
     m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>();
     m_camera->SetPosition(glm::vec3(0.0f, 1.0f, -10.0f));
 
+    // load shader
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram<ParticleShaderProgram>();
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram<ModelShaderProgram>();
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram<SkyboxShaderProgram>();
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram<DomeShaderProgram>();
+
     // create scene and set a camera
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
-    // create plane entity
-    m_planeMaterial = std::make_shared<sg::ogl::resource::Material>();
-    const auto planeDiffTextureId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/test.png") };
-    m_planeMaterial->mapKd = planeDiffTextureId;
-    m_planeEntity = m_scene->CreateModelEntity<ModelShaderProgram>("res/model/plane/plane.obj", "model", m_planeMaterial);
-    m_planeEntity->GetLocalTransform().scale = glm::vec3(100.0f, 1.0f, 100.0f);
-
-    // create skydom entity
-    m_skydomeEntity = m_scene->CreateSkydomeEntity<DomeShaderProgram>("res/model/dome/dome.obj", "dome");
-
-    // create skybox entity
-    const std::vector<std::string> textureFileNames
-    {
-        "res/texture/sky/sRight.png",
-        "res/texture/sky/sLeft.png",
-        "res/texture/sky/sUp.png",
-        "res/texture/sky/sDown.png",
-        "res/texture/sky/sBack.png",
-        "res/texture/sky/sFront.png"
-    };
-
-    m_skyboxEntity = m_scene->CreateSkyboxEntity<SkyboxShaderProgram>(textureFileNames, "skybox", 5000.0f);
+    // create scene loader
+    m_sceneLoader = std::make_unique<sg::ogl::scene::SceneLoader>("res/config/Scene.xml");
+    m_sceneLoader->LoadAtmosphere(m_scene.get(), m_atmosphere);
+    m_sceneLoader->LoadMaterials(GetApplicationContext(), m_materials);
+    m_sceneLoader->LoadEntities(m_scene.get(), m_entities, m_materials);
 
     // create particles emitter
+    /*
     GetApplicationContext()->GetShaderManager()->AddShaderProgram<ParticleShaderProgram>("particle_anim");
     m_particleEmitter = std::make_shared<sg::ogl::particle::ParticleEmitter>(
         m_scene.get(),
         MAX_PARTICLES,
         "res/texture/particle/fire.png",
-        8                                           // number of rows
+        8
         );
 
-    // build particles
     BuildParticles();
+    */
 }
 
 //-------------------------------------------------

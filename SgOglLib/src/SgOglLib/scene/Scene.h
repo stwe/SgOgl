@@ -7,8 +7,8 @@
 #include "Application.h"
 #include "Log.h"
 #include "Entity.h"
-#include "RenderComponent.h"
 #include "TerrainComponent.h"
+#include "component/Components.h"
 #include "resource/Model.h"
 #include "resource/Mesh.h"
 #include "resource/Material.h"
@@ -99,17 +99,13 @@ namespace sg::ogl::scene
 
         static Node* CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material = nullptr);
 
-        template <typename T>
         Entity* CreateModelEntity(
             const std::string& t_modelPath,
-            const std::string& t_shaderName,
-            const MaterialSharedPtr t_alternativeMaterial = nullptr
+            const std::string& t_shaderFolderName,
+            const MaterialSharedPtr& t_alternativeMaterial = nullptr
         )
         {
-            // add shader program to the ShaderManager
-            m_application->GetShaderManager()->AddShaderProgram<T>(t_shaderName);
-
-            // add model to the ModelManager
+            // get the model from the ModelManager (the model is added if necessary)
             const auto model{ m_application->GetModelManager()->GetModelFromPath(t_modelPath) };
 
             // create entity
@@ -135,7 +131,7 @@ namespace sg::ogl::scene
                     child->SetParentScene(this);
 
                     // add a render component
-                    AddRenderComponent<RenderComponent, DefaultRenderConfig>(child, t_shaderName);
+                    AddRenderComponent<component::RenderComponent, component::ModelRenderConfig>(child, t_shaderFolderName);
 
                     // add entity as child
                     entity->AddChild(child);
@@ -147,19 +143,15 @@ namespace sg::ogl::scene
                 entity->material = t_alternativeMaterial ? t_alternativeMaterial : meshes[0]->GetDefaultMaterial();
                 entity->SetParentScene(this);
 
-                AddRenderComponent<RenderComponent, DefaultRenderConfig>(entity, t_shaderName);
+                AddRenderComponent<component::RenderComponent, component::ModelRenderConfig>(entity, t_shaderFolderName);
             }
 
             return entity;
         }
 
-        template <typename T>
-        Entity* CreateSkydomeEntity(const std::string& t_modelPath, const std::string& t_shaderName)
+        Entity* CreateSkydomeEntity(const std::string& t_modelPath, const std::string& t_shaderFolderName)
         {
-            // add shader program to the ShaderManager
-            m_application->GetShaderManager()->AddShaderProgram<T>(t_shaderName);
-
-            // add model to the ModelManager
+            // get the model from the ModelManager (the model is added if necessary)
             const auto model{ m_application->GetModelManager()->GetModelFromPath(t_modelPath) };
             SG_OGL_CORE_ASSERT(model->GetMeshes().size() == 1, "[Scene::CreateSkydomeEntity()] Invalid number of meshes.")
 
@@ -167,27 +159,28 @@ namespace sg::ogl::scene
             auto* entity{ new Entity };
             SG_OGL_CORE_ASSERT(entity, "[Scene::CreateSkydomeEntity()] Null pointer.")
 
+            // set mesh
             entity->mesh = model->GetMeshes()[0];
+
+            // use the default material because the color is set in the shader
             entity->material = model->GetMeshes()[0]->GetDefaultMaterial();
+
+            // set transform
             entity->GetLocalTransform().scale = glm::vec3(m_application->GetProjectionOptions().farPlane * 0.5f);
             entity->SetParentScene(this);
 
             // add render component
-            AddRenderComponent<RenderComponent, DefaultRenderConfig>(entity, t_shaderName);
+            AddRenderComponent<component::RenderComponent, component::ModelRenderConfig>(entity, t_shaderFolderName);
 
             return entity;
         }
 
-        template <typename T>
         Entity* CreateSkyboxEntity(
             const std::vector<std::string>& t_textureFileNames,
-            const std::string& t_shaderName,
+            const std::string& t_shaderFolderName,
             const float t_size = 500.0f
         )
         {
-            // add shader program to the ShaderManager
-            m_application->GetShaderManager()->AddShaderProgram<T>(t_shaderName);
-
             // add a cubemap to the TextureManager
             const auto cubemapId{ m_application->GetTextureManager()->GetCubemapId(t_textureFileNames) };
 
@@ -217,11 +210,12 @@ namespace sg::ogl::scene
             entity->SetParentScene(this);
 
             // add render component
-            AddRenderComponent<RenderComponent, SkyboxRenderConfig>(entity, t_shaderName);
+            AddRenderComponent<component::RenderComponent, component::SkyboxRenderConfig>(entity, t_shaderFolderName);
 
             return entity;
         }
 
+        /*
         template <typename T, typename N, typename S>
         Entity* CreateTerrainEntity(const std::shared_ptr<terrain::Terrain>& t_terrain, const std::string& t_shaderName)
         {
@@ -243,13 +237,14 @@ namespace sg::ogl::scene
             entity->SetParentScene(this);
 
             // add render component
-            AddRenderComponent<RenderComponent, DefaultRenderConfig>(entity, t_shaderName);
+            AddRenderComponent<component::RenderComponent, component::ModelRenderConfig>(entity, t_shaderName);
 
             // add terrain component
             AddTerrainComponent(entity, t_terrain);
 
             return entity;
         }
+        */
 
         void AddNodeToRoot(Node* t_node) const;
 
@@ -282,12 +277,12 @@ namespace sg::ogl::scene
         static std::vector<glm::vec3> CreateSkyboxVertices(float t_size);
 
         template <typename TRenderComponent, typename TRenderConfig>
-        void AddRenderComponent(Entity* t_entity, const std::string& t_shaderName) const
+        void AddRenderComponent(Entity* t_entity, const std::string& t_shaderFolder) const
         {
             auto renderComponentUniquePtr{ std::make_unique<TRenderComponent>() };
             SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::AddRenderComponent()] Null pointer.")
 
-            auto renderConfigUniquePtr{ std::make_unique<TRenderConfig>(m_application->GetShaderManager()->GetShaderProgram(t_shaderName)) };
+            auto renderConfigUniquePtr{ std::make_unique<TRenderConfig>(t_shaderFolder) };
             SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::AddRenderComponent()] Null pointer.")
 
             renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));

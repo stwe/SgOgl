@@ -20,6 +20,11 @@ public:
         sg::ogl::resource::TextureManager::BindForReading(t_entity.material->mapKd, GL_TEXTURE0, GL_TEXTURE_CUBE_MAP);
     }
 
+    std::string GetFolderName() override
+    {
+        return "skybox";
+    }
+
 protected:
 
 private:

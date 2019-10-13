@@ -137,6 +137,7 @@ project "Sandbox"
         "SgOglLib/vendor/spdlog/include",
         "SgOglLib/vendor/glew/include",
         "SgOglLib/vendor/glfw/include",
+        "SgOglLib/vendor/tinyxml2/include",
         "SgOglLib/vendor/glm",
         "SgOglLib/vendor/assimp/include"
     }

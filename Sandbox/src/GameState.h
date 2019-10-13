@@ -12,11 +12,26 @@ public:
     // scene graph
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
 
+    // scene loader
+    using SceneLoaderUniquePtr = std::unique_ptr<sg::ogl::scene::SceneLoader>;
+
     // camera
     using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
 
     // particles
     using ParticleEmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
+
+    // atmosphere
+    using AtmosphereKey = std::string;
+    using AtmosphereContainer = std::map<AtmosphereKey, sg::ogl::scene::Entity*>;
+
+    // materials
+    using MaterialKey = std::string;
+    using MaterialSharedPtr = std::shared_ptr<sg::ogl::resource::Material>;
+    using MaterialContainer = std::map<MaterialKey, MaterialSharedPtr>;
+
+    // entities
+    using EntityContainer = std::vector<sg::ogl::scene::Entity*>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -39,9 +54,7 @@ public:
     {
         SG_OGL_LOG_DEBUG("[GameState::~GameState()] Destruct GameState.");
 
-        delete m_skydomeEntity;
-        delete m_skyboxEntity;
-        delete m_planeEntity;
+        // todo delete entities && children
     }
 
     //-------------------------------------------------
@@ -56,14 +69,14 @@ protected:
 
 private:
     SceneUniquePtr m_scene;
+    SceneLoaderUniquePtr m_sceneLoader;
+
+    AtmosphereContainer m_atmosphere;
+    MaterialContainer m_materials;
+    EntityContainer m_entities;
+
     CameraSharedPtr m_camera;
     ParticleEmitterSharedPtr m_particleEmitter;
-
-    std::shared_ptr<sg::ogl::resource::Material> m_planeMaterial;
-
-    sg::ogl::scene::Entity* m_skydomeEntity{ nullptr };
-    sg::ogl::scene::Entity* m_skyboxEntity{ nullptr };
-    sg::ogl::scene::Entity* m_planeEntity{ nullptr };
 
     //-------------------------------------------------
     // Init

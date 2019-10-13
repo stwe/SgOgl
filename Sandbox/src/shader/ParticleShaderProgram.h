@@ -8,6 +8,11 @@ public:
 
     }
 
+    std::string GetFolderName() override
+    {
+        return "particle";
+    }
+
 protected:
 
 private:

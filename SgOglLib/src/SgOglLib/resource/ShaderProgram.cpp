@@ -319,6 +319,15 @@ void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformNa
 }
 
 //-------------------------------------------------
+// To implement
+//-------------------------------------------------
+
+sg::ogl::resource::ShaderProgram::Options sg::ogl::resource::ShaderProgram::GetOptions() const
+{
+    return VERTEX_SHADER | FRAGMENT_SHADER;
+}
+
+//-------------------------------------------------
 // Helper
 //-------------------------------------------------
 

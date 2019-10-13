@@ -35,35 +35,63 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         template <typename T>
-        void AddShaderProgram(const std::string& t_folder, const bool t_loadGeometryShader = false)
+        void AddShaderProgram()
         {
-            if (m_shaderPrograms.count(t_folder) != 0)
-            {
-                SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] Shader program {} already exist.", t_folder);
-                return;
-            }
-
+            // create ShaderProgram
             auto shaderProgram{ std::make_unique<T>() };
             SG_OGL_CORE_ASSERT(shaderProgram, "[ShaderManager::AddShaderProgram()] Null pointer.")
 
-            SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] Start adding shader to program: {}.", t_folder);
+            // get folder name
+            auto folderName{ shaderProgram->GetFolderName() };
 
-            const auto shaderPath{ "res/shader/" + t_folder };
+            // create path
+            const auto shaderPath{ "res/shader/" + folderName };
 
-            shaderProgram->AddVertexShader(ShaderUtil::ReadShaderFile(shaderPath + "/Vertex.vert"));
-            shaderProgram->AddFragmentShader(ShaderUtil::ReadShaderFile(shaderPath + "/Fragment.frag"));
+            // get options
+            const auto options{ shaderProgram->GetOptions() };
 
-            if (t_loadGeometryShader)
+            // add to ShaderManager
+            if (m_shaderPrograms.count(folderName) == 0)
             {
-                shaderProgram->AddGeometryShader(ShaderUtil::ReadShaderFile(shaderPath + "/Geometry.geom"));
+                SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] Start adding shader to program: {}.", folderName);
+
+                // add vertex shader
+                if ((options & ShaderProgram::Flags::VERTEX_SHADER) == ShaderProgram::Flags::VERTEX_SHADER)
+                {
+                    shaderProgram->AddVertexShader(ShaderUtil::ReadShaderFile(shaderPath + "/Vertex.vert"));
+                }
+
+                // add tessellation control shader
+                if ((options & ShaderProgram::Flags::TESSELLATION_CONTROL_SHADER) == ShaderProgram::Flags::TESSELLATION_CONTROL_SHADER)
+                {
+                    shaderProgram->AddTessellationControlShader(ShaderUtil::ReadShaderFile(shaderPath + "/TessControl.tesc"));
+                }
+
+                // add tessellation evaluation shader
+                if ((options & ShaderProgram::Flags::TESSELLATION_EVALUATION_SHADER) == ShaderProgram::Flags::TESSELLATION_EVALUATION_SHADER)
+                {
+                    shaderProgram->AddTessellationEvaluationShader(ShaderUtil::ReadShaderFile(shaderPath + "/TessEval.tese"));
+                }
+
+                // add geometry shader
+                if ((options & ShaderProgram::Flags::GEOMETRY_SHADER) == ShaderProgram::Flags::GEOMETRY_SHADER)
+                {
+                    shaderProgram->AddGeometryShader(ShaderUtil::ReadShaderFile(shaderPath + "/Geometry.geom"));
+                }
+
+                // add fragment shader
+                if ((options & ShaderProgram::Flags::FRAGMENT_SHADER) == ShaderProgram::Flags::FRAGMENT_SHADER)
+                {
+                    shaderProgram->AddFragmentShader(ShaderUtil::ReadShaderFile(shaderPath + "/Fragment.frag"));
+                }
+
+                shaderProgram->LinkAndValidateProgram();
+                shaderProgram->AddAllFoundUniforms();
+
+                m_shaderPrograms.emplace(folderName, std::move(shaderProgram));
+
+                SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] All shader was added successfully to program {}.", folderName);
             }
-
-            shaderProgram->LinkAndValidateProgram();
-            shaderProgram->AddAllFoundUniforms();
-
-            m_shaderPrograms.emplace(t_folder, std::move(shaderProgram));
-
-            SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] All shader was added successfully to program {}.", t_folder);
         }
 
         template <typename T>

@@ -41,9 +41,13 @@
 #include "SgOglLib/scene/Component.h"
 #include "SgOglLib/scene/Entity.h"
 #include "SgOglLib/scene/Node.h"
-#include "SgOglLib/scene/RenderComponent.h"
+#include "SgOglLib/scene/RenderConfig.h"
 #include "SgOglLib/scene/Scene.h"
+#include "SgOglLib/scene/SceneLoader.h"
 #include "SgOglLib/scene/TerrainComponent.h"
+
+// scene - components
+#include "SgOglLib/scene/component/Components.h"
 
 // state
 #include "SgOglLib/state/State.h"

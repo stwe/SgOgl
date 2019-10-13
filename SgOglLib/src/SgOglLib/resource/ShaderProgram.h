@@ -24,6 +24,17 @@ namespace sg::ogl::resource
     class SG_OGL_API ShaderProgram
     {
     public:
+        using Options = uint8_t;
+
+        enum Flags : Options
+        {
+            VERTEX_SHADER = 1,
+            TESSELLATION_CONTROL_SHADER = 2,
+            TESSELLATION_EVALUATION_SHADER = 4,
+            GEOMETRY_SHADER = 8,
+            FRAGMENT_SHADER = 16
+        };
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
@@ -94,9 +105,11 @@ namespace sg::ogl::resource
         void SetUniform(const std::string& t_uniformName, const Material& t_material);
 
         //-------------------------------------------------
-        // Set uniforms
+        // To implement
         //-------------------------------------------------
 
+        virtual std::string GetFolderName() = 0;
+        virtual Options GetOptions() const;
         virtual void UpdateUniforms(scene::Entity& t_entity) = 0;
 
     protected:
