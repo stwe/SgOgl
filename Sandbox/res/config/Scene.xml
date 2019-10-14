@@ -43,6 +43,7 @@
     </materials>
 
     <entities>
+        <!--
         <entity>
             <model>res/model/plane/plane.obj</model>
             <position x="0.0" y="0.0" z="0.0"/>
@@ -55,6 +56,12 @@
             <model>res/model/Bush_01/Bush_01.obj</model>
             <position x="0.0" y="0.0" z="0.0"/>
             <scale x="0.25" y="0.25" z="0.25"/>
+            <shader_folder_name>model</shader_folder_name>
+        </entity>
+        -->
+        <entity>
+            <model>res/model/sponza/sponza.obj</model>
+            <position x="0.0" y="0.0" z="0.0"/>
             <shader_folder_name>model</shader_folder_name>
         </entity>
     </entities>

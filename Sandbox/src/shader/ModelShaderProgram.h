@@ -12,9 +12,18 @@ public:
         const auto mvp{ projectionMatrix * t_entity.GetParentScene()->GetCurrentCamera().GetViewMatrix() * t_entity.GetWorldMatrix() };
         SetUniform("mvpMatrix", mvp);
 
+        // set diffuse color
+        SetUniform("diffuseColor", t_entity.material->kd);
+
+        // set has diffuse map
+        SetUniform("hasDiffuseMap", t_entity.material->HasDiffuseMap());
+
         // set diffuse map
-        SetUniform("diffuseMap", 0);
-        sg::ogl::resource::TextureManager::BindForReading(t_entity.material->mapKd, GL_TEXTURE0);
+        if (t_entity.material->HasDiffuseMap())
+        {
+            SetUniform("diffuseMap", 0);
+            sg::ogl::resource::TextureManager::BindForReading(t_entity.material->mapKd, GL_TEXTURE0);
+        }
 
         // set ambient intensity
         SetUniform("ambientIntensity", glm::vec3(1.0f));

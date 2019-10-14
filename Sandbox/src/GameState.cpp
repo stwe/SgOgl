@@ -88,7 +88,7 @@ void GameState::Init()
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::Black());
 
     // enable face culling
-    //sg::ogl::OpenGl::EnableFaceCulling();
+    sg::ogl::OpenGl::EnableFaceCulling();
 
     // create camera and set a camera position
     m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>();

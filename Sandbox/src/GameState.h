@@ -5,7 +5,7 @@
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 16.0f };
+    static constexpr auto CAMERA_VELOCITY{ 128.0f };
     static constexpr auto MAX_PARTICLES{ 200 };
     static constexpr auto NEW_PARTICLES{ 80 };
 
