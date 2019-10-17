@@ -55,6 +55,9 @@ namespace sg::ogl
     public:
         static void SetClearColor(const Color& t_color);
         static void Clear();
+
+        static void EnableDepthTesting();
+        static void DisableDepthTesting();
         static void EnableDepthAndStencilTesting();
 
         static void EnableWritingIntoDepthBuffer();

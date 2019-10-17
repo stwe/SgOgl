@@ -52,14 +52,14 @@ void sg::ogl::resource::Mesh::InitDraw() const
     m_vao->BindVao();
 }
 
-void sg::ogl::resource::Mesh::DrawPrimitives() const
+void sg::ogl::resource::Mesh::DrawPrimitives(const uint32_t t_drawMode) const
 {
-    m_vao->DrawPrimitives();
+    m_vao->DrawPrimitives(t_drawMode);
 }
 
-void sg::ogl::resource::Mesh::DrawInstanced(const int32_t t_instanceCount) const
+void sg::ogl::resource::Mesh::DrawInstanced(const int32_t t_instanceCount, const uint32_t t_drawMode) const
 {
-    m_vao->DrawInstanced(t_instanceCount);
+    m_vao->DrawInstanced(t_instanceCount, t_drawMode);
 }
 
 void sg::ogl::resource::Mesh::EndDraw()

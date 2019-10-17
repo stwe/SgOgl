@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include "Log.h"
+#include "OpenGl.h"
 #include "buffer/Vao.h"
 #include "buffer/BufferLayout.h"
 
@@ -101,14 +102,16 @@ namespace sg::ogl::resource
 
         /**
          * @brief Calls glDrawElements or glDrawArrays to render.
+         * @param t_drawMode Specifies what kind of primitives to render.
          */
-        void DrawPrimitives() const;
+        void DrawPrimitives(uint32_t t_drawMode = GL_TRIANGLES) const;
 
         /**
          * @brief Calls glDrawElementsInstanced or glDrawArraysInstanced to render.
          * @param t_instanceCount Specifies the number of instances to be rendered.
+         * @param t_drawMode Specifies what kind of primitives to render.
          */
-        void DrawInstanced(int32_t t_instanceCount) const;
+        void DrawInstanced(int32_t t_instanceCount, uint32_t t_drawMode = GL_TRIANGLES) const;
 
         /**
          * @brief Unbind VAO.

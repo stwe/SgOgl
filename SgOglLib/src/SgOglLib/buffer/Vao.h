@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 #include "Core.h"
+#include "OpenGl.h"
 
 namespace sg::ogl::buffer
 {
@@ -81,8 +82,8 @@ namespace sg::ogl::buffer
         // Draw
         //-------------------------------------------------
 
-        void DrawPrimitives() const;
-        void DrawInstanced(int32_t t_instanceCount) const;
+        void DrawPrimitives(uint32_t t_drawMode = GL_TRIANGLES) const;
+        void DrawInstanced(int32_t t_instanceCount, uint32_t t_drawMode = GL_TRIANGLES) const;
 
     protected:
 

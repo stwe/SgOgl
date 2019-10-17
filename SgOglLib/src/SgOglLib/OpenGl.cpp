@@ -75,6 +75,16 @@ void sg::ogl::OpenGl::Clear()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
+void sg::ogl::OpenGl::EnableDepthTesting()
+{
+    glEnable(GL_DEPTH_TEST);
+}
+
+void sg::ogl::OpenGl::DisableDepthTesting()
+{
+    glDisable(GL_DEPTH_TEST);
+}
+
 void sg::ogl::OpenGl::EnableDepthAndStencilTesting()
 {
     glEnable(GL_DEPTH_TEST);

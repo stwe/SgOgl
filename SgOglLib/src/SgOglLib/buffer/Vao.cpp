@@ -1,6 +1,5 @@
 #include "Vao.h"
 #include "Log.h"
-#include "OpenGl.h"
 #include "BufferLayout.h"
 #include "VertexAttribute.h"
 #include "SgOglException.h"
@@ -277,27 +276,27 @@ void sg::ogl::buffer::Vao::AllocateVertices(float* const t_vertices, const int32
 // Draw
 //-------------------------------------------------
 
-void sg::ogl::buffer::Vao::DrawPrimitives() const
+void sg::ogl::buffer::Vao::DrawPrimitives(const uint32_t t_drawMode) const
 {
     if (HasIndexBuffer())
     {
-        glDrawElements(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(t_drawMode, m_drawCount, GL_UNSIGNED_INT, nullptr);
     }
     else
     {
-        glDrawArrays(GL_TRIANGLES, 0, m_drawCount);
+        glDrawArrays(t_drawMode, 0, m_drawCount);
     }
 }
 
-void sg::ogl::buffer::Vao::DrawInstanced(const int32_t t_instanceCount) const
+void sg::ogl::buffer::Vao::DrawInstanced(const int32_t t_instanceCount, const uint32_t t_drawMode) const
 {
     if (HasIndexBuffer())
     {
-        glDrawElementsInstanced(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, nullptr, t_instanceCount);
+        glDrawElementsInstanced(t_drawMode, m_drawCount, GL_UNSIGNED_INT, nullptr, t_instanceCount);
     }
     else
     {
-        glDrawArraysInstanced(GL_TRIANGLES, 0, m_drawCount, t_instanceCount);
+        glDrawArraysInstanced(t_drawMode, 0, m_drawCount, t_instanceCount);
     }
 }
 

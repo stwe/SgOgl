@@ -4,6 +4,7 @@
 #include "shader/DomeShaderProgram.h"
 #include "shader/SkyboxShaderProgram.h"
 #include "shader/ModelShaderProgram.h"
+#include "shader/GuiShaderProgram.h"
 
 //-------------------------------------------------
 // Logic
@@ -28,6 +29,8 @@ bool GameState::Update(const double t_dt)
     {
         entity->Update();
     }
+
+    m_waterTile->Update();
 
     //m_atmosphere.at("skydome")->Update();
     m_atmosphere.at("skybox")->Update();
@@ -72,8 +75,12 @@ void GameState::Render()
         entity->Render();
     }
 
+    m_waterTile->Render();
+
     //m_atmosphere.at("skydome")->Render();
     m_atmosphere.at("skybox")->Render();
+
+    m_guiEntity->Render();
 
     //m_particleEmitter->Render(); // todo render before skybox
 }
@@ -99,6 +106,7 @@ void GameState::Init()
     GetApplicationContext()->GetShaderManager()->AddShaderProgram<ModelShaderProgram>();
     GetApplicationContext()->GetShaderManager()->AddShaderProgram<SkyboxShaderProgram>();
     GetApplicationContext()->GetShaderManager()->AddShaderProgram<DomeShaderProgram>();
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram<GuiShaderProgram>();
 
     // create scene and set a camera
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
@@ -109,6 +117,16 @@ void GameState::Init()
     m_sceneLoader->LoadAtmosphere(m_scene.get(), m_atmosphere);
     m_sceneLoader->LoadMaterials(GetApplicationContext(), m_materials);
     m_sceneLoader->LoadEntities(m_scene.get(), m_entities, m_materials);
+
+    // create water tile
+    m_material = std::make_shared<sg::ogl::resource::Material>();
+    m_material->kd = glm::vec3(0.0f, 0.0f, 1.0f);
+    m_waterTile = m_scene->CreateModelEntity("res/model/plane/plane.obj", "model", m_material);
+    m_waterTile->GetLocalTransform().position = glm::vec3(0.0f);
+    m_waterTile->GetLocalTransform().scale = glm::vec3(60.0f, 1.0f, 60.0f);
+
+    // create gui
+    m_guiEntity = m_scene->CreateGuiEntity("res/texture/test.png", glm::vec2(0.5f), glm::vec2(0.25f), "gui");
 
     // create particles emitter
     /*

@@ -5,7 +5,7 @@
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 128.0f };
+    static constexpr auto CAMERA_VELOCITY{ 8.0f };
     static constexpr auto MAX_PARTICLES{ 200 };
     static constexpr auto NEW_PARTICLES{ 80 };
 
@@ -77,6 +77,13 @@ private:
 
     CameraSharedPtr m_camera;
     ParticleEmitterSharedPtr m_particleEmitter;
+
+    // water
+    std::shared_ptr<sg::ogl::resource::Material> m_material;
+    sg::ogl::scene::Entity* m_waterTile{ nullptr };
+
+    // gui
+    sg::ogl::scene::Entity* m_guiEntity{ nullptr };
 
     //-------------------------------------------------
     // Init

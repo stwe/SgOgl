@@ -20,6 +20,11 @@ namespace sg::ogl::scene
          */
         std::string shaderFolder;
 
+        /**
+         * @brief Specifies what kind of primitives to render.
+         */
+        uint32_t drawMode{ GL_TRIANGLES };
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------

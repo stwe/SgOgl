@@ -62,11 +62,11 @@ void sg::ogl::scene::component::RenderComponent::Render()
     // draw
     if (GetParentEntity()->instanceCount > 0)
     {
-        GetParentEntity()->mesh->DrawInstanced(GetParentEntity()->instanceCount);
+        GetParentEntity()->mesh->DrawInstanced(GetParentEntity()->instanceCount, m_renderConfig->drawMode);
     }
     else
     {
-        GetParentEntity()->mesh->DrawPrimitives();
+        GetParentEntity()->mesh->DrawPrimitives(m_renderConfig->drawMode);
     }
 
     // unbind Vao
