@@ -9,6 +9,7 @@
 
 // buffer
 #include "SgOglLib/buffer/Vao.h"
+#include "SgOglLib/buffer/Fbo.h"
 #include "SgOglLib/buffer/BufferLayout.h"
 
 // camera

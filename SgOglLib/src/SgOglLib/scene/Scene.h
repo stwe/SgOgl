@@ -247,10 +247,60 @@ namespace sg::ogl::scene
                 { buffer::VertexAttributeType::POSITION_2D, "aPosition" },
             };
 
-            meshUniquePtr->Allocate(bufferLayout, &vertices, static_cast<int32_t>(vertices.size()));
+            meshUniquePtr->Allocate(bufferLayout, &vertices, static_cast<int32_t>(vertices.size()) / 2);
 
             // set the texture id as mapKd
             materialUniquePtr->mapKd = textureId;
+
+            // setup entity
+            entity->mesh = std::move(meshUniquePtr);
+            entity->material = std::move(materialUniquePtr);
+            entity->SetParentScene(this);
+
+            // setup for generating a transformation matrix
+            entity->GetLocalTransform().position = glm::vec3(t_position.x, t_position.y, 0.0f);
+            entity->GetLocalTransform().scale = glm::vec3(t_scale.x, t_scale.y, 1.0f);
+
+            entity->SetDebugName("Gui");
+
+            // add render component
+            AddRenderComponent<component::RenderComponent, component::GuiRenderConfig>(entity, t_shaderFolderName);
+
+            return entity;
+        }
+
+        Entity* CreateGuiEntity(
+            const uint32_t t_textureId,
+            const glm::vec2& t_position,
+            const glm::vec2& t_scale,
+            const std::string& t_shaderFolderName
+        )
+        {
+            // create a new entity
+            auto* entity{ new Entity };
+            SG_OGL_CORE_ASSERT(entity, "[Scene::CreateGuiEntity()] Null pointer.")
+
+            auto meshUniquePtr{ std::make_unique<resource::Mesh>() };
+            SG_OGL_CORE_ASSERT(meshUniquePtr, "[Scene::CreateGuiEntity()] Null pointer.")
+
+            auto materialUniquePtr{ std::make_unique<resource::Material>() };
+            SG_OGL_CORE_ASSERT(materialUniquePtr, "[Scene::CreateGuiEntity()] Null pointer.")
+
+            std::vector<float> vertices{
+                    -1.0f,  1.0f,
+                    -1.0f, -1.0f,
+                     1.0f,  1.0f,
+                     1.0f, -1.0f
+            };
+
+            const buffer::BufferLayout bufferLayout{
+                { buffer::VertexAttributeType::POSITION_2D, "aPosition" },
+            };
+
+            meshUniquePtr->Allocate(bufferLayout, &vertices, static_cast<int32_t>(vertices.size()) / 2);
+
+            // set the texture id as mapKd
+            materialUniquePtr->mapKd = t_textureId;
 
             // setup entity
             entity->mesh = std::move(meshUniquePtr);

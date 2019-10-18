@@ -85,6 +85,9 @@ private:
     // gui
     sg::ogl::scene::Entity* m_guiEntity{ nullptr };
 
+    // fbo
+    std::shared_ptr<sg::ogl::buffer::Fbo> m_fbo;
+
     //-------------------------------------------------
     // Init
     //-------------------------------------------------

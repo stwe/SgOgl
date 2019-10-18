@@ -1,6 +1,6 @@
 #pragma once
 
-class GuiShaderProgram : public sg::ogl::resource::ShaderProgram
+class DepthMapShaderProgram : public sg::ogl::resource::ShaderProgram
 {
 public:
     void UpdateUniforms(sg::ogl::scene::Entity& t_entity) override
@@ -13,11 +13,14 @@ public:
         mat = scale(mat, glm::vec3(t_entity.GetLocalTransform().scale.x, t_entity.GetLocalTransform().scale.y, 1.0f));
 
         SetUniform("transformationMatrix", mat);
+
+        SetUniform("near_plane", t_entity.GetParentScene()->GetApplicationContext()->GetProjectionOptions().nearPlane);
+        SetUniform("far_plane", t_entity.GetParentScene()->GetApplicationContext()->GetProjectionOptions().farPlane);
     }
 
     std::string GetFolderName() override
     {
-        return "gui";
+        return "gui_depth_map";
     }
 
 protected:

@@ -5,6 +5,7 @@
 #include "shader/SkyboxShaderProgram.h"
 #include "shader/ModelShaderProgram.h"
 #include "shader/GuiShaderProgram.h"
+#include "shader/DepthMapShaderProgram.h"
 
 //-------------------------------------------------
 // Logic
@@ -70,6 +71,18 @@ bool GameState::Update(const double t_dt)
 
 void GameState::Render()
 {
+    // render to depth map
+    m_fbo->BindAsRenderTarget();
+    glClear(GL_DEPTH_BUFFER_BIT);
+    for (auto* entity : m_entities)
+    {
+        entity->Render();
+    }
+    m_waterTile->Render();
+    m_fbo->UnbindRenderTarget();
+
+    // render scene as normal
+    sg::ogl::OpenGl::Clear();
     for (auto* entity : m_entities)
     {
         entity->Render();
@@ -102,11 +115,12 @@ void GameState::Init()
     m_camera->SetPosition(glm::vec3(0.0f, 1.0f, -10.0f));
 
     // load shader
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram<ParticleShaderProgram>();
+    //GetApplicationContext()->GetShaderManager()->AddShaderProgram<ParticleShaderProgram>();
     GetApplicationContext()->GetShaderManager()->AddShaderProgram<ModelShaderProgram>();
     GetApplicationContext()->GetShaderManager()->AddShaderProgram<SkyboxShaderProgram>();
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram<DomeShaderProgram>();
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram<GuiShaderProgram>();
+    //GetApplicationContext()->GetShaderManager()->AddShaderProgram<DomeShaderProgram>();
+    //GetApplicationContext()->GetShaderManager()->AddShaderProgram<GuiShaderProgram>();
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram<DepthMapShaderProgram>();
 
     // create scene and set a camera
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
@@ -125,8 +139,12 @@ void GameState::Init()
     m_waterTile->GetLocalTransform().position = glm::vec3(0.0f);
     m_waterTile->GetLocalTransform().scale = glm::vec3(60.0f, 1.0f, 60.0f);
 
+    // fbo
+    m_fbo = std::make_shared<sg::ogl::buffer::Fbo>(GetApplicationContext(), 512, 512);
+
     // create gui
-    m_guiEntity = m_scene->CreateGuiEntity("res/texture/test.png", glm::vec2(0.5f), glm::vec2(0.25f), "gui");
+    //m_guiEntity = m_scene->CreateGuiEntity("res/texture/test.png", glm::vec2(0.5f), glm::vec2(0.25f), "gui");
+    m_guiEntity = m_scene->CreateGuiEntity(m_fbo->GetDepthTextureId(), glm::vec2(0.5f), glm::vec2(0.25f), "gui_depth_map");
 
     // create particles emitter
     /*
