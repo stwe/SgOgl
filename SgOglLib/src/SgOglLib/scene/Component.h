@@ -12,7 +12,8 @@ namespace sg::ogl::scene
         enum class Type
         {
             RENDERER,
-            TERRAIN
+            TERRAIN,
+            WATER
         };
 
         //-------------------------------------------------

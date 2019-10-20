@@ -132,3 +132,13 @@ void sg::ogl::OpenGl::DisableBlending()
 {
     glDisable(GL_BLEND);
 }
+
+void sg::ogl::OpenGl::EnableClipping()
+{
+    glEnable(GL_CLIP_DISTANCE0);
+}
+
+void sg::ogl::OpenGl::DisableClipping()
+{
+    glDisable(GL_CLIP_DISTANCE0);
+}

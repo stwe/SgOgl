@@ -69,6 +69,9 @@ namespace sg::ogl
         static void EnableAlphaBlending();
         static void DisableBlending();
 
+        static void EnableClipping();
+        static void DisableClipping();
+
     protected:
 
     private:

@@ -80,6 +80,8 @@ namespace sg::ogl::scene
 
         Application* GetApplicationContext() const;
 
+        glm::vec4 GetCurrentClipPlane() const;
+
         //-------------------------------------------------
         // Setter
         //-------------------------------------------------
@@ -87,6 +89,7 @@ namespace sg::ogl::scene
         void SetCurrentCamera(const CameraSharedPtr& t_camera);
         void SetDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
         void SetPointLight(const PointLightSharedPtr& t_pointLight);
+        void SetCurrentClipPlane(const glm::vec4& t_currentClipPlane);
 
         //-------------------------------------------------
         // Vertex attribute
@@ -99,6 +102,15 @@ namespace sg::ogl::scene
         //-------------------------------------------------
 
         static Node* CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material = nullptr);
+
+        void AddWaterComponent(Entity* t_entity, const uint32_t t_reflectionTextureId, const uint32_t t_refractionTextureId) const
+        {
+            auto waterComponentUniquePtr{ std::make_unique<component::WaterComponent>() };
+            waterComponentUniquePtr->reflectionTextureId = t_reflectionTextureId;
+            waterComponentUniquePtr->refractionTextureId = t_refractionTextureId;
+
+            t_entity->AddComponent(Component::Type::WATER, std::move(waterComponentUniquePtr));
+        }
 
         Entity* CreateModelEntity(
             const std::string& t_modelPath,
@@ -276,6 +288,8 @@ namespace sg::ogl::scene
             const std::string& t_shaderFolderName
         )
         {
+            SG_OGL_CORE_ASSERT(t_textureId, "[Scene::CreateGuiEntity()] Invalid texture id.")
+
             // create a new entity
             auto* entity{ new Entity };
             SG_OGL_CORE_ASSERT(entity, "[Scene::CreateGuiEntity()] Null pointer.")
@@ -369,6 +383,8 @@ namespace sg::ogl::scene
         Node* m_rootNode{ nullptr };
 
         Application* m_application{ nullptr };
+
+        glm::vec4 m_currentClipPlane{ glm::vec4(0.0f) };
 
         //-------------------------------------------------
         // Helper

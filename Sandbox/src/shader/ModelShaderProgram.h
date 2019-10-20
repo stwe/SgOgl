@@ -8,6 +8,12 @@ public:
         // get projection matrix
         const auto projectionMatrix{ t_entity.GetParentScene()->GetApplicationContext()->GetWindow()->GetProjectionMatrix() };
 
+        // set model matrix
+        SetUniform("modelMatrix", t_entity.GetWorldMatrix());
+
+        // set plane
+        SetUniform("plane", t_entity.GetParentScene()->GetCurrentClipPlane());
+
         // set mvp matrix
         const auto mvp{ projectionMatrix * t_entity.GetParentScene()->GetCurrentCamera().GetViewMatrix() * t_entity.GetWorldMatrix() };
         SetUniform("mvpMatrix", mvp);

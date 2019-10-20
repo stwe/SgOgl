@@ -36,6 +36,14 @@ void sg::ogl::camera::LookAtCamera::SetPosition(const glm::vec3& t_position)
     m_position = t_position;
 }
 
+void sg::ogl::camera::LookAtCamera::InvertPitch()
+{
+    m_pitch = -m_pitch;
+
+    // Update Front, Right and Up Vectors using the updated Euler angles.
+    Update();
+}
+
 //-------------------------------------------------
 // Getter
 //-------------------------------------------------
@@ -82,17 +90,34 @@ void sg::ogl::camera::LookAtCamera::ProcessKeyboard(const CameraMovement t_direc
     const auto velocity{ static_cast<float>(m_movementSpeed * t_dt) };
 
     if (t_direction == FORWARD)
+    {
         m_position += m_front * velocity;
+    }
+
     if (t_direction == BACKWARD)
+    {
         m_position -= m_front * velocity;
+    }
+
     if (t_direction == LEFT)
+    {
         m_position -= m_right * velocity;
+    }
+
     if (t_direction == RIGHT)
+    {
         m_position += m_right * velocity;
+    }
+
     if (t_direction == UP)
+    {
         m_position += m_up * velocity;
+    }
+
     if (t_direction == DOWN)
+    {
         m_position -= m_up * velocity;
+    }
 }
 
 void sg::ogl::camera::LookAtCamera::ProcessMouse(const glm::vec2& t_displVec)
@@ -117,17 +142,6 @@ void sg::ogl::camera::LookAtCamera::ProcessMouse(const glm::vec2& t_displVec)
     {
         m_pitch = -89.0f;
     }
-
-    /*
-    if (m_pitch < 0.0f)
-    {
-        m_pitch = 0.0f;
-    }
-    else if (m_pitch > 90.0f)
-    {
-        m_pitch = 90.0f;
-    }
-    */
 
     // Update Front, Right and Up Vectors using the updated Euler angles.
     Update();

@@ -1,6 +1,6 @@
 #version 330
 
-// model/Vertex.vert
+// water/Vertex.vert
 
 // In
 
@@ -12,22 +12,16 @@ layout (location = 4) in vec3 aBiTangent;
 
 // Out
 
-out vec2 vUv;
+out vec4 clipSpace;
 
 // Uniforms
 
-uniform mat4 modelMatrix;
 uniform mat4 mvpMatrix;
-uniform vec4 plane;
 
 // Main
 
 void main()
 {
-    gl_Position = mvpMatrix * vec4(aPosition, 1.0);
-
-    vec4 worldPosition = modelMatrix * vec4(aPosition, 1.0);
-    gl_ClipDistance[0] = dot(worldPosition, plane);
-
-    vUv = aUv;
+    clipSpace = mvpMatrix * vec4(aPosition, 1.0);
+    gl_Position = clipSpace;
 }

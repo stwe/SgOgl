@@ -4,3 +4,4 @@
 #include "ModelRenderConfig.h"
 #include "SkyboxRenderConfig.h"
 #include "RenderComponent.h"
+#include "WaterComponent.h"

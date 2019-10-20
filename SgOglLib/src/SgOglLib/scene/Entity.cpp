@@ -20,6 +20,11 @@ sg::ogl::scene::Scene* sg::ogl::scene::Entity::GetParentScene() const
     return m_parentScene;
 }
 
+sg::ogl::scene::Entity::ComponentSharedPtr& sg::ogl::scene::Entity::GetComponentSharedPtr(Component::Type t_type)
+{
+    return m_components.at(t_type);
+}
+
 //-------------------------------------------------
 // Setter
 //-------------------------------------------------

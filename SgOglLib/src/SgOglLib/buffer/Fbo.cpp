@@ -72,6 +72,7 @@ void sg::ogl::buffer::Fbo::UnbindFbo()
 void sg::ogl::buffer::Fbo::BindAsRenderTarget() const
 {
     glViewport(0, 0, m_width, m_height);
+    glBindTexture(GL_TEXTURE_2D, 0);
     BindFbo();
 }
 

@@ -43,6 +43,7 @@ namespace sg::ogl::camera
         void SetCameraSpeed(double t_speed);
         void SetMouseSensitivity(float t_sensitivity);
         void SetPosition(const glm::vec3& t_position);
+        void InvertPitch();
 
         //-------------------------------------------------
         // Getter
@@ -57,7 +58,7 @@ namespace sg::ogl::camera
         //-------------------------------------------------
 
         /**
-         * @brief Calculates the front vector from the Camera's (updated) Euler Angles.
+         * @brief Recalculates the Front, Up and Right vector.
          */
         void Update();
 

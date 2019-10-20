@@ -5,9 +5,8 @@
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 8.0f };
-    static constexpr auto MAX_PARTICLES{ 200 };
-    static constexpr auto NEW_PARTICLES{ 80 };
+    static constexpr auto CAMERA_VELOCITY{ 32.0f };
+    static constexpr auto WATER_HEIGHT{ 13.0f };
 
     // scene graph
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
@@ -17,9 +16,6 @@ public:
 
     // camera
     using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
-
-    // particles
-    using ParticleEmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
 
     // atmosphere
     using AtmosphereKey = std::string;
@@ -76,17 +72,16 @@ private:
     EntityContainer m_entities;
 
     CameraSharedPtr m_camera;
-    ParticleEmitterSharedPtr m_particleEmitter;
 
     // water
-    std::shared_ptr<sg::ogl::resource::Material> m_material;
     sg::ogl::scene::Entity* m_waterTile{ nullptr };
 
-    // gui
-    sg::ogl::scene::Entity* m_guiEntity{ nullptr };
+    // guis
+    sg::ogl::scene::Entity* m_guiReflection{ nullptr };
+    sg::ogl::scene::Entity* m_guiRefraction{ nullptr };
 
     // fbo
-    std::shared_ptr<sg::ogl::buffer::Fbo> m_fbo;
+    std::shared_ptr<sg::ogl::buffer::WaterFbos> m_waterFbos;
 
     //-------------------------------------------------
     // Init
@@ -98,5 +93,6 @@ private:
     // Helper
     //-------------------------------------------------
 
-    void BuildParticles() const;
+    void RenderReflectionTexture();
+    void RenderRefractionTexture();
 };

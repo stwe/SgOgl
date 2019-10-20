@@ -56,8 +56,29 @@
 
         <entity>
             <model>res/model/Bush_01/Bush_01.obj</model>
+            <position x="12.0" y="14.0" z="-18.0"/>
+            <scale x="0.5" y="0.5" z="0.5"/>
+            <shader_folder_name>model</shader_folder_name>
+        </entity>
+
+        <entity>
+            <model>res/model/Bush_01/Bush_01.obj</model>
+            <position x="8.0" y="14.0" z="-18.0"/>
+            <scale x="0.5" y="0.5" z="0.5"/>
+            <shader_folder_name>model</shader_folder_name>
+        </entity>
+
+        <entity>
+            <model>res/model/Bush_01/Bush_01.obj</model>
+            <position x="16.0" y="14.0" z="-18.0"/>
+            <scale x="0.5" y="0.5" z="0.5"/>
+            <shader_folder_name>model</shader_folder_name>
+        </entity>
+
+        <entity>
+            <model>res/model/monu/mount.obj</model>
             <position x="0.0" y="0.0" z="0.0"/>
-            <scale x="0.25" y="0.25" z="0.25"/>
+            <scale x="10.0" y="10.0" z="10.0"/>
             <shader_folder_name>model</shader_folder_name>
         </entity>
 

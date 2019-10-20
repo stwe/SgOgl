@@ -23,6 +23,9 @@ namespace sg::ogl::scene
         Component& GetComponent(Component::Type t_type);
         Scene* GetParentScene() const;
 
+        // todo
+        ComponentSharedPtr& GetComponentSharedPtr(Component::Type t_type);
+
         //-------------------------------------------------
         // Setter
         //-------------------------------------------------

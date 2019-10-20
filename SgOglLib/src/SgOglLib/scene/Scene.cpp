@@ -83,6 +83,11 @@ sg::ogl::Application* sg::ogl::scene::Scene::GetApplicationContext() const
     return m_application;
 }
 
+glm::vec4 sg::ogl::scene::Scene::GetCurrentClipPlane() const
+{
+    return m_currentClipPlane;
+}
+
 //-------------------------------------------------
 // Setter
 //-------------------------------------------------
@@ -114,6 +119,11 @@ void sg::ogl::scene::Scene::SetPointLight(const PointLightSharedPtr& t_pointLigh
     }
 
     m_pointLight = t_pointLight;
+}
+
+void sg::ogl::scene::Scene::SetCurrentClipPlane(const glm::vec4& t_currentClipPlane)
+{
+    m_currentClipPlane = t_currentClipPlane;
 }
 
 //-------------------------------------------------

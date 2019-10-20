@@ -1,11 +1,9 @@
 #include <random>
 #include "GameState.h"
-#include "shader/ParticleShaderProgram.h"
-#include "shader/DomeShaderProgram.h"
 #include "shader/SkyboxShaderProgram.h"
 #include "shader/ModelShaderProgram.h"
 #include "shader/GuiShaderProgram.h"
-#include "shader/DepthMapShaderProgram.h"
+#include "shader/WaterShaderProgram.h"
 
 //-------------------------------------------------
 // Logic
@@ -23,9 +21,6 @@ bool GameState::Input()
 
 bool GameState::Update(const double t_dt)
 {
-    //m_particleEmitter->Update(t_dt);
-    //BuildParticles();
-
     for (auto* entity : m_entities)
     {
         entity->Update();
@@ -33,7 +28,6 @@ bool GameState::Update(const double t_dt)
 
     m_waterTile->Update();
 
-    //m_atmosphere.at("skydome")->Update();
     m_atmosphere.at("skybox")->Update();
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
@@ -71,31 +65,29 @@ bool GameState::Update(const double t_dt)
 
 void GameState::Render()
 {
-    // render to depth map
-    m_fbo->BindAsRenderTarget();
-    glClear(GL_DEPTH_BUFFER_BIT);
+    // enable clipping
+    sg::ogl::OpenGl::EnableClipping();
+
+    // render reflection texture
+    RenderReflectionTexture();
+
+    // render refraction texture
+    RenderRefractionTexture();
+
+    // render to screen
+    sg::ogl::OpenGl::DisableClipping();
+    //m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f));
     for (auto* entity : m_entities)
     {
         entity->Render();
     }
-    m_waterTile->Render();
-    m_fbo->UnbindRenderTarget();
-
-    // render scene as normal
-    sg::ogl::OpenGl::Clear();
-    for (auto* entity : m_entities)
-    {
-        entity->Render();
-    }
 
     m_waterTile->Render();
 
-    //m_atmosphere.at("skydome")->Render();
     m_atmosphere.at("skybox")->Render();
 
-    m_guiEntity->Render();
-
-    //m_particleEmitter->Render(); // todo render before skybox
+    m_guiReflection->Render();
+    m_guiRefraction->Render();
 }
 
 //-------------------------------------------------
@@ -112,90 +104,75 @@ void GameState::Init()
 
     // create camera and set a camera position
     m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>();
-    m_camera->SetPosition(glm::vec3(0.0f, 1.0f, -10.0f));
+    m_camera->SetPosition(glm::vec3(0.0f, 48.0f, -10.0f));
 
     // load shader
-    //GetApplicationContext()->GetShaderManager()->AddShaderProgram<ParticleShaderProgram>();
     GetApplicationContext()->GetShaderManager()->AddShaderProgram<ModelShaderProgram>();
     GetApplicationContext()->GetShaderManager()->AddShaderProgram<SkyboxShaderProgram>();
-    //GetApplicationContext()->GetShaderManager()->AddShaderProgram<DomeShaderProgram>();
-    //GetApplicationContext()->GetShaderManager()->AddShaderProgram<GuiShaderProgram>();
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram<DepthMapShaderProgram>();
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram<GuiShaderProgram>();
+    GetApplicationContext()->GetShaderManager()->AddShaderProgram<WaterShaderProgram>();
 
     // create scene and set a camera
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
-    // create scene loader
+    // create scene loader and load configured scene entities
     m_sceneLoader = std::make_unique<sg::ogl::scene::SceneLoader>("res/config/Scene.xml");
     m_sceneLoader->LoadAtmosphere(m_scene.get(), m_atmosphere);
     m_sceneLoader->LoadMaterials(GetApplicationContext(), m_materials);
     m_sceneLoader->LoadEntities(m_scene.get(), m_entities, m_materials);
 
-    // create water tile
-    m_material = std::make_shared<sg::ogl::resource::Material>();
-    m_material->kd = glm::vec3(0.0f, 0.0f, 1.0f);
-    m_waterTile = m_scene->CreateModelEntity("res/model/plane/plane.obj", "model", m_material);
-    m_waterTile->GetLocalTransform().position = glm::vec3(0.0f);
-    m_waterTile->GetLocalTransform().scale = glm::vec3(60.0f, 1.0f, 60.0f);
+    // create fbos for water rendering
+    m_waterFbos = std::make_shared<sg::ogl::buffer::WaterFbos>(GetApplicationContext());
 
-    // fbo
-    m_fbo = std::make_shared<sg::ogl::buffer::Fbo>(GetApplicationContext(), 512, 512);
+    // create a water tile entity
+    m_waterTile = m_scene->CreateModelEntity("res/model/plane/plane.obj", "water");
+    m_waterTile->GetLocalTransform().position = glm::vec3(22.0f, WATER_HEIGHT, 0.0f);
+    m_waterTile->GetLocalTransform().scale = glm::vec3(30.0f, 1.0f, 30.0f);
+    m_scene->AddWaterComponent(m_waterTile, m_waterFbos->GetReflectionColorTextureId(), m_waterFbos->GetRefractionColorTextureId());
 
-    // create gui
-    //m_guiEntity = m_scene->CreateGuiEntity("res/texture/test.png", glm::vec2(0.5f), glm::vec2(0.25f), "gui");
-    m_guiEntity = m_scene->CreateGuiEntity(m_fbo->GetDepthTextureId(), glm::vec2(0.5f), glm::vec2(0.25f), "gui_depth_map");
-
-    // create particles emitter
-    /*
-    GetApplicationContext()->GetShaderManager()->AddShaderProgram<ParticleShaderProgram>("particle_anim");
-    m_particleEmitter = std::make_shared<sg::ogl::particle::ParticleEmitter>(
-        m_scene.get(),
-        MAX_PARTICLES,
-        "res/texture/particle/fire.png",
-        8
-        );
-
-    BuildParticles();
-    */
+    // create debug guis
+    m_guiReflection = m_scene->CreateGuiEntity(m_waterFbos->GetReflectionColorTextureId(), glm::vec2(-0.5f, 0.5f), glm::vec2(0.25f), "gui");
+    m_guiRefraction = m_scene->CreateGuiEntity(m_waterFbos->GetRefractionColorTextureId(), glm::vec2(0.5f, 0.5f), glm::vec2(0.25f), "gui");
 }
 
 //-------------------------------------------------
 // Helper
 //-------------------------------------------------
 
-void GameState::BuildParticles() const
+void GameState::RenderReflectionTexture()
 {
-    std::random_device seeder;
-    std::mt19937 engine(seeder());
+    // render all above the water surface
+    m_waterFbos->BindReflectionFboAsRenderTarget();
 
-    const std::uniform_real_distribution<float> velocityX(-1.0f, 1.0f);
-    const std::uniform_real_distribution<float> velocityZ(-1.0f, 1.0f);
-    const std::uniform_real_distribution<float> scale(0.5f, 1.0f);
-    const std::uniform_real_distribution<float> lifetime(2.0f, 4.0f);
+    const auto distance{ 2.0f * (m_camera->GetPosition().y - WATER_HEIGHT) };
+    m_camera->GetPosition() -= distance;
+    m_camera->InvertPitch();
 
-    const auto nrOfparticles{ m_particleEmitter->GetParticles().size() };
-
-    if (nrOfparticles < MAX_PARTICLES)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    m_scene->SetCurrentClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -WATER_HEIGHT + 1.0f));
+    for (auto* entity : m_entities)
     {
-        auto newParticles{ MAX_PARTICLES - nrOfparticles };
-        if (newParticles > NEW_PARTICLES)
-        {
-            newParticles = NEW_PARTICLES;
-        }
-
-        //SG_OGL_LOG_DEBUG("[GameState::BuildParticles()] ...add {} new particles to existing {}.", newParticles, nrOfparticles);
-
-        for (auto i{ 0u }; i < newParticles; ++i)
-        {
-            sg::ogl::particle::Particle particle;
-
-            particle.position = glm::vec3(0.0f, 5.0f, 0.0f);
-            particle.velocity = glm::vec3(velocityX(engine), 1.0f, velocityZ(engine));
-            particle.scale = scale(engine);
-            particle.lifetime = lifetime(engine);
-
-            m_particleEmitter->AddParticle(particle);
-        }
+        entity->Render();
     }
+
+    m_camera->GetPosition() += distance;
+    m_camera->InvertPitch();
+
+    m_waterFbos->UnbindRenderTarget();
+}
+
+void GameState::RenderRefractionTexture()
+{
+    // render all under the water surface
+    m_waterFbos->BindRefractionFboAsRenderTarget();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, WATER_HEIGHT));
+    for (auto* entity : m_entities)
+    {
+        entity->Render();
+    }
+
+    m_waterFbos->UnbindRenderTarget();
 }
