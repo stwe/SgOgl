@@ -107,13 +107,15 @@ namespace sg::ogl::scene
             Entity* t_entity,
             const uint32_t t_reflectionTextureId,
             const uint32_t t_refractionTextureId,
-            const uint32_t t_dudvTextureId
+            const uint32_t t_dudvTextureId,
+            const uint32_t t_normalTextureId
         ) const
         {
             auto waterComponentUniquePtr{ std::make_unique<component::WaterComponent>() };
             waterComponentUniquePtr->reflectionTextureId = t_reflectionTextureId;
             waterComponentUniquePtr->refractionTextureId = t_refractionTextureId;
             waterComponentUniquePtr->dudvTextureId = t_dudvTextureId;
+            waterComponentUniquePtr->normalTextureId = t_reflectionTextureId;
 
             t_entity->AddComponent(Component::Type::WATER, std::move(waterComponentUniquePtr));
         }

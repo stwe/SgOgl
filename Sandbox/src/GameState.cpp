@@ -130,7 +130,8 @@ void GameState::Init()
     m_waterTile->GetLocalTransform().position = glm::vec3(22.0f, WATER_HEIGHT, 0.0f);
     m_waterTile->GetLocalTransform().scale = glm::vec3(30.0f, 1.0f, 30.0f);
     const auto dudvTextureId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/water/waterDUDV.png") };
-    m_scene->AddWaterComponent(m_waterTile, m_waterFbos->GetReflectionColorTextureId(), m_waterFbos->GetRefractionColorTextureId(), dudvTextureId);
+    const auto normalTextureId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/water/normal.png") };
+    m_scene->AddWaterComponent(m_waterTile, m_waterFbos->GetReflectionColorTextureId(), m_waterFbos->GetRefractionColorTextureId(), dudvTextureId, normalTextureId);
 
     // create debug guis
     m_guiReflection = m_scene->CreateGuiEntity(m_waterFbos->GetReflectionColorTextureId(), glm::vec2(-0.5f, 0.5f), glm::vec2(0.25f), "gui");

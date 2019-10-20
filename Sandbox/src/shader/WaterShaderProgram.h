@@ -22,6 +22,7 @@ public:
         SetUniform("reflectionMap", 0);
         SetUniform("refractionMap", 1);
         SetUniform("dudvMap", 2);
+        SetUniform("normalMap", 3);
 
         // get water component
         const auto waterComponent{ std::dynamic_pointer_cast<sg::ogl::scene::component::WaterComponent>(t_entity.GetComponentSharedPtr(sg::ogl::scene::Component::Type::WATER)) };
@@ -33,6 +34,7 @@ public:
         sg::ogl::resource::TextureManager::BindForReading(waterComponent->reflectionTextureId, GL_TEXTURE0);
         sg::ogl::resource::TextureManager::BindForReading(waterComponent->refractionTextureId, GL_TEXTURE1);
         sg::ogl::resource::TextureManager::BindForReading(waterComponent->dudvTextureId, GL_TEXTURE2);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent->normalTextureId, GL_TEXTURE3);
     }
 
     std::string GetFolderName() override
