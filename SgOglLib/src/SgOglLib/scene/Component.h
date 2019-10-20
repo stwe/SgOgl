@@ -47,7 +47,7 @@ namespace sg::ogl::scene
 
         virtual void Init() {}
         virtual void Input() {}
-        virtual void Update() {}
+        virtual void Update(double t_dt) {}
         virtual void Render() {}
 
     protected:

@@ -23,12 +23,12 @@ bool GameState::Update(const double t_dt)
 {
     for (auto* entity : m_entities)
     {
-        entity->Update();
+        entity->Update(t_dt);
     }
 
-    m_waterTile->Update();
+    m_waterTile->Update(t_dt);
 
-    m_atmosphere.at("skybox")->Update();
+    m_atmosphere.at("skybox")->Update(t_dt);
 
     if (GetApplicationContext()->GetWindow()->IsKeyPressed(GLFW_KEY_W))
     {
@@ -86,8 +86,8 @@ void GameState::Render()
 
     m_atmosphere.at("skybox")->Render();
 
-    m_guiReflection->Render();
-    m_guiRefraction->Render();
+    //m_guiReflection->Render();
+    //m_guiRefraction->Render();
 }
 
 //-------------------------------------------------
@@ -129,7 +129,8 @@ void GameState::Init()
     m_waterTile = m_scene->CreateModelEntity("res/model/plane/plane.obj", "water");
     m_waterTile->GetLocalTransform().position = glm::vec3(22.0f, WATER_HEIGHT, 0.0f);
     m_waterTile->GetLocalTransform().scale = glm::vec3(30.0f, 1.0f, 30.0f);
-    m_scene->AddWaterComponent(m_waterTile, m_waterFbos->GetReflectionColorTextureId(), m_waterFbos->GetRefractionColorTextureId());
+    const auto dudvTextureId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/water/waterDUDV.png") };
+    m_scene->AddWaterComponent(m_waterTile, m_waterFbos->GetReflectionColorTextureId(), m_waterFbos->GetRefractionColorTextureId(), dudvTextureId);
 
     // create debug guis
     m_guiReflection = m_scene->CreateGuiEntity(m_waterFbos->GetReflectionColorTextureId(), glm::vec2(-0.5f, 0.5f), glm::vec2(0.25f), "gui");

@@ -103,11 +103,17 @@ namespace sg::ogl::scene
 
         static Node* CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material = nullptr);
 
-        void AddWaterComponent(Entity* t_entity, const uint32_t t_reflectionTextureId, const uint32_t t_refractionTextureId) const
+        void AddWaterComponent(
+            Entity* t_entity,
+            const uint32_t t_reflectionTextureId,
+            const uint32_t t_refractionTextureId,
+            const uint32_t t_dudvTextureId
+        ) const
         {
             auto waterComponentUniquePtr{ std::make_unique<component::WaterComponent>() };
             waterComponentUniquePtr->reflectionTextureId = t_reflectionTextureId;
             waterComponentUniquePtr->refractionTextureId = t_refractionTextureId;
+            waterComponentUniquePtr->dudvTextureId = t_dudvTextureId;
 
             t_entity->AddComponent(Component::Type::WATER, std::move(waterComponentUniquePtr));
         }

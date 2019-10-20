@@ -47,7 +47,7 @@ namespace sg::ogl::scene::component
 
         void Init() override {}
         void Input() override {}
-        void Update() override {}
+        void Update(const double t_dt) override {}
         void Render() override;
 
     protected:

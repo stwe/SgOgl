@@ -136,7 +136,7 @@ void sg::ogl::scene::Node::Input()
     }
 }
 
-void sg::ogl::scene::Node::Update()
+void sg::ogl::scene::Node::Update(const double t_dt)
 {
     if (m_parent)
     {
@@ -149,7 +149,7 @@ void sg::ogl::scene::Node::Update()
 
     for (auto* child : m_children)
     {
-        child->Update();
+        child->Update(t_dt);
     }
 }
 

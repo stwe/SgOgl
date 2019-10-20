@@ -62,14 +62,14 @@ void sg::ogl::scene::Entity::Input()
     Node::Input();
 }
 
-void sg::ogl::scene::Entity::Update()
+void sg::ogl::scene::Entity::Update(const double t_dt)
 {
     for (auto& component : m_components)
     {
-        component.second->Update();
+        component.second->Update(t_dt);
     }
 
-    Node::Update();
+    Node::Update(t_dt);
 }
 
 void sg::ogl::scene::Entity::Render()

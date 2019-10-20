@@ -12,16 +12,28 @@ layout (location = 4) in vec3 aBiTangent;
 
 // Out
 
-out vec4 clipSpace;
+out vec4 vClipSpace;
+out vec2 vUv;
+out vec3 vToCameraVector;
 
 // Uniforms
 
+uniform mat4 modelMatrix;
 uniform mat4 mvpMatrix;
+uniform vec3 cameraPosition;
 
 // Main
 
+const float tiling = 4.0;
+
 void main()
 {
-    clipSpace = mvpMatrix * vec4(aPosition, 1.0);
-    gl_Position = clipSpace;
+    vec4 worldPosition = modelMatrix * vec4(aPosition, 1.0);
+    vClipSpace = mvpMatrix * vec4(aPosition, 1.0);
+    gl_Position = vClipSpace;
+
+    // use position.z!
+    vUv = vec2(aPosition.x / 2.0 + 0.5, aPosition.z / 2.0 + 0.5) * tiling;
+
+    vToCameraVector = cameraPosition - worldPosition.xyz;
 }
