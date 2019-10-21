@@ -83,6 +83,9 @@ private:
     // fbo
     std::shared_ptr<sg::ogl::buffer::WaterFbos> m_waterFbos;
 
+    // light
+    std::shared_ptr<sg::ogl::light::DirectionalLight> m_sun;
+
     //-------------------------------------------------
     // Init
     //-------------------------------------------------

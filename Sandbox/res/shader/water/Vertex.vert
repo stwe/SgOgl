@@ -15,12 +15,14 @@ layout (location = 4) in vec3 aBiTangent;
 out vec4 vClipSpace;
 out vec2 vUv;
 out vec3 vToCameraVector;
+out vec3 vFromLightVector;
 
 // Uniforms
 
 uniform mat4 modelMatrix;
 uniform mat4 mvpMatrix;
 uniform vec3 cameraPosition;
+uniform vec3 lightPosition;
 
 // Main
 
@@ -36,4 +38,5 @@ void main()
     vUv = vec2(aPosition.x / 2.0 + 0.5, aPosition.z / 2.0 + 0.5) * tiling;
 
     vToCameraVector = cameraPosition - worldPosition.xyz;
+    vFromLightVector = worldPosition.xyz - lightPosition;
 }

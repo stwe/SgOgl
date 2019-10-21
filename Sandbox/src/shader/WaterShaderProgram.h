@@ -24,6 +24,10 @@ public:
         SetUniform("dudvMap", 2);
         SetUniform("normalMap", 3);
 
+        // set light
+        SetUniform("lightPosition", t_entity.GetParentScene()->GetDirectionalLight().direction);
+        SetUniform("lightColor", t_entity.GetParentScene()->GetDirectionalLight().diffuseIntensity);
+
         // get water component
         const auto waterComponent{ std::dynamic_pointer_cast<sg::ogl::scene::component::WaterComponent>(t_entity.GetComponentSharedPtr(sg::ogl::scene::Component::Type::WATER)) };
 

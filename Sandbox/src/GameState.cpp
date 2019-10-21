@@ -116,6 +116,12 @@ void GameState::Init()
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
+    // create and add the sun
+    m_sun = std::make_shared<sg::ogl::light::DirectionalLight>();
+    m_sun->direction = sg::ogl::light::DirectionalLight::MID_DAY;
+    m_sun->diffuseIntensity = glm::vec3(1.3f, 1.3f, 1.3f);
+    m_scene->SetDirectionalLight(m_sun);
+
     // create scene loader and load configured scene entities
     m_sceneLoader = std::make_unique<sg::ogl::scene::SceneLoader>("res/config/Scene.xml");
     m_sceneLoader->LoadAtmosphere(m_scene.get(), m_atmosphere);
