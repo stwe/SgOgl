@@ -18,6 +18,10 @@ public:
         // set camera position
         SetUniform("cameraPosition", t_entity.GetParentScene()->GetCurrentCamera().GetPosition());
 
+        // set near and far
+        SetUniform("near", t_entity.GetParentScene()->GetApplicationContext()->GetProjectionOptions().nearPlane);
+        SetUniform("far", t_entity.GetParentScene()->GetApplicationContext()->GetProjectionOptions().farPlane);
+
         // set textures
         SetUniform("reflectionMap", 0);
         SetUniform("refractionMap", 1);

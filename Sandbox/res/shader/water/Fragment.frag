@@ -22,6 +22,8 @@ uniform sampler2D normalMap;
 uniform sampler2D depthMap;
 uniform float moveFactor;
 uniform vec3 lightColor;
+uniform float near;
+uniform float far;
 
 // Main
 
@@ -34,9 +36,6 @@ void main()
     vec2 ndc = (vClipSpace.xy / vClipSpace.w) / 2.0 + 0.5;
     vec2 refractTexCoords = vec2(ndc.x, ndc.y);
     vec2 reflectTexCoords = vec2(ndc.x, -ndc.y);
-
-    float near = 0.1;
-    float far = 10000.0;
 
     float depth = texture(depthMap, refractTexCoords).r;
     float floorDistance = 2.0 * near * far / (far + near - (2.0 * depth - 1.0) * (far - near));
