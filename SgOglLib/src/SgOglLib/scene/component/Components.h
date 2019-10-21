@@ -5,3 +5,4 @@
 #include "SkyboxRenderConfig.h"
 #include "RenderComponent.h"
 #include "WaterComponent.h"
+#include "WaterRenderConfig.h"

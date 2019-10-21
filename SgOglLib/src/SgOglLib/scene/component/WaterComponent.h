@@ -19,6 +19,7 @@ namespace sg::ogl::scene::component
         uint32_t refractionTextureId{ 0 };
         uint32_t dudvTextureId{ 0 };
         uint32_t normalTextureId{ 0 };
+        uint32_t depthTextureId{ 0 };
 
         float moveFactor{ 0.0f };
 

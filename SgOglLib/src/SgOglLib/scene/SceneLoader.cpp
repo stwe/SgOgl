@@ -82,11 +82,11 @@ void sg::ogl::scene::SceneLoader::LoadEntities(Scene* t_scene, EntityContainer& 
         Entity* entity{ nullptr };
         if (alternativeMaterial)
         {
-            entity = t_scene->CreateModelEntity(model, shaderFolderName, t_materials.at(alternativeMaterial->GetText()));
+            entity = t_scene->CreateModelEntity<component::ModelRenderConfig>(model, shaderFolderName, t_materials.at(alternativeMaterial->GetText()));
         }
         else
         {
-            entity = t_scene->CreateModelEntity(model, shaderFolderName);
+            entity = t_scene->CreateModelEntity<component::ModelRenderConfig>(model, shaderFolderName);
         }
 
         if (positionElement)

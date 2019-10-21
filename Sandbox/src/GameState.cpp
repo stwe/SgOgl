@@ -118,7 +118,7 @@ void GameState::Init()
 
     // create and add the sun
     m_sun = std::make_shared<sg::ogl::light::DirectionalLight>();
-    m_sun->direction = sg::ogl::light::DirectionalLight::MID_DAY;
+    m_sun->direction = glm::vec3(1000.0f, -1000.0f, 1000.0f);
     m_sun->diffuseIntensity = glm::vec3(1.3f, 1.3f, 1.3f);
     m_scene->SetDirectionalLight(m_sun);
 
@@ -132,12 +132,19 @@ void GameState::Init()
     m_waterFbos = std::make_shared<sg::ogl::buffer::WaterFbos>(GetApplicationContext());
 
     // create a water tile entity
-    m_waterTile = m_scene->CreateModelEntity("res/model/plane/plane.obj", "water");
+    m_waterTile = m_scene->CreateModelEntity<sg::ogl::scene::component::WaterRenderConfig>("res/model/plane/plane.obj", "water");
     m_waterTile->GetLocalTransform().position = glm::vec3(22.0f, WATER_HEIGHT, 0.0f);
     m_waterTile->GetLocalTransform().scale = glm::vec3(30.0f, 1.0f, 30.0f);
     const auto dudvTextureId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/water/waterDUDV.png") };
     const auto normalTextureId{ GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath("res/texture/water/normal.png") };
-    m_scene->AddWaterComponent(m_waterTile, m_waterFbos->GetReflectionColorTextureId(), m_waterFbos->GetRefractionColorTextureId(), dudvTextureId, normalTextureId);
+    m_scene->AddWaterComponent(
+        m_waterTile,
+        m_waterFbos->GetReflectionColorTextureId(),
+        m_waterFbos->GetRefractionColorTextureId(),
+        dudvTextureId,
+        normalTextureId,
+        m_waterFbos->GetRefractionDepthTextureId()
+    );
 
     // create debug guis
     m_guiReflection = m_scene->CreateGuiEntity(m_waterFbos->GetReflectionColorTextureId(), glm::vec2(-0.5f, 0.5f), glm::vec2(0.25f), "gui");
@@ -158,7 +165,7 @@ void GameState::RenderReflectionTexture()
     m_camera->InvertPitch();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    m_scene->SetCurrentClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -WATER_HEIGHT + 1.0f));
+    m_scene->SetCurrentClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -WATER_HEIGHT));
     for (auto* entity : m_entities)
     {
         entity->Render();

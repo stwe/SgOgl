@@ -23,6 +23,7 @@ public:
         SetUniform("refractionMap", 1);
         SetUniform("dudvMap", 2);
         SetUniform("normalMap", 3);
+        SetUniform("depthMap", 4);
 
         // set light
         SetUniform("lightPosition", t_entity.GetParentScene()->GetDirectionalLight().direction);
@@ -39,6 +40,7 @@ public:
         sg::ogl::resource::TextureManager::BindForReading(waterComponent->refractionTextureId, GL_TEXTURE1);
         sg::ogl::resource::TextureManager::BindForReading(waterComponent->dudvTextureId, GL_TEXTURE2);
         sg::ogl::resource::TextureManager::BindForReading(waterComponent->normalTextureId, GL_TEXTURE3);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent->depthTextureId, GL_TEXTURE4);
     }
 
     std::string GetFolderName() override

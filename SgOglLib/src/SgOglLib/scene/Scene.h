@@ -108,18 +108,21 @@ namespace sg::ogl::scene
             const uint32_t t_reflectionTextureId,
             const uint32_t t_refractionTextureId,
             const uint32_t t_dudvTextureId,
-            const uint32_t t_normalTextureId
+            const uint32_t t_normalTextureId,
+            const uint32_t t_depthTextureId
         ) const
         {
             auto waterComponentUniquePtr{ std::make_unique<component::WaterComponent>() };
             waterComponentUniquePtr->reflectionTextureId = t_reflectionTextureId;
             waterComponentUniquePtr->refractionTextureId = t_refractionTextureId;
             waterComponentUniquePtr->dudvTextureId = t_dudvTextureId;
-            waterComponentUniquePtr->normalTextureId = t_reflectionTextureId;
+            waterComponentUniquePtr->normalTextureId = t_normalTextureId;
+            waterComponentUniquePtr->depthTextureId = t_depthTextureId;
 
             t_entity->AddComponent(Component::Type::WATER, std::move(waterComponentUniquePtr));
         }
 
+        template <typename TRenderConfig>
         Entity* CreateModelEntity(
             const std::string& t_modelPath,
             const std::string& t_shaderFolderName,
@@ -152,7 +155,7 @@ namespace sg::ogl::scene
                     child->SetParentScene(this);
 
                     // add a render component
-                    AddRenderComponent<component::RenderComponent, component::ModelRenderConfig>(child, t_shaderFolderName);
+                    AddRenderComponent<component::RenderComponent, TRenderConfig>(child, t_shaderFolderName);
 
                     // add entity as child
                     entity->AddChild(child);
@@ -164,7 +167,7 @@ namespace sg::ogl::scene
                 entity->material = t_alternativeMaterial ? t_alternativeMaterial : meshes[0]->GetDefaultMaterial();
                 entity->SetParentScene(this);
 
-                AddRenderComponent<component::RenderComponent, component::ModelRenderConfig>(entity, t_shaderFolderName);
+                AddRenderComponent<component::RenderComponent, TRenderConfig>(entity, t_shaderFolderName);
             }
 
             return entity;
