@@ -163,8 +163,7 @@ void GameState::RenderReflectionTexture()
     const auto distance{ 2.0f * (m_camera->GetPosition().y - WATER_HEIGHT) };
     m_camera->GetPosition() -= distance;
     m_camera->InvertPitch();
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    sg::ogl::OpenGl::ClearColorAndDepthBuffer();
     m_scene->SetCurrentClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -WATER_HEIGHT));
     for (auto* entity : m_entities)
     {
@@ -181,8 +180,7 @@ void GameState::RenderRefractionTexture()
 {
     // render all under the water surface
     m_waterFbos->BindRefractionFboAsRenderTarget();
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    sg::ogl::OpenGl::ClearColorAndDepthBuffer();
     m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, WATER_HEIGHT));
     for (auto* entity : m_entities)
     {
