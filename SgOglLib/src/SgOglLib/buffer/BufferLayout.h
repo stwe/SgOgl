@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: BufferLayout.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 #include <vector>
@@ -10,7 +19,7 @@ namespace sg::ogl::buffer
     class SG_OGL_API BufferLayout
     {
     public:
-        using Attributes = std::vector<VertexAttribute>;
+        using AttributeContainer = std::vector<VertexAttribute>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -31,9 +40,9 @@ namespace sg::ogl::buffer
         // Getter
         //-------------------------------------------------
 
-        const Attributes& GetAttributes() const noexcept;
+        const AttributeContainer& GetAttributes() const noexcept;
         int32_t GetStride() const;
-        uint32_t GetFloatsPerLayout() const;
+        uint32_t GetNumberOfFloats() const;
 
         static uint32_t GetVertexAttributeTypeSize(VertexAttributeType t_vertexAttributeType);
         static uint32_t GetOpenGlType(VertexAttributeType t_vertexAttributeType);
@@ -41,14 +50,14 @@ namespace sg::ogl::buffer
     protected:
 
     private:
-        Attributes m_vertexAttributes;
+        AttributeContainer m_vertexAttributes;
         int32_t m_stride{ 0 };
-        uint32_t m_floatsPerLayout{ 0 };
+        uint32_t m_numberOfFloats{ 0 };
 
         //-------------------------------------------------
         // Helper
         //-------------------------------------------------
 
-        void CalculateOffsetsAndStride();
+        void Init();
     };
 }

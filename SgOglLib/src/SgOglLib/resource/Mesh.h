@@ -78,16 +78,15 @@ namespace sg::ogl::resource
             SG_OGL_CORE_ASSERT(t_vertexContainer, "[Mesh::Allocate()] Null pointer.")
             SG_OGL_CORE_ASSERT(t_vertexCount > 0, "[Mesh::Allocate()] Invalid vertex count.")
 
-            m_vao->AllocateVertices(
+            m_vao->AddVertexDataVbo(
                 reinterpret_cast<float*>(t_vertexContainer->data()),
                 t_vertexCount,
-                t_bufferLayout.GetFloatsPerLayout() * t_vertexCount * sizeof(float),
                 t_bufferLayout
             );
 
             if (t_indexContainer)
             {
-                m_vao->AllocateIndices(*t_indexContainer);
+                m_vao->AddIndexBuffer(*t_indexContainer);
             }
         }
 

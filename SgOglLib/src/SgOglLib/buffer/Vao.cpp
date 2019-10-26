@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Vao.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include "Vao.h"
 #include "Log.h"
 #include "BufferLayout.h"
@@ -31,7 +40,7 @@ uint32_t sg::ogl::buffer::Vao::GetVaoId() const
     return m_vaoId;
 }
 
-const sg::ogl::buffer::Vao::Vbos& sg::ogl::buffer::Vao::GetVbos() const
+const sg::ogl::buffer::Vao::VboContainer& sg::ogl::buffer::Vao::GetVbos() const
 {
     return m_vbos;
 }
@@ -57,7 +66,7 @@ void sg::ogl::buffer::Vao::SetDrawCount(const int32_t t_drawCount)
 }
 
 //-------------------------------------------------
-// Vao - Public && Private
+// Vao
 //-------------------------------------------------
 
 void sg::ogl::buffer::Vao::GenerateVao()
@@ -86,7 +95,7 @@ void sg::ogl::buffer::Vao::DeleteVao() const
 }
 
 //-------------------------------------------------
-// Vbo`s
+// Vbos
 //-------------------------------------------------
 
 uint32_t sg::ogl::buffer::Vao::GenerateVbo()
@@ -128,6 +137,85 @@ void sg::ogl::buffer::Vao::DeleteVbos() const
     }
 }
 
+uint32_t sg::ogl::buffer::Vao::AddEmptyVbo(const uint32_t t_floatCount, const uint32_t t_usage)
+{
+    // Bind our existing Vao.
+    BindVao();
+
+    // Generate and bind a new Vbo.
+    const auto vboId{ GenerateVbo() };
+    BindVbo(vboId);
+
+    // Create and initialize an empty buffer.
+    glBufferData(GL_ARRAY_BUFFER, t_floatCount * sizeof(float), nullptr, t_usage);
+
+    // Unbind buffers.
+    UnbindVbo();
+    UnbindVao();
+
+    return vboId;
+}
+
+void sg::ogl::buffer::Vao::AddVertexDataVbo(float* const t_vertices, const int32_t t_drawCount, const BufferLayout& t_bufferLayout)
+{
+    // Bind our existing Vao.
+    BindVao();
+
+    // Generate and bind a new Vbo.
+    const auto vboId{ GenerateVbo() };
+    BindVbo(vboId);
+
+    // calc number of floats
+    const auto floatCount{ t_bufferLayout.GetNumberOfFloats() * t_drawCount };
+
+    // Create and initialize a buffer.
+    glBufferData(GL_ARRAY_BUFFER, floatCount * sizeof(float), t_vertices, GL_STATIC_DRAW);
+
+    // Specify how OpenGL should interpret the vertex data before rendering.
+    uint32_t index{ 0 };
+    for (const auto& attribute : t_bufferLayout.GetAttributes())
+    {
+        glEnableVertexAttribArray(index);
+        glVertexAttribPointer(
+            index,
+            VertexAttributeMeta::GetComponentCount(attribute.vertexAttributeType),
+            BufferLayout::GetOpenGlType(attribute.vertexAttributeType),
+            attribute.normalized ? GL_TRUE : GL_FALSE,
+            t_bufferLayout.GetStride(),
+            reinterpret_cast<uintptr_t*>(attribute.offset)
+        );
+
+        index++;
+    }
+
+    // Unbind buffers.
+    UnbindVbo();
+    UnbindVao();
+
+    // Set draw count.
+    SetDrawCount(t_drawCount);
+}
+
+void sg::ogl::buffer::Vao::AddInstancedAttribute(
+    const uint32_t t_vboId,
+    const uint32_t t_index,
+    const int32_t t_dataSize,
+    const int32_t t_instancedDataLength,
+    const uint64_t t_offset
+) const
+{
+    // Bind buffers.
+    BindVao();
+    BindVbo(t_vboId);
+
+    glVertexAttribPointer(t_index, t_dataSize, GL_FLOAT, GL_FALSE, t_instancedDataLength * sizeof(float), reinterpret_cast<uintptr_t*>(t_offset * sizeof(float)));
+    glVertexAttribDivisor(t_index, 1);
+
+    // Unbind buffers.
+    UnbindVbo();
+    UnbindVao();
+}
+
 //-------------------------------------------------
 // Ebo
 //-------------------------------------------------
@@ -157,58 +245,7 @@ void sg::ogl::buffer::Vao::DeleteEbo() const
     }
 }
 
-//-------------------------------------------------
-// Allocate
-//-------------------------------------------------
-
-uint32_t sg::ogl::buffer::Vao::AllocateMemory(const uint32_t t_floatCount)
-{
-    static_assert(sizeof(float) == 4);
-
-    // Bind our existing Vao.
-    BindVao();
-
-    // Generate and bind a new Vbo.
-    const auto vboId{ GenerateVbo() };
-    BindVbo(vboId);
-
-    // Specifies the target to which the buffer object is bound.
-    const auto target{ GL_ARRAY_BUFFER };
-
-    // Specifies the expected usage pattern of the data store.
-    const auto usage{ GL_STREAM_DRAW };
-
-    // Create and initialize an empty buffer.
-    glBufferData(target, t_floatCount * sizeof(float), nullptr, usage);
-
-    // Unbind buffers.
-    UnbindVbo();
-    UnbindVao();
-
-    return vboId;
-}
-
-void sg::ogl::buffer::Vao::AddInstancedAttribute(
-    const uint32_t t_vboId,
-    const uint32_t t_attr,
-    const int32_t t_dataSize,
-    const int32_t t_instancedDataLength,
-    const uint64_t t_offset
-) const
-{
-    // Bind buffers.
-    BindVao();
-    BindVbo(t_vboId);
-
-    glVertexAttribPointer(t_attr, t_dataSize, GL_FLOAT, GL_FALSE, t_instancedDataLength * sizeof(float), (void*)(t_offset * sizeof(float)));
-    glVertexAttribDivisor(t_attr, 1);
-
-    // Unbind buffers.
-    UnbindVbo();
-    UnbindVao();
-}
-
-void sg::ogl::buffer::Vao::AllocateIndices(const IndicesContainer& t_indices)
+void sg::ogl::buffer::Vao::AddIndexBuffer(const IndexContainer& t_indices)
 {
     static constexpr auto ELEMENT_SIZE_IN_BYTES{ sizeof(uint32_t) };
     const auto numberOfElements{ static_cast<int32_t>(t_indices.size()) };
@@ -228,48 +265,6 @@ void sg::ogl::buffer::Vao::AllocateIndices(const IndicesContainer& t_indices)
 
     // Set draw count.
     SetDrawCount(numberOfElements);
-}
-
-void sg::ogl::buffer::Vao::AllocateVertices(float* const t_vertices, const int32_t t_drawCount, const uint32_t t_size, const BufferLayout& t_bufferLayout)
-{
-    // Bind our existing Vao.
-    BindVao();
-
-    // Generate and bind a new Vbo.
-    const auto vboId{ GenerateVbo() };
-    BindVbo(vboId);
-
-    // Specifies the target to which the buffer object is bound.
-    const auto target{ GL_ARRAY_BUFFER };
-
-    // Specifies the expected usage pattern of the data store.
-    const auto usage{ GL_STATIC_DRAW };
-
-    // Create and initialize a buffer.
-    glBufferData(target, t_size, t_vertices, usage);
-
-    // Specify how OpenGL should interpret the vertex data before rendering.
-    uint32_t index{ 0 };
-    for (const auto& attribute : t_bufferLayout.GetAttributes())
-    {
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index,
-            attribute.GetComponentCount(),
-            BufferLayout::GetOpenGlType(attribute.vertexAttributeType),
-            attribute.normalized ? GL_TRUE : GL_FALSE,
-            t_bufferLayout.GetStride(),
-            reinterpret_cast<uintptr_t*>(attribute.offset)
-        );
-
-        index++;
-    }
-
-    // Unbind buffers.
-    UnbindVbo();
-    UnbindVao();
-
-    // Set draw count.
-    SetDrawCount(t_drawCount);
 }
 
 //-------------------------------------------------

@@ -221,15 +221,14 @@ void sg::ogl::particle::ParticleEmitter::InitVao()
     };
 
     // create a Vbo for the particle vertices
-    m_vao->AllocateVertices(
+    m_vao->AddVertexDataVbo(
         vertices.data(),
         static_cast<int32_t>(vertices.size()),
-        static_cast<uint32_t>(vertices.size()) * sizeof(float),
         bufferLayout
     );
 
     // create an empty Vbo for instanced data
-    m_vbo = m_vao->AllocateMemory(NUMBER_OF_FLOATS_PER_INSTANCE * static_cast<uint32_t>(m_maxParticles));
+    m_vbo = m_vao->AddEmptyVbo(NUMBER_OF_FLOATS_PER_INSTANCE * static_cast<uint32_t>(m_maxParticles));
 
     // set Vbo attributes
     m_vao->AddInstancedAttribute(m_vbo, 1, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 0);
