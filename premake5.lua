@@ -45,7 +45,8 @@ project "SgOglLib"
         "%{prj.name}/vendor/glm",
         "%{prj.name}/vendor/assimp/include",
         "%{prj.name}/vendor/stduuid",
-        "%{prj.name}/vendor/stduuid/include"
+        "%{prj.name}/vendor/stduuid/include",
+        "%{prj.name}/vendor/entt/src"
     }
 
     linkoptions
@@ -139,7 +140,8 @@ project "Sandbox"
         "SgOglLib/vendor/glfw/include",
         "SgOglLib/vendor/tinyxml2/include",
         "SgOglLib/vendor/glm",
-        "SgOglLib/vendor/assimp/include"
+        "SgOglLib/vendor/assimp/include",
+        "SgOglLib/vendor/entt/src"
     }
 
     links
