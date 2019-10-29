@@ -7,20 +7,24 @@
 1. [What is does](#what-is-does)
 2. [Installing](#installing)
 3. [Using](#using)
+a) [Create application class and entry point](#Create-application-class-and-entry-point)
+b) [Load a model from a obj file](#Load-a-model-from-a-obj-file)
+c) [Create a Skybox](#Create-a-Skybox)
+d) [Create a Terrain](#Create-a-terrein)
 
 ***
 
-## What it does
+## 1. What it does
 
 A GameEngine library for OpenGL developed for educational purposes.
 
-## Installing
+## 2. Installing
 
 Install Visual Studio 2019 and use Premake5 and the premake5.lua file to create the project files.
 
-## Using
+## 3. Using
 
-### 1. Create application class && entry point
+### a) Create application class and entry point
 
 We need to create a class that inherits from `sg::ogl::Application`. Here we call this class `Sandbox`.
 The header `SgOgl.h` must be included.
@@ -198,7 +202,7 @@ The config file can look like this.
 </init>
 ```
 
-### 2. Load a model from a obj file
+### b) Load a model from a obj file
 
 The next step is render the model of a house. To do this we add to the `GameState` an entity, a render system, a scene and a camera. In addition, a private function `Init()` is required.
 
