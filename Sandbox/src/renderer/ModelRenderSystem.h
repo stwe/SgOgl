@@ -14,17 +14,15 @@ public:
     {
         PrepareRendering();
 
-        auto view = m_scene->GetApplicationContext()->registry.template view<sg::ogl::ecs::component::ModelComponent, sg::ogl::ecs::component::TransformComponent>();
-        // auto view = m_scene->GetApplicationContext()->registry.view<sg::ogl::ecs::component::ModelComponent, sg::ogl::ecs::component::TransformComponent>();
+        auto view = m_scene->GetApplicationContext()->registry.view<sg::ogl::ecs::component::ModelComponent, sg::ogl::ecs::component::TransformComponent>();
 
-        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram("model") };
+        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
 
         shaderProgram.Bind();
 
         for (auto entity : view)
         {
-            auto& modelComponent = view.template get<sg::ogl::ecs::component::ModelComponent>(entity);
-            // auto& modelComponent = view.get<sg::ogl::ecs::component::ModelComponent>(entity);
+            auto& modelComponent = view.get<sg::ogl::ecs::component::ModelComponent>(entity);
 
             for (auto& mesh : modelComponent.model->GetMeshes())
             {
@@ -43,6 +41,8 @@ public:
     }
 
 protected:
+    void PrepareRendering() override {}
+    void FinishRendering() override {}
 
 private:
 

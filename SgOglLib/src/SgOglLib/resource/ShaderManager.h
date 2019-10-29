@@ -35,7 +35,7 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         template <typename T>
-        void AddShaderProgram()
+        std::string AddShaderProgram()
         {
             // create ShaderProgram
             auto shaderProgram{ std::make_unique<T>() };
@@ -92,6 +92,8 @@ namespace sg::ogl::resource
 
                 SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] All shader was added successfully to program {}.", folderName);
             }
+
+            return folderName;
         }
 
         template <typename T>

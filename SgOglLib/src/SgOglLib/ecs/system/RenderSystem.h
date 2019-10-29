@@ -42,19 +42,33 @@ namespace sg::ogl::ecs::system
         // Logic
         //-------------------------------------------------
 
+        std::string GetShaderFolderName() const { return m_shaderFolderName; }
+
+        //-------------------------------------------------
+        // Logic
+        //-------------------------------------------------
+
         virtual void Update(double t_dt) {}
         virtual void Render() = 0;
 
     protected:
+        /**
+         * @brief Pointer to the parent Scene.
+         */
         scene::Scene* m_scene{ nullptr };
+
+        /**
+         * @brief Folder name of the loaded shader.
+         */
+        std::string m_shaderFolderName;
 
         virtual void PrepareRendering() {}
         virtual void FinishRendering() {}
 
     private:
-        void LoadShader() const
+        void LoadShader()
         {
-            m_scene->GetApplicationContext()->GetShaderManager().AddShaderProgram<TShaderProgram>();
+            m_shaderFolderName = m_scene->GetApplicationContext()->GetShaderManager().AddShaderProgram<TShaderProgram>();
         }
     };
 }
