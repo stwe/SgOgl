@@ -4,13 +4,13 @@
 
 ***
 
-1. [What is does](#what-is-does)
-2. [Installing](#installing)
-3. [Using](#using)
-a) [Create application class and entry point](#Create-application-class-and-entry-point)
-b) [Load a model from a obj file](#Load-a-model-from-a-obj-file)
-c) [Create a Skybox](#Create-a-Skybox)
-d) [Create a Terrain](#Create-a-terrein)
+1. [What is does](#1-what-is-does)
+2. [Installing](#2-installing)
+3. [Using](#3-using)
+a) [Create application class and entry point](#a-Create-application-class-and-entry-point)
+b) [Load a model from a obj file](#b-Load-a-model-from-a-obj-file)
+c) [Create a Skybox](#c-Create-a-Skybox)
+d) [Create a Terrain](#d-Create-a-terrein)
 
 ***
 
