@@ -45,7 +45,7 @@ void sg::ogl::scene::component::RenderComponent::Render()
     SG_OGL_CORE_ASSERT(m_renderConfig, "[RenderComponent::Render()] Null pointer.")
 
     // get shader program
-    auto& shaderProgram{ m_parentEntity->GetParentScene()->GetApplicationContext()->GetShaderManager()->GetShaderProgram(m_renderConfig->shaderFolder) };
+    auto& shaderProgram{ m_parentEntity->GetParentScene()->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_renderConfig->shaderFolder) };
 
     // bind shader
     shaderProgram.Bind();
@@ -54,7 +54,8 @@ void sg::ogl::scene::component::RenderComponent::Render()
     m_renderConfig->PrepareRendering();
 
     // update uniforms
-    shaderProgram.UpdateUniforms(*GetParentEntity());
+    // todo
+    //shaderProgram.UpdateUniforms(*GetParentEntity());
 
     // bind Vao
     GetParentEntity()->mesh->InitDraw();

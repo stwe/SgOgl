@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Model.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 #include <assimp/scene.h>
@@ -6,17 +15,18 @@
 #include <string>
 #include "Core.h"
 
+namespace sg::ogl
+{
+    class Application;
+}
+
 namespace sg::ogl::resource
 {
-    class TextureManager;
     class Mesh;
 
     class SG_OGL_API Model
     {
     public:
-        // private Model Ctor. -> Use the ModelManager to create a new Model
-        friend class ModelManager;
-
         using VertexContainer = std::vector<float>;
         using IndexContainer = std::vector<uint32_t>;
         using TextureContainer = std::vector<uint32_t>;
@@ -29,6 +39,8 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         Model() = delete;
+
+        Model(std::string t_fullFilePath, Application* t_application);
 
         Model(const Model& t_other) = delete;
         Model(Model&& t_other) noexcept = delete;
@@ -46,18 +58,12 @@ namespace sg::ogl::resource
     protected:
 
     private:
+        Application* m_application{ nullptr };
+
         MeshContainer m_meshes;
 
         std::string m_fullFilePath;
         std::string m_directory;
-
-        TextureManager& m_textureManager;
-
-        //-------------------------------------------------
-        // Ctors. / Dtor.
-        //-------------------------------------------------
-
-        Model(std::string t_fullFilePath, TextureManager& t_textureManager);
 
         //-------------------------------------------------
         // Load Model

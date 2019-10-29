@@ -19,14 +19,14 @@ void sg::ogl::scene::TerrainComponent::Init()
     const auto& terrainOptions{ m_terrain->GetTerrainOptions() };
 
     // get normalmap ShaderProgram
-    auto& normalmapShaderProgram{ shaderManager->GetComputeShaderProgram(terrainOptions.normalmap.computeShaderName) };
+    auto& normalmapShaderProgram{ shaderManager.GetComputeShaderProgram(terrainOptions.normalmap.computeShaderName) };
 
     // get splatmap ShaderProgram
-    auto& splatmapShaderProgram{ shaderManager->GetComputeShaderProgram(terrainOptions.splatmap.computeShaderName) };
+    auto& splatmapShaderProgram{ shaderManager.GetComputeShaderProgram(terrainOptions.splatmap.computeShaderName) };
 
     // render Normalmap
 
-    const auto normalmapTextureId{ textureManager->GetTextureId(terrainOptions.normalmap.uniqueTextureName) };
+    const auto normalmapTextureId{ textureManager.GetTextureId(terrainOptions.normalmap.uniqueTextureName) };
     resource::TextureManager::Bind(normalmapTextureId);
     resource::TextureManager::UseBilinearFilter();
 
@@ -35,7 +35,8 @@ void sg::ogl::scene::TerrainComponent::Init()
 
     normalmapShaderProgram.Bind();
 
-    normalmapShaderProgram.UpdateUniforms(*m_parentEntity);
+    // todo
+    //normalmapShaderProgram.UpdateUniforms(*m_parentEntity);
 
     glBindImageTexture(0, normalmapTextureId, 0, false, 0, GL_WRITE_ONLY, GL_RGBA32F);
     glDispatchCompute(m_terrain->GetHeightmapWidth() / 16, m_terrain->GetHeightmapWidth() / 16, 1);
@@ -44,7 +45,7 @@ void sg::ogl::scene::TerrainComponent::Init()
 
     // render Splatmap
 
-    const auto splatmapTextureId{ textureManager->GetTextureId(terrainOptions.splatmap.uniqueTextureName) };
+    const auto splatmapTextureId{ textureManager.GetTextureId(terrainOptions.splatmap.uniqueTextureName) };
     resource::TextureManager::Bind(splatmapTextureId);
     resource::TextureManager::UseBilinearFilter();
 
@@ -52,7 +53,8 @@ void sg::ogl::scene::TerrainComponent::Init()
 
     splatmapShaderProgram.Bind();
 
-    splatmapShaderProgram.UpdateUniforms(*m_parentEntity);
+    // todo
+    //splatmapShaderProgram.UpdateUniforms(*m_parentEntity);
 
     glBindImageTexture(0, splatmapTextureId, 0, false, 0, GL_WRITE_ONLY, GL_RGBA32F);
     glDispatchCompute(m_terrain->GetHeightmapWidth() / 16, m_terrain->GetHeightmapWidth() / 16, 1);

@@ -238,13 +238,13 @@ void sg::ogl::scene::Scene::StorePositions(const std::vector<glm::mat4>& t_model
     auto& vao{ t_entity->mesh->GetVao() };
 
     // bind vao
-    vao->BindVao();
+    vao.BindVao();
 
     // generate a new vbo
-    const auto vboId{ vao->GenerateVbo() };
+    const auto vboId{ vao.GenerateVbo() };
 
     // bind the new vbo
-    vao->BindVbo(vboId);
+    vao.BindVbo(vboId);
 
     // store data
     glBufferData(GL_ARRAY_BUFFER, t_modelMatrices.size() * sizeof(glm::mat4), t_modelMatrices.data(), GL_STATIC_DRAW);
@@ -268,10 +268,10 @@ void sg::ogl::scene::Scene::StorePositions(const std::vector<glm::mat4>& t_model
     glVertexAttribDivisor(8, 1);
 
     // unbind vbo
-    vao->UnbindVbo();
+    vao.UnbindVbo();
 
     // unbind vao
-    vao->UnbindVao();
+    vao.UnbindVao();
 }
 
 std::vector<glm::vec3> sg::ogl::scene::Scene::CreateSkyboxVertices(const float t_size)

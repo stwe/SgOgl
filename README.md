@@ -16,14 +16,7 @@ A GameEngine library for OpenGL developed for educational purposes.
 
 ## Installing
 
-### Windows
-
-For Visual Studio there is a premake5.lua file.
-
-### Linux
-
-For Linux some CMakeLists.txt files included to help you. A installed G++ 7 or above is necessary.
-But the configuration will not be updated by me.
+Install Visual Studio 2019 and use Premake5 and the premake5.lua file to create the project files.
 
 ## Using
 
@@ -47,15 +40,6 @@ public:
     {
     }
 
-    Sandbox(const Sandbox& t_other) = delete;
-    Sandbox(Sandbox&& t_other) noexcept = delete;
-    Sandbox& operator=(const Sandbox& t_other) = delete;
-    Sandbox& operator=(Sandbox&& t_other) noexcept = delete;
-
-    ~Sandbox() noexcept override
-    {
-    }
-
 protected:
     void RegisterStates() override
     {
@@ -72,7 +56,7 @@ private:
 };
 ```
 
-Next, a game state must be created. The class is usefully named "GameState" inherits from `sg::ogl::state::State`.
+Next, a game state must be created. The class is named `GameState` and inherits from `sg::ogl::state::State`.
 
 ```cpp
 // File: GameState.h
@@ -88,16 +72,6 @@ public:
 
     explicit GameState(sg::ogl::state::StateStack* t_stateStack)
         : State{ t_stateStack, "GameState" }
-    {
-        Init();
-    }
-
-    GameState(const GameState& t_other) = delete;
-    GameState(GameState&& t_other) noexcept = delete;
-    GameState& operator=(const GameState& t_other) = delete;
-    GameState& operator=(GameState&& t_other) noexcept = delete;
-
-    ~GameState() noexcept override
     {
     }
 
@@ -167,7 +141,7 @@ private:
 ```
 
 The `main()` function of the lib calls `sg::ogl::create_application()` to create an `sg::ogl::Application`.
-In our case, an instance of the `Sandbox` class should be created. The return type is `unique_ptr`.
+In our case, an instance of the `Sandbox` class should be created.
 
 In the `Sandbox` class, the header `SgOglEntryPoint.h` must be included as well.
 
@@ -224,4 +198,5 @@ The config file can look like this.
 </init>
 ```
 
-### 2. Example:
+### 2. Load a model from a obj file
+

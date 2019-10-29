@@ -35,13 +35,13 @@ protected:
     void RegisterStates() override
     {
         SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register Game State.");
-        GetStateStack()->RegisterState<GameState>(sg::ogl::state::GAME);
+        GetStateStack().RegisterState<GameState>(sg::ogl::state::GAME);
     }
 
     void Init() override
     {
         SG_OGL_LOG_DEBUG("[Sandbox::Init()] Init (Push) Game State.");
-        GetStateStack()->PushState(sg::ogl::state::GAME);
+        GetStateStack().PushState(sg::ogl::state::GAME);
     }
 
 private:

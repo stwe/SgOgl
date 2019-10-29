@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Mesh.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include "Mesh.h"
 #include "Material.h"
 
@@ -9,8 +18,15 @@ sg::ogl::resource::Mesh::Mesh()
     : m_vao{ std::make_unique<buffer::Vao>() }
 {
     SG_OGL_CORE_ASSERT(m_vao, "[Mesh::Mesh()] Null pointer.")
-
     SG_OGL_CORE_LOG_DEBUG("[Mesh::Mesh()] Create Mesh.");
+}
+
+sg::ogl::resource::Mesh::Mesh(const std::string& t_name)
+    : m_vao{ std::make_unique<buffer::Vao>() }
+    , m_name{ t_name }
+{
+    SG_OGL_CORE_ASSERT(m_vao, "[Mesh::Mesh()] Null pointer.")
+    SG_OGL_CORE_LOG_DEBUG("[Mesh::Mesh()] Create Mesh with name {}.", t_name);
 }
 
 sg::ogl::resource::Mesh::~Mesh() noexcept
@@ -22,29 +38,39 @@ sg::ogl::resource::Mesh::~Mesh() noexcept
 // Getter
 //-------------------------------------------------
 
+std::string sg::ogl::resource::Mesh::GetName() const
+{
+    return m_name;
+}
+
 sg::ogl::resource::Mesh::MaterialSharedPtr sg::ogl::resource::Mesh::GetDefaultMaterial() const
 {
     SG_OGL_CORE_ASSERT(m_defaultMaterial, "[Mesh::GetDefaultMaterial()] Null pointer.")
     return m_defaultMaterial;
 }
 
-sg::ogl::resource::Mesh::VaoUniquePtr& sg::ogl::resource::Mesh::GetVao()
+sg::ogl::buffer::Vao& sg::ogl::resource::Mesh::GetVao() const
 {
-    return m_vao;
+    return *m_vao;
 }
 
 //-------------------------------------------------
 // Setter
 //-------------------------------------------------
 
-void sg::ogl::resource::Mesh::SetDefaultMaterial(MaterialUniquePtr t_defaultMaterial)
+void sg::ogl::resource::Mesh::SetName(const std::string& t_name)
+{
+    m_name = t_name;
+}
+
+void sg::ogl::resource::Mesh::SetDefaultMaterial(const MaterialSharedPtr& t_defaultMaterial)
 {
     SG_OGL_CORE_ASSERT(!m_defaultMaterial, "[Mesh::SetDefaultMaterial()] Default material already exist.")
-    m_defaultMaterial = std::move(t_defaultMaterial);
+    m_defaultMaterial = t_defaultMaterial;
 }
 
 //-------------------------------------------------
-// Draw mesh
+// Draw - methods created for convenience
 //-------------------------------------------------
 
 void sg::ogl::resource::Mesh::InitDraw() const

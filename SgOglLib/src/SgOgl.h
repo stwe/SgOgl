@@ -2,19 +2,25 @@
 
 // core
 #include "SgOglLib/Application.h"
-#include "SgOglLib/Window.h"
-#include "SgOglLib/Log.h"
 #include "SgOglLib/Color.h"
+#include "SgOglLib/Log.h"
 #include "SgOglLib/OpenGl.h"
+#include "SgOglLib/Window.h"
 
 // buffer
-#include "SgOglLib/buffer/Vao.h"
-#include "SgOglLib/buffer/Fbo.h"
-#include "SgOglLib/buffer/WaterFbos.h"
 #include "SgOglLib/buffer/BufferLayout.h"
+#include "SgOglLib/buffer/Fbo.h"
+#include "SgOglLib/buffer/Vao.h"
+#include "SgOglLib/buffer/WaterFbos.h"
 
 // camera
 #include "SgOglLib/camera/LookAtCamera.h"
+
+// ecs
+#include "SgOglLib/ecs/component/MeshComponent.h"
+#include "SgOglLib/ecs/component/ModelComponent.h"
+#include "SgOglLib/ecs/component/TransformComponent.h"
+#include "SgOglLib/ecs/system/RenderSystem.h"
 
 // input
 #include "SgOglLib/input/MouseInput.h"
@@ -45,10 +51,7 @@
 #include "SgOglLib/scene/Node.h"
 #include "SgOglLib/scene/RenderConfig.h"
 #include "SgOglLib/scene/Scene.h"
-#include "SgOglLib/scene/SceneLoader.h"
 #include "SgOglLib/scene/TerrainComponent.h"
-
-// scene - components
 #include "SgOglLib/scene/component/Components.h"
 
 // state

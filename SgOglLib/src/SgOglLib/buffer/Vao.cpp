@@ -250,6 +250,11 @@ void sg::ogl::buffer::Vao::AddIndexBuffer(const IndexContainer& t_indices)
     static constexpr auto ELEMENT_SIZE_IN_BYTES{ sizeof(uint32_t) };
     const auto numberOfElements{ static_cast<int32_t>(t_indices.size()) };
 
+    if (m_vbos.empty())
+    {
+        SG_OGL_CORE_LOG_WARN("[Vao::AddIndexBuffer()] The index buffer should be created last, otherwise wrong values in draw count are likely.");
+    }
+
     // Bind our existing Vao.
     BindVao();
 

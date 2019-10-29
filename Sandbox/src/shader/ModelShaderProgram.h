@@ -3,36 +3,25 @@
 class ModelShaderProgram : public sg::ogl::resource::ShaderProgram
 {
 public:
-    void UpdateUniforms(sg::ogl::scene::Entity& t_entity) override
+    void UpdateUniforms(const sg::ogl::scene::Scene& t_scene, const entt::entity t_entity, const sg::ogl::resource::Mesh& t_currentMesh) override
     {
-        // get projection matrix
-        const auto projectionMatrix{ t_entity.GetParentScene()->GetApplicationContext()->GetWindow()->GetProjectionMatrix() };
+        auto& transformComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TransformComponent>(t_entity);
 
-        // set model matrix
-        SetUniform("modelMatrix", t_entity.GetWorldMatrix());
+        const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
+        const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };
 
-        // set plane
-        SetUniform("plane", t_entity.GetParentScene()->GetCurrentClipPlane());
-
-        // set mvp matrix
-        const auto mvp{ projectionMatrix * t_entity.GetParentScene()->GetCurrentCamera().GetViewMatrix() * t_entity.GetWorldMatrix() };
+        SetUniform("modelMatrix", static_cast<glm::mat4>(transformComponent));
+        SetUniform("plane", glm::vec4(0.0f));
         SetUniform("mvpMatrix", mvp);
+        SetUniform("ambientIntensity", glm::vec3(1.0f));
+        SetUniform("diffuseColor", t_currentMesh.GetDefaultMaterial()->kd);
+        SetUniform("hasDiffuseMap", t_currentMesh.GetDefaultMaterial()->HasDiffuseMap());
 
-        // set diffuse color
-        SetUniform("diffuseColor", t_entity.material->kd);
-
-        // set has diffuse map
-        SetUniform("hasDiffuseMap", t_entity.material->HasDiffuseMap());
-
-        // set diffuse map
-        if (t_entity.material->HasDiffuseMap())
+        if (t_currentMesh.GetDefaultMaterial()->HasDiffuseMap())
         {
             SetUniform("diffuseMap", 0);
-            sg::ogl::resource::TextureManager::BindForReading(t_entity.material->mapKd, GL_TEXTURE0);
+            sg::ogl::resource::TextureManager::BindForReading(t_currentMesh.GetDefaultMaterial()->mapKd, GL_TEXTURE0);
         }
-
-        // set ambient intensity
-        SetUniform("ambientIntensity", glm::vec3(1.0f));
     }
 
     std::string GetFolderName() override

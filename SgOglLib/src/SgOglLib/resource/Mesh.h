@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Mesh.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 #include <memory>
@@ -5,7 +14,6 @@
 #include "Log.h"
 #include "OpenGl.h"
 #include "buffer/Vao.h"
-#include "buffer/BufferLayout.h"
 
 namespace sg::ogl::resource
 {
@@ -16,7 +24,6 @@ namespace sg::ogl::resource
     public:
         using IndexContainer = std::vector<uint32_t>;
         using VaoUniquePtr = std::unique_ptr<buffer::Vao>;
-        using MaterialUniquePtr = std::unique_ptr<Material>;
         using MaterialSharedPtr = std::shared_ptr<Material>;
 
         //-------------------------------------------------
@@ -24,6 +31,8 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         Mesh();
+
+        explicit Mesh(const std::string& t_name);
 
         Mesh(const Mesh& t_other) = delete;
         Mesh(Mesh&& t_other) noexcept = delete;
@@ -37,10 +46,14 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         /**
-         * @brief Get the default Material as shared_ptr. Mesh has
-         *        ownership of Material. The Material is also used
-         *        in a Node, so later Node has also ownership.
-         * @return Material shared_ptr
+         * @brief Getter for Mesh name.
+         * @return The name of the Mesh.
+         */
+        std::string GetName() const;
+
+        /**
+         * @brief Get the default Material.
+         * @return Material as shared_ptr.
          */
         MaterialSharedPtr GetDefaultMaterial() const;
 
@@ -48,54 +61,30 @@ namespace sg::ogl::resource
          * @brief Get the Vao.
          * @return Reference to the Vao.
          */
-        VaoUniquePtr& GetVao();
+        buffer::Vao& GetVao() const;
 
         //-------------------------------------------------
         // Setter
         //-------------------------------------------------
 
         /**
-         * @brief Set the default Material for the Mesh. The Material should come from a
-         *        factory function as unique_ptr. The unique_ptr is converted to a
-         *        shared_ptr (m_defaultMaterial).
-         * @param t_defaultMaterial The default Material as unique_ptr.
+         * @brief Setter for Mesh name.
+         * @param t_name The name of the Mesh.
          */
-        void SetDefaultMaterial(MaterialUniquePtr t_defaultMaterial);
+        void SetName(const std::string& t_name);
+
+        /**
+         * @brief Set the default Material for the Mesh.
+         * @param t_defaultMaterial The default Material as shared_ptr.
+         */
+        void SetDefaultMaterial(const MaterialSharedPtr& t_defaultMaterial);
 
         //-------------------------------------------------
-        // Allocate
-        //-------------------------------------------------
-
-        template <typename T>
-        void Allocate(
-            const buffer::BufferLayout& t_bufferLayout,
-            std::vector<T>* t_vertexContainer,
-            const int32_t t_vertexCount,
-            IndexContainer* t_indexContainer = nullptr
-        )
-        {
-            SG_OGL_CORE_ASSERT(m_vao, "[Mesh::Allocate()] Null pointer.")
-            SG_OGL_CORE_ASSERT(t_vertexContainer, "[Mesh::Allocate()] Null pointer.")
-            SG_OGL_CORE_ASSERT(t_vertexCount > 0, "[Mesh::Allocate()] Invalid vertex count.")
-
-            m_vao->AddVertexDataVbo(
-                reinterpret_cast<float*>(t_vertexContainer->data()),
-                t_vertexCount,
-                t_bufferLayout
-            );
-
-            if (t_indexContainer)
-            {
-                m_vao->AddIndexBuffer(*t_indexContainer);
-            }
-        }
-
-        //-------------------------------------------------
-        // Draw mesh
+        // Draw - methods created for convenience
         //-------------------------------------------------
 
         /**
-         * @brief Bind VAO.
+         * @brief Bind Vao.
          */
         void InitDraw() const;
 
@@ -113,7 +102,7 @@ namespace sg::ogl::resource
         void DrawInstanced(int32_t t_instanceCount, uint32_t t_drawMode = GL_TRIANGLES) const;
 
         /**
-         * @brief Unbind VAO.
+         * @brief Unbind Vao.
          */
         static void EndDraw();
 
@@ -124,6 +113,13 @@ namespace sg::ogl::resource
          * @brief The Vao of the Mesh.
          */
         VaoUniquePtr m_vao;
+
+        /**
+         * @brief The name of the Mesh.
+         *        The name is used as a key if the mesh is to be
+         *        stored in the ModelManager.
+         */
+        std::string m_name;
 
         /**
          * @brief The default Material of the Mesh.

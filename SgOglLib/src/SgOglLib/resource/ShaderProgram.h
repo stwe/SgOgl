@@ -6,20 +6,25 @@
 #include <glm/glm.hpp>
 #include "Core.h"
 
+namespace entt {
+    enum class entity : unsigned;
+}
+
+namespace sg::ogl::scene
+{
+    class Scene;
+}
+
 namespace sg::ogl::light
 {
     struct DirectionalLight;
     struct PointLight;
 }
 
-namespace sg::ogl::scene
-{
-    class Entity;
-}
-
 namespace sg::ogl::resource
 {
     struct Material;
+    class Mesh;
 
     class SG_OGL_API ShaderProgram
     {
@@ -110,7 +115,7 @@ namespace sg::ogl::resource
 
         virtual std::string GetFolderName() = 0;
         virtual Options GetOptions() const;
-        virtual void UpdateUniforms(scene::Entity& t_entity) = 0;
+        virtual void UpdateUniforms(const scene::Scene& t_scene, entt::entity t_entity, const Mesh& t_currentMesh) = 0;
 
     protected:
 

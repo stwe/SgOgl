@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <entt/entity/registry.hpp>
 #include "Core.h"
 #include "Config.h"
 
@@ -77,6 +78,17 @@ namespace sg::ogl
         using MouseInputUniquePtr = std::unique_ptr<input::MouseInput, DeleteMouseInput>;
 
         //-------------------------------------------------
+        // Public member
+        //-------------------------------------------------
+
+        /**
+         * @brief The core class of the EnTT Ecs.
+         *        It stores entities and arranges pools of
+         *        components on a per request basis.
+         */
+        entt::registry registry;
+
+        //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
 
@@ -101,13 +113,13 @@ namespace sg::ogl
         const ProjectionOptions& GetProjectionOptions() const noexcept;
         ProjectionOptions& GetProjectionOptions() noexcept;
 
-        WindowUniquePtr& GetWindow() noexcept;
-        ShaderManagerUniquePtr& GetShaderManager() noexcept;
-        TextureManagerUniquePtr& GetTextureManager() noexcept;
-        ModelManagerUniquePtr& GetModelManager() noexcept;
-        StateStackUniquePtr& GetStateStack() noexcept;
-        CircularEventQueueUniquePtr& GetCircularEventQueue() noexcept;
-        MouseInputUniquePtr& GetMouseInput() noexcept;
+        Window& GetWindow() noexcept;
+        resource::ShaderManager& GetShaderManager() noexcept;
+        resource::TextureManager& GetTextureManager() noexcept;
+        resource::ModelManager& GetModelManager() noexcept;
+        state::StateStack& GetStateStack() noexcept;
+        event::CircularEventQueue& GetCircularEventQueue() noexcept;
+        input::MouseInput& GetMouseInput() noexcept;
 
         //-------------------------------------------------
         // Run

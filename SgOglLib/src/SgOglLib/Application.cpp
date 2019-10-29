@@ -1,5 +1,4 @@
 #include <sstream>
-
 #include "Application.h"
 #include "Log.h"
 #include "Window.h"
@@ -98,39 +97,39 @@ sg::ogl::ProjectionOptions& sg::ogl::Application::GetProjectionOptions() noexcep
     return m_projectionOptions;
 }
 
-sg::ogl::Application::WindowUniquePtr& sg::ogl::Application::GetWindow() noexcept
+sg::ogl::Window& sg::ogl::Application::GetWindow() noexcept
 {
-    return m_window;
+    return *m_window;
 }
 
-sg::ogl::Application::ShaderManagerUniquePtr& sg::ogl::Application::GetShaderManager() noexcept
+sg::ogl::resource::ShaderManager& sg::ogl::Application::GetShaderManager() noexcept
 {
-    return m_shaderManager;
+    return *m_shaderManager;
 }
 
-sg::ogl::Application::TextureManagerUniquePtr& sg::ogl::Application::GetTextureManager() noexcept
+sg::ogl::resource::TextureManager& sg::ogl::Application::GetTextureManager() noexcept
 {
-    return m_textureManager;
+    return *m_textureManager;
 }
 
-sg::ogl::Application::ModelManagerUniquePtr& sg::ogl::Application::GetModelManager() noexcept
+sg::ogl::resource::ModelManager& sg::ogl::Application::GetModelManager() noexcept
 {
-    return m_modelManager;
+    return *m_modelManager;
 }
 
-sg::ogl::Application::StateStackUniquePtr& sg::ogl::Application::GetStateStack() noexcept
+sg::ogl::state::StateStack& sg::ogl::Application::GetStateStack() noexcept
 {
-    return m_stateStack;
+    return *m_stateStack;
 }
 
-sg::ogl::Application::CircularEventQueueUniquePtr& sg::ogl::Application::GetCircularEventQueue() noexcept
+sg::ogl::event::CircularEventQueue& sg::ogl::Application::GetCircularEventQueue() noexcept
 {
-    return m_circularEventQueue;
+    return *m_circularEventQueue;
 }
 
-sg::ogl::Application::MouseInputUniquePtr& sg::ogl::Application::GetMouseInput() noexcept
+sg::ogl::input::MouseInput& sg::ogl::Application::GetMouseInput() noexcept
 {
-    return m_mouseInput;
+    return *m_mouseInput;
 }
 
 //-------------------------------------------------
@@ -174,7 +173,7 @@ void sg::ogl::Application::CoreInit()
     m_textureManager.reset(new resource::TextureManager);
     SG_OGL_CORE_ASSERT(m_textureManager, "[Application::CoreInit()] Null pointer.")
 
-    m_modelManager.reset(new resource::ModelManager(*m_textureManager));
+    m_modelManager.reset(new resource::ModelManager(this));
     SG_OGL_CORE_ASSERT(m_modelManager, "[Application::CoreInit()] Null pointer.")
 
     m_stateStack.reset(new state::StateStack{ this });

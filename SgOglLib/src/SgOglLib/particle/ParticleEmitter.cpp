@@ -32,10 +32,10 @@ sg::ogl::particle::ParticleEmitter::ParticleEmitter(
     InitVao();
 
     // get texture handle for the given texture path
-    m_textureId = m_scene->GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath(t_texturePath);
+    m_textureId = m_scene->GetApplicationContext()->GetTextureManager().GetTextureIdFromPath(t_texturePath);
 
     // get a pointer to the shader program
-    m_shaderProgram = &m_scene->GetApplicationContext()->GetShaderManager()->GetShaderProgram("particle_anim");
+    m_shaderProgram = &m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram("particle_anim");
     SG_OGL_CORE_ASSERT(m_shaderProgram, "[ParticleEmitter::ParticleEmitter()] Null pointer.")
 }
 
@@ -134,7 +134,7 @@ void sg::ogl::particle::ParticleEmitter::Render()
     PrepareRendering();
 
     // set uniforms
-    m_shaderProgram->SetUniform("projectionMatrix", m_scene->GetApplicationContext()->GetWindow()->GetProjectionMatrix());
+    m_shaderProgram->SetUniform("projectionMatrix", m_scene->GetApplicationContext()->GetWindow().GetProjectionMatrix());
     m_shaderProgram->SetUniform("numberOfRows", static_cast<float>(m_nrOfTextureRows));
     m_shaderProgram->SetUniform("particleTexture", 0);
 

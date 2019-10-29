@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Model.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include "Model.h"
@@ -6,6 +15,7 @@
 #include "Log.h"
 #include "TextureManager.h"
 #include "SgOglException.h"
+#include "Application.h"
 #include "buffer/VertexAttribute.h"
 #include "buffer/BufferLayout.h"
 
@@ -13,10 +23,11 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::resource::Model::Model(std::string t_fullFilePath, TextureManager& t_textureManager)
-    : m_fullFilePath{ std::move(t_fullFilePath) }
-    , m_textureManager{ t_textureManager }
+sg::ogl::resource::Model::Model(std::string t_fullFilePath, Application* t_application)
+    : m_application{ t_application }
+    , m_fullFilePath{ std::move(t_fullFilePath) }
 {
+    SG_OGL_CORE_ASSERT(m_application, "[Model::Model()] Null pointer.")
     SG_OGL_CORE_LOG_DEBUG("[Model::Model()] Create Model.");
 
     m_directory = m_fullFilePath.substr(0, m_fullFilePath.find_last_of('/'));
@@ -114,7 +125,7 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
             if (!missingUv)
             {
                 missingUv = true;
-                SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing texture coords.");
+                SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing texture coords. Set default values (0, 0).");
             }
         }
 
@@ -133,7 +144,7 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
             if (!missingTangent)
             {
                 missingTangent = true;
-                SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing tangent coords.");
+                SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing tangent coords. Set default values (0, 0, 0).");
             }
         }
 
@@ -152,7 +163,7 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
             if (!missingBiTangent)
             {
                 missingBiTangent = true;
-                SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing bitangent coords.");
+                SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing bitangent coords. Set default values (0, 0, 0).");
             }
         }
     }
@@ -256,7 +267,7 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
         materialUniquePtr->mapBump = normalMaps[0];
     }
 
-    // Use a predefined BufferLayout.
+    // Set the BufferLayout.
     const buffer::BufferLayout bufferLayout{
         { buffer::VertexAttributeType::POSITION, "aPosition" },
         { buffer::VertexAttributeType::NORMAL, "aNormal" },
@@ -269,8 +280,11 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
     auto meshUniquePtr{ std::make_unique<Mesh>() };
     SG_OGL_CORE_ASSERT(meshUniquePtr, "[Model::ProcessMesh()] Null pointer.")
 
-    // Allocate the data to the mesh.
-    meshUniquePtr->Allocate(bufferLayout, &vertices, t_mesh->mNumVertices, &indices);
+    // Add Vbo.
+    meshUniquePtr->GetVao().AddVertexDataVbo(vertices.data(), t_mesh->mNumVertices, bufferLayout);
+
+    // Add Ebo.
+    meshUniquePtr->GetVao().AddIndexBuffer(indices);
 
     // Each mesh has a default material. Set the material properties as default.
     meshUniquePtr->SetDefaultMaterial(std::move(materialUniquePtr));
@@ -292,7 +306,7 @@ sg::ogl::resource::Model::TextureContainer sg::ogl::resource::Model::LoadMateria
             throw SG_OGL_EXCEPTION("[Model::LoadMaterialTextures()] Error while loading material texture.");
         }
 
-        textures.push_back(m_textureManager.GetTextureIdFromPath(m_directory + "/" + str.C_Str()));
+        textures.push_back(m_application->GetTextureManager().GetTextureIdFromPath(m_directory + "/" + str.C_Str()));
     }
 
     return textures;

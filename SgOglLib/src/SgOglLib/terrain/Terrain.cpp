@@ -157,8 +157,11 @@ void sg::ogl::terrain::Terrain::GenerateTerrain()
     m_mesh.reset(new resource::Mesh);
     SG_OGL_CORE_ASSERT(m_mesh, "[Terrain::GenerateTerrain()] Null pointer.")
 
-    // Allocate the data to the mesh.
-    m_mesh->Allocate(bufferLayout, &vertices, count * count, &indices);
+    // Add Vbo.
+    m_mesh->GetVao().AddVertexDataVbo(vertices.data(), count * count, bufferLayout);
+
+    // Add Ebo.
+    m_mesh->GetVao().AddIndexBuffer(indices);
 }
 
 //-------------------------------------------------

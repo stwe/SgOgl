@@ -9,6 +9,8 @@
 #include "Log.h"
 #include "Entity.h"
 #include "TerrainComponent.h"
+#include "buffer/VertexAttribute.h"
+#include "buffer/BufferLayout.h"
 #include "component/Components.h"
 #include "resource/Model.h"
 #include "resource/Mesh.h"
@@ -130,7 +132,7 @@ namespace sg::ogl::scene
         )
         {
             // get the model from the ModelManager (the model is added if necessary)
-            const auto model{ m_application->GetModelManager()->GetModelFromPath(t_modelPath) };
+            const auto model{ m_application->GetModelManager().GetModelByPath(t_modelPath) };
 
             // create entity
             auto* entity{ new Entity };
@@ -176,7 +178,7 @@ namespace sg::ogl::scene
         Entity* CreateSkydomeEntity(const std::string& t_modelPath, const std::string& t_shaderFolderName)
         {
             // get the model from the ModelManager (the model is added if necessary)
-            const auto model{ m_application->GetModelManager()->GetModelFromPath(t_modelPath) };
+            const auto model{ m_application->GetModelManager().GetModelByPath(t_modelPath) };
             SG_OGL_CORE_ASSERT(model->GetMeshes().size() == 1, "[Scene::CreateSkydomeEntity()] Invalid number of meshes.")
 
             // create entity
@@ -206,7 +208,7 @@ namespace sg::ogl::scene
         )
         {
             // add a cubemap to the TextureManager
-            const auto cubemapId{ m_application->GetTextureManager()->GetCubemapId(t_textureFileNames) };
+            const auto cubemapId{ m_application->GetTextureManager().GetCubemapId(t_textureFileNames) };
 
             // create entity
             auto* entity{ new Entity };
@@ -224,7 +226,8 @@ namespace sg::ogl::scene
                 { buffer::VertexAttributeType::POSITION, "vPosition" },
             };
 
-            meshUniquePtr->Allocate(bufferLayout, &vertices, static_cast<int32_t>(vertices.size()));
+            // add Vbo
+            meshUniquePtr->GetVao().AddVertexDataVbo(reinterpret_cast<float*>(vertices.data()), static_cast<int32_t>(vertices.size()), bufferLayout);
 
             // set the cubemap id as mapKd
             materialUniquePtr->mapKd = cubemapId;
@@ -247,7 +250,7 @@ namespace sg::ogl::scene
         )
         {
             // add texture to the TextureManager and get the Id
-            const auto textureId{ m_application->GetTextureManager()->GetTextureIdFromPath(t_textureFileName) };
+            const auto textureId{ m_application->GetTextureManager().GetTextureIdFromPath(t_textureFileName) };
 
             // create a new entity
             auto* entity{ new Entity };
@@ -270,7 +273,8 @@ namespace sg::ogl::scene
                 { buffer::VertexAttributeType::POSITION_2D, "aPosition" },
             };
 
-            meshUniquePtr->Allocate(bufferLayout, &vertices, static_cast<int32_t>(vertices.size()) / 2);
+            // add vao
+            meshUniquePtr->GetVao().AddVertexDataVbo(vertices.data(), static_cast<int32_t>(vertices.size()) / 2, bufferLayout);
 
             // set the texture id as mapKd
             materialUniquePtr->mapKd = textureId;
@@ -322,7 +326,8 @@ namespace sg::ogl::scene
                 { buffer::VertexAttributeType::POSITION_2D, "aPosition" },
             };
 
-            meshUniquePtr->Allocate(bufferLayout, &vertices, static_cast<int32_t>(vertices.size()) / 2);
+            // add Vbo
+            meshUniquePtr->GetVao().AddVertexDataVbo(vertices.data(), static_cast<int32_t>(vertices.size()) / 2, bufferLayout);
 
             // set the texture id as mapKd
             materialUniquePtr->mapKd = t_textureId;
