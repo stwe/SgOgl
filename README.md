@@ -400,3 +400,178 @@ protected:
     void FinishRendering() override {}
 };
 ```
+
+### c) Create a Skybox
+
+As with the obj model, an entity and a render system is needed.
+
+```cpp
+// File: GameState.h
+
+class GameState : public sg::ogl::state::State
+{
+public:
+
+    // ...
+
+private:
+    entt::entity m_houseEntity;
+    entt::entity m_skyboxEntity;
+
+    std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
+    std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
+
+    SceneUniquePtr m_scene;
+    CameraSharedPtr m_camera;
+
+    void Init();
+    void CreateHouseEntity();
+    void CreateSkyboxEntity();
+};
+```
+
+We create a method for creating each entity (`CreateHouseEntity()` and `CreateSkyboxEntity()`).
+
+```cpp
+// File: GameState.cpp
+
+void GameState::Render()
+{
+    m_modelRenderSystem->Render();
+    m_skyboxRenderSystem->Render();
+}
+
+void GameState::Init()
+{
+    // ...
+
+    CreateHouseEntity();
+    CreateSkyboxEntity();
+}
+```
+
+Nothing new here. Create entity, add components and render system.
+The method `GetStaticMeshByName("skybox")` retrieves a built-in Mesh for a Skybox from the ModelManager.
+
+```cpp
+// File: GameState.cpp
+
+void GameState::CreateSkyboxEntity()
+{
+    // create an entity
+    m_skyboxEntity = GetApplicationContext()->registry.create();
+
+    // add mesh component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
+        m_skyboxEntity,
+        GetApplicationContext()->GetModelManager().GetStaticMeshByName("skybox")
+    );
+
+    // add cubemap component
+    const std::vector<std::string> cubemapFileNames{
+        "res/texture/sky/sRight.png",
+        "res/texture/sky/sLeft.png",
+        "res/texture/sky/sUp.png",
+        "res/texture/sky/sDown.png",
+        "res/texture/sky/sBack.png",
+        "res/texture/sky/sFront.png"
+    };
+
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::CubemapComponent>(
+        m_skyboxEntity,
+        GetApplicationContext()->GetTextureManager().GetCubemapId(cubemapFileNames)
+    );
+
+    // create a render system for the entity
+    m_skyboxRenderSystem = std::make_unique<SkyboxRenderSystem<SkyboxShaderProgram>>(m_scene.get());
+}
+```
+
+The Skybox shader program.
+
+
+```cpp
+class SkyboxShaderProgram : public sg::ogl::resource::ShaderProgram
+{
+public:
+    void UpdateUniforms(const sg::ogl::scene::Scene& t_scene, const entt::entity t_entity, const sg::ogl::resource::Mesh& t_currentMesh) override
+    {
+        // remove translation from the view matrix
+        const auto skyboxViewMatrix{ glm::mat4(glm::mat3(t_scene.GetCurrentCamera().GetViewMatrix())) };
+
+        // get projection matrix
+        const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
+
+        // set shader uniforms
+        SetUniform("projectionMatrix", projectionMatrix);
+        SetUniform("viewMatrix", skyboxViewMatrix);
+        SetUniform("cubeSampler", 0);
+
+        // get cubemap component
+        auto& cubemapComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::CubemapComponent>(t_entity);
+
+        // bind cubemap
+        sg::ogl::resource::TextureManager::BindForReading(cubemapComponent.cubemapId, GL_TEXTURE0, GL_TEXTURE_CUBE_MAP);
+    }
+
+    std::string GetFolderName() override
+    {
+        return "skybox";
+    }
+};
+```
+
+The skybox render system. Here, the `DepthFunc` is changed in `PrepareRendering()` and `FinishRendering()`.
+
+
+```cpp
+template <typename TShaderProgram>
+class SkyboxRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
+{
+public:
+    explicit SkyboxRenderSystem(sg::ogl::scene::Scene* t_scene)
+        : sg::ogl::ecs::system::RenderSystem<TShaderProgram>(t_scene)
+    {}
+
+    void Update(double t_dt) override {}
+
+    void Render() override
+    {
+        PrepareRendering();
+
+        auto view = m_scene->GetApplicationContext()->registry.view<
+            sg::ogl::ecs::component::MeshComponent,
+            sg::ogl::ecs::component::CubemapComponent>();
+
+        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
+
+        shaderProgram.Bind();
+
+        for (auto entity : view)
+        {
+            auto& meshComponent = view.get<sg::ogl::ecs::component::MeshComponent>(entity);
+
+            meshComponent.mesh->InitDraw();
+            shaderProgram.UpdateUniforms(*m_scene, entity, *meshComponent.mesh);
+            meshComponent.mesh->DrawPrimitives();
+            meshComponent.mesh->EndDraw();
+        }
+
+        sg::ogl::resource::ShaderProgram::Unbind();
+
+        FinishRendering();
+    }
+
+protected:
+    void PrepareRendering() override
+    {
+        sg::ogl::OpenGl::SetDepthFunc(GL_LEQUAL);
+    }
+
+    void FinishRendering() override
+    {
+        // GL_LESS is the initial depth comparison function
+        sg::ogl::OpenGl::SetDepthFunc(GL_LESS);
+    }
+};
+```
