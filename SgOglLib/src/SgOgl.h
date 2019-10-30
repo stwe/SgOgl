@@ -21,6 +21,7 @@
 #include "SgOglLib/ecs/component/MaterialComponent.h"
 #include "SgOglLib/ecs/component/MeshComponent.h"
 #include "SgOglLib/ecs/component/ModelComponent.h"
+#include "SgOglLib/ecs/component/SkydomeComponent.h"
 #include "SgOglLib/ecs/component/TransformComponent.h"
 #include "SgOglLib/ecs/system/RenderSystem.h"
 

@@ -14,7 +14,9 @@ public:
     {
         PrepareRendering();
 
-        auto view = m_scene->GetApplicationContext()->registry.view<sg::ogl::ecs::component::ModelComponent, sg::ogl::ecs::component::TransformComponent>();
+        auto view = m_scene->GetApplicationContext()->registry.view<
+            sg::ogl::ecs::component::ModelComponent,
+            sg::ogl::ecs::component::TransformComponent>();
 
         auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
 
@@ -22,16 +24,20 @@ public:
 
         for (auto entity : view)
         {
-            auto& modelComponent = view.get<sg::ogl::ecs::component::ModelComponent>(entity);
-
-            for (auto& mesh : modelComponent.model->GetMeshes())
+            // todo: exclude skydome -> get a view without
+            if (!m_scene->GetApplicationContext()->registry.has<sg::ogl::ecs::component::SkydomeComponent>(entity))
             {
-                mesh->InitDraw();
+                auto& modelComponent = view.get<sg::ogl::ecs::component::ModelComponent>(entity);
 
-                shaderProgram.UpdateUniforms(*m_scene, entity, *mesh);
+                for (auto& mesh : modelComponent.model->GetMeshes())
+                {
+                    mesh->InitDraw();
 
-                mesh->DrawPrimitives();
-                mesh->EndDraw();
+                    shaderProgram.UpdateUniforms(*m_scene, entity, *mesh);
+
+                    mesh->DrawPrimitives();
+                    mesh->EndDraw();
+                }
             }
         }
 

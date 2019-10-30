@@ -61,7 +61,8 @@ bool GameState::Update(const double t_dt)
 void GameState::Render()
 {
     m_modelRenderSystem->Render();
-    m_skyboxRenderSystem->Render();
+    //m_skyboxRenderSystem->Render();
+    m_skydomeRenderSystem->Render();
 }
 
 //-------------------------------------------------
@@ -83,7 +84,8 @@ void GameState::Init()
 
     // create entities
     CreateHouseEntity();
-    CreateSkyboxEntity();
+    //CreateSkyboxEntity();
+    CreateSkydomeEntity();
 }
 
 void GameState::CreateHouseEntity()
@@ -132,4 +134,30 @@ void GameState::CreateSkyboxEntity()
 
     // create a render system for the entity
     m_skyboxRenderSystem = std::make_unique<SkyboxRenderSystem<SkyboxShaderProgram>>(m_scene.get());
+}
+
+void GameState::CreateSkydomeEntity()
+{
+    // create an entity
+    m_skydomeEntity = GetApplicationContext()->registry.create();
+
+    // add model component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
+        m_skydomeEntity,
+        GetApplicationContext()->GetModelManager().GetModelByPath("res/model/dome/dome.obj")
+    );
+
+    // add transform component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
+        m_skydomeEntity,
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(GetApplicationContext()->GetProjectionOptions().farPlane * 0.5f)
+    );
+
+    // add skydome component/tag
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::SkydomeComponent>(m_skydomeEntity);
+
+    // create a render system for the entity
+    m_skydomeRenderSystem = std::make_unique<SkydomeRenderSystem<DomeShaderProgram>>(m_scene.get());
 }

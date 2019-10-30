@@ -124,32 +124,6 @@ namespace sg::ogl::scene
             t_entity->AddComponent(Component::Type::WATER, std::move(waterComponentUniquePtr));
         }
 
-        Entity* CreateSkydomeEntity(const std::string& t_modelPath, const std::string& t_shaderFolderName)
-        {
-            // get the model from the ModelManager (the model is added if necessary)
-            const auto model{ m_application->GetModelManager().GetModelByPath(t_modelPath) };
-            SG_OGL_CORE_ASSERT(model->GetMeshes().size() == 1, "[Scene::CreateSkydomeEntity()] Invalid number of meshes.")
-
-            // create entity
-            auto* entity{ new Entity };
-            SG_OGL_CORE_ASSERT(entity, "[Scene::CreateSkydomeEntity()] Null pointer.")
-
-            // set mesh
-            entity->mesh = model->GetMeshes()[0];
-
-            // use the default material because the color is set in the shader
-            entity->material = model->GetMeshes()[0]->GetDefaultMaterial();
-
-            // set transform
-            entity->GetLocalTransform().scale = glm::vec3(m_application->GetProjectionOptions().farPlane * 0.5f);
-            entity->SetParentScene(this);
-
-            // add render component
-            //AddRenderComponent<component::RenderComponent, component::ModelRenderConfig>(entity, t_shaderFolderName);
-
-            return entity;
-        }
-
         Entity* CreateGuiEntity(
             const std::string& t_textureFileName,
             const glm::vec2& t_position,

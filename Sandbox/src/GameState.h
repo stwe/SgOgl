@@ -10,10 +10,15 @@
 #pragma once
 
 #include "SgOgl.h"
-#include "renderer/ModelRenderSystem.h"
+
 #include "shader/ModelShaderProgram.h"
+#include "renderer/ModelRenderSystem.h"
+
 #include "shader/SkyboxShaderProgram.h"
 #include "renderer/SkyboxRenderSystem.h"
+
+#include "shader/DomeShaderProgram.h"
+#include "renderer/SkydomeRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
@@ -61,9 +66,11 @@ protected:
 private:
     entt::entity m_houseEntity;
     entt::entity m_skyboxEntity;
+    entt::entity m_skydomeEntity;
 
     std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
     std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
+    std::unique_ptr<SkydomeRenderSystem<DomeShaderProgram>> m_skydomeRenderSystem;
 
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
@@ -73,6 +80,8 @@ private:
     //-------------------------------------------------
 
     void Init();
+
     void CreateHouseEntity();
     void CreateSkyboxEntity();
+    void CreateSkydomeEntity();
 };
