@@ -147,3 +147,8 @@ void sg::ogl::OpenGl::DisableClipping()
 {
     glDisable(GL_CLIP_DISTANCE0);
 }
+
+void sg::ogl::OpenGl::SetDepthFunc(const uint32_t t_func)
+{
+    glDepthFunc(t_func);
+}

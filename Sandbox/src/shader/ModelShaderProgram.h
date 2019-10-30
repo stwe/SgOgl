@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: ModelShaderProgram.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 class ModelShaderProgram : public sg::ogl::resource::ShaderProgram

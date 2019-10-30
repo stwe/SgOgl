@@ -1,8 +1,19 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: GameState.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 #include "SgOgl.h"
 #include "renderer/ModelRenderSystem.h"
 #include "shader/ModelShaderProgram.h"
+#include "shader/SkyboxShaderProgram.h"
+#include "renderer/SkyboxRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
@@ -48,16 +59,20 @@ public:
 protected:
 
 private:
-    entt::entity m_entity;
+    entt::entity m_houseEntity;
+    entt::entity m_skyboxEntity;
 
     std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
+    std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
 
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
 
     //-------------------------------------------------
-    // Init
+    // Helper
     //-------------------------------------------------
 
     void Init();
+    void CreateHouseEntity();
+    void CreateSkyboxEntity();
 };

@@ -17,6 +17,8 @@
 #include "SgOglLib/camera/LookAtCamera.h"
 
 // ecs
+#include "SgOglLib/ecs/component/CubemapComponent.h"
+#include "SgOglLib/ecs/component/MaterialComponent.h"
 #include "SgOglLib/ecs/component/MeshComponent.h"
 #include "SgOglLib/ecs/component/ModelComponent.h"
 #include "SgOglLib/ecs/component/TransformComponent.h"

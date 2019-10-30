@@ -124,57 +124,6 @@ namespace sg::ogl::scene
             t_entity->AddComponent(Component::Type::WATER, std::move(waterComponentUniquePtr));
         }
 
-        template <typename TRenderConfig>
-        Entity* CreateModelEntity(
-            const std::string& t_modelPath,
-            const std::string& t_shaderFolderName,
-            const MaterialSharedPtr& t_alternativeMaterial = nullptr
-        )
-        {
-            // get the model from the ModelManager (the model is added if necessary)
-            const auto model{ m_application->GetModelManager().GetModelByPath(t_modelPath) };
-
-            // create entity
-            auto* entity{ new Entity };
-            SG_OGL_CORE_ASSERT(entity, "[Scene::CreateModelEntity()] Null pointer.")
-
-            // get model meshes
-            const auto& meshes{ model->GetMeshes() };
-
-            // create a child entity for each mesh
-            if (meshes.size() > 1)
-            {
-                // for each mesh
-                for (const auto& mesh : meshes)
-                {
-                    // create a child
-                    auto* child{ new Entity };
-                    SG_OGL_CORE_ASSERT(child, "[Scene::CreateModelEntity()] Null pointer.")
-
-                    // set mesh && material
-                    child->mesh = mesh;
-                    child->material = t_alternativeMaterial ? t_alternativeMaterial : mesh->GetDefaultMaterial();
-                    child->SetParentScene(this);
-
-                    // add a render component
-                    AddRenderComponent<component::RenderComponent, TRenderConfig>(child, t_shaderFolderName);
-
-                    // add entity as child
-                    entity->AddChild(child);
-                }
-            }
-            else
-            {
-                entity->mesh = meshes[0];
-                entity->material = t_alternativeMaterial ? t_alternativeMaterial : meshes[0]->GetDefaultMaterial();
-                entity->SetParentScene(this);
-
-                AddRenderComponent<component::RenderComponent, TRenderConfig>(entity, t_shaderFolderName);
-            }
-
-            return entity;
-        }
-
         Entity* CreateSkydomeEntity(const std::string& t_modelPath, const std::string& t_shaderFolderName)
         {
             // get the model from the ModelManager (the model is added if necessary)
@@ -196,48 +145,7 @@ namespace sg::ogl::scene
             entity->SetParentScene(this);
 
             // add render component
-            AddRenderComponent<component::RenderComponent, component::ModelRenderConfig>(entity, t_shaderFolderName);
-
-            return entity;
-        }
-
-        Entity* CreateSkyboxEntity(
-            const std::vector<std::string>& t_textureFileNames,
-            const std::string& t_shaderFolderName,
-            const float t_size = 500.0f
-        )
-        {
-            // add a cubemap to the TextureManager
-            const auto cubemapId{ m_application->GetTextureManager().GetCubemapId(t_textureFileNames) };
-
-            // create entity
-            auto* entity{ new Entity };
-            SG_OGL_CORE_ASSERT(entity, "[Scene::CreateSkyboxEntity()] Null pointer.")
-
-            auto meshUniquePtr{ std::make_unique<resource::Mesh>() };
-            SG_OGL_CORE_ASSERT(meshUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
-
-            auto materialUniquePtr{ std::make_unique<resource::Material>() };
-            SG_OGL_CORE_ASSERT(materialUniquePtr, "[Scene::CreateSkyboxEntity()] Null pointer.")
-
-            auto vertices{ CreateSkyboxVertices(t_size) };
-
-            const buffer::BufferLayout bufferLayout{
-                { buffer::VertexAttributeType::POSITION, "vPosition" },
-            };
-
-            // add Vbo
-            meshUniquePtr->GetVao().AddVertexDataVbo(reinterpret_cast<float*>(vertices.data()), static_cast<int32_t>(vertices.size()), bufferLayout);
-
-            // set the cubemap id as mapKd
-            materialUniquePtr->mapKd = cubemapId;
-
-            entity->mesh = std::move(meshUniquePtr);
-            entity->material = std::move(materialUniquePtr);
-            entity->SetParentScene(this);
-
-            // add render component
-            AddRenderComponent<component::RenderComponent, component::SkyboxRenderConfig>(entity, t_shaderFolderName);
+            //AddRenderComponent<component::RenderComponent, component::ModelRenderConfig>(entity, t_shaderFolderName);
 
             return entity;
         }

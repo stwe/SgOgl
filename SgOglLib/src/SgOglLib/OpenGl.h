@@ -73,6 +73,8 @@ namespace sg::ogl
         static void EnableClipping();
         static void DisableClipping();
 
+        static void SetDepthFunc(uint32_t t_func);
+
     protected:
 
     private:

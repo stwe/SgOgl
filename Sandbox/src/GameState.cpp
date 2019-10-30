@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: GameState.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include "GameState.h"
 
 //-------------------------------------------------
@@ -52,10 +61,11 @@ bool GameState::Update(const double t_dt)
 void GameState::Render()
 {
     m_modelRenderSystem->Render();
+    m_skyboxRenderSystem->Render();
 }
 
 //-------------------------------------------------
-// Init
+// Helper
 //-------------------------------------------------
 
 void GameState::Init()
@@ -71,18 +81,55 @@ void GameState::Init()
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
+    // create entities
+    CreateHouseEntity();
+    CreateSkyboxEntity();
+}
+
+void GameState::CreateHouseEntity()
+{
     // create an entity
-    m_entity = GetApplicationContext()->registry.create();
+    m_houseEntity = GetApplicationContext()->registry.create();
 
     // add model component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
-        m_entity,
+        m_houseEntity,
         GetApplicationContext()->GetModelManager().GetModelByPath("res/model/House/farmhouse_obj.obj")
     );
 
     // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(m_entity);
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(m_houseEntity);
 
     // create a render system for the entity
     m_modelRenderSystem = std::make_unique<ModelRenderSystem<ModelShaderProgram>>(m_scene.get());
+}
+
+void GameState::CreateSkyboxEntity()
+{
+    // create an entity
+    m_skyboxEntity = GetApplicationContext()->registry.create();
+
+    // add mesh component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
+        m_skyboxEntity,
+        GetApplicationContext()->GetModelManager().GetStaticMeshByName("skybox")
+    );
+
+    // add cubemap component
+    const std::vector<std::string> cubemapFileNames{
+        "res/texture/sky/sRight.png",
+        "res/texture/sky/sLeft.png",
+        "res/texture/sky/sUp.png",
+        "res/texture/sky/sDown.png",
+        "res/texture/sky/sBack.png",
+        "res/texture/sky/sFront.png"
+    };
+
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::CubemapComponent>(
+        m_skyboxEntity,
+        GetApplicationContext()->GetTextureManager().GetCubemapId(cubemapFileNames)
+    );
+
+    // create a render system for the entity
+    m_skyboxRenderSystem = std::make_unique<SkyboxRenderSystem<SkyboxShaderProgram>>(m_scene.get());
 }
