@@ -8,7 +8,7 @@
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include "Mesh.h"
-#include "Material.h"
+#include "Core.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.

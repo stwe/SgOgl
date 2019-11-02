@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glm/vec3.hpp>
-#include "Core.h"
 
 /**
  * Distance  Constant  Linear   Quadratic
@@ -21,7 +20,7 @@
 
 namespace sg::ogl::light
 {
-    struct SG_OGL_API PointLight
+    struct PointLight
     {
         glm::vec3 position{ glm::vec3(0.0f) };
 

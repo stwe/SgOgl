@@ -14,6 +14,7 @@
 #include "Log.h"
 #include "Application.h"
 #include "SgOglException.h"
+#include "Core.h"
 #include "buffer/VertexAttribute.h"
 #include "buffer/BufferLayout.h"
 

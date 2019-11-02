@@ -1,11 +1,10 @@
 #pragma once
 
 #include <cstdint>
-#include "Core.h"
 
 namespace sg::ogl
 {
-    struct SG_OGL_API Color
+    struct Color
     {
         //-------------------------------------------------
         // Ctors. / Dtor.

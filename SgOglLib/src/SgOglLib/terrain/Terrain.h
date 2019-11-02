@@ -13,11 +13,11 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "Color.h"
-#include "Core.h"
 #include "Config.h"
 #include "Application.h"
 #include "Log.h"
 #include "SgOglException.h"
+#include "Core.h"
 #include "resource/ShaderManager.h"
 #include "resource/TextureManager.h"
 #include "resource/Mesh.h"
@@ -30,7 +30,7 @@ namespace sg::ogl::resource
 
 namespace sg::ogl::terrain
 {
-    class SG_OGL_API Terrain
+    class Terrain
     {
     public:
         using VertexContainer = std::vector<float>;

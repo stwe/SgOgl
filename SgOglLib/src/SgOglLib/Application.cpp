@@ -1,5 +1,6 @@
 #include <sstream>
 #include "Application.h"
+#include "Core.h"
 #include "Log.h"
 #include "Window.h"
 #include "OpenGl.h"

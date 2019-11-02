@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include "Core.h"
 
 namespace sg::ogl
 {
@@ -10,7 +9,7 @@ namespace sg::ogl
 
 namespace sg::ogl::buffer
 {
-    class SG_OGL_API Fbo
+    class Fbo
     {
     public:
         //-------------------------------------------------

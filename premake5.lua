@@ -10,8 +10,7 @@ workspace "SgOgl"
 
     platforms
     {
-        "StaticLib",
-        "Dll"
+        "StaticLib"
     }
 
     floatingpoint "Fast"
@@ -63,14 +62,6 @@ project "SgOglLib"
 
     filter "platforms:StaticLib"
         kind "StaticLib"
-
-    filter "platforms:Dll"
-        kind "SharedLib"
-        defines
-        {
-            "SG_OGL_DLL",
-            "SG_OGL_DLL_EXPORTS"
-        }
 
     filter "configurations:Debug"
         defines "SG_OGL_DEBUG_BUILD"

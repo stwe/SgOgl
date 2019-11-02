@@ -11,11 +11,10 @@
 
 #include <string>
 #include <glm/vec3.hpp>
-#include "Core.h"
 
 namespace sg::ogl::resource
 {
-    struct SG_OGL_API Material
+    struct Material
     {
         /**
          * @brief The material name statement.

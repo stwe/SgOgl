@@ -1,11 +1,10 @@
 #pragma once
 
 #include <glm/vec3.hpp>
-#include "Core.h"
 
 namespace sg::ogl::light
 {
-    struct SG_OGL_API DirectionalLight
+    struct DirectionalLight
     {
         static constexpr glm::vec3 DAWN{ glm::vec3(-1.0f, 0.0f, 0.0f) };
         static constexpr glm::vec3 MID_DAY{ glm::vec3(0.0f, 1.0f, 0.0f) };

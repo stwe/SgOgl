@@ -11,7 +11,6 @@
 
 #include <cstdint>
 #include <vector>
-#include "Core.h"
 #include "OpenGl.h"
 
 namespace sg::ogl::buffer
@@ -22,7 +21,7 @@ namespace sg::ogl::buffer
      * @brief The Vao class wraps an OpenGL Vertex Array Object (Vao).
      *        A Vao is an object which contains one or more Vertex Buffer Objects (Vbo).
      */
-    class SG_OGL_API Vao
+    class Vao
     {
     public:
         using VboContainer = std::vector<uint32_t>;

@@ -1,11 +1,10 @@
 #pragma once
 
 #include <spdlog/spdlog.h>
-#include "Core.h"
 
 namespace sg::ogl
 {
-    class SG_OGL_API Log
+    class Log
     {
     public:
         using LoggerSharedPtr = std::shared_ptr<spdlog::logger>;

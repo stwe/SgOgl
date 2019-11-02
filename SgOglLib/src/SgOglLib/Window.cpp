@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "SgOglException.h"
 #include "Log.h"
+#include "Core.h"
 
 //-------------------------------------------------
 // Custom Deleter

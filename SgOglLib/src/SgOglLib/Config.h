@@ -11,7 +11,6 @@
 
 #include <string>
 #include <map>
-#include "Core.h"
 
 namespace sg::ogl
 {
@@ -19,7 +18,7 @@ namespace sg::ogl
     // Window options
     //-------------------------------------------------
 
-    struct SG_OGL_LOCAL WindowOptions
+    struct WindowOptions
     {
         std::string title{ "" };
         bool showTriangles{ false };
@@ -36,7 +35,7 @@ namespace sg::ogl
     // Projection options
     //-------------------------------------------------
 
-    struct SG_OGL_LOCAL ProjectionOptions
+    struct ProjectionOptions
     {
         float fovDeg{ 0.0f };
         int width{ 0 };
@@ -49,7 +48,7 @@ namespace sg::ogl
     // Terrain options
     //-------------------------------------------------
 
-    struct SG_OGL_LOCAL TerrainOptions
+    struct TerrainOptions
     {
         using TextureKeyName = std::string;
         using TexturePath = std::string;
@@ -72,7 +71,7 @@ namespace sg::ogl
     // Config
     //-------------------------------------------------
 
-    class SG_OGL_LOCAL Config
+    class Config
     {
     public:
         static bool ToBool(const std::string& t_value);

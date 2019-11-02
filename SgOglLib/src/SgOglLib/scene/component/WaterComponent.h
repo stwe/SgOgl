@@ -1,12 +1,11 @@
 #pragma once
 
 #include <cstdint>
-#include "Core.h"
 #include "scene/Component.h"
 
 namespace sg::ogl::scene::component
 {
-    class SG_OGL_API WaterComponent : public Component
+    class WaterComponent : public Component
     {
     public:
         static constexpr float WAVE_SPEED{ 0.04f };

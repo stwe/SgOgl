@@ -14,7 +14,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "Core.h"
 
 namespace sg::ogl
 {
@@ -27,7 +26,7 @@ namespace sg::ogl::resource
     class Mesh;
     class Model;
 
-    class SG_OGL_API ModelManager
+    class ModelManager
     {
     public:
         using MaterialSharedPtr = std::shared_ptr<Material>;

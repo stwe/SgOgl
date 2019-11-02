@@ -2,11 +2,10 @@
 
 #include <string>
 #include <utility>
-#include "Core.h"
 
 namespace sg::ogl::scene
 {
-    class SG_OGL_API RenderConfig
+    class RenderConfig
     {
     public:
         //-------------------------------------------------

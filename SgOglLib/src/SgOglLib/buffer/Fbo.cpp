@@ -1,4 +1,5 @@
 #include "Fbo.h"
+#include "Core.h"
 #include "Log.h"
 #include "OpenGl.h"
 #include "SgOglException.h"

@@ -19,7 +19,7 @@ namespace sg::ogl::resource
 {
     struct Material;
 
-    class SG_OGL_API Mesh
+    class Mesh
     {
     public:
         using IndexContainer = std::vector<uint32_t>;

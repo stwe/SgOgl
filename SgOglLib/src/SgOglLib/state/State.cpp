@@ -1,6 +1,7 @@
 #include "State.h"
 #include "StateStack.h"
 #include "Log.h"
+#include "Core.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.

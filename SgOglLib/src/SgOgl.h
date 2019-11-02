@@ -55,7 +55,6 @@
 #include "SgOglLib/scene/Node.h"
 #include "SgOglLib/scene/RenderConfig.h"
 #include "SgOglLib/scene/Scene.h"
-#include "SgOglLib/scene/component/Components.h"
 
 // state
 #include "SgOglLib/state/State.h"

@@ -10,7 +10,6 @@
 #pragma once
 
 #include <string>
-#include "Core.h"
 #include "SgOglException.h"
 
 namespace sg::ogl::buffer
@@ -40,7 +39,7 @@ namespace sg::ogl::buffer
         }
     };
 
-    struct SG_OGL_LOCAL VertexAttribute
+    struct VertexAttribute
     {
         VertexAttributeType vertexAttributeType{ VertexAttributeType::NONE };
         std::string name;

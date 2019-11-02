@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include "Core.h"
 
 namespace sg::ogl
 {
@@ -25,7 +24,7 @@ namespace sg::ogl::state
 
     class StateStack;
 
-    class SG_OGL_API State
+    class State
     {
     public:
         //-------------------------------------------------

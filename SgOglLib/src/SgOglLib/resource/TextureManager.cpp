@@ -2,6 +2,7 @@
 #include "OpenGl.h"
 #include "Log.h"
 #include "SgOglException.h"
+#include "Core.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.

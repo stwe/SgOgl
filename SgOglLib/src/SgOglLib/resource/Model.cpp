@@ -16,6 +16,7 @@
 #include "TextureManager.h"
 #include "SgOglException.h"
 #include "Application.h"
+#include "Core.h"
 #include "buffer/VertexAttribute.h"
 #include "buffer/BufferLayout.h"
 

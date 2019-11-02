@@ -3,11 +3,10 @@
 #include <map>
 #include <vector>
 #include <string>
-#include "Core.h"
 
 namespace sg::ogl::resource
 {
-    class SG_OGL_API TextureManager
+    class TextureManager
     {
     public:
         using Textures = std::map<std::string, uint32_t>;

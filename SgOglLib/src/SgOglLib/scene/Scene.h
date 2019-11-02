@@ -8,9 +8,9 @@
 #include "Application.h"
 #include "Log.h"
 #include "Entity.h"
+#include "Core.h"
 #include "buffer/VertexAttribute.h"
 #include "buffer/BufferLayout.h"
-#include "component/Components.h"
 #include "resource/Model.h"
 #include "resource/Mesh.h"
 #include "resource/Material.h"
@@ -34,7 +34,7 @@ namespace sg::ogl::scene
 {
     class Node;
 
-    class SG_OGL_API Scene
+    class Scene
     {
     public:
         using ModelSharedPtr = std::shared_ptr<resource::Model>;
@@ -103,6 +103,7 @@ namespace sg::ogl::scene
 
         static Node* CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material = nullptr);
 
+        /*
         void AddWaterComponent(
             Entity* t_entity,
             const uint32_t t_reflectionTextureId,
@@ -121,6 +122,7 @@ namespace sg::ogl::scene
 
             t_entity->AddComponent(Component::Type::WATER, std::move(waterComponentUniquePtr));
         }
+        */
 
         Entity* CreateGuiEntity(
             const std::string& t_textureFileName,

@@ -13,7 +13,6 @@
 #include <vector>
 #include <map>
 #include <glm/glm.hpp>
-#include "Core.h"
 
 namespace entt {
     enum class entity : unsigned;
@@ -40,7 +39,7 @@ namespace sg::ogl::resource
     struct Material;
     class Mesh;
 
-    class SG_OGL_API ShaderProgram
+    class ShaderProgram
     {
     public:
         using Options = uint8_t;

@@ -1,6 +1,7 @@
 #include <uuid.h>
 #include "Node.h"
 #include "Log.h"
+#include "Core.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.

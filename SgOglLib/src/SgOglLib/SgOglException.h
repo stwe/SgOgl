@@ -2,7 +2,6 @@
 
 #include <exception>
 #include <string>
-#include "Core.h"
 
 namespace sg::ogl
 {
@@ -10,7 +9,7 @@ namespace sg::ogl
     #pragma warning(push)
     #pragma warning(disable: 4275)
 #endif
-    class SG_OGL_API SgOglException : public std::exception
+    class SgOglException : public std::exception
     {
 #if defined(_WIN64) && defined(_MSC_VER)
     #pragma warning(pop)

@@ -1,12 +1,10 @@
 #pragma once
 
-#include "Core.h"
-
 namespace sg::ogl::scene
 {
     class Entity;
 
-    class SG_OGL_API Component
+    class Component
     {
     public:
         enum class Type

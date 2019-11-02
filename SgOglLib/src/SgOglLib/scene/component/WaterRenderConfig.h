@@ -1,11 +1,10 @@
 #pragma once
 
 #include "scene/RenderConfig.h"
-#include "Core.h"
 
 namespace sg::ogl::scene::component
 {
-    class SG_OGL_API WaterRenderConfig : public RenderConfig
+    class WaterRenderConfig : public RenderConfig
     {
     public:
         explicit WaterRenderConfig(const std::string& t_shaderFolder)

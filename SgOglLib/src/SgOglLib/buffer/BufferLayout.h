@@ -12,11 +12,10 @@
 #include <vector>
 #include <cstdint>
 #include "VertexAttribute.h"
-#include "Core.h"
 
 namespace sg::ogl::buffer
 {
-    class SG_OGL_API BufferLayout
+    class BufferLayout
     {
     public:
         using AttributeContainer = std::vector<VertexAttribute>;

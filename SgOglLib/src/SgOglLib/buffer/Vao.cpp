@@ -12,6 +12,7 @@
 #include "BufferLayout.h"
 #include "VertexAttribute.h"
 #include "SgOglException.h"
+#include "Core.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.

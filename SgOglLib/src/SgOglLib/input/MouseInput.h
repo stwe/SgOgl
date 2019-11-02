@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glm/vec2.hpp>
-#include "Core.h"
 
 namespace sg::ogl
 {
@@ -10,7 +9,7 @@ namespace sg::ogl
 
 namespace sg::ogl::input
 {
-    class SG_OGL_API MouseInput
+    class MouseInput
     {
     public:
         //-------------------------------------------------

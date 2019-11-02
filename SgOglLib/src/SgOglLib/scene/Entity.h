@@ -9,7 +9,7 @@ namespace sg::ogl::scene
 {
     class Scene;
 
-    class SG_OGL_API Entity : public Node
+    class Entity : public Node
     {
     public:
         using ComponentSharedPtr = std::shared_ptr<Component>;

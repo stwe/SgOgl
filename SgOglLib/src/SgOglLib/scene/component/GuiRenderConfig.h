@@ -1,12 +1,11 @@
 #pragma once
 
 #include "OpenGl.h"
-#include "Core.h"
 #include "scene/RenderConfig.h"
 
 namespace sg::ogl::scene::component
 {
-    class SG_OGL_API GuiRenderConfig : public RenderConfig
+    class GuiRenderConfig : public RenderConfig
     {
     public:
         explicit GuiRenderConfig(const std::string& t_shaderFolder)

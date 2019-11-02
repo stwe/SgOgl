@@ -13,7 +13,6 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include "Core.h"
 
 namespace sg::ogl
 {
@@ -24,7 +23,7 @@ namespace sg::ogl::resource
 {
     class Mesh;
 
-    class SG_OGL_API Model
+    class Model
     {
     public:
         using VertexContainer = std::vector<float>;

@@ -5,7 +5,6 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "Core.h"
 #include "math/Transform.h"
 
 namespace sg::ogl::resource
@@ -16,7 +15,7 @@ namespace sg::ogl::resource
 
 namespace sg::ogl::scene
 {
-    class SG_OGL_API Node
+    class Node
     {
     public:
         using ChildrenContainer = std::vector<Node*>;

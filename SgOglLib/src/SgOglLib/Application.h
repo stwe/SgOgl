@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <entt/entity/registry.hpp>
-#include "Core.h"
 #include "Config.h"
 
 namespace sg::ogl::resource
@@ -66,7 +65,7 @@ namespace sg::ogl
         void operator()(input::MouseInput* t_mouseInput) const;
     };
 
-    class SG_OGL_API Application
+    class Application
     {
     public:
         using WindowUniquePtr = std::unique_ptr<Window, DeleteWindow>;

@@ -14,6 +14,7 @@
 #include "OpenGl.h"
 #include "ShaderUtil.h"
 #include "Material.h"
+#include "Core.h"
 #include "light/DirectionalLight.h"
 #include "light/PointLight.h"
 

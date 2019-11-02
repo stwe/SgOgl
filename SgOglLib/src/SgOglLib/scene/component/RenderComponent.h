@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include "Core.h"
 #include "scene/Component.h"
 
 namespace sg::ogl::scene
@@ -11,7 +10,7 @@ namespace sg::ogl::scene
 
 namespace sg::ogl::scene::component
 {
-    class SG_OGL_API RenderComponent : public Component
+    class RenderComponent : public Component
     {
     public:
         using RenderConfigSharedPtr = std::shared_ptr<RenderConfig>;

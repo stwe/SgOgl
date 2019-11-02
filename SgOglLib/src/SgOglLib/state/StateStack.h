@@ -13,12 +13,12 @@ namespace sg::ogl
 
 namespace sg::ogl::state
 {
-    struct SG_OGL_API DeleteState
+    struct DeleteState
     {
         void operator()(State* t_state) const;
     };
 
-    class SG_OGL_API StateStack
+    class StateStack
     {
     public:
         using StateUniquePtr = std::unique_ptr<State, DeleteState>;

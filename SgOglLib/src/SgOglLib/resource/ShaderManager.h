@@ -12,15 +12,15 @@
 #include <string>
 #include <memory>
 #include <map>
-#include "Core.h"
 #include "Log.h"
 #include "ShaderUtil.h"
 #include "SgOglException.h"
 #include "ShaderProgram.h"
+#include "Core.h"
 
 namespace sg::ogl::resource
 {
-    class SG_OGL_API ShaderManager
+    class ShaderManager
     {
     public:
         using ShaderProgramUniquePtr = std::unique_ptr<ShaderProgram>;

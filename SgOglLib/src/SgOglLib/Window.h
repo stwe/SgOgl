@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <glm/mat4x4.hpp>
-#include "Core.h"
 
 struct GLFWwindow;
 
@@ -15,7 +14,7 @@ namespace sg::ogl
         void operator()(GLFWwindow* t_window) const;
     };
 
-    class SG_OGL_API Window
+    class Window
     {
     public:
         using GlfWwindowUniquePtr = std::unique_ptr<GLFWwindow, GlfwDeleteWindow>;
