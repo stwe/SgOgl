@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Config.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include <tinyxml2.h>
 #include "Config.h"
 #include "Core.h"
@@ -119,7 +128,7 @@ void sg::ogl::Config::LoadOptions(const std::string& t_fileName, TerrainOptions&
         {
             for (auto* texture{ textures->FirstChildElement() }; texture != nullptr; texture = texture->NextSiblingElement())
             {
-                t_terrainOptions.texturePack.emplace(texture->Attribute("name"), texture->Attribute("path"));
+                t_terrainOptions.textureContainer.emplace(texture->Attribute("name"), texture->Attribute("path"));
             }
         }
         else
@@ -130,8 +139,8 @@ void sg::ogl::Config::LoadOptions(const std::string& t_fileName, TerrainOptions&
         const auto* normalmap{ root->FirstChildElement("normalmap") };
         if (normalmap)
         {
-            t_terrainOptions.normalmap.computeShaderName = normalmap->Attribute("shader");
-            t_terrainOptions.normalmap.uniqueTextureName = normalmap->Attribute("texture");
+            t_terrainOptions.normalmapShaderName = normalmap->Attribute("shaderName");
+            t_terrainOptions.normalmapTextureName = normalmap->Attribute("textureName");
         }
         else
         {
@@ -141,8 +150,8 @@ void sg::ogl::Config::LoadOptions(const std::string& t_fileName, TerrainOptions&
         const auto* splatmap{ root->FirstChildElement("splatmap") };
         if (splatmap)
         {
-            t_terrainOptions.splatmap.computeShaderName = splatmap->Attribute("shader");
-            t_terrainOptions.splatmap.uniqueTextureName = splatmap->Attribute("texture");
+            t_terrainOptions.splatmapShaderName = splatmap->Attribute("shaderName");
+            t_terrainOptions.splatmapTextureName = splatmap->Attribute("textureName");
         }
         else
         {

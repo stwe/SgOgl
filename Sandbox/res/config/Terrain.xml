@@ -9,7 +9,7 @@
         <texture name="sand" path="res/texture/terrain/GrassAndRock.jpg"/>
         <texture name="rock" path="res/texture/terrain/Cliff (Grassy).jpg"/>
     </textures>
-    <normalmap shader="normalmap" texture="normalmapTexture"/>
-    <splatmap shader="splatmap" texture="splatmapTexture"/>
+    <normalmap shaderName="normalmap" textureName="normalmapTexture"/>
+    <splatmap shaderName="splatmap" textureName="splatmapTexture"/>
     <normalStrength>60.0</normalStrength>
 </terrain>

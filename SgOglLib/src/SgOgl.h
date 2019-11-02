@@ -2,9 +2,9 @@
 
 // core
 #include "SgOglLib/Application.h"
+#include "SgOglLib/OpenGl.h"
 #include "SgOglLib/Color.h"
 #include "SgOglLib/Log.h"
-#include "SgOglLib/OpenGl.h"
 #include "SgOglLib/Window.h"
 
 // buffer
@@ -22,6 +22,7 @@
 #include "SgOglLib/ecs/component/MeshComponent.h"
 #include "SgOglLib/ecs/component/ModelComponent.h"
 #include "SgOglLib/ecs/component/SkydomeComponent.h"
+#include "SgOglLib/ecs/component/TerrainComponent.h"
 #include "SgOglLib/ecs/component/TransformComponent.h"
 #include "SgOglLib/ecs/system/RenderSystem.h"
 
@@ -54,7 +55,6 @@
 #include "SgOglLib/scene/Node.h"
 #include "SgOglLib/scene/RenderConfig.h"
 #include "SgOglLib/scene/Scene.h"
-#include "SgOglLib/scene/TerrainComponent.h"
 #include "SgOglLib/scene/component/Components.h"
 
 // state

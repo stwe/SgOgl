@@ -3,6 +3,17 @@
 #include "Log.h"
 #include "Color.h"
 
+//-------------------------------------------------
+// Stb Image
+//-------------------------------------------------
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "resource/stb_image.h"
+
+//-------------------------------------------------
+// Debug output
+//-------------------------------------------------
+
 void APIENTRY gl_debug_output(
     const uint32_t t_source,
     const uint32_t t_type,

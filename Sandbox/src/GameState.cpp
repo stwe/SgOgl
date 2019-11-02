@@ -8,6 +8,8 @@
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include "GameState.h"
+#include "shader/ComputeSplatmap.h"
+#include "shader/ComputeNormalmap.h"
 
 //-------------------------------------------------
 // Logic
@@ -62,6 +64,7 @@ void GameState::Render()
 {
     m_modelRenderSystem->Render();
     //m_skyboxRenderSystem->Render();
+    m_terrainRenderSystem->Render();
     m_skydomeRenderSystem->Render();
 }
 
@@ -76,16 +79,23 @@ void GameState::Init()
 
     // create camera and set a camera position
     m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>();
-    m_camera->SetPosition(glm::vec3(0.0f, 10.0f, -40.0f));
+    m_camera->SetPosition(glm::vec3(0.0f, 50.0f, -100.0f));
 
     // create scene and set a camera
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
+    // create terrain object
+    m_terrain = std::make_shared<sg::ogl::terrain::Terrain>(GetApplicationContext(), "res/config/Terrain.xml");
+
+    // generate terrain
+    m_terrain->GenerateTerrain<ComputeNormalmap, ComputeSplatmap>();
+
     // create entities
     CreateHouseEntity();
     //CreateSkyboxEntity();
     CreateSkydomeEntity();
+    CreateTerrainEntity();
 }
 
 void GameState::CreateHouseEntity()
@@ -100,7 +110,10 @@ void GameState::CreateHouseEntity()
     );
 
     // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(m_houseEntity);
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
+        m_houseEntity,
+        glm::vec3(-10.0f, 14.0f, 0.0f)
+    );
 
     // create a render system for the entity
     m_modelRenderSystem = std::make_unique<ModelRenderSystem<ModelShaderProgram>>(m_scene.get());
@@ -160,4 +173,25 @@ void GameState::CreateSkydomeEntity()
 
     // create a render system for the entity
     m_skydomeRenderSystem = std::make_unique<SkydomeRenderSystem<DomeShaderProgram>>(m_scene.get());
+}
+
+void GameState::CreateTerrainEntity()
+{
+    // create an entity
+    m_terrainEntity = GetApplicationContext()->registry.create();
+
+    // add terrain component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TerrainComponent>(
+        m_terrainEntity,
+        m_terrain
+    );
+
+    // add transform component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
+        m_terrainEntity,
+        glm::vec3(m_terrain->GetTerrainOptions().xPos, 0.0f, m_terrain->GetTerrainOptions().zPos)
+    );
+
+    // create a render system for the terrain entity
+    m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
 }

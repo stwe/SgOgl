@@ -1,44 +1,55 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: TerrainShaderProgram.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 class TerrainShaderProgram : public sg::ogl::resource::ShaderProgram
 {
 public:
-    void UpdateUniforms(sg::ogl::scene::Entity& t_entity) override
+    void UpdateUniforms(const sg::ogl::scene::Scene& t_scene, const entt::entity t_entity, const sg::ogl::resource::Mesh& t_currentMesh) override
     {
+        // get components
+        auto& terrainComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TerrainComponent>(t_entity);
+        auto& transformComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TransformComponent>(t_entity);
+
         // get terrain options
-        const auto& terrainOptions{ dynamic_cast<sg::ogl::scene::TerrainComponent*>(&t_entity.GetComponent(sg::ogl::scene::Component::Type::TERRAIN))->GetTerrain().GetTerrainOptions() };
-
-        sg::ogl::math::Transform transform;
-        transform.position = glm::vec3(terrainOptions.xPos, 0.0f, terrainOptions.zPos);
-
-        // get projection matrix
-        const auto projectionMatrix{ t_entity.GetParentScene()->GetApplicationContext()->GetWindow()->GetProjectionMatrix() };
+        const auto& terrainOptions{ terrainComponent.terrain->GetTerrainOptions() };
 
         // calc mvp matrix
-        const auto mvp{ projectionMatrix * t_entity.GetParentScene()->GetCurrentCamera().GetViewMatrix() * transform.GetModelMatrix() };
+        const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
+        const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };
+
+        // set mvp uniform
         SetUniform("mvpMatrix", mvp);
 
-        // set textures
-        int32_t counter{ 0 };
-        for (const auto& entry : terrainOptions.texturePack)
+        // set and bind textures
+        auto counter{ 0 };
+        for (const auto& entry : terrainOptions.textureContainer)
         {
             SetUniform(entry.first, counter);
-            sg::ogl::resource::TextureManager::BindForReading(t_entity.GetParentScene()->GetApplicationContext()->GetTextureManager()->GetTextureIdFromPath(entry.second), GL_TEXTURE0 + counter);
+            sg::ogl::resource::TextureManager::BindForReading(t_scene.GetApplicationContext()->GetTextureManager().GetTextureIdFromPath(entry.second), GL_TEXTURE0 + counter);
             counter++;
         }
 
-        // bind normalmap
-        const auto normalmapTextureName{ terrainOptions.normalmap.uniqueTextureName };
-        const auto normalmapTextureId{ t_entity.GetParentScene()->GetApplicationContext()->GetTextureManager()->GetTextureId(normalmapTextureName) };
+        // set and bind normalmap
         SetUniform("normalmap", counter);
-        sg::ogl::resource::TextureManager::BindForReading(normalmapTextureId, GL_TEXTURE0 + counter);
+        sg::ogl::resource::TextureManager::BindForReading(terrainComponent.terrain->GetNormalmapTextureId(), GL_TEXTURE0 + counter);
         counter++;
 
-        // bind splatmap
-        const auto splatmapTextureName{ terrainOptions.splatmap.uniqueTextureName };
-        const auto splatmapTextureId{ t_entity.GetParentScene()->GetApplicationContext()->GetTextureManager()->GetTextureId(splatmapTextureName) };
+        // set and bind splatmap
         SetUniform("splatmap", counter);
-        sg::ogl::resource::TextureManager::BindForReading(splatmapTextureId, GL_TEXTURE0 + counter);
+        sg::ogl::resource::TextureManager::BindForReading(terrainComponent.terrain->GetSplatmapTextureId(), GL_TEXTURE0 + counter);
+    }
+
+    std::string GetFolderName() override
+    {
+        return "terrain";
     }
 
 protected:

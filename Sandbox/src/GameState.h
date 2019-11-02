@@ -10,15 +10,14 @@
 #pragma once
 
 #include "SgOgl.h"
-
 #include "shader/ModelShaderProgram.h"
 #include "renderer/ModelRenderSystem.h"
-
 #include "shader/SkyboxShaderProgram.h"
 #include "renderer/SkyboxRenderSystem.h"
-
 #include "shader/DomeShaderProgram.h"
 #include "renderer/SkydomeRenderSystem.h"
+#include "shader/TerrainShaderProgram.h"
+#include "renderer/TerrainRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
@@ -30,6 +29,9 @@ public:
 
     // camera
     using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
+
+    // terrain
+    using TerrainSharedPtr = std::shared_ptr<sg::ogl::terrain::Terrain>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -67,10 +69,14 @@ private:
     entt::entity m_houseEntity;
     entt::entity m_skyboxEntity;
     entt::entity m_skydomeEntity;
+    entt::entity m_terrainEntity;
+
+    TerrainSharedPtr m_terrain;
 
     std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
     std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
     std::unique_ptr<SkydomeRenderSystem<DomeShaderProgram>> m_skydomeRenderSystem;
+    std::unique_ptr<TerrainRenderSystem<TerrainShaderProgram>> m_terrainRenderSystem;
 
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
@@ -84,4 +90,5 @@ private:
     void CreateHouseEntity();
     void CreateSkyboxEntity();
     void CreateSkydomeEntity();
+    void CreateTerrainEntity();
 };

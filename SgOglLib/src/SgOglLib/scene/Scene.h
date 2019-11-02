@@ -8,14 +8,12 @@
 #include "Application.h"
 #include "Log.h"
 #include "Entity.h"
-#include "TerrainComponent.h"
 #include "buffer/VertexAttribute.h"
 #include "buffer/BufferLayout.h"
 #include "component/Components.h"
 #include "resource/Model.h"
 #include "resource/Mesh.h"
 #include "resource/Material.h"
-#include "resource/ModelManager.h"
 #include "resource/ShaderManager.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
@@ -173,7 +171,7 @@ namespace sg::ogl::scene
             entity->SetDebugName("Gui");
 
             // add render component
-            AddRenderComponent<component::RenderComponent, component::GuiRenderConfig>(entity, t_shaderFolderName);
+            //AddRenderComponent<component::RenderComponent, component::GuiRenderConfig>(entity, t_shaderFolderName);
 
             return entity;
         }
@@ -224,41 +222,10 @@ namespace sg::ogl::scene
             entity->GetLocalTransform().scale = glm::vec3(t_scale.x, t_scale.y, 1.0f);
 
             // add render component
-            AddRenderComponent<component::RenderComponent, component::GuiRenderConfig>(entity, t_shaderFolderName);
+            //AddRenderComponent<component::RenderComponent, component::GuiRenderConfig>(entity, t_shaderFolderName);
 
             return entity;
         }
-
-        /*
-        template <typename T, typename N, typename S>
-        Entity* CreateTerrainEntity(const std::shared_ptr<terrain::Terrain>& t_terrain, const std::string& t_shaderName)
-        {
-            // add shader program to the ShaderManager
-            m_application->GetShaderManager()->AddShaderProgram<T>(t_shaderName);
-
-            // add compute shader to the ShaderManager
-            m_application->GetShaderManager()->AddComputeShaderProgram<N>(t_terrain->GetTerrainOptions().normalmap.computeShaderName);
-            m_application->GetShaderManager()->AddComputeShaderProgram<S>(t_terrain->GetTerrainOptions().splatmap.computeShaderName);
-
-            // create entity
-            auto* entity{ new Entity };
-            SG_OGL_CORE_ASSERT(entity, "[Scene::CreateTerrainEntity()] Null pointer.")
-
-            entity->mesh = t_terrain->GetMesh();
-            SG_OGL_CORE_ASSERT(entity->mesh, "[Scene::CreateTerrainEntity()] Null pointer.")
-
-            entity->material = nullptr;
-            entity->SetParentScene(this);
-
-            // add render component
-            AddRenderComponent<component::RenderComponent, component::ModelRenderConfig>(entity, t_shaderName);
-
-            // add terrain component
-            AddTerrainComponent(entity, t_terrain);
-
-            return entity;
-        }
-        */
 
         void AddNodeToRoot(Node* t_node) const;
 
@@ -289,29 +256,5 @@ namespace sg::ogl::scene
         //-------------------------------------------------
 
         static void StorePositions(const std::vector<glm::mat4>& t_modelMatrices, Entity* t_entity);
-
-        static std::vector<glm::vec3> CreateSkyboxVertices(float t_size);
-
-        template <typename TRenderComponent, typename TRenderConfig>
-        void AddRenderComponent(Entity* t_entity, const std::string& t_shaderFolder) const
-        {
-            auto renderComponentUniquePtr{ std::make_unique<TRenderComponent>() };
-            SG_OGL_CORE_ASSERT(renderComponentUniquePtr, "[Scene::AddRenderComponent()] Null pointer.")
-
-            auto renderConfigUniquePtr{ std::make_unique<TRenderConfig>(t_shaderFolder) };
-            SG_OGL_CORE_ASSERT(renderConfigUniquePtr, "[Scene::AddRenderComponent()] Null pointer.")
-
-            renderComponentUniquePtr->SetRenderConfig(std::move(renderConfigUniquePtr));
-
-            t_entity->AddComponent(Component::Type::RENDERER, std::move(renderComponentUniquePtr));
-        }
-
-        void AddTerrainComponent(Entity* t_entity, const std::shared_ptr<terrain::Terrain>& t_terrain) const
-        {
-            auto terrainComponentUniquePtr{ std::make_unique<TerrainComponent>(t_terrain) };
-            SG_OGL_CORE_ASSERT(terrainComponentUniquePtr, "[Scene::AddTerrainComponent()] Null pointer.")
-
-            t_entity->AddComponent(Component::Type::TERRAIN, std::move(terrainComponentUniquePtr));
-        }
     };
 }

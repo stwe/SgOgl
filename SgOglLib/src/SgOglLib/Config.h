@@ -1,9 +1,17 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Config.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 #include <string>
 #include <map>
 #include "Core.h"
-#include "resource/ComputeShaderTexture.h"
 
 namespace sg::ogl
 {
@@ -43,18 +51,20 @@ namespace sg::ogl
 
     struct SG_OGL_LOCAL TerrainOptions
     {
-        using TextureName = std::string;
+        using TextureKeyName = std::string;
         using TexturePath = std::string;
-        using TexturePack = std::map<TextureName, TexturePath>;
+        using TextureContainer = std::map<TextureKeyName, TexturePath>;
 
         float xPos{ 0.0f };
         float zPos{ 0.0f };
         float scaleXz{ 1.0f };
         float scaleY{ 1.0f };
         std::string heightmapPath;
-        TexturePack texturePack;
-        resource::ComputeShaderTexture normalmap;
-        resource::ComputeShaderTexture splatmap;
+        TextureContainer textureContainer;
+        std::string normalmapShaderName;
+        std::string splatmapShaderName;
+        std::string normalmapTextureName;
+        std::string splatmapTextureName;
         float normalStrength{ 60.0f };
     };
 

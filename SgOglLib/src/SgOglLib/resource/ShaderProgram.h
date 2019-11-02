@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: ShaderProgram.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 #include <string>
@@ -19,6 +28,11 @@ namespace sg::ogl::light
 {
     struct DirectionalLight;
     struct PointLight;
+}
+
+namespace sg::ogl::terrain
+{
+    class Terrain;
 }
 
 namespace sg::ogl::resource
@@ -115,7 +129,8 @@ namespace sg::ogl::resource
 
         virtual std::string GetFolderName() = 0;
         virtual Options GetOptions() const;
-        virtual void UpdateUniforms(const scene::Scene& t_scene, entt::entity t_entity, const Mesh& t_currentMesh) = 0;
+        virtual void UpdateUniforms(const scene::Scene& t_scene, entt::entity t_entity, const Mesh& t_currentMesh) {}
+        virtual void UpdateUniforms(const terrain::Terrain& t_terrain) {}
 
     protected:
 

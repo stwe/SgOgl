@@ -1,24 +1,30 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Terrain.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include "Terrain.h"
-#include "resource/Mesh.h"
-#include "resource/ShaderManager.h"
-#include "resource/TextureManager.h"
-#include "resource/stb_image.h"
-#include "buffer/BufferLayout.h"
-#include "Log.h"
-#include "SgOglException.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::terrain::Terrain::Terrain(resource::TextureManager& t_textureManager, const std::string& t_configFileName)
-    : m_textureManager{ t_textureManager }
+sg::ogl::terrain::Terrain::Terrain(Application* t_application, const std::string& t_configFileName)
+    : m_application{ t_application }
 {
+    SG_OGL_CORE_ASSERT(m_application, "[Terrain::Terrain()] Null pointer.")
+    SG_OGL_CORE_LOG_DEBUG("[Terrain::Terrain()] Create Terrain.");
+
     Config::LoadOptions(t_configFileName, m_terrainOptions);
 }
 
 sg::ogl::terrain::Terrain::~Terrain() noexcept
 {
+    SG_OGL_CORE_LOG_DEBUG("[Terrain::~Terrain()] Destruct Terrain.");
 }
 
 //-------------------------------------------------
@@ -30,138 +36,14 @@ const sg::ogl::TerrainOptions& sg::ogl::terrain::Terrain::GetTerrainOptions() co
     return m_terrainOptions;
 }
 
-sg::ogl::terrain::Terrain::MeshSharedPtr& sg::ogl::terrain::Terrain::GetMesh()
+const sg::ogl::resource::Mesh& sg::ogl::terrain::Terrain::GetMesh() const
 {
-    return m_mesh;
-}
-
-//-------------------------------------------------
-// Generate
-//-------------------------------------------------
-
-void sg::ogl::terrain::Terrain::GenerateTerrain()
-{
-    // Generate a OpenGL texture handle for the heightmap.
-    m_heightmapTextureId = m_textureManager.GetTextureIdFromPath(m_terrainOptions.heightmapPath);
-
-    // Generate OpenGL texture handles for other textures.
-    for (const auto& entry : m_terrainOptions.texturePack)
+    if (!m_mesh)
     {
-        m_textureManager.GetTextureIdFromPath(entry.second);
+        SG_OGL_CORE_LOG_ERROR("[Terrain::GetMesh()] You may have forgotten to call the GenerateTerrain() method.");
     }
 
-    // Load heightmap locally again as image.
-    SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] Load heightmap {}.", m_terrainOptions.heightmapPath);
-    int nrChannels;
-    auto* const image{ stbi_load(m_terrainOptions.heightmapPath.c_str(), &m_heightmapWidth, &m_heightmapHeight, &nrChannels, 0) };
-    if (!image)
-    {
-        throw SG_OGL_EXCEPTION("[Terrain::GenerateTerrain()] Heightmap failed to load at path " + m_terrainOptions.heightmapPath + ".");
-    }
-
-    // Width and height should have the same value.
-    if (m_heightmapWidth != m_heightmapHeight)
-    {
-        throw SG_OGL_EXCEPTION("[Terrain::GenerateTerrain()] Width and height should have the same value.");
-    }
-
-    SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] The heightmap {} was successfully loaded.", m_terrainOptions.heightmapPath);
-    SG_OGL_CORE_LOG_DEBUG("[Terrain::GenerateTerrain()] Heightmap width: {}, height: {}.", m_heightmapWidth, m_heightmapHeight);
-
-    // width = height -> can use one of them as a counter
-    const auto count{ m_heightmapWidth };
-
-    // to save the generated heights of the terrain
-    m_terrainHeights.resize(count, std::vector<float>(count));
-
-    // Create the terrain vertices.
-    VerticesContainer vertices;
-    for (auto z{ 0 }; z < count; ++z)
-    {
-        for (auto x{ 0 }; x < count; ++x)
-        {
-            // Get the height value from the heightmap.
-            auto yPos{ GetHeight(x, z, count, nrChannels, image) };
-
-            // Scale the height value into range <0.0, 1.0>.
-            if (nrChannels == STBI_grey)
-            {
-                yPos /= 256.0f;
-            }
-            else
-            {
-                yPos /= MAX_PIXEL_COLOUR;
-            }
-
-            SG_OGL_CORE_ASSERT(yPos >= 0.0f && yPos <= 1.0f, "[Terrain::GenerateTerrain()] Invalid height value.")
-
-            // Save height value.
-            m_terrainHeights[x][z] = yPos;
-
-            // Scale points into range <-0.5, 0.5> on x and z axis
-            auto xPos{ static_cast<float>(x) / (static_cast<float>(count) - 1) };
-            auto zPos{ static_cast<float>(z) / (static_cast<float>(count) - 1) };
-            xPos = -0.5f + xPos;
-            zPos = -0.5f + zPos;
-
-            SG_OGL_CORE_ASSERT(xPos >= -0.5f && xPos <= 0.5f, "[Terrain::GenerateTerrain()] Invalid x value.")
-            SG_OGL_CORE_ASSERT(zPos >= -0.5f && zPos <= 0.5f, "[Terrain::GenerateTerrain()] Invalid z value.")
-
-            // save position (3 floats)
-            vertices.push_back(xPos * m_terrainOptions.scaleXz);
-            vertices.push_back(yPos * m_terrainOptions.scaleY);
-            vertices.push_back(zPos * m_terrainOptions.scaleXz);
-
-            // save normal (3 floats)
-            auto normal{ CalculateNormal(x, z, count, nrChannels, image) };
-            vertices.push_back(normal.x);
-            vertices.push_back(normal.y);
-            vertices.push_back(normal.z);
-
-            // save uv (2 floats)
-            vertices.push_back(static_cast<float>(x) / (static_cast<float>(count) - 1));
-            vertices.push_back(static_cast<float>(z) / (static_cast<float>(count) - 1));
-        }
-    }
-
-    // Free the image memory.
-    stbi_image_free(image);
-
-    // Create the terrain indices.
-    IndicesContainer indices;
-    for (auto gz{ 0 }; gz < count - 1; ++gz)
-    {
-        for (auto gx{ 0 }; gx < count - 1; ++gx)
-        {
-            const auto topLeft = (gz * count) + gx;
-            const auto topRight = topLeft + 1;
-            const auto bottomLeft = ((gz + 1) * count) + gx;
-            const auto bottomRight = bottomLeft + 1;
-            indices.push_back(topLeft);
-            indices.push_back(bottomLeft);
-            indices.push_back(topRight);
-            indices.push_back(topRight);
-            indices.push_back(bottomLeft);
-            indices.push_back(bottomRight);
-        }
-    }
-
-    // Use a predefined BufferLayout.
-    const buffer::BufferLayout bufferLayout{
-        { buffer::VertexAttributeType::POSITION, "aPosition" },
-        { buffer::VertexAttributeType::NORMAL, "aNormal" },
-        { buffer::VertexAttributeType::UV, "aUv" }
-    };
-
-    // Create a Mesh instance.
-    m_mesh.reset(new resource::Mesh);
-    SG_OGL_CORE_ASSERT(m_mesh, "[Terrain::GenerateTerrain()] Null pointer.")
-
-    // Add Vbo.
-    m_mesh->GetVao().AddVertexDataVbo(vertices.data(), count * count, bufferLayout);
-
-    // Add Ebo.
-    m_mesh->GetVao().AddIndexBuffer(indices);
+    return *m_mesh;
 }
 
 //-------------------------------------------------
