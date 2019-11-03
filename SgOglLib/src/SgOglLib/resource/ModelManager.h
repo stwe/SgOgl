@@ -42,6 +42,13 @@ namespace sg::ogl::resource
         using ModelContainer = std::map<ModelFullPathAsKey, ModelSharedPtr>;
 
         //-------------------------------------------------
+        // Built in mesh names
+        //-------------------------------------------------
+
+        inline static const StaticMeshKey SKYBOX_MESH{ "skybox" };
+        inline static const StaticMeshKey GUI_MESH{ "gui" };
+
+        //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
 
@@ -92,6 +99,7 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         void AddSkyboxStaticMesh();
+        void AddGuiStaticMesh();
 
         static std::vector<glm::vec3> CreateSkyboxVertices(float t_size = 500.0f);
     };

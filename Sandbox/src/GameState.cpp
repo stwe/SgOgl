@@ -63,9 +63,10 @@ bool GameState::Update(const double t_dt)
 void GameState::Render()
 {
     m_modelRenderSystem->Render();
-    //m_skyboxRenderSystem->Render();
+    m_skyboxRenderSystem->Render();
     m_terrainRenderSystem->Render();
-    m_skydomeRenderSystem->Render();
+    //m_skydomeRenderSystem->Render();
+    m_guiRenderSystem->Render();
 }
 
 //-------------------------------------------------
@@ -93,9 +94,10 @@ void GameState::Init()
 
     // create entities
     CreateHouseEntity();
-    //CreateSkyboxEntity();
-    CreateSkydomeEntity();
+    CreateSkyboxEntity();
+    //CreateSkydomeEntity();
     CreateTerrainEntity();
+    CreateGuiEntity();
 }
 
 void GameState::CreateHouseEntity()
@@ -115,7 +117,7 @@ void GameState::CreateHouseEntity()
         glm::vec3(-10.0f, 14.0f, 0.0f)
     );
 
-    // create a render system for the entity
+    // create a render system for the house entity
     m_modelRenderSystem = std::make_unique<ModelRenderSystem<ModelShaderProgram>>(m_scene.get());
 }
 
@@ -127,7 +129,7 @@ void GameState::CreateSkyboxEntity()
     // add mesh component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
         m_skyboxEntity,
-        GetApplicationContext()->GetModelManager().GetStaticMeshByName("skybox")
+        GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::SKYBOX_MESH)
     );
 
     // add cubemap component
@@ -145,7 +147,7 @@ void GameState::CreateSkyboxEntity()
         GetApplicationContext()->GetTextureManager().GetCubemapId(cubemapFileNames)
     );
 
-    // create a render system for the entity
+    // create a render system for the skybox entity
     m_skyboxRenderSystem = std::make_unique<SkyboxRenderSystem<SkyboxShaderProgram>>(m_scene.get());
 }
 
@@ -171,7 +173,7 @@ void GameState::CreateSkydomeEntity()
     // add skydome component/tag
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::SkydomeComponent>(m_skydomeEntity);
 
-    // create a render system for the entity
+    // create a render system for the skydome entity
     m_skydomeRenderSystem = std::make_unique<SkydomeRenderSystem<DomeShaderProgram>>(m_scene.get());
 }
 
@@ -194,4 +196,46 @@ void GameState::CreateTerrainEntity()
 
     // create a render system for the terrain entity
     m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
+}
+
+void GameState::CreateGuiEntity()
+{
+    // create an entity
+    m_guiEntity = GetApplicationContext()->registry.create();
+
+    const auto posX{ 0.5f };
+    const auto posY{ 0.5f };
+
+    const auto scaleX{ 0.25f };
+    const auto scaleY{ 0.25f };
+
+    // add transform component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
+        m_guiEntity,
+        glm::vec3(posX, posY, 0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(scaleX, scaleY, 1.0f)
+    );
+
+    // add mesh component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
+        m_guiEntity,
+        GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::GUI_MESH)
+    );
+
+    // add gui component
+    /*
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::GuiComponent>(
+        m_guiEntity,
+        GetApplicationContext()->GetTextureManager().GetTextureIdFromPath("res/texture/test.png")
+    );
+    */
+
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::GuiComponent>(
+        m_guiEntity,
+        m_terrain->GetNormalmapTextureId()
+    );
+
+    // create a render system for the gui entity
+    m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
 }

@@ -18,11 +18,13 @@
 #include "renderer/SkydomeRenderSystem.h"
 #include "shader/TerrainShaderProgram.h"
 #include "renderer/TerrainRenderSystem.h"
+#include "shader/GuiShaderProgram.h"
+#include "renderer/GuiRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 12.0f };
+    static constexpr auto CAMERA_VELOCITY{ 24.0f };
 
     // scene graph
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
@@ -70,6 +72,7 @@ private:
     entt::entity m_skyboxEntity;
     entt::entity m_skydomeEntity;
     entt::entity m_terrainEntity;
+    entt::entity m_guiEntity;
 
     TerrainSharedPtr m_terrain;
 
@@ -77,6 +80,7 @@ private:
     std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
     std::unique_ptr<SkydomeRenderSystem<DomeShaderProgram>> m_skydomeRenderSystem;
     std::unique_ptr<TerrainRenderSystem<TerrainShaderProgram>> m_terrainRenderSystem;
+    std::unique_ptr<GuiRenderSystem<GuiShaderProgram>> m_guiRenderSystem;
 
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
@@ -91,4 +95,5 @@ private:
     void CreateSkyboxEntity();
     void CreateSkydomeEntity();
     void CreateTerrainEntity();
+    void CreateGuiEntity();
 };

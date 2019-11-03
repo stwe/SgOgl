@@ -18,6 +18,7 @@
 
 // ecs
 #include "SgOglLib/ecs/component/CubemapComponent.h"
+#include "SgOglLib/ecs/component/GuiComponent.h"
 #include "SgOglLib/ecs/component/MaterialComponent.h"
 #include "SgOglLib/ecs/component/MeshComponent.h"
 #include "SgOglLib/ecs/component/ModelComponent.h"
