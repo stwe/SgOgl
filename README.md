@@ -10,7 +10,7 @@
     1. [Create application class and entry point](#a-Create-application-class-and-entry-point)
     1. [Load a model from a obj file](#b-Load-a-model-from-a-obj-file)
     1. [Create a Skybox](#c-Create-a-Skybox)
-    1. [Create a Terrain](#d-Create-a-terrein)
+    1. [Create a Terrain](#d-Create-a-terrain)
     1. [Create a Gui](#e-Create-a-gui)
 
 ***
@@ -27,7 +27,7 @@ Install Visual Studio 2019 and use Premake5 and the premake5.lua file to create 
 
 In the next few points a Skybox, a Terrain and the model of a house will be loaded. Finally the normalmap of the Terrain should be displayed in a Gui.
 
-[![Result](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/SkyHouseTerrainGui.png)
+![Result](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/SkyHouseTerrainGui.png)
 
 ### a) Create application class and entry point
 
