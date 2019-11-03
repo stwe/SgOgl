@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "resource/ShaderProgram.h"
-
 class GuiShaderProgram : public sg::ogl::resource::ShaderProgram
 {
 public:

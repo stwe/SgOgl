@@ -11,6 +11,7 @@
     1. [Load a model from a obj file](#b-Load-a-model-from-a-obj-file)
     1. [Create a Skybox](#c-Create-a-Skybox)
     1. [Create a Terrain](#d-Create-a-terrein)
+    1. [Create a Gui](#e-Create-a-gui)
 
 ***
 
@@ -23,6 +24,10 @@ A GameEngine library for OpenGL developed for educational purposes.
 Install Visual Studio 2019 and use Premake5 and the premake5.lua file to create the project files.
 
 ## 3. Using
+
+In the next few points a Skybox, a Terrain and the model of a house will be loaded. Finally the normalmap of the Terrain should be displayed in a Gui.
+
+[![Result](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/SkyHouseTerrainGui.png)
 
 ### a) Create application class and entry point
 
@@ -451,7 +456,7 @@ void GameState::Init()
 ```
 
 Nothing new here. Create entity, add components and render system.
-The method `GetStaticMeshByName("skybox")` retrieves a built-in Mesh for a Skybox from the ModelManager.
+The method `GetStaticMeshByName(sg::ogl::resource::ModelManager::SKYBOX_MESH)` retrieves a built-in Mesh for a Skybox from the ModelManager.
 
 ```cpp
 // File: GameState.cpp
@@ -464,7 +469,7 @@ void GameState::CreateSkyboxEntity()
     // add mesh component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
         m_skyboxEntity,
-        GetApplicationContext()->GetModelManager().GetStaticMeshByName("skybox")
+        GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::SKYBOX_MESH)
     );
 
     // add cubemap component
@@ -491,6 +496,8 @@ The Skybox shader program.
 
 
 ```cpp
+// File: SkyboxShaderProgram.h
+
 class SkyboxShaderProgram : public sg::ogl::resource::ShaderProgram
 {
 public:
@@ -525,6 +532,8 @@ The skybox render system. Here, the `DepthFunc` is changed in `PrepareRendering(
 
 
 ```cpp
+// File: SkyboxRenderSystem.h
+
 template <typename TShaderProgram>
 class SkyboxRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
 {
@@ -572,6 +581,378 @@ protected:
     {
         // GL_LESS is the initial depth comparison function
         sg::ogl::OpenGl::SetDepthFunc(GL_LESS);
+    }
+};
+```
+
+### d) Create a Terrain
+
+For the terrain, a config file must first be created.
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+
+<terrain>
+    <position x="0.0" z="0.0"/>
+    <scale xz="6000.0" y="600.0"/>
+    <heightmapPath>res/heightmap/map.bmp</heightmapPath>
+    <textures>
+        <texture name="grass" path="res/texture/terrain/Grass.jpg"/>
+        <texture name="sand" path="res/texture/terrain/GrassAndRock.jpg"/>
+        <texture name="rock" path="res/texture/terrain/Cliff.jpg"/>
+    </textures>
+    <normalmap shaderName="normalmap" textureName="normalmapTexture"/>
+    <splatmap shaderName="splatmap" textureName="splatmapTexture"/>
+    <normalStrength>60.0</normalStrength>
+</terrain>
+
+```
+
+In addition to the render system and the entity, an instance of `Terrain()` is needed.
+
+```cpp
+// File: GameState.h
+
+class GameState : public sg::ogl::state::State
+{
+public:
+    /// ...
+
+    // terrain
+    using TerrainSharedPtr = std::shared_ptr<sg::ogl::terrain::Terrain>;
+
+    // ...
+
+    void Render() override;
+
+private:
+    // ...
+
+    entt::entity m_terrainEntity;
+
+    TerrainSharedPtr m_terrain;
+
+    std::unique_ptr<TerrainRenderSystem<TerrainShaderProgram>> m_terrainRenderSystem;
+
+    void Init();
+
+    void CreateTerrainEntity();
+};
+```
+
+As always.
+
+```cpp
+// File: GameState.cpp
+
+void GameState::Render()
+{
+    // ...
+    m_terrainRenderSystem->Render();
+}
+```
+
+This is where the instance of `Terrain()` is created. The above created config is passed.
+
+```cpp
+// File: GameState.cpp
+
+void GameState::Init()
+{
+    // ...
+
+    m_terrain = std::make_shared<sg::ogl::terrain::Terrain>(GetApplicationContext(), "res/config/Terrain.xml");
+    m_terrain->GenerateTerrain<ComputeNormalmap, ComputeSplatmap>();
+
+    // ...
+
+    CreateTerrainEntity();
+}
+```
+
+Create an entity and add components.
+
+```cpp
+// File: GameState.cpp
+
+void GameState::CreateTerrainEntity()
+{
+    // create an entity
+    m_terrainEntity = GetApplicationContext()->registry.create();
+
+    // add terrain component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TerrainComponent>(
+        m_terrainEntity,
+        m_terrain
+    );
+
+    // add transform component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
+        m_terrainEntity,
+        glm::vec3(m_terrain->GetTerrainOptions().xPos, 0.0f, m_terrain->GetTerrainOptions().zPos)
+    );
+
+    // create a render system for the terrain entity
+    m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
+}
+```
+
+The shader program and the renderer.
+
+```cpp
+// File: TerrainShaderProgram.h
+
+class TerrainShaderProgram : public sg::ogl::resource::ShaderProgram
+{
+public:
+    void UpdateUniforms(const sg::ogl::scene::Scene& t_scene, const entt::entity t_entity, const sg::ogl::resource::Mesh& t_currentMesh) override
+    {
+        // get components
+        auto& terrainComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TerrainComponent>(t_entity);
+        auto& transformComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TransformComponent>(t_entity);
+
+        // get terrain options
+        const auto& terrainOptions{ terrainComponent.terrain->GetTerrainOptions() };
+
+        // calc mvp matrix
+        const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
+        const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };
+
+        // set mvp uniform
+        SetUniform("mvpMatrix", mvp);
+
+        // set and bind textures
+        auto counter{ 0 };
+        for (const auto& entry : terrainOptions.textureContainer)
+        {
+            SetUniform(entry.first, counter);
+            sg::ogl::resource::TextureManager::BindForReading(t_scene.GetApplicationContext()->GetTextureManager().GetTextureIdFromPath(entry.second), GL_TEXTURE0 + counter);
+            counter++;
+        }
+
+        // set and bind normalmap
+        SetUniform("normalmap", counter);
+        sg::ogl::resource::TextureManager::BindForReading(terrainComponent.terrain->GetNormalmapTextureId(), GL_TEXTURE0 + counter);
+        counter++;
+
+        // set and bind splatmap
+        SetUniform("splatmap", counter);
+        sg::ogl::resource::TextureManager::BindForReading(terrainComponent.terrain->GetSplatmapTextureId(), GL_TEXTURE0 + counter);
+    }
+
+    std::string GetFolderName() override
+    {
+        return "terrain";
+    }
+};
+```
+
+```cpp
+// File: TerrainRenderSystem.h
+
+template <typename TShaderProgram>
+class TerrainRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
+{
+public:
+    explicit TerrainRenderSystem(sg::ogl::scene::Scene* t_scene)
+        : sg::ogl::ecs::system::RenderSystem<TShaderProgram>(t_scene)
+    {}
+
+    void Update(double t_dt) override {}
+
+    void Render() override
+    {
+        PrepareRendering();
+
+        auto view = m_scene->GetApplicationContext()->registry.view<
+            sg::ogl::ecs::component::TerrainComponent,
+            sg::ogl::ecs::component::TransformComponent>();
+
+        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
+
+        shaderProgram.Bind();
+
+        for (auto entity : view)
+        {
+            auto& terrainComponent = view.get<sg::ogl::ecs::component::TerrainComponent>(entity);
+
+            terrainComponent.terrain->GetMesh().InitDraw();
+            shaderProgram.UpdateUniforms(*m_scene, entity, terrainComponent.terrain->GetMesh());
+            terrainComponent.terrain->GetMesh().DrawPrimitives();
+            terrainComponent.terrain->GetMesh().EndDraw();
+        }
+
+        sg::ogl::resource::ShaderProgram::Unbind();
+
+        FinishRendering();
+    }
+
+protected:
+    void PrepareRendering() override {}
+    void FinishRendering() override {}
+};
+```
+
+
+### e) Create a Gui
+
+Here, a `Gui` should be created and the content should be the terrain-generated normalmap.
+
+```cpp
+// File: GameState.h
+
+class GameState : public sg::ogl::state::State
+{
+public:
+    // ...
+
+    void Render() override;
+
+private:
+    entt::entity m_guiEntity;
+
+    std::unique_ptr<GuiRenderSystem<GuiShaderProgram>> m_guiRenderSystem;
+
+    // ...
+
+    void Init();
+
+    void CreateGuiEntity();
+};
+```
+
+Create an entity and add components.
+
+```cpp
+// File: GameState.cpp
+
+void GameState::Render()
+{
+    // ...
+
+    m_guiRenderSystem->Render();
+}
+
+void GameState::Init()
+{
+    // ...
+
+    CreateGuiEntity();
+}
+
+void GameState::CreateGuiEntity()
+{
+    // create an entity
+    m_guiEntity = GetApplicationContext()->registry.create();
+
+    const auto posX{ 0.5f };
+    const auto posY{ 0.5f };
+
+    const auto scaleX{ 0.25f };
+    const auto scaleY{ 0.25f };
+
+    // add transform component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
+        m_guiEntity,
+        glm::vec3(posX, posY, 0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(scaleX, scaleY, 1.0f)
+    );
+
+    // add mesh component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
+        m_guiEntity,
+        GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::GUI_MESH)
+    );
+
+    // add gui component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::GuiComponent>(
+        m_guiEntity,
+        m_terrain->GetNormalmapTextureId()
+    );
+
+    // create a render system for the gui entity
+    m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
+}
+```
+
+The shader program and the renderer.
+
+```cpp
+// File: GuiShaderProgram.h
+
+class GuiShaderProgram : public sg::ogl::resource::ShaderProgram
+{
+public:
+    void UpdateUniforms(const sg::ogl::scene::Scene& t_scene, const entt::entity t_entity, const sg::ogl::resource::Mesh& t_currentMesh) override
+    {
+        auto& transformComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TransformComponent>(t_entity);
+        SetUniform("transformationMatrix", static_cast<glm::mat4>(transformComponent));
+
+        auto& guiComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::GuiComponent>(t_entity);
+        SetUniform("guiTexture", 0);
+        sg::ogl::resource::TextureManager::BindForReading(guiComponent.textureId, GL_TEXTURE0);
+    }
+
+    std::string GetFolderName() override
+    {
+        return "gui";
+    }
+};
+```
+
+```cpp
+// File: GuiRenderSystem.h
+
+template <typename TShaderProgram>
+class GuiRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
+{
+public:
+    explicit GuiRenderSystem(sg::ogl::scene::Scene* t_scene)
+        : sg::ogl::ecs::system::RenderSystem<TShaderProgram>(t_scene)
+    {}
+
+    void Update(double t_dt) override {}
+
+    void Render() override
+    {
+        PrepareRendering();
+
+        auto view = m_scene->GetApplicationContext()->registry.view<
+            sg::ogl::ecs::component::TransformComponent,
+            sg::ogl::ecs::component::MeshComponent,
+            sg::ogl::ecs::component::GuiComponent>();
+
+        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
+
+        shaderProgram.Bind();
+
+        for (auto entity : view)
+        {
+            auto& meshComponent = view.get<sg::ogl::ecs::component::MeshComponent>(entity);
+
+            meshComponent.mesh->InitDraw();
+            shaderProgram.UpdateUniforms(*m_scene, entity, *meshComponent.mesh);
+            meshComponent.mesh->DrawPrimitives(GL_TRIANGLE_STRIP);
+            meshComponent.mesh->EndDraw();
+        }
+
+        sg::ogl::resource::ShaderProgram::Unbind();
+
+        FinishRendering();
+    }
+
+protected:
+    void PrepareRendering() override
+    {
+        sg::ogl::OpenGl::EnableAlphaBlending();
+        sg::ogl::OpenGl::DisableDepthTesting();
+    }
+
+    void FinishRendering() override
+    {
+        sg::ogl::OpenGl::EnableDepthTesting();
+        sg::ogl::OpenGl::DisableBlending();
     }
 };
 ```
