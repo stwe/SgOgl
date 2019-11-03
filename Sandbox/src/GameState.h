@@ -68,12 +68,6 @@ public:
 protected:
 
 private:
-    entt::entity m_houseEntity;
-    entt::entity m_skyboxEntity;
-    entt::entity m_skydomeEntity;
-    entt::entity m_terrainEntity;
-    entt::entity m_guiEntity;
-
     TerrainSharedPtr m_terrain;
 
     std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
@@ -96,4 +90,6 @@ private:
     void CreateSkydomeEntity();
     void CreateTerrainEntity();
     void CreateGuiEntity();
+
+    void AddTree(float t_x, float t_z);
 };

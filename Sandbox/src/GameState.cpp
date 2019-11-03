@@ -7,6 +7,7 @@
 // 
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
+#include <random>
 #include "GameState.h"
 #include "shader/ComputeSplatmap.h"
 #include "shader/ComputeNormalmap.h"
@@ -92,43 +93,60 @@ void GameState::Init()
     // generate terrain
     m_terrain->GenerateTerrain<ComputeNormalmap, ComputeSplatmap>();
 
+    // create render systems
+    m_modelRenderSystem = std::make_unique<ModelRenderSystem<ModelShaderProgram>>(m_scene.get());
+    m_skyboxRenderSystem = std::make_unique<SkyboxRenderSystem<SkyboxShaderProgram>>(m_scene.get());
+    m_skydomeRenderSystem = std::make_unique<SkydomeRenderSystem<DomeShaderProgram>>(m_scene.get());
+    m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
+    m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
+
     // create entities
     CreateHouseEntity();
     CreateSkyboxEntity();
     //CreateSkydomeEntity();
     CreateTerrainEntity();
     CreateGuiEntity();
+
+    std::random_device seeder;
+    std::mt19937 engine(seeder());
+
+    const std::uniform_real_distribution<float> posX(15.0f, 45.0f);
+    const std::uniform_real_distribution<float> posZ(5.0f, 65.0f);
+
+    for (auto i{ 0 }; i < 4; ++i)
+    {
+        AddTree(posX(engine), posZ(engine));
+    }
 }
 
 void GameState::CreateHouseEntity()
 {
     // create an entity
-    m_houseEntity = GetApplicationContext()->registry.create();
+    const auto entity{ GetApplicationContext()->registry.create() };
 
     // add model component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
-        m_houseEntity,
+        entity,
         GetApplicationContext()->GetModelManager().GetModelByPath("res/model/House/farmhouse_obj.obj")
     );
 
+    const auto height{ m_terrain->GetHeightAtWorldPosition(-10.0f, 0.0f) };
+
     // add transform component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        m_houseEntity,
-        glm::vec3(-10.0f, 14.0f, 0.0f)
+        entity,
+        glm::vec3(-10.0f, height, 0.0f)
     );
-
-    // create a render system for the house entity
-    m_modelRenderSystem = std::make_unique<ModelRenderSystem<ModelShaderProgram>>(m_scene.get());
 }
 
 void GameState::CreateSkyboxEntity()
 {
     // create an entity
-    m_skyboxEntity = GetApplicationContext()->registry.create();
+    const auto entity{ GetApplicationContext()->registry.create() };
 
     // add mesh component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
-        m_skyboxEntity,
+        entity,
         GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::SKYBOX_MESH)
     );
 
@@ -143,65 +161,56 @@ void GameState::CreateSkyboxEntity()
     };
 
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::CubemapComponent>(
-        m_skyboxEntity,
+        entity,
         GetApplicationContext()->GetTextureManager().GetCubemapId(cubemapFileNames)
     );
-
-    // create a render system for the skybox entity
-    m_skyboxRenderSystem = std::make_unique<SkyboxRenderSystem<SkyboxShaderProgram>>(m_scene.get());
 }
 
 void GameState::CreateSkydomeEntity()
 {
     // create an entity
-    m_skydomeEntity = GetApplicationContext()->registry.create();
+    const auto entity{ GetApplicationContext()->registry.create() };
 
     // add model component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
-        m_skydomeEntity,
+        entity,
         GetApplicationContext()->GetModelManager().GetModelByPath("res/model/dome/dome.obj")
     );
 
     // add transform component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        m_skydomeEntity,
+        entity,
         glm::vec3(0.0f),
         glm::vec3(0.0f),
         glm::vec3(GetApplicationContext()->GetProjectionOptions().farPlane * 0.5f)
     );
 
     // add skydome component/tag
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::SkydomeComponent>(m_skydomeEntity);
-
-    // create a render system for the skydome entity
-    m_skydomeRenderSystem = std::make_unique<SkydomeRenderSystem<DomeShaderProgram>>(m_scene.get());
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::SkydomeComponent>(entity);
 }
 
 void GameState::CreateTerrainEntity()
 {
     // create an entity
-    m_terrainEntity = GetApplicationContext()->registry.create();
+    const auto entity{ GetApplicationContext()->registry.create() };
 
     // add terrain component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TerrainComponent>(
-        m_terrainEntity,
+        entity,
         m_terrain
     );
 
     // add transform component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        m_terrainEntity,
+        entity,
         glm::vec3(m_terrain->GetTerrainOptions().xPos, 0.0f, m_terrain->GetTerrainOptions().zPos)
     );
-
-    // create a render system for the terrain entity
-    m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
 }
 
 void GameState::CreateGuiEntity()
 {
     // create an entity
-    m_guiEntity = GetApplicationContext()->registry.create();
+    const auto entity{ GetApplicationContext()->registry.create() };
 
     const auto posX{ 0.5f };
     const auto posY{ 0.5f };
@@ -211,7 +220,7 @@ void GameState::CreateGuiEntity()
 
     // add transform component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        m_guiEntity,
+        entity,
         glm::vec3(posX, posY, 0.0f),
         glm::vec3(0.0f),
         glm::vec3(scaleX, scaleY, 1.0f)
@@ -219,7 +228,7 @@ void GameState::CreateGuiEntity()
 
     // add mesh component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
-        m_guiEntity,
+        entity,
         GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::GUI_MESH)
     );
 
@@ -232,10 +241,29 @@ void GameState::CreateGuiEntity()
     */
 
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::GuiComponent>(
-        m_guiEntity,
+        entity,
         m_terrain->GetNormalmapTextureId()
     );
+}
 
-    // create a render system for the gui entity
-    m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
+void GameState::AddTree(const float t_x, const float t_z)
+{
+    // create an entity
+    const auto entity{ GetApplicationContext()->registry.create() };
+
+    // add model component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
+        entity,
+        GetApplicationContext()->GetModelManager().GetModelByPath("res/model/Tree_02/tree02.obj")
+    );
+
+    const auto height{ m_terrain->GetHeightAtWorldPosition(t_x, t_z) };
+
+    // add transform component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
+        entity,
+        glm::vec3(t_x, height, t_z),
+        glm::vec3(0.0f),
+        glm::vec3(16.0f)
+    );
 }

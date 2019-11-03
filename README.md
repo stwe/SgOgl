@@ -209,7 +209,7 @@ The config file can look like this.
 
 ### b) Load a model from a obj file
 
-The next step is render the model of a house. To do this we add to the `GameState` an entity, a render system, a scene and a camera. In addition, a private function `Init()` is required.
+The next step is render the model of a house. To do this we add to the `GameState` a render system, a scene and a camera. In addition, a private function `Init()` is required.
 
 As shown below, two more classes are included. This is the `ModelShaderProgram` and the `ModelRenderSystem`.
 We'll talk about the classes later.
@@ -244,8 +244,6 @@ public:
 protected:
 
 private:
-    entt::entity m_entity;
-
     std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
 
     SceneUniquePtr m_scene;
@@ -256,7 +254,7 @@ private:
 ```
 
 Let's start with the `Init()` method. Nothing is complicated here.
-It will create a camera and a scene. Then the camera is added to the scene. The entity is created with the `registry`.
+It will create a camera and a scene. Then the camera is added to the scene. An entity is created with the `registry`.
 Now two components (ModelComponent and TransformComponent) are added to the entity.
 All obj models are stored in the `ModelManager` as `std::shared_ptr<Model>`. The call `GetApplicationContext()->GetModelManager().GetModelByPath("res/model/House/farmhouse_obj.obj")` returns the smart pointer by value. When the method is called for the first time with this model, the model is preloaded and stored in the `ModelManager`.
 Finally, the render system is created.
@@ -275,16 +273,16 @@ void GameState::Init()
     m_scene->SetCurrentCamera(m_camera);
 
     // create an entity
-    m_entity = GetApplicationContext()->registry.create();
+    const auto entity{ GetApplicationContext()->registry.create() };
 
     // add model component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
-        m_entity,
+        entity,
         GetApplicationContext()->GetModelManager().GetModelByPath("res/model/House/farmhouse_obj.obj")
     );
 
     // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(m_entity);
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(entity);
 
     // create a render system for the entity
     m_modelRenderSystem = std::make_unique<ModelRenderSystem<ModelShaderProgram>>(m_scene.get());
@@ -408,7 +406,7 @@ protected:
 
 ### c) Create a Skybox
 
-As with the obj model, an entity and a render system is needed.
+As with the obj model a render system is needed.
 
 ```cpp
 // File: GameState.h
@@ -420,9 +418,6 @@ public:
     // ...
 
 private:
-    entt::entity m_houseEntity;
-    entt::entity m_skyboxEntity;
-
     std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
     std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
 
@@ -449,13 +444,14 @@ void GameState::Render()
 void GameState::Init()
 {
     // ...
+    m_skyboxRenderSystem = std::make_unique<SkyboxRenderSystem<SkyboxShaderProgram>>(m_scene.get());
 
     CreateHouseEntity();
     CreateSkyboxEntity();
 }
 ```
 
-Nothing new here. Create entity, add components and render system.
+Nothing new here. Create entity and add components.
 The method `GetStaticMeshByName(sg::ogl::resource::ModelManager::SKYBOX_MESH)` retrieves a built-in Mesh for a Skybox from the ModelManager.
 
 ```cpp
@@ -464,11 +460,11 @@ The method `GetStaticMeshByName(sg::ogl::resource::ModelManager::SKYBOX_MESH)` r
 void GameState::CreateSkyboxEntity()
 {
     // create an entity
-    m_skyboxEntity = GetApplicationContext()->registry.create();
+    const auto entity{ GetApplicationContext()->registry.create() };
 
     // add mesh component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
-        m_skyboxEntity,
+        entity,
         GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::SKYBOX_MESH)
     );
 
@@ -483,12 +479,9 @@ void GameState::CreateSkyboxEntity()
     };
 
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::CubemapComponent>(
-        m_skyboxEntity,
+        entity,
         GetApplicationContext()->GetTextureManager().GetCubemapId(cubemapFileNames)
     );
-
-    // create a render system for the entity
-    m_skyboxRenderSystem = std::make_unique<SkyboxRenderSystem<SkyboxShaderProgram>>(m_scene.get());
 }
 ```
 
@@ -608,7 +601,7 @@ For the terrain, a config file must first be created.
 
 ```
 
-In addition to the render system and the entity, an instance of `Terrain()` is needed.
+In addition to the render system an instance of `Terrain()` is needed.
 
 ```cpp
 // File: GameState.h
@@ -627,8 +620,6 @@ public:
 
 private:
     // ...
-
-    entt::entity m_terrainEntity;
 
     TerrainSharedPtr m_terrain;
 
@@ -661,6 +652,8 @@ void GameState::Init()
 {
     // ...
 
+    m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
+
     m_terrain = std::make_shared<sg::ogl::terrain::Terrain>(GetApplicationContext(), "res/config/Terrain.xml");
     m_terrain->GenerateTerrain<ComputeNormalmap, ComputeSplatmap>();
 
@@ -678,22 +671,19 @@ Create an entity and add components.
 void GameState::CreateTerrainEntity()
 {
     // create an entity
-    m_terrainEntity = GetApplicationContext()->registry.create();
+    const auto entity{ GetApplicationContext()->registry.create() };
 
     // add terrain component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TerrainComponent>(
-        m_terrainEntity,
+        entity,
         m_terrain
     );
 
     // add transform component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        m_terrainEntity,
+        entity,
         glm::vec3(m_terrain->GetTerrainOptions().xPos, 0.0f, m_terrain->GetTerrainOptions().zPos)
     );
-
-    // create a render system for the terrain entity
-    m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
 }
 ```
 
@@ -809,8 +799,6 @@ public:
     void Render() override;
 
 private:
-    entt::entity m_guiEntity;
-
     std::unique_ptr<GuiRenderSystem<GuiShaderProgram>> m_guiRenderSystem;
 
     // ...
@@ -837,13 +825,15 @@ void GameState::Init()
 {
     // ...
 
+    m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
+
     CreateGuiEntity();
 }
 
 void GameState::CreateGuiEntity()
 {
     // create an entity
-    m_guiEntity = GetApplicationContext()->registry.create();
+    const auto entity{ GetApplicationContext()->registry.create() };
 
     const auto posX{ 0.5f };
     const auto posY{ 0.5f };
@@ -853,7 +843,7 @@ void GameState::CreateGuiEntity()
 
     // add transform component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        m_guiEntity,
+        entity,
         glm::vec3(posX, posY, 0.0f),
         glm::vec3(0.0f),
         glm::vec3(scaleX, scaleY, 1.0f)
@@ -861,18 +851,22 @@ void GameState::CreateGuiEntity()
 
     // add mesh component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
-        m_guiEntity,
+        entity,
         GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::GUI_MESH)
     );
 
     // add gui component
+    /*
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::GuiComponent>(
         m_guiEntity,
+        GetApplicationContext()->GetTextureManager().GetTextureIdFromPath("res/texture/test.png")
+    );
+    */
+
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::GuiComponent>(
+        entity,
         m_terrain->GetNormalmapTextureId()
     );
-
-    // create a render system for the gui entity
-    m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
 }
 ```
 
