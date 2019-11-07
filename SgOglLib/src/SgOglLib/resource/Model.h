@@ -10,6 +10,7 @@
 #pragma once
 
 #include <assimp/scene.h>
+#include <assimp/postprocess.h>
 #include <vector>
 #include <memory>
 #include <string>
@@ -39,7 +40,7 @@ namespace sg::ogl::resource
 
         Model() = delete;
 
-        Model(std::string t_fullFilePath, Application* t_application);
+        Model(std::string t_fullFilePath, Application* t_application, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
 
         Model(const Model& t_other) = delete;
         Model(Model&& t_other) noexcept = delete;
@@ -68,7 +69,7 @@ namespace sg::ogl::resource
         // Load Model
         //-------------------------------------------------
 
-        void LoadModel();
+        void LoadModel(unsigned int t_pFlags);
         void ProcessNode(aiNode* t_node, const aiScene* t_scene);
         MeshUniquePtr ProcessMesh(aiMesh* t_mesh, const aiScene* t_scene) const;
         TextureContainer LoadMaterialTextures(aiMaterial* t_mat, aiTextureType t_type) const;

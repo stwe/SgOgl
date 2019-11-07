@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <assimp/postprocess.h>
 #include <glm/vec3.hpp>
 #include <memory>
 #include <map>
@@ -69,7 +70,7 @@ namespace sg::ogl::resource
 
         MaterialSharedPtr GetMaterialByName(const std::string& t_name);
         StaticMeshSharedPtr GetStaticMeshByName(const std::string& t_name);
-        ModelSharedPtr GetModelByPath(const std::string& t_fullFilePath);
+        ModelSharedPtr GetModelByPath(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
 
         //-------------------------------------------------
         // Add

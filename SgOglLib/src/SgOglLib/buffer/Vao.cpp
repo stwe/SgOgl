@@ -157,6 +157,22 @@ uint32_t sg::ogl::buffer::Vao::AddEmptyVbo(const uint32_t t_floatCount, const ui
     return vboId;
 }
 
+void sg::ogl::buffer::Vao::StoreTransformationMatrices(const uint32_t t_vboId, const uint32_t t_floatCount, const std::vector<glm::mat4>& t_matrices) const
+{
+    // Bind our existing Vao.
+    BindVao();
+
+    // Bind the given Vbo.
+    BindVbo(t_vboId);
+
+    // Store data
+    glBufferData(GL_ARRAY_BUFFER, t_floatCount * sizeof(float), t_matrices.data(), GL_STATIC_DRAW);
+
+    // Unbind buffers.
+    UnbindVbo();
+    UnbindVao();
+}
+
 void sg::ogl::buffer::Vao::AddVertexDataVbo(float* const t_vertices, const int32_t t_drawCount, const BufferLayout& t_bufferLayout)
 {
     // Bind our existing Vao.
@@ -209,6 +225,7 @@ void sg::ogl::buffer::Vao::AddInstancedAttribute(
     BindVao();
     BindVbo(t_vboId);
 
+    glEnableVertexAttribArray(t_index);
     glVertexAttribPointer(t_index, t_dataSize, GL_FLOAT, GL_FALSE, t_instancedDataLength * sizeof(float), reinterpret_cast<uintptr_t*>(t_offset * sizeof(float)));
     glVertexAttribDivisor(t_index, 1);
 

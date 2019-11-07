@@ -64,10 +64,11 @@ bool GameState::Update(const double t_dt)
 void GameState::Render()
 {
     m_modelRenderSystem->Render();
-    m_skyboxRenderSystem->Render();
+    //m_skyboxRenderSystem->Render();
     m_terrainRenderSystem->Render();
-    //m_skydomeRenderSystem->Render();
-    m_guiRenderSystem->Render();
+    m_skydomeRenderSystem->Render();
+    m_instancingRenderSystem->Render();
+    //m_guiRenderSystem->Render();
 }
 
 //-------------------------------------------------
@@ -99,24 +100,16 @@ void GameState::Init()
     m_skydomeRenderSystem = std::make_unique<SkydomeRenderSystem<DomeShaderProgram>>(m_scene.get());
     m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
     m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
+    m_instancingRenderSystem = std::make_unique<InstancingRenderSystem<InstancingShaderProgram>>(m_scene.get());
 
     // create entities
     CreateHouseEntity();
     CreateSkyboxEntity();
-    //CreateSkydomeEntity();
+    CreateSkydomeEntity();
     CreateTerrainEntity();
     CreateGuiEntity();
 
-    std::random_device seeder;
-    std::mt19937 engine(seeder());
-
-    const std::uniform_real_distribution<float> posX(15.0f, 45.0f);
-    const std::uniform_real_distribution<float> posZ(5.0f, 65.0f);
-
-    for (auto i{ 0 }; i < 4; ++i)
-    {
-        AddTree(posX(engine), posZ(engine));
-    }
+    AddGrass(50000, "res/model/Grass/grassmodel.obj");
 }
 
 void GameState::CreateHouseEntity()
@@ -246,24 +239,67 @@ void GameState::CreateGuiEntity()
     );
 }
 
-void GameState::AddTree(const float t_x, const float t_z)
+void GameState::AddGrass(const uint32_t t_instances, const std::string& t_path)
 {
+    std::vector<glm::mat4> matrices;
+
+    CreateGrassPositions(t_instances, matrices);
+
+    const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals };
+
+    for (auto& mesh : GetApplicationContext()->GetModelManager().GetModelByPath(t_path, pFlags)->GetMeshes())
+    {
+        // get Vao of the mesh
+        auto& vao{ mesh->GetVao() };
+
+        // create an empty Vbo for instanced data
+        const uint32_t numberOfFloatsPerInstance{ 16 };
+        const auto vbo{ vao.AddEmptyVbo(numberOfFloatsPerInstance * t_instances) };
+
+        // set Vbo attributes
+        vao.AddInstancedAttribute(vbo, 5, 4, numberOfFloatsPerInstance, 0);
+        vao.AddInstancedAttribute(vbo, 6, 4, numberOfFloatsPerInstance, 4);
+        vao.AddInstancedAttribute(vbo, 7, 4, numberOfFloatsPerInstance, 8);
+        vao.AddInstancedAttribute(vbo, 8, 4, numberOfFloatsPerInstance, 12);
+
+        // store data
+        vao.StoreTransformationMatrices(vbo, numberOfFloatsPerInstance * t_instances, matrices);
+    }
+
     // create an entity
     const auto entity{ GetApplicationContext()->registry.create() };
+
+    // add instances component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::InstancesComponent>(
+        entity,
+        t_instances
+    );
 
     // add model component
     GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
         entity,
-        GetApplicationContext()->GetModelManager().GetModelByPath("res/model/Tree_02/tree02.obj")
+        GetApplicationContext()->GetModelManager().GetModelByPath(t_path)
     );
+}
 
-    const auto height{ m_terrain->GetHeightAtWorldPosition(t_x, t_z) };
+void GameState::CreateGrassPositions(const uint32_t t_instances, std::vector<glm::mat4>& t_matrices) const
+{
+    std::random_device seeder;
+    std::mt19937 engine(seeder());
 
-    // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        entity,
-        glm::vec3(t_x, height, t_z),
-        glm::vec3(0.0f),
-        glm::vec3(16.0f)
-    );
+    const std::uniform_real_distribution<float> posX(1.0f, 550.0f);
+    const std::uniform_real_distribution<float> posZ(-350.0f, 350.0f);
+
+    for (auto i{ 0u }; i < t_instances; ++i)
+    {
+        sg::ogl::math::Transform transform;
+
+        const auto pos{ glm::vec3(posX(engine), 0.0f, posZ(engine)) };
+        const auto height{ m_terrain->GetHeightAtWorldPosition(pos.x, pos.z) };
+
+        transform.position = glm::vec3(pos.x, height, pos.z);
+        transform.scale = glm::vec3(2.0f);
+
+        t_matrices.push_back(transform.GetModelMatrix());
+    }
 }

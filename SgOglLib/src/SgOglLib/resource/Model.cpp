@@ -24,7 +24,7 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::resource::Model::Model(std::string t_fullFilePath, Application* t_application)
+sg::ogl::resource::Model::Model(std::string t_fullFilePath, Application* t_application, const unsigned int t_pFlags)
     : m_application{ t_application }
     , m_fullFilePath{ std::move(t_fullFilePath) }
 {
@@ -33,7 +33,7 @@ sg::ogl::resource::Model::Model(std::string t_fullFilePath, Application* t_appli
 
     m_directory = m_fullFilePath.substr(0, m_fullFilePath.find_last_of('/'));
 
-    LoadModel();
+    LoadModel(t_pFlags);
 }
 
 sg::ogl::resource::Model::~Model() noexcept
@@ -54,13 +54,13 @@ const sg::ogl::resource::Model::MeshContainer& sg::ogl::resource::Model::GetMesh
 // Load Model
 //-------------------------------------------------
 
-void sg::ogl::resource::Model::LoadModel()
+void sg::ogl::resource::Model::LoadModel(const unsigned int t_pFlags)
 {
     Assimp::Importer importer;
 
     SG_OGL_LOG_DEBUG("[Model::LoadModel()] Start loading model file at: {}", m_fullFilePath);
 
-    const auto* scene{ importer.ReadFile(m_fullFilePath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals) };
+    const auto* scene{ importer.ReadFile(m_fullFilePath, t_pFlags) };
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
         throw SG_OGL_EXCEPTION("[Model::LoadModel()] ERROR::ASSIMP:: " + std::string(importer.GetErrorString()));

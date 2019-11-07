@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: SgOgl.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 // core
@@ -19,6 +28,7 @@
 // ecs
 #include "SgOglLib/ecs/component/CubemapComponent.h"
 #include "SgOglLib/ecs/component/GuiComponent.h"
+#include "SgOglLib/ecs/component/InstancesComponent.h"
 #include "SgOglLib/ecs/component/MaterialComponent.h"
 #include "SgOglLib/ecs/component/MeshComponent.h"
 #include "SgOglLib/ecs/component/ModelComponent.h"

@@ -84,12 +84,6 @@ namespace sg::ogl::scene
         void SetCurrentClipPlane(const glm::vec4& t_currentClipPlane);
 
         //-------------------------------------------------
-        // Vertex attribute
-        //-------------------------------------------------
-
-        static void SetInstancePositions(const std::vector<glm::mat4>& t_modelMatrices, Entity* t_entity);
-
-        //-------------------------------------------------
         // Scene objects
         //-------------------------------------------------
 
@@ -139,11 +133,5 @@ namespace sg::ogl::scene
         Application* m_application{ nullptr };
 
         glm::vec4 m_currentClipPlane{ glm::vec4(0.0f) };
-
-        //-------------------------------------------------
-        // Helper
-        //-------------------------------------------------
-
-        static void StorePositions(const std::vector<glm::mat4>& t_modelMatrices, Entity* t_entity);
     };
 }

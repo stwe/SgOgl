@@ -6,12 +6,16 @@
 
 1. [What is does](#1-what-is-does)
 1. [Installing](#2-installing)
-1. [Using](#3-using)
-    1. [Create application class and entry point](#a-Create-application-class-and-entry-point)
-    1. [Load a model from a obj file](#b-Load-a-model-from-a-obj-file)
-    1. [Create a Skybox](#c-Create-a-Skybox)
-    1. [Create a Terrain](#d-Create-a-terrain)
-    1. [Create a Gui](#e-Create-a-gui)
+1. [Getting started](#3-getting-started)
+    1. [Create application class and entry point](#a-create-application-class-and-entry-point)
+    1. [Load a model from a obj file](#b-load-a-model-from-a-obj-file)
+    1. [Create a Skybox](#c-create-a-Skybox)
+    1. [Create a Terrain](#d-create-a-terrain)
+    1. [Create a Gui](#e-create-a-gui)
+1. [Advanced](#4-advanced)
+    1. [Instancing](#a-instancing)
+    1. [Water rendering](#b-water-rendering)
+    1. [Lighting](#c-lighting)
 
 ***
 
@@ -23,7 +27,7 @@ A GameEngine library for OpenGL developed for educational purposes.
 
 Install Visual Studio 2019 and use Premake5 and the premake5.lua file to create the project files.
 
-## 3. Using
+## 3. Getting started
 
 In the next few points a Skybox, a Terrain and the model of a house will be loaded. Finally the normalmap of the Terrain should be displayed in a Gui.
 
@@ -950,3 +954,233 @@ protected:
     }
 };
 ```
+
+## 4. Advanced
+
+### a) Instancing
+
+The next step is to add grass to the scene. The following image shows 50,000 grass models that were rendered with a single draw call. Of course, without lighting.
+
+![Result](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/GrassInstancing.png)
+
+Our `GameState` class gets some new methods: `AddGrass()` and `CreateGrassPositions()`.
+
+```cpp
+// File: GameState.h
+
+class GameState : public sg::ogl::state::State
+{
+public:
+    // ...
+
+    void Render() override;
+
+protected:
+
+private:
+    // ...
+
+    std::unique_ptr<InstancingRenderSystem<InstancingShaderProgram>> m_instancingRenderSystem;
+
+
+    void Init();
+
+    // ...
+
+    void AddGrass(uint32_t t_instances, const std::string& t_path);
+    void CreateGrassPositions(uint32_t t_instances, std::vector<glm::mat4>& t_matrices) const;
+};
+```
+
+The `CreateGrassPositions()` method generates random positions for all instances.
+
+```cpp
+// File: GameState.cpp
+
+void GameState::CreateGrassPositions(const uint32_t t_instances, std::vector<glm::mat4>& t_matrices) const
+{
+    std::random_device seeder;
+    std::mt19937 engine(seeder());
+
+    const std::uniform_real_distribution<float> posX(1.0f, 550.0f);
+    const std::uniform_real_distribution<float> posZ(-350.0f, 350.0f);
+
+    for (auto i{ 0u }; i < t_instances; ++i)
+    {
+        sg::ogl::math::Transform transform;
+
+        const auto pos{ glm::vec3(posX(engine), 0.0f, posZ(engine)) };
+        const auto height{ m_terrain->GetHeightAtWorldPosition(pos.x, pos.z) };
+
+        transform.position = glm::vec3(pos.x, height, pos.z);
+        transform.scale = glm::vec3(2.0f);
+
+        t_matrices.push_back(transform.GetModelMatrix());
+    }
+}
+```
+
+The `AddGrass()` method creates an Entity with a model. Then we add a VBO with the positions for each Mesh of the Model. There is an `InstancesComponent()` which stores only the number of instances.
+
+```cpp
+// File: GameState.cpp
+
+void GameState::AddGrass(const uint32_t t_instances, const std::string& t_path)
+{
+    std::vector<glm::mat4> matrices;
+
+    CreateGrassPositions(t_instances, matrices);
+
+    const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals };
+
+    for (auto& mesh : GetApplicationContext()->GetModelManager().GetModelByPath(t_path, pFlags)->GetMeshes())
+    {
+        // get Vao of the mesh
+        auto& vao{ mesh->GetVao() };
+
+        // create an empty Vbo for instanced data
+        const uint32_t numberOfFloatsPerInstance{ 16 };
+        const auto vbo{ vao.AddEmptyVbo(numberOfFloatsPerInstance * t_instances) };
+
+        // set Vbo attributes
+        vao.AddInstancedAttribute(vbo, 5, 4, numberOfFloatsPerInstance, 0);
+        vao.AddInstancedAttribute(vbo, 6, 4, numberOfFloatsPerInstance, 4);
+        vao.AddInstancedAttribute(vbo, 7, 4, numberOfFloatsPerInstance, 8);
+        vao.AddInstancedAttribute(vbo, 8, 4, numberOfFloatsPerInstance, 12);
+
+        // store data
+        vao.StoreTransformationMatrices(vbo, numberOfFloatsPerInstance * t_instances, matrices);
+    }
+
+    // create an entity
+    const auto entity{ GetApplicationContext()->registry.create() };
+
+    // add instances component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::InstancesComponent>(
+        entity,
+        t_instances
+    );
+
+    // add model component
+    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
+        entity,
+        GetApplicationContext()->GetModelManager().GetModelByPath(t_path)
+    );
+}
+```
+
+The `Render()` and `Init()` Method: We render 50.000 instances.
+
+```cpp
+// File: GameState.cpp
+
+void GameState::Render()
+{
+    // ...
+
+    m_instancingRenderSystem->Render();
+}
+
+void GameState::Init()
+{
+    // ...
+
+    m_instancingRenderSystem = std::make_unique<InstancingRenderSystem<InstancingShaderProgram>>(m_scene.get());
+
+    // ...
+
+    AddGrass(50000, "res/model/Grass/grassmodel.obj");
+}
+```
+
+The shader program and the renderer.
+
+```cpp
+// File: InstancingShaderProgram.h
+
+class InstancingShaderProgram : public sg::ogl::resource::ShaderProgram
+{
+public:
+    void UpdateUniforms(const sg::ogl::scene::Scene& t_scene, const entt::entity t_entity, const sg::ogl::resource::Mesh& t_currentMesh) override
+    {
+        SetUniform("projectionMatrix", t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix());
+        SetUniform("viewMatrix", t_scene.GetCurrentCamera().GetViewMatrix());
+        SetUniform("ambientIntensity", glm::vec3(1.0f));
+        SetUniform("diffuseMap", 0);
+        sg::ogl::resource::TextureManager::BindForReading(t_currentMesh.GetDefaultMaterial()->mapKd, GL_TEXTURE0);
+    }
+
+    std::string GetFolderName() override
+    {
+        return "instancing";
+    }
+};
+```
+
+```cpp
+// File: InstancingRenderSystem.h
+
+template <typename TShaderProgram>
+class InstancingRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
+{
+public:
+    explicit InstancingRenderSystem(sg::ogl::scene::Scene* t_scene)
+        : sg::ogl::ecs::system::RenderSystem<TShaderProgram>(t_scene)
+    {}
+
+    void Update(double t_dt) override {}
+
+    void Render() override
+    {
+        PrepareRendering();
+
+        auto view = m_scene->GetApplicationContext()->registry.view<
+            sg::ogl::ecs::component::InstancesComponent,
+            sg::ogl::ecs::component::ModelComponent>();
+
+        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
+
+        shaderProgram.Bind();
+
+        for (auto entity : view)
+        {
+            auto& instancesComponent = view.get<sg::ogl::ecs::component::InstancesComponent>(entity);
+            auto& modelComponent = view.get<sg::ogl::ecs::component::ModelComponent>(entity);
+
+            for (auto& mesh : modelComponent.model->GetMeshes())
+            {
+                mesh->InitDraw();
+                shaderProgram.UpdateUniforms(*m_scene, entity, *mesh);
+                mesh->DrawInstanced(instancesComponent.instances);
+                mesh->EndDraw();
+            }
+        }
+
+        sg::ogl::resource::ShaderProgram::Unbind();
+
+        FinishRendering();
+    }
+
+protected:
+    void PrepareRendering() override
+    {
+        sg::ogl::OpenGl::EnableAlphaBlending();
+    }
+
+    void FinishRendering() override
+    {
+        sg::ogl::OpenGl::DisableBlending();
+    }
+};
+```
+
+
+### b) Water rendering
+
+
+
+
+### c) Lighting
+
+
+

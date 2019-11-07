@@ -20,6 +20,8 @@
 #include "renderer/TerrainRenderSystem.h"
 #include "shader/GuiShaderProgram.h"
 #include "renderer/GuiRenderSystem.h"
+#include "shader/InstancingShaderProgram.h"
+#include "renderer/InstancingRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
@@ -75,6 +77,7 @@ private:
     std::unique_ptr<SkydomeRenderSystem<DomeShaderProgram>> m_skydomeRenderSystem;
     std::unique_ptr<TerrainRenderSystem<TerrainShaderProgram>> m_terrainRenderSystem;
     std::unique_ptr<GuiRenderSystem<GuiShaderProgram>> m_guiRenderSystem;
+    std::unique_ptr<InstancingRenderSystem<InstancingShaderProgram>> m_instancingRenderSystem;
 
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
@@ -91,5 +94,6 @@ private:
     void CreateTerrainEntity();
     void CreateGuiEntity();
 
-    void AddTree(float t_x, float t_z);
+    void AddGrass(uint32_t t_instances, const std::string& t_path);
+    void CreateGrassPositions(uint32_t t_instances, std::vector<glm::mat4>& t_matrices) const;
 };

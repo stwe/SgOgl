@@ -61,12 +61,12 @@ sg::ogl::resource::ModelManager::StaticMeshSharedPtr sg::ogl::resource::ModelMan
     return m_staticMeshes.at(t_name);
 }
 
-sg::ogl::resource::ModelManager::ModelSharedPtr sg::ogl::resource::ModelManager::GetModelByPath(const std::string& t_fullFilePath)
+sg::ogl::resource::ModelManager::ModelSharedPtr sg::ogl::resource::ModelManager::GetModelByPath(const std::string& t_fullFilePath, const unsigned int t_pFlags)
 {
     // load the model if it does not already exist
     if (m_models.count(t_fullFilePath) == 0)
     {
-        auto modelSharedPtr{ std::make_shared<Model>(t_fullFilePath, m_application) };
+        auto modelSharedPtr{ std::make_shared<Model>(t_fullFilePath, m_application, t_pFlags) };
         SG_OGL_CORE_ASSERT(modelSharedPtr, "[ModelManager::GetModelByPath()] Null pointer.")
 
         m_models.emplace(t_fullFilePath, modelSharedPtr);

@@ -17,8 +17,8 @@ out vec2 vUv;
 
 // Uniforms
 
-uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
 
 // Main
 
@@ -26,6 +26,8 @@ void main()
 {
     vec3 position = vec3(aInstanceMatrix * vec4(aPosition, 1.0));
     vUv = aUv;
+
+    //vUv.y = 1 - vUv.y;
 
     gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
 }

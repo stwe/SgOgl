@@ -11,6 +11,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <glm/mat4x4.hpp>
 #include "OpenGl.h"
 
 namespace sg::ogl::buffer
@@ -77,6 +78,14 @@ namespace sg::ogl::buffer
          * @return The id of the new created Vbo.
          */
         uint32_t AddEmptyVbo(uint32_t t_floatCount, uint32_t t_usage = GL_STREAM_DRAW);
+
+        /**
+         * @brief Store an instanced array of transformation matrices.
+         * @param t_vboId The Id of the Vbo in which the data should be stored.
+         * @param t_floatCount The number of floats.
+         * @param t_matrices The array of transformation matrices.
+         */
+        void StoreTransformationMatrices(uint32_t t_vboId, uint32_t t_floatCount, const std::vector<glm::mat4>& t_matrices) const;
 
         /**
          * @brief Add a Vertex Buffer Object (Vbo) an copy the given vertex data to the Gpu.
