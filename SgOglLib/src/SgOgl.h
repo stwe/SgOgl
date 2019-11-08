@@ -61,10 +61,6 @@
 #include "SgOglLib/resource/TextureManager.h"
 
 // scene
-#include "SgOglLib/scene/Component.h"
-#include "SgOglLib/scene/Entity.h"
-#include "SgOglLib/scene/Node.h"
-#include "SgOglLib/scene/RenderConfig.h"
 #include "SgOglLib/scene/Scene.h"
 
 // state

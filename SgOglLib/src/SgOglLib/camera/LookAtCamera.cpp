@@ -1,4 +1,5 @@
 #include "LookAtCamera.h"
+#include "Log.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -6,6 +7,8 @@
 
 sg::ogl::camera::LookAtCamera::LookAtCamera()
 {
+    SG_OGL_CORE_LOG_DEBUG("[LookAtCamera::LookAtCamera()] Create LookAtCamera.");
+
     Update();
 }
 
@@ -14,7 +17,14 @@ sg::ogl::camera::LookAtCamera::LookAtCamera(const glm::vec3 t_position, const fl
     , m_yaw{ t_yaw }
     , m_pitch{ t_pitch }
 {
+    SG_OGL_CORE_LOG_DEBUG("[LookAtCamera::LookAtCamera()] Create LookAtCamera.");
+
     Update();
+}
+
+sg::ogl::camera::LookAtCamera::~LookAtCamera() noexcept
+{
+    SG_OGL_CORE_LOG_DEBUG("[LookAtCamera::~LookAtCamera()] Destruct LookAtCamera.");
 }
 
 //-------------------------------------------------

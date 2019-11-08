@@ -1,15 +1,21 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Scene.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 #include <memory>
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <vector>
-#include "Application.h"
-#include "Entity.h"
-#include "resource/Model.h"
-#include "resource/Material.h"
-#include "resource/ShaderProgram.h"
-#include "terrain/Terrain.h"
+#include <glm/vec4.hpp>
+
+namespace sg::ogl
+{
+    class Application;
+}
 
 namespace sg::ogl::light
 {
@@ -24,14 +30,9 @@ namespace sg::ogl::camera
 
 namespace sg::ogl::scene
 {
-    class Node;
-
     class Scene
     {
     public:
-        using ModelSharedPtr = std::shared_ptr<resource::Model>;
-        using MaterialSharedPtr = std::shared_ptr<resource::Material>;
-
         using CameraSharedPtr = std::shared_ptr<camera::LookAtCamera>;
 
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
@@ -56,6 +57,8 @@ namespace sg::ogl::scene
         // Getter
         //-------------------------------------------------
 
+        Application* GetApplicationContext() const;
+
         camera::LookAtCamera& GetCurrentCamera() noexcept;
         const camera::LookAtCamera& GetCurrentCamera() const noexcept;
 
@@ -67,10 +70,6 @@ namespace sg::ogl::scene
 
         bool IsDirectionalLight() const;
         bool IsPointLight() const;
-
-        Node* GetRoot() const;
-
-        Application* GetApplicationContext() const;
 
         glm::vec4 GetCurrentClipPlane() const;
 
@@ -86,8 +85,6 @@ namespace sg::ogl::scene
         //-------------------------------------------------
         // Scene objects
         //-------------------------------------------------
-
-        static Node* CreateNode(const ModelSharedPtr& t_model, const MaterialSharedPtr& t_material = nullptr);
 
         /*
         void AddWaterComponent(
@@ -110,27 +107,15 @@ namespace sg::ogl::scene
         }
         */
 
-        void AddNodeToRoot(Node* t_node) const;
-
-        //-------------------------------------------------
-        // Logic
-        //-------------------------------------------------
-
-        void Update();
-        void Render() const;
-        void Render(Node* t_node) const;
-
     protected:
 
     private:
+        Application* m_application{ nullptr };
+
         CameraSharedPtr m_currentCamera;
 
         DirectionalLightSharedPtr m_directionalLight;
         PointLightSharedPtr m_pointLight;
-
-        Node* m_rootNode{ nullptr };
-
-        Application* m_application{ nullptr };
 
         glm::vec4 m_currentClipPlane{ glm::vec4(0.0f) };
     };

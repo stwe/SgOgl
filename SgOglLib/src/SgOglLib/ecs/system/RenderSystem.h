@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "Core.h"
 #include "scene/Scene.h"
 
 namespace sg::ogl::ecs::system

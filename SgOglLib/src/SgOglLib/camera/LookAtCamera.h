@@ -33,7 +33,7 @@ namespace sg::ogl::camera
         LookAtCamera& operator=(const LookAtCamera& t_other) = delete;
         LookAtCamera& operator=(LookAtCamera&& t_other) noexcept = delete;
 
-        ~LookAtCamera() noexcept = default;
+        ~LookAtCamera() noexcept;
 
         //-------------------------------------------------
         // Setter

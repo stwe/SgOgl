@@ -1,4 +1,6 @@
 #include <glm/gtx/norm.hpp>
+#include "Core.h"
+#include "Application.h"
 #include "ParticleEmitter.h"
 #include "Particle.h"
 #include "Log.h"
@@ -9,6 +11,8 @@
 #include "buffer/VertexAttribute.h"
 #include "camera/LookAtCamera.h"
 #include "scene/Scene.h"
+#include "resource/TextureManager.h"
+#include "resource/ShaderManager.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
