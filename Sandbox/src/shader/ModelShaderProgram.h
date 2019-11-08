@@ -20,7 +20,7 @@ public:
         const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };
 
         SetUniform("modelMatrix", static_cast<glm::mat4>(transformComponent));
-        SetUniform("plane", glm::vec4(0.0f));
+        SetUniform("plane", t_scene.GetCurrentClipPlane());
         SetUniform("mvpMatrix", mvp);
         SetUniform("ambientIntensity", glm::vec3(1.0f));
         SetUniform("diffuseColor", t_currentMesh.GetDefaultMaterial()->kd);

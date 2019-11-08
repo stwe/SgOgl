@@ -132,6 +132,7 @@ void sg::ogl::resource::ModelManager::AddStaticMeshes()
 {
     AddSkyboxStaticMesh();
     AddGuiStaticMesh();
+    AddWaterStaticMesh();
 }
 
 //-------------------------------------------------
@@ -184,6 +185,35 @@ void sg::ogl::resource::ModelManager::AddGuiStaticMesh()
 
     // store Mesh
     m_staticMeshes.emplace(GUI_MESH, meshSharedPtr);
+}
+
+void sg::ogl::resource::ModelManager::AddWaterStaticMesh()
+{
+    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddWaterStaticMesh()] Add Water mesh.");
+
+    // create Mesh
+    auto meshSharedPtr{ std::make_shared<Mesh>() };
+
+    // create BufferLayout
+    const buffer::BufferLayout bufferLayout{
+        { buffer::VertexAttributeType::POSITION_2D, "aPosition" },
+    };
+
+    // x and z vertex positions, y is set to 0.0 in the vertex shader
+    std::vector<float> vertices{
+        -1.0f, -1.0f,
+        -1.0f,  1.0f,
+         1.0f, -1.0f,
+         1.0f, -1.0f,
+        -1.0f,  1.0f,
+         1.0f,  1.0f
+    };
+
+    // add Vbo
+    meshSharedPtr->GetVao().AddVertexDataVbo(vertices.data(), static_cast<int32_t>(vertices.size()) / 2, bufferLayout);
+
+    // store Mesh
+    m_staticMeshes.emplace(WATER_MESH, meshSharedPtr);
 }
 
 std::vector<glm::vec3> sg::ogl::resource::ModelManager::CreateSkyboxVertices(const float t_size)

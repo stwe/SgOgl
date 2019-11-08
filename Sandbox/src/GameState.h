@@ -10,23 +10,28 @@
 #pragma once
 
 #include "SgOgl.h"
+
 #include "shader/ModelShaderProgram.h"
-#include "renderer/ModelRenderSystem.h"
 #include "shader/SkyboxShaderProgram.h"
-#include "renderer/SkyboxRenderSystem.h"
 #include "shader/DomeShaderProgram.h"
-#include "renderer/SkydomeRenderSystem.h"
 #include "shader/TerrainShaderProgram.h"
-#include "renderer/TerrainRenderSystem.h"
 #include "shader/GuiShaderProgram.h"
-#include "renderer/GuiRenderSystem.h"
 #include "shader/InstancingShaderProgram.h"
+#include "shader/WaterShaderProgram.h"
+
+#include "renderer/ModelRenderSystem.h"
+#include "renderer/SkyboxRenderSystem.h"
+#include "renderer/SkydomeRenderSystem.h"
+#include "renderer/TerrainRenderSystem.h"
+#include "renderer/GuiRenderSystem.h"
 #include "renderer/InstancingRenderSystem.h"
+#include "renderer/WaterRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 24.0f };
+    static constexpr auto CAMERA_VELOCITY{ 96.0f };
+    static constexpr auto WATER_HEIGHT{ 50.0f };
 
     // scene graph
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
@@ -78,9 +83,13 @@ private:
     std::unique_ptr<TerrainRenderSystem<TerrainShaderProgram>> m_terrainRenderSystem;
     std::unique_ptr<GuiRenderSystem<GuiShaderProgram>> m_guiRenderSystem;
     std::unique_ptr<InstancingRenderSystem<InstancingShaderProgram>> m_instancingRenderSystem;
+    std::unique_ptr<WaterRenderSystem<WaterShaderProgram>> m_waterRenderSystem;
 
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
+
+    std::shared_ptr<sg::ogl::buffer::WaterFbos> m_waterFbos;
+    std::shared_ptr<sg::ogl::light::DirectionalLight> m_sun;
 
     //-------------------------------------------------
     // Helper
@@ -89,11 +98,16 @@ private:
     void Init();
 
     void CreateHouseEntity();
+    void CreateTreeEntity();
     void CreateSkyboxEntity();
     void CreateSkydomeEntity();
     void CreateTerrainEntity();
+    void CreateWaterEntity();
     void CreateGuiEntity();
 
     void AddGrass(uint32_t t_instances, const std::string& t_path);
     void CreateGrassPositions(uint32_t t_instances, std::vector<glm::mat4>& t_matrices) const;
+
+    void RenderReflectionTexture() const;
+    void RenderRefractionTexture() const;
 };

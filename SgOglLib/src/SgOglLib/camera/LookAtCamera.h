@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: LookAtCamera.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -51,6 +60,9 @@ namespace sg::ogl::camera
         glm::vec3& GetPosition();
         const glm::vec3& GetPosition() const;
         glm::mat4 GetViewMatrix() const;
+
+        float GetYaw() const;
+        float GetPitch() const;
 
         //-------------------------------------------------
         // Update

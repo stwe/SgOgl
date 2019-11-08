@@ -3,7 +3,7 @@
 <terrain>
     <position x="0.0" z="0.0"/>
     <scale xz="6000.0" y="600.0"/>
-    <heightmapPath>res/heightmap/hm0.bmp</heightmapPath>
+    <heightmapPath>res/heightmap/mountains512.png</heightmapPath>
     <textures>
         <texture name="grass" path="res/texture/terrain/Grass (Hill).jpg"/>
         <texture name="sand" path="res/texture/terrain/GrassAndRock.jpg"/>

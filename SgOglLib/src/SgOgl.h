@@ -35,6 +35,7 @@
 #include "SgOglLib/ecs/component/SkydomeComponent.h"
 #include "SgOglLib/ecs/component/TerrainComponent.h"
 #include "SgOglLib/ecs/component/TransformComponent.h"
+#include "SgOglLib/ecs/component/WaterComponent.h"
 #include "SgOglLib/ecs/system/RenderSystem.h"
 
 // input

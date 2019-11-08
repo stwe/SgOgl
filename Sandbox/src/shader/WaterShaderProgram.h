@@ -1,26 +1,39 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: WaterShaderProgram.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 class WaterShaderProgram : public sg::ogl::resource::ShaderProgram
 {
 public:
-    void UpdateUniforms(sg::ogl::scene::Entity& t_entity) override
+    void UpdateUniforms(const sg::ogl::scene::Scene& t_scene, const entt::entity t_entity, const sg::ogl::resource::Mesh& t_currentMesh) override
     {
+        // get components
+        auto& waterComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::WaterComponent>(t_entity);
+        auto& transformComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TransformComponent>(t_entity);
+
         // get projection matrix
-        const auto projectionMatrix{ t_entity.GetParentScene()->GetApplicationContext()->GetWindow()->GetProjectionMatrix() };
+        const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
 
         // set model matrix
-        SetUniform("modelMatrix", t_entity.GetWorldMatrix());
+        SetUniform("modelMatrix", static_cast<glm::mat4>(transformComponent));
 
-        // set mvp matrix
-        const auto mvp{ projectionMatrix * t_entity.GetParentScene()->GetCurrentCamera().GetViewMatrix() * t_entity.GetWorldMatrix() };
-        SetUniform("mvpMatrix", mvp);
+        // set vp matrix
+        const auto vp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() };
+        SetUniform("vpMatrix", vp);
 
         // set camera position
-        SetUniform("cameraPosition", t_entity.GetParentScene()->GetCurrentCamera().GetPosition());
+        SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
         // set near and far
-        SetUniform("near", t_entity.GetParentScene()->GetApplicationContext()->GetProjectionOptions().nearPlane);
-        SetUniform("far", t_entity.GetParentScene()->GetApplicationContext()->GetProjectionOptions().farPlane);
+        SetUniform("near", t_scene.GetApplicationContext()->GetProjectionOptions().nearPlane);
+        SetUniform("far", t_scene.GetApplicationContext()->GetProjectionOptions().farPlane);
 
         // set textures
         SetUniform("reflectionMap", 0);
@@ -30,21 +43,18 @@ public:
         SetUniform("depthMap", 4);
 
         // set light
-        SetUniform("lightPosition", t_entity.GetParentScene()->GetDirectionalLight().direction);
-        SetUniform("lightColor", t_entity.GetParentScene()->GetDirectionalLight().diffuseIntensity);
-
-        // get water component
-        const auto waterComponent{ std::dynamic_pointer_cast<sg::ogl::scene::component::WaterComponent>(t_entity.GetComponentSharedPtr(sg::ogl::scene::Component::Type::WATER)) };
+        SetUniform("lightPosition", t_scene.GetDirectionalLight().direction);
+        SetUniform("lightColor", t_scene.GetDirectionalLight().diffuseIntensity);
 
         // set move factor
-        SetUniform("moveFactor", waterComponent->moveFactor);
+        SetUniform("moveFactor", waterComponent.moveFactor);
 
         // bind textures
-        sg::ogl::resource::TextureManager::BindForReading(waterComponent->reflectionTextureId, GL_TEXTURE0);
-        sg::ogl::resource::TextureManager::BindForReading(waterComponent->refractionTextureId, GL_TEXTURE1);
-        sg::ogl::resource::TextureManager::BindForReading(waterComponent->dudvTextureId, GL_TEXTURE2);
-        sg::ogl::resource::TextureManager::BindForReading(waterComponent->normalTextureId, GL_TEXTURE3);
-        sg::ogl::resource::TextureManager::BindForReading(waterComponent->depthTextureId, GL_TEXTURE4);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.reflectionTextureId, GL_TEXTURE0);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.refractionTextureId, GL_TEXTURE1);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.dudvTextureId, GL_TEXTURE2);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.normalTextureId, GL_TEXTURE3);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.depthTextureId, GL_TEXTURE4);
     }
 
     std::string GetFolderName() override

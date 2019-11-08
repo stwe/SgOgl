@@ -1,6 +1,6 @@
 // This file is part of the SgOgl package.
 // 
-// Filename: SkyboxRenderSystem.h
+// Filename: WaterRenderSystem.h
 // Author:   stwe
 // 
 // License:  MIT
@@ -10,14 +10,28 @@
 #pragma once
 
 template <typename TShaderProgram>
-class SkyboxRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
+class WaterRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
 {
 public:
-    explicit SkyboxRenderSystem(sg::ogl::scene::Scene* t_scene)
+    explicit WaterRenderSystem(sg::ogl::scene::Scene* t_scene)
         : sg::ogl::ecs::system::RenderSystem<TShaderProgram>(t_scene)
     {}
 
-    void Update(double t_dt) override {}
+    void Update(const double t_dt) override
+    {
+        auto view = m_scene->GetApplicationContext()->registry.view<
+            sg::ogl::ecs::component::MeshComponent,
+            sg::ogl::ecs::component::WaterComponent,
+            sg::ogl::ecs::component::TransformComponent>();
+
+        for (auto entity : view)
+        {
+            auto& waterComponent = view.get<sg::ogl::ecs::component::WaterComponent>(entity);
+
+            waterComponent.moveFactor += waterComponent.waveSpeed * static_cast<float>(t_dt);
+            waterComponent.moveFactor = fmod(waterComponent.moveFactor, 1.0f);
+        }
+    }
 
     void Render() override
     {
@@ -25,7 +39,8 @@ public:
 
         auto view = m_scene->GetApplicationContext()->registry.view<
             sg::ogl::ecs::component::MeshComponent,
-            sg::ogl::ecs::component::CubemapComponent>();
+            sg::ogl::ecs::component::WaterComponent,
+            sg::ogl::ecs::component::TransformComponent>();
 
         auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
 
@@ -49,15 +64,13 @@ public:
 protected:
     void PrepareRendering() override
     {
-        sg::ogl::OpenGl::SetDepthFunc(GL_LEQUAL);
+        sg::ogl::OpenGl::EnableAlphaBlending();
     }
 
     void FinishRendering() override
     {
-        // GL_LESS is the initial depth comparison function
-        sg::ogl::OpenGl::SetDepthFunc(GL_LESS);
+        sg::ogl::OpenGl::DisableBlending();
     }
 
 private:
-
 };

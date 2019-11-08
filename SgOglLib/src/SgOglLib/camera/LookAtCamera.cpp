@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: LookAtCamera.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include "LookAtCamera.h"
 #include "Log.h"
 
@@ -71,6 +80,16 @@ const glm::vec3& sg::ogl::camera::LookAtCamera::GetPosition() const
 glm::mat4 sg::ogl::camera::LookAtCamera::GetViewMatrix() const
 {
     return lookAt(m_position, m_position + m_front, m_up);
+}
+
+float sg::ogl::camera::LookAtCamera::GetYaw() const
+{
+    return m_yaw;
+}
+
+float sg::ogl::camera::LookAtCamera::GetPitch() const
+{
+    return m_pitch;
 }
 
 //-------------------------------------------------

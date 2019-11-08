@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: ModelRenderSystem.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 template <typename TShaderProgram>
@@ -32,9 +41,7 @@ public:
                 for (auto& mesh : modelComponent.model->GetMeshes())
                 {
                     mesh->InitDraw();
-
                     shaderProgram.UpdateUniforms(*m_scene, entity, *mesh);
-
                     mesh->DrawPrimitives();
                     mesh->EndDraw();
                 }

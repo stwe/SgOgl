@@ -4,11 +4,7 @@
 
 // In
 
-layout (location = 0) in vec3 aPosition;
-layout (location = 1) in vec3 aNormal;
-layout (location = 2) in vec2 aUv;
-layout (location = 3) in vec3 aTangent;
-layout (location = 4) in vec3 aBiTangent;
+layout (location = 0) in vec2 aPosition;
 
 // Out
 
@@ -20,7 +16,7 @@ out vec3 vFromLightVector;
 // Uniforms
 
 uniform mat4 modelMatrix;
-uniform mat4 mvpMatrix;
+uniform mat4 vpMatrix;
 uniform vec3 cameraPosition;
 uniform vec3 lightPosition;
 
@@ -30,12 +26,11 @@ const float tiling = 4.0;
 
 void main()
 {
-    vec4 worldPosition = modelMatrix * vec4(aPosition, 1.0);
-    vClipSpace = mvpMatrix * vec4(aPosition, 1.0);
+    vec4 worldPosition = modelMatrix * vec4(aPosition.x, 0.0, aPosition.y, 1.0);
+    vClipSpace = vpMatrix * worldPosition;
     gl_Position = vClipSpace;
 
-    // use position.z!
-    vUv = vec2(aPosition.x / 2.0 + 0.5, aPosition.z / 2.0 + 0.5) * tiling;
+    vUv = vec2(aPosition.x / 2.0 + 0.5, aPosition.y / 2.0 + 0.5) * tiling;
 
     vToCameraVector = cameraPosition - worldPosition.xyz;
     vFromLightVector = worldPosition.xyz - lightPosition;

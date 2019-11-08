@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: TerrainRenderSystem.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 template <typename TShaderProgram>
@@ -44,4 +53,3 @@ protected:
 private:
 
 };
-
