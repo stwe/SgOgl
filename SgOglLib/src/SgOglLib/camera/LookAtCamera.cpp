@@ -163,6 +163,7 @@ void sg::ogl::camera::LookAtCamera::ProcessMouse(const glm::vec2& t_displVec)
         m_yaw = -359.0f;
     }
 
+    /*
     if (m_pitch > 89.0f)
     {
         m_pitch = 89.0f;
@@ -171,6 +172,7 @@ void sg::ogl::camera::LookAtCamera::ProcessMouse(const glm::vec2& t_displVec)
     {
         m_pitch = -89.0f;
     }
+    */
 
     // Update Front, Right and Up Vectors using the updated Euler angles.
     Update();

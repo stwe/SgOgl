@@ -48,8 +48,15 @@ public:
     }
 
 protected:
-    void PrepareRendering() override {}
-    void FinishRendering() override {}
+    void PrepareRendering() override
+    {
+        sg::ogl::OpenGl::EnableFaceCulling();
+    }
+
+    void FinishRendering() override
+    {
+        sg::ogl::OpenGl::DisableFaceCulling();
+    }
 
 private:
 

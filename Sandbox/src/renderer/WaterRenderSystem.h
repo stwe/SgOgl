@@ -64,11 +64,13 @@ public:
 protected:
     void PrepareRendering() override
     {
+        sg::ogl::OpenGl::EnableFaceCulling();
         sg::ogl::OpenGl::EnableAlphaBlending();
     }
 
     void FinishRendering() override
     {
+        sg::ogl::OpenGl::DisableFaceCulling();
         sg::ogl::OpenGl::DisableBlending();
     }
 

@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: WaterFbos.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include "WaterFbos.h"
 #include "Log.h"
 #include "OpenGl.h"

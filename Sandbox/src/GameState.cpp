@@ -91,7 +91,7 @@ void GameState::Render()
 
     m_skyboxRenderSystem->Render();
     //m_skydomeRenderSystem->Render();
-    m_guiRenderSystem->Render();
+    //m_guiRenderSystem->Render();
 }
 
 //-------------------------------------------------
@@ -400,7 +400,7 @@ void GameState::RenderReflectionTexture() const
     m_waterFbos->BindReflectionFboAsRenderTarget();
 
     const auto distance{ 2.0f * (m_camera->GetPosition().y - WATER_HEIGHT) };
-    m_camera->GetPosition() -= distance;
+    m_camera->GetPosition().y -= distance;
     m_camera->InvertPitch();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -413,7 +413,7 @@ void GameState::RenderReflectionTexture() const
     m_skyboxRenderSystem->Render();
     //m_skydomeRenderSystem->Render();
 
-    m_camera->GetPosition() += distance;
+    m_camera->GetPosition().y += distance;
     m_camera->InvertPitch();
 
     m_waterFbos->UnbindRenderTarget();

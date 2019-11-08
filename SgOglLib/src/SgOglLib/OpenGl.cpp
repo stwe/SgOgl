@@ -127,15 +127,11 @@ void sg::ogl::OpenGl::EnableFaceCulling()
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);
-
-    SG_OGL_CORE_LOG_DEBUG("[OpenGl::EnableFaceCulling()] Face culling enabled (front = ccw).");
 }
 
 void sg::ogl::OpenGl::DisableFaceCulling()
 {
     glDisable(GL_CULL_FACE);
-
-    SG_OGL_CORE_LOG_DEBUG("[OpenGl::DisableFaceCulling()] Face culling disabled.");
 }
 
 void sg::ogl::OpenGl::EnableAlphaBlending()
