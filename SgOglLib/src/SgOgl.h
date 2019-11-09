@@ -36,6 +36,7 @@
 #include "SgOglLib/ecs/component/TerrainComponent.h"
 #include "SgOglLib/ecs/component/TransformComponent.h"
 #include "SgOglLib/ecs/component/WaterComponent.h"
+#include "SgOglLib/ecs/factory/EntityFactory.h"
 #include "SgOglLib/ecs/system/RenderSystem.h"
 
 // input

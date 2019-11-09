@@ -30,7 +30,7 @@
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 96.0f };
+    static constexpr auto CAMERA_VELOCITY{ 128.0f };
     static constexpr auto WATER_HEIGHT{ 50.0f };
 
     // scene graph
@@ -97,16 +97,9 @@ private:
 
     void Init();
 
-    void CreateHouseEntity();
-    void CreateTreeEntity();
-    void CreateSkyboxEntity();
-    void CreateSkydomeEntity();
-    void CreateTerrainEntity();
     void CreateWaterEntity();
-    void CreateGuiEntity();
 
-    void AddGrass(uint32_t t_instances, const std::string& t_path);
-    void CreateGrassPositions(uint32_t t_instances, std::vector<glm::mat4>& t_matrices) const;
+    std::vector<glm::mat4> CreatePlantPositions(uint32_t t_instances) const;
 
     void RenderReflectionTexture() const;
     void RenderRefractionTexture() const;

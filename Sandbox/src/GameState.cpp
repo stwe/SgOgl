@@ -86,12 +86,12 @@ void GameState::Render()
 
     m_modelRenderSystem->Render();
     m_terrainRenderSystem->Render();
-    //m_instancingRenderSystem->Render();
+    m_instancingRenderSystem->Render();
     m_waterRenderSystem->Render();
 
     m_skyboxRenderSystem->Render();
     //m_skydomeRenderSystem->Render();
-    //m_guiRenderSystem->Render();
+    m_guiRenderSystem->Render();
 }
 
 //-------------------------------------------------
@@ -132,78 +132,25 @@ void GameState::Init()
     // create a fbos object for water rendering
     m_waterFbos = std::make_shared<sg::ogl::buffer::WaterFbos>(GetApplicationContext());
 
-    // create entities
-    CreateHouseEntity();
-    CreateTreeEntity();
-    CreateSkyboxEntity();
-    CreateSkydomeEntity();
-    CreateTerrainEntity();
-    CreateWaterEntity();
-    CreateGuiEntity();
-
-    //AddGrass(50000, "res/model/Grass/grassmodel.obj");
-}
-
-void GameState::CreateHouseEntity()
-{
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
-
-    // add model component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
-        entity,
-        GetApplicationContext()->GetModelManager().GetModelByPath("res/model/House/farmhouse_obj.obj")
-    );
-
-    const auto posX{ -1000.0f };
-    const auto posZ{ -2000.0f };
-    const auto height{ m_terrain->GetHeightAtWorldPosition(posX, posZ) };
-
-    // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        entity,
-        glm::vec3(posX, height, posZ),
+    // house
+    auto height{ m_terrain->GetHeightAtWorldPosition(-1000.0f, -2000.0f) };
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        "res/model/House/farmhouse_obj.obj",
+        glm::vec3(-1000.0f, height, -2000.0f),
         glm::vec3(0.0f),
         glm::vec3(2.0f)
     );
-}
 
-void GameState::CreateTreeEntity()
-{
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
-
-    // add model component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
-        entity,
-        GetApplicationContext()->GetModelManager().GetModelByPath("res/model/Tree_02/tree02.obj")
-    );
-
-    const auto posX{ -1090.0f };
-    const auto posZ{ -2060.0f };
-    const auto height{ m_terrain->GetHeightAtWorldPosition(posX, posZ) };
-
-    // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        entity,
-        glm::vec3(posX, height, posZ),
+    // tree
+    height = m_terrain->GetHeightAtWorldPosition(-1090.0f, -2060.0f);
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        "res/model/Tree_02/tree02.obj",
+        glm::vec3(-1090.0f, height, -2060.0f),
         glm::vec3(0.0f),
         glm::vec3(64.0f)
     );
-}
 
-void GameState::CreateSkyboxEntity()
-{
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
-
-    // add mesh component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
-        entity,
-        GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::SKYBOX_MESH)
-    );
-
-    // add cubemap component
+    // skybox
     const std::vector<std::string> cubemapFileNames{
         "res/texture/sky/sRight.png",
         "res/texture/sky/sLeft.png",
@@ -212,51 +159,29 @@ void GameState::CreateSkyboxEntity()
         "res/texture/sky/sBack.png",
         "res/texture/sky/sFront.png"
     };
+    GetApplicationContext()->GetEntityFactory().CreateSkyboxEntity(cubemapFileNames);
 
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::CubemapComponent>(
-        entity,
-        GetApplicationContext()->GetTextureManager().GetCubemapId(cubemapFileNames)
-    );
-}
+    // skydome
+    GetApplicationContext()->GetEntityFactory().CreateSkydomeEntity("res/model/dome/dome.obj");
 
-void GameState::CreateSkydomeEntity()
-{
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
+    // terrain
+    GetApplicationContext()->GetEntityFactory().CreateTerrainEntity(m_terrain);
 
-    // add model component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
-        entity,
-        GetApplicationContext()->GetModelManager().GetModelByPath("res/model/dome/dome.obj")
-    );
+    CreateWaterEntity();
 
-    // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        entity,
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(GetApplicationContext()->GetProjectionOptions().farPlane * 0.5f)
-    );
+    // gui
+    const auto posX{ 0.5f };
+    const auto posY{ 0.5f };
+    const auto scaleX{ 0.25f };
+    const auto scaleY{ 0.25f };
+    GetApplicationContext()->GetEntityFactory().CreateGuiEntity(posX, posY, scaleX, scaleY, m_waterFbos->GetReflectionColorTextureId());
 
-    // add skydome component/tag
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::SkydomeComponent>(entity);
-}
-
-void GameState::CreateTerrainEntity()
-{
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
-
-    // add terrain component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TerrainComponent>(
-        entity,
-        m_terrain
-    );
-
-    // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        entity,
-        glm::vec3(m_terrain->GetTerrainOptions().xPos, 0.0f, m_terrain->GetTerrainOptions().zPos)
+    // plants
+    const uint32_t instances{ 10000 };
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        instances,
+        "res/model/Grass/grassmodel.obj",
+        CreatePlantPositions(instances)
     );
 }
 
@@ -298,87 +223,15 @@ void GameState::CreateWaterEntity()
     );
 }
 
-void GameState::CreateGuiEntity()
-{
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
-
-    const auto posX{ 0.5f };
-    const auto posY{ 0.5f };
-
-    const auto scaleX{ 0.25f };
-    const auto scaleY{ 0.25f };
-
-    // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        entity,
-        glm::vec3(posX, posY, 0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(scaleX, scaleY, 1.0f)
-    );
-
-    // add mesh component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
-        entity,
-        GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::GUI_MESH)
-    );
-
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::GuiComponent>(
-        entity,
-        m_waterFbos->GetReflectionColorTextureId()
-    );
-}
-
-void GameState::AddGrass(const uint32_t t_instances, const std::string& t_path)
-{
-    std::vector<glm::mat4> matrices;
-
-    CreateGrassPositions(t_instances, matrices);
-
-    const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals };
-
-    for (auto& mesh : GetApplicationContext()->GetModelManager().GetModelByPath(t_path, pFlags)->GetMeshes())
-    {
-        // get Vao of the mesh
-        auto& vao{ mesh->GetVao() };
-
-        // create an empty Vbo for instanced data
-        const uint32_t numberOfFloatsPerInstance{ 16 };
-        const auto vbo{ vao.AddEmptyVbo(numberOfFloatsPerInstance * t_instances) };
-
-        // set Vbo attributes
-        vao.AddInstancedAttribute(vbo, 5, 4, numberOfFloatsPerInstance, 0);
-        vao.AddInstancedAttribute(vbo, 6, 4, numberOfFloatsPerInstance, 4);
-        vao.AddInstancedAttribute(vbo, 7, 4, numberOfFloatsPerInstance, 8);
-        vao.AddInstancedAttribute(vbo, 8, 4, numberOfFloatsPerInstance, 12);
-
-        // store data
-        vao.StoreTransformationMatrices(vbo, numberOfFloatsPerInstance * t_instances, matrices);
-    }
-
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
-
-    // add instances component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::InstancesComponent>(
-        entity,
-        t_instances
-    );
-
-    // add model component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
-        entity,
-        GetApplicationContext()->GetModelManager().GetModelByPath(t_path)
-    );
-}
-
-void GameState::CreateGrassPositions(const uint32_t t_instances, std::vector<glm::mat4>& t_matrices) const
+std::vector<glm::mat4> GameState::CreatePlantPositions(const uint32_t t_instances) const
 {
     std::random_device seeder;
     std::mt19937 engine(seeder());
 
-    const std::uniform_real_distribution<float> posX(1.0f, 550.0f);
-    const std::uniform_real_distribution<float> posZ(-350.0f, 350.0f);
+    const std::uniform_real_distribution<float> posX(-1100.0f , -800.0f);
+    const std::uniform_real_distribution<float> posZ(-2050.0f , -1900.0);
+
+    std::vector<glm::mat4> matrices;
 
     for (auto i{ 0u }; i < t_instances; ++i)
     {
@@ -390,8 +243,10 @@ void GameState::CreateGrassPositions(const uint32_t t_instances, std::vector<glm
         transform.position = glm::vec3(pos.x, height, pos.z);
         transform.scale = glm::vec3(2.0f);
 
-        t_matrices.push_back(transform.GetModelMatrix());
+        matrices.push_back(transform.GetModelMatrix());
     }
+
+    return matrices;
 }
 
 void GameState::RenderReflectionTexture() const
