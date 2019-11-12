@@ -19,10 +19,12 @@
 #include "ecs/component/TerrainComponent.h"
 #include "ecs/component/GuiComponent.h"
 #include "ecs/component/InstancesComponent.h"
+#include "ecs/component/WaterComponent.h"
 #include "resource/Model.h"
 #include "resource/ModelManager.h"
 #include "resource/TextureManager.h"
 #include "terrain/Terrain.h"
+#include "water/Water.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -198,4 +200,30 @@ void sg::ogl::ecs::factory::EntityFactory::CreateGuiEntity(
 
     // add gui component
     m_application->registry.assign<component::GuiComponent>(entity, t_textureId);
+}
+
+void sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const std::shared_ptr<water::Water>& t_water) const
+{
+    // create an entity
+    const auto entity{ m_application->registry.create() };
+
+    // add mesh component
+    m_application->registry.assign<component::MeshComponent>(
+        entity,
+        m_application->GetModelManager().GetStaticMeshByName(resource::ModelManager::WATER_MESH)
+    );
+
+    // add water component
+    m_application->registry.assign<component::WaterComponent>(
+        entity,
+        t_water
+    );
+
+    // add transform component
+    m_application->registry.assign<component::TransformComponent>(
+        entity,
+        glm::vec3(t_water->GetXPosition(), t_water->GetHeight(), t_water->GetZPosition()),
+        glm::vec3(0.0f),
+        glm::vec3(t_water->GetTileSize())
+    );
 }

@@ -71,3 +71,6 @@
 
 // terrain
 #include "SgOglLib/terrain/Terrain.h"
+
+// water
+#include "SgOglLib/water/Water.h"

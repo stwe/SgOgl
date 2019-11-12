@@ -28,8 +28,8 @@ public:
         {
             auto& waterComponent = view.get<sg::ogl::ecs::component::WaterComponent>(entity);
 
-            waterComponent.moveFactor += waterComponent.waveSpeed * static_cast<float>(t_dt);
-            waterComponent.moveFactor = fmod(waterComponent.moveFactor, 1.0f);
+            waterComponent.water->moveFactor += waterComponent.water->GetWaveSpeed() * static_cast<float>(t_dt);
+            waterComponent.water->moveFactor = fmod(waterComponent.water->moveFactor, 1.0f);
         }
     }
 

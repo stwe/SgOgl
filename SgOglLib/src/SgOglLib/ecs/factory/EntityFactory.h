@@ -25,6 +25,11 @@ namespace sg::ogl::terrain
     class Terrain;
 }
 
+namespace sg::ogl::water
+{
+    class Water;
+}
+
 namespace sg::ogl::ecs::factory
 {
     class EntityFactory
@@ -73,6 +78,8 @@ namespace sg::ogl::ecs::factory
             float t_scaleY,
             uint32_t t_textureId
         ) const;
+
+        void CreateWaterEntity(const std::shared_ptr<water::Water>& t_water) const;
 
     protected:
 

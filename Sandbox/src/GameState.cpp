@@ -120,6 +120,16 @@ void GameState::Init()
     m_terrain = std::make_shared<sg::ogl::terrain::Terrain>(GetApplicationContext(), "res/config/Terrain.xml");
     m_terrain->GenerateTerrain<ComputeNormalmap, ComputeSplatmap>();
 
+    // create water
+    m_water = std::make_shared<sg::ogl::water::Water>(
+        GetApplicationContext(),
+        -400.0f, -2300.0f,
+        WATER_HEIGHT,
+        750.0f,
+        "res/texture/water/waterDUDV.png",
+        "res/texture/water/normal.png"
+    );
+
     // create render systems
     m_modelRenderSystem = std::make_unique<ModelRenderSystem<ModelShaderProgram>>(m_scene.get());
     m_skyboxRenderSystem = std::make_unique<SkyboxRenderSystem<SkyboxShaderProgram>>(m_scene.get());
@@ -128,9 +138,6 @@ void GameState::Init()
     m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
     m_instancingRenderSystem = std::make_unique<InstancingRenderSystem<InstancingShaderProgram>>(m_scene.get());
     m_waterRenderSystem = std::make_unique<WaterRenderSystem<WaterShaderProgram>>(m_scene.get());
-
-    // create a fbos object for water rendering
-    m_waterFbos = std::make_shared<sg::ogl::buffer::WaterFbos>(GetApplicationContext());
 
     // house
     auto height{ m_terrain->GetHeightAtWorldPosition(-1000.0f, -2000.0f) };
@@ -167,14 +174,19 @@ void GameState::Init()
     // terrain
     GetApplicationContext()->GetEntityFactory().CreateTerrainEntity(m_terrain);
 
-    CreateWaterEntity();
+    // water
+    GetApplicationContext()->GetEntityFactory().CreateWaterEntity(m_water);
 
     // gui
     const auto posX{ 0.5f };
     const auto posY{ 0.5f };
     const auto scaleX{ 0.25f };
     const auto scaleY{ 0.25f };
-    GetApplicationContext()->GetEntityFactory().CreateGuiEntity(posX, posY, scaleX, scaleY, m_waterFbos->GetReflectionColorTextureId());
+    GetApplicationContext()->GetEntityFactory().CreateGuiEntity(
+        posX, posY,
+        scaleX, scaleY,
+        m_water->GetWaterFbos().GetReflectionColorTextureId()
+    );
 
     // plants
     const uint32_t instances{ 10000 };
@@ -182,44 +194,6 @@ void GameState::Init()
         instances,
         "res/model/Grass/grassmodel.obj",
         CreatePlantPositions(instances)
-    );
-}
-
-void GameState::CreateWaterEntity()
-{
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
-
-    // add mesh component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
-        entity,
-        GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::WATER_MESH)
-    );
-
-    const auto xPos{ -400.0f };
-    const auto zPos{ -2300.0f };
-    const auto height{ WATER_HEIGHT };
-    const auto tileSize{ 750.0f };
-
-    // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        entity,
-        glm::vec3(xPos, height, zPos),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(tileSize * 2.0f, tileSize, tileSize)
-    );
-
-    const auto dudvTextureId{ GetApplicationContext()->GetTextureManager().GetTextureIdFromPath("res/texture/water/waterDUDV.png") };
-    const auto normalTextureId{ GetApplicationContext()->GetTextureManager().GetTextureIdFromPath("res/texture/water/normal.png") };
-
-    // add water component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::WaterComponent>(
-        entity,
-        m_waterFbos->GetReflectionColorTextureId(),
-        m_waterFbos->GetRefractionColorTextureId(),
-        dudvTextureId,
-        normalTextureId,
-        m_waterFbos->GetRefractionDepthTextureId()
     );
 }
 
@@ -252,7 +226,7 @@ std::vector<glm::mat4> GameState::CreatePlantPositions(const uint32_t t_instance
 void GameState::RenderReflectionTexture() const
 {
     // render all above the water surface
-    m_waterFbos->BindReflectionFboAsRenderTarget();
+    m_water->GetWaterFbos().BindReflectionFboAsRenderTarget();
 
     const auto distance{ 2.0f * (m_camera->GetPosition().y - WATER_HEIGHT) };
     m_camera->GetPosition().y -= distance;
@@ -271,13 +245,13 @@ void GameState::RenderReflectionTexture() const
     m_camera->GetPosition().y += distance;
     m_camera->InvertPitch();
 
-    m_waterFbos->UnbindRenderTarget();
+    m_water->GetWaterFbos().UnbindRenderTarget();
 }
 
 void GameState::RenderRefractionTexture() const
 {
     // render all under the water surface
-    m_waterFbos->BindRefractionFboAsRenderTarget();
+    m_water->GetWaterFbos().BindRefractionFboAsRenderTarget();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, WATER_HEIGHT));
@@ -289,5 +263,5 @@ void GameState::RenderRefractionTexture() const
     m_skyboxRenderSystem->Render();
     //m_skydomeRenderSystem->Render();
 
-    m_waterFbos->UnbindRenderTarget();
+    m_water->GetWaterFbos().UnbindRenderTarget();
 }

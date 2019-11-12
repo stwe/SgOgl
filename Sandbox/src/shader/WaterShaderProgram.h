@@ -47,14 +47,14 @@ public:
         SetUniform("lightColor", t_scene.GetDirectionalLight().diffuseIntensity);
 
         // set move factor
-        SetUniform("moveFactor", waterComponent.moveFactor);
+        SetUniform("moveFactor", waterComponent.water->moveFactor);
 
         // bind textures
-        sg::ogl::resource::TextureManager::BindForReading(waterComponent.reflectionTextureId, GL_TEXTURE0);
-        sg::ogl::resource::TextureManager::BindForReading(waterComponent.refractionTextureId, GL_TEXTURE1);
-        sg::ogl::resource::TextureManager::BindForReading(waterComponent.dudvTextureId, GL_TEXTURE2);
-        sg::ogl::resource::TextureManager::BindForReading(waterComponent.normalTextureId, GL_TEXTURE3);
-        sg::ogl::resource::TextureManager::BindForReading(waterComponent.depthTextureId, GL_TEXTURE4);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.water->GetWaterFbos().GetReflectionColorTextureId(), GL_TEXTURE0);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.water->GetWaterFbos().GetRefractionColorTextureId(), GL_TEXTURE1);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.water->GetDudvTextureId(), GL_TEXTURE2);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.water->GetNormalTextureId(), GL_TEXTURE3);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.water->GetWaterFbos().GetRefractionDepthTextureId(), GL_TEXTURE4);
     }
 
     std::string GetFolderName() override

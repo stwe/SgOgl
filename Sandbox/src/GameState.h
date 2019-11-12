@@ -42,6 +42,9 @@ public:
     // terrain
     using TerrainSharedPtr = std::shared_ptr<sg::ogl::terrain::Terrain>;
 
+    // water
+    using WaterSharedPtr = std::shared_ptr<sg::ogl::water::Water>;
+
     //-------------------------------------------------
     // Ctors. / Dtor.
     //-------------------------------------------------
@@ -76,6 +79,7 @@ protected:
 
 private:
     TerrainSharedPtr m_terrain;
+    WaterSharedPtr m_water;
 
     std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
     std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
@@ -88,7 +92,6 @@ private:
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
 
-    std::shared_ptr<sg::ogl::buffer::WaterFbos> m_waterFbos;
     std::shared_ptr<sg::ogl::light::DirectionalLight> m_sun;
 
     //-------------------------------------------------
@@ -96,8 +99,6 @@ private:
     //-------------------------------------------------
 
     void Init();
-
-    void CreateWaterEntity();
 
     std::vector<glm::mat4> CreatePlantPositions(uint32_t t_instances) const;
 
