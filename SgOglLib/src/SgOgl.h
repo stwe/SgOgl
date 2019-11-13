@@ -38,6 +38,7 @@
 #include "SgOglLib/ecs/component/WaterComponent.h"
 #include "SgOglLib/ecs/factory/EntityFactory.h"
 #include "SgOglLib/ecs/system/RenderSystem.h"
+#include "SgOglLib/ecs/system/WaterRenderSystem.h"
 
 // input
 #include "SgOglLib/input/MouseInput.h"

@@ -128,7 +128,7 @@ void GameState::Init()
     m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
     m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
     m_instancingRenderSystem = std::make_unique<InstancingRenderSystem<InstancingShaderProgram>>(m_scene.get());
-    m_waterRenderSystem = std::make_unique<WaterRenderSystem<WaterShaderProgram>>(m_scene.get());
+    m_waterRenderSystem = std::make_unique<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>>(m_scene.get());
 
     // house
     auto height{ m_terrain->GetHeightAtWorldPosition(-1000.0f, -2000.0f) };

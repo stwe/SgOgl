@@ -25,7 +25,6 @@
 #include "renderer/TerrainRenderSystem.h"
 #include "renderer/GuiRenderSystem.h"
 #include "renderer/InstancingRenderSystem.h"
-#include "renderer/WaterRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
@@ -87,7 +86,8 @@ private:
     std::unique_ptr<TerrainRenderSystem<TerrainShaderProgram>> m_terrainRenderSystem;
     std::unique_ptr<GuiRenderSystem<GuiShaderProgram>> m_guiRenderSystem;
     std::unique_ptr<InstancingRenderSystem<InstancingShaderProgram>> m_instancingRenderSystem;
-    std::unique_ptr<WaterRenderSystem<WaterShaderProgram>> m_waterRenderSystem;
+
+    std::unique_ptr<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>> m_waterRenderSystem;
 
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
@@ -101,7 +101,4 @@ private:
     void Init();
 
     std::vector<glm::mat4> CreatePlantPositions(uint32_t t_instances) const;
-
-    void RenderReflectionTexture() const;
-    void RenderRefractionTexture() const;
 };
