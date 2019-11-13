@@ -63,6 +63,7 @@ namespace sg::ogl::ecs::system
          */
         std::string m_shaderFolderName;
 
+        // todo
         virtual void PrepareRendering() {}
         virtual void FinishRendering() {}
 

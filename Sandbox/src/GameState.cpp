@@ -71,24 +71,15 @@ bool GameState::Update(const double t_dt)
 
 void GameState::Render()
 {
-    // enable clipping
-    sg::ogl::OpenGl::EnableClipping();
+    // render to textures
+    m_waterRenderSystem->RenderReflectionTexture(m_modelRenderSystem, m_terrainRenderSystem, m_skyboxRenderSystem);
+    m_waterRenderSystem->RenderRefractionTexture(m_modelRenderSystem, m_terrainRenderSystem, m_skyboxRenderSystem);
 
-    // render reflection texture
-    RenderReflectionTexture();
-
-    // render refraction texture
-    RenderRefractionTexture();
-
-    // disable clipping  -  render to the screen
-    sg::ogl::OpenGl::DisableClipping();
-    m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f));
-
+    //render to the screen
     m_modelRenderSystem->Render();
     m_terrainRenderSystem->Render();
     m_instancingRenderSystem->Render();
     m_waterRenderSystem->Render();
-
     m_skyboxRenderSystem->Render();
     //m_skydomeRenderSystem->Render();
     m_guiRenderSystem->Render();
@@ -221,47 +212,4 @@ std::vector<glm::mat4> GameState::CreatePlantPositions(const uint32_t t_instance
     }
 
     return matrices;
-}
-
-void GameState::RenderReflectionTexture() const
-{
-    // render all above the water surface
-    m_water->GetWaterFbos().BindReflectionFboAsRenderTarget();
-
-    const auto distance{ 2.0f * (m_camera->GetPosition().y - WATER_HEIGHT) };
-    m_camera->GetPosition().y -= distance;
-    m_camera->InvertPitch();
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    m_scene->SetCurrentClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -WATER_HEIGHT));
-
-    m_modelRenderSystem->Render();
-    m_terrainRenderSystem->Render();
-    //m_instancingRenderSystem->Render();
-
-    m_skyboxRenderSystem->Render();
-    //m_skydomeRenderSystem->Render();
-
-    m_camera->GetPosition().y += distance;
-    m_camera->InvertPitch();
-
-    m_water->GetWaterFbos().UnbindRenderTarget();
-}
-
-void GameState::RenderRefractionTexture() const
-{
-    // render all under the water surface
-    m_water->GetWaterFbos().BindRefractionFboAsRenderTarget();
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, WATER_HEIGHT));
-
-    m_modelRenderSystem->Render();
-    m_terrainRenderSystem->Render();
-    //m_instancingRenderSystem->Render();
-
-    m_skyboxRenderSystem->Render();
-    //m_skydomeRenderSystem->Render();
-
-    m_water->GetWaterFbos().UnbindRenderTarget();
 }

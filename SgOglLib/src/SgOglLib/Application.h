@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <entt/entity/registry.hpp>
+#include <entt/entt.hpp>
 #include "Config.h"
 
 namespace sg::ogl::resource
