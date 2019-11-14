@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <string>
 #include <memory>
+#include <glm/vec3.hpp>
 
 namespace sg::ogl
 {
@@ -47,7 +48,7 @@ namespace sg::ogl::water
             float t_xPos,
             float t_zPos,
             float t_height,
-            float t_tileSize,
+            const glm::vec3& t_tileSize,
             const std::string& t_dudvMapFilePath,
             const std::string& t_normalMapFilePath
         );
@@ -57,7 +58,7 @@ namespace sg::ogl::water
         Water& operator=(const Water& t_other) = delete;
         Water& operator=(Water&& t_other) noexcept = delete;
 
-        ~Water();
+        ~Water() noexcept;
 
         //-------------------------------------------------
         // Getter
@@ -66,7 +67,7 @@ namespace sg::ogl::water
         float GetXPosition() const;
         float GetZPosition() const;
         float GetHeight() const;
-        float GetTileSize() const;
+        glm::vec3 GetTileSize() const;
 
         float GetWaveSpeed() const;
 
@@ -89,7 +90,7 @@ namespace sg::ogl::water
         float m_xPos{ 0.0f };
         float m_zPos{ 0.0f };
         float m_height{ 0.0f };
-        float m_tileSize{ 64.0f };
+        glm::vec3 m_tileSize{ 64.0f };
 
         float m_waveSpeed{ 0.04f };
 

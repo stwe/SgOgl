@@ -12,7 +12,7 @@
 
 void sg::ogl::GlfwDeleteWindow::operator()(GLFWwindow* t_window) const
 {
-    SG_OGL_CORE_LOG_DEBUG("[GlfwDeleteWindow::operator()] Destroying GLFW Window Context. Goodbye.");
+    SG_OGL_CORE_LOG_DEBUG("[GlfwDeleteWindow::operator()] Destroying GLFW Window Context.");
     glfwDestroyWindow(t_window);
     glfwTerminate();
 }

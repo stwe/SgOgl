@@ -23,7 +23,7 @@ sg::ogl::water::Water::Water(
     const float t_xPos,
     const float t_zPos,
     const float t_height,
-    const float t_tileSize,
+    const glm::vec3& t_tileSize,
     const std::string& t_dudvMapFilePath,
     const std::string& t_normalMapFilePath
 )
@@ -43,7 +43,7 @@ sg::ogl::water::Water::Water(
     SG_OGL_CORE_ASSERT(m_waterFbos, "[Water::Water()] Null pointer.")
 }
 
-sg::ogl::water::Water::~Water()
+sg::ogl::water::Water::~Water() noexcept
 {
     SG_OGL_CORE_LOG_DEBUG("[Water::~Water()] Destruct Water.");
 }
@@ -67,7 +67,7 @@ float sg::ogl::water::Water::GetHeight() const
     return m_height;
 }
 
-float sg::ogl::water::Water::GetTileSize() const
+glm::vec3 sg::ogl::water::Water::GetTileSize() const
 {
     return m_tileSize;
 }

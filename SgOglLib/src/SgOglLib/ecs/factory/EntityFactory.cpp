@@ -224,6 +224,6 @@ void sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const std::shared_p
         entity,
         glm::vec3(t_water->GetXPosition(), t_water->GetHeight(), t_water->GetZPosition()),
         glm::vec3(0.0f),
-        glm::vec3(t_water->GetTileSize())
+        t_water->GetTileSize()
     );
 }

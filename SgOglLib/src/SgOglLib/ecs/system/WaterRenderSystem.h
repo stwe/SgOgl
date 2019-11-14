@@ -134,7 +134,7 @@ namespace sg::ogl::ecs::system
 
             for (auto entity : view)
             {
-                auto& meshComponent = view.get<sg::ogl::ecs::component::MeshComponent>(entity);
+                auto& meshComponent = view.get<component::MeshComponent>(entity);
 
                 meshComponent.mesh->InitDraw();
                 shaderProgram.UpdateUniforms(*m_scene, entity, *meshComponent.mesh);

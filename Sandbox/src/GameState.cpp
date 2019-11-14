@@ -116,7 +116,7 @@ void GameState::Init()
         GetApplicationContext(),
         -400.0f, -2300.0f,
         WATER_HEIGHT,
-        750.0f,
+        glm::vec3(750.0f * 2.0f, 750.0f, 750.0f),
         "res/texture/water/waterDUDV.png",
         "res/texture/water/normal.png"
     );
