@@ -18,6 +18,7 @@
 #include "shader/GuiShaderProgram.h"
 #include "shader/InstancingShaderProgram.h"
 #include "shader/WaterShaderProgram.h"
+#include "shader/ParticleShaderProgram.h"
 
 #include "renderer/ModelRenderSystem.h"
 #include "renderer/SkyboxRenderSystem.h"
@@ -25,12 +26,15 @@
 #include "renderer/TerrainRenderSystem.h"
 #include "renderer/GuiRenderSystem.h"
 #include "renderer/InstancingRenderSystem.h"
+#include "renderer/ParticleRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
 public:
     static constexpr auto CAMERA_VELOCITY{ 128.0f };
     static constexpr auto WATER_HEIGHT{ 50.0f };
+    static constexpr auto MAX_PARTICLES{ 400 };
+    static constexpr auto NEW_PARTICLES{ 2 };
 
     // scene graph
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
@@ -43,6 +47,9 @@ public:
 
     // water
     using WaterSharedPtr = std::shared_ptr<sg::ogl::water::Water>;
+
+    // particles
+    using ParticleEmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -79,6 +86,7 @@ protected:
 private:
     TerrainSharedPtr m_terrain;
     WaterSharedPtr m_water;
+    ParticleEmitterSharedPtr m_particleEmitter;
 
     std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
     std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
@@ -86,6 +94,7 @@ private:
     std::unique_ptr<TerrainRenderSystem<TerrainShaderProgram>> m_terrainRenderSystem;
     std::unique_ptr<GuiRenderSystem<GuiShaderProgram>> m_guiRenderSystem;
     std::unique_ptr<InstancingRenderSystem<InstancingShaderProgram>> m_instancingRenderSystem;
+    std::unique_ptr<ParticleRenderSystem<ParticleShaderProgram>> m_particleRenderSystem;
 
     std::unique_ptr<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>> m_waterRenderSystem;
 
@@ -99,6 +108,7 @@ private:
     //-------------------------------------------------
 
     void Init();
+    void BuildParticles() const;
 
     std::vector<glm::mat4> CreatePlantPositions(uint32_t t_instances) const;
 };

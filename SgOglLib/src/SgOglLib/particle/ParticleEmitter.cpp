@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: ParticleEmitter.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include <glm/gtx/norm.hpp>
 #include "Core.h"
 #include "Application.h"
@@ -80,7 +89,7 @@ bool sg::ogl::particle::ParticleEmitter::AddParticle(Particle& t_particle)
 // Logic
 //-------------------------------------------------
 
-void sg::ogl::particle::ParticleEmitter::Update(double t_dt)
+void sg::ogl::particle::ParticleEmitter::Update(const double t_dt)
 {
     // get current camera position
     const auto& cameraPosition{ m_scene->GetCurrentCamera().GetPosition() };
@@ -114,7 +123,8 @@ void sg::ogl::particle::ParticleEmitter::Update(double t_dt)
                 particle.cameraDistance = length2(cameraPosition - particle.position);
             }
 
-            particle.velocity.y += -10 * 0.3f * frametime;
+            //particle.velocity.y += -10 * 0.3f * frametime;
+            particle.velocity.y += 10 * 0.5f * frametime;
             particle.position += particle.velocity * frametime;
 
             // update texture info
@@ -169,7 +179,7 @@ void sg::ogl::particle::ParticleEmitter::Render()
         modelMatrix[2][2] = viewMatrix[2][2];
 
         //rotate(modelMatrix, glm::radians(particle.rotation), glm::vec3(0.0f, 0.0f, 1.0f));
-        scale(modelMatrix, glm::vec3(particle.scale));
+        modelMatrix = scale(modelMatrix, glm::vec3(particle.scale));
 
         // create modelView matrix
         const auto matrix{ viewMatrix * modelMatrix };

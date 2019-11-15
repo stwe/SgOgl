@@ -28,6 +28,9 @@ bool GameState::Input()
 
 bool GameState::Update(const double t_dt)
 {
+    m_particleEmitter->Update(t_dt);
+    BuildParticles();
+
     m_waterRenderSystem->Update(t_dt);
 
     if (GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_W))
@@ -82,7 +85,10 @@ void GameState::Render()
     m_waterRenderSystem->Render();
     m_skyboxRenderSystem->Render();
     //m_skydomeRenderSystem->Render();
-    m_guiRenderSystem->Render();
+
+    m_particleEmitter->Render();
+
+    //m_guiRenderSystem->Render();
 }
 
 //-------------------------------------------------
@@ -95,7 +101,7 @@ void GameState::Init()
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
     // create camera and set a camera position
-    m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>(glm::vec3(-1364.0f, 389.0f, -3112.0f), 74.0f, -25.0f);
+    m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>(glm::vec3(-818.0f, 151.0f, -1782.0f), -115.0f, -10.0f);
 
     // create scene and set the camera as current
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
@@ -128,22 +134,23 @@ void GameState::Init()
     m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
     m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
     m_instancingRenderSystem = std::make_unique<InstancingRenderSystem<InstancingShaderProgram>>(m_scene.get());
+    m_particleRenderSystem = std::make_unique<ParticleRenderSystem<ParticleShaderProgram>>(m_scene.get());
     m_waterRenderSystem = std::make_unique<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>>(m_scene.get());
 
     // house
     auto height{ m_terrain->GetHeightAtWorldPosition(-1000.0f, -2000.0f) };
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
-        "res/model/House/farmhouse_obj.obj",
+        "res/model/OldHouse/Big_old_house.obj",
         glm::vec3(-1000.0f, height, -2000.0f),
         glm::vec3(0.0f),
-        glm::vec3(2.0f)
+        glm::vec3(24.0f)
     );
 
     // tree
-    height = m_terrain->GetHeightAtWorldPosition(-1090.0f, -2060.0f);
+    height = m_terrain->GetHeightAtWorldPosition(-758.0f, -2070.0f);
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
         "res/model/Tree_02/tree02.obj",
-        glm::vec3(-1090.0f, height, -2060.0f),
+        glm::vec3(-758.0f, height, -2070.0f),
         glm::vec3(0.0f),
         glm::vec3(64.0f)
     );
@@ -180,12 +187,58 @@ void GameState::Init()
     );
 
     // plants
-    const uint32_t instances{ 10000 };
+    const uint32_t instances{ 5000 };
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
         instances,
         "res/model/Grass/grassmodel.obj",
         CreatePlantPositions(instances)
     );
+
+    //////////////////////////
+    //////////////////////////
+
+    m_particleEmitter = std::make_shared<sg::ogl::particle::ParticleEmitter>(
+        m_scene.get(),
+        MAX_PARTICLES,
+        "res/texture/particle/smoke.png",
+        8 // number of rows
+    );
+
+    BuildParticles();
+}
+
+void GameState::BuildParticles() const
+{
+    std::random_device seeder;
+    std::mt19937 engine(seeder());
+
+    const std::uniform_real_distribution<float> velocityX(-0.5f, 0.5f);
+    const std::uniform_real_distribution<float> velocityZ(-0.5f, 0.5f);
+    const std::uniform_real_distribution<float> scale(2.0f, 4.0f);
+    const std::uniform_real_distribution<float> lifetime(1.0f, 4.0f);
+
+    const auto nrOfparticles{ m_particleEmitter->GetParticles().size() };
+
+    if (nrOfparticles < MAX_PARTICLES)
+    {
+        auto newParticles{ MAX_PARTICLES - nrOfparticles };
+        if (newParticles > NEW_PARTICLES)
+        {
+            newParticles = NEW_PARTICLES;
+        }
+
+        for (auto i{ 0u }; i < newParticles; ++i)
+        {
+            sg::ogl::particle::Particle particle;
+
+            particle.position = glm::vec3(-968.0f, 210.0f, -1977.0f);
+            particle.velocity = glm::vec3(velocityX(engine), 1.0f, velocityZ(engine));
+            particle.scale = scale(engine);
+            particle.lifetime = lifetime(engine);
+
+            m_particleEmitter->AddParticle(particle);
+        }
+    }
 }
 
 std::vector<glm::mat4> GameState::CreatePlantPositions(const uint32_t t_instances) const
@@ -193,8 +246,8 @@ std::vector<glm::mat4> GameState::CreatePlantPositions(const uint32_t t_instance
     std::random_device seeder;
     std::mt19937 engine(seeder());
 
-    const std::uniform_real_distribution<float> posX(-1100.0f , -800.0f);
-    const std::uniform_real_distribution<float> posZ(-2050.0f , -1900.0);
+    const std::uniform_real_distribution<float> posX(-1300.0f , -747.0f);
+    const std::uniform_real_distribution<float> posZ(-2038.0f , -1756.0);
 
     std::vector<glm::mat4> matrices;
 
@@ -206,7 +259,7 @@ std::vector<glm::mat4> GameState::CreatePlantPositions(const uint32_t t_instance
         const auto height{ m_terrain->GetHeightAtWorldPosition(pos.x, pos.z) };
 
         transform.position = glm::vec3(pos.x, height, pos.z);
-        transform.scale = glm::vec3(2.0f);
+        transform.scale = glm::vec3(8.0f);
 
         matrices.push_back(transform.GetModelMatrix());
     }
