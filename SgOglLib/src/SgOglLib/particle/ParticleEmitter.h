@@ -19,16 +19,6 @@ namespace sg::ogl::scene
     class Scene;
 }
 
-namespace sg::ogl::buffer
-{
-    class Vao;
-}
-
-namespace sg::ogl::resource
-{
-    class ShaderProgram;
-}
-
 namespace sg::ogl::particle
 {
     struct Particle;
@@ -36,7 +26,6 @@ namespace sg::ogl::particle
     class ParticleEmitter
     {
     public:
-        using VaoUniquePtr = std::unique_ptr<buffer::Vao>;
         using ParticleContainer = std::vector<Particle>;
         using InstancedDataContainer = std::vector<float>;
 
@@ -68,15 +57,6 @@ namespace sg::ogl::particle
 
         static constexpr auto NUMBER_OF_FLOATS_PER_INSTANCE{ 21 };
 
-        inline static std::vector<float> vertices{
-            -0.5f,  0.5f,
-            -0.5f, -0.5f,
-             0.5f,  0.5f,
-             0.5f, -0.5f
-        };
-
-        static constexpr int32_t VERTEX_COUNT{ 4 };
-
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
@@ -84,6 +64,7 @@ namespace sg::ogl::particle
         ParticleEmitter(
             scene::Scene* t_scene,
             size_t t_maxParticles,
+            size_t t_newParticles,
             const std::string& t_texturePath,
             int t_nrOfTextureRows = 1
         );
@@ -99,12 +80,23 @@ namespace sg::ogl::particle
         // Getter
         //-------------------------------------------------
 
+        size_t GetMaxParticles() const;
+        int GetNumberOfTextureRows() const;
+        uint32_t GetTextureId() const;
+        uint32_t GetVboId() const;
         ParticleContainer& GetParticles();
+
+        //-------------------------------------------------
+        // Setter
+        //-------------------------------------------------
+
+        void SetVboId(uint32_t t_vboId);
 
         //-------------------------------------------------
         // Add
         //-------------------------------------------------
 
+        void BuildNewParticles();
         bool AddParticle(Particle& t_particle);
 
         //-------------------------------------------------
@@ -128,9 +120,9 @@ namespace sg::ogl::particle
         size_t m_maxParticles{ 0 };
 
         /**
-         * @brief A Vertex Array Object.
+         * @brief Number of min particles.
          */
-        VaoUniquePtr m_vao;
+        size_t m_newParticles{ 0 };
 
         /**
          * @brief A container with all particles.
@@ -148,11 +140,6 @@ namespace sg::ogl::particle
         uint32_t m_textureId{ 0 };
 
         /**
-         * @brief A pointer to the ShaderProgram.
-         */
-        resource::ShaderProgram* m_shaderProgram{ nullptr };
-
-        /**
          * @brief Vbo Id of instanced data.
          */
         uint32_t m_vbo{ 0 };
@@ -163,18 +150,10 @@ namespace sg::ogl::particle
         InstancedDataContainer m_instancedData;
 
         //-------------------------------------------------
-        // Init
-        //-------------------------------------------------
-
-        void InitVao();
-
-        //-------------------------------------------------
         // Helper
         //-------------------------------------------------
 
         glm::vec2 GetTextureOffset(int t_textureIndex) const;
-        void PrepareRendering() const;
-        static void FinishRendering();
         void UpdateTextureInfo(Particle& t_particle) const;
         void UpdateVbo() const;
 

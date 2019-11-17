@@ -21,11 +21,13 @@
 #include "ecs/component/GuiComponent.h"
 #include "ecs/component/InstancesComponent.h"
 #include "ecs/component/WaterComponent.h"
+#include "ecs/component/ParticleEmitterComponent.h"
 #include "resource/Model.h"
 #include "resource/ModelManager.h"
 #include "resource/TextureManager.h"
 #include "terrain/Terrain.h"
 #include "water/Water.h"
+#include "particle/ParticleEmitter.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -84,12 +86,14 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const auto vbo{ buffer::Vbo::GenerateVbo() };
 
     // init empty
+    // todo: remove
     buffer::Vbo::InitEmpty(vbo, numberOfFloatsPerInstance * t_instances, GL_STATIC_DRAW);
 
     // store data
     buffer::Vbo::StoreTransformationMatrices(vbo, numberOfFloatsPerInstance * t_instances, t_matrices);
 
     // bind Vbo to each mesh
+    // todo
     const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals };
     for (auto& mesh : m_application->GetModelManager().GetModelByPath(t_fullModelFilePath, pFlags)->GetMeshes())
     {
@@ -102,8 +106,9 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
         buffer::Vbo::AddInstancedAttribute(vbo, 6, 4, numberOfFloatsPerInstance, 4);
         buffer::Vbo::AddInstancedAttribute(vbo, 7, 4, numberOfFloatsPerInstance, 8);
         buffer::Vbo::AddInstancedAttribute(vbo, 8, 4, numberOfFloatsPerInstance, 12);
-    }
 
+        vao.UnbindVao();
+    }
     SG_OGL_CORE_LOG_WARN("[EntityFactory::CreateModelEntity()] The Vao for the model {} has been changed.", t_fullModelFilePath);
 
     // create an entity
@@ -236,10 +241,48 @@ void sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const std::shared_p
     );
 }
 
-void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(uint32_t t_instances) const
+void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(std::shared_ptr<particle::ParticleEmitter>& t_particleEmitter) const
 {
+    const uint32_t numberOfFloatsPerInstance{ 21 };
+
+    // create an empty Vbo for instanced data
+    const auto vbo{ buffer::Vbo::GenerateVbo() };
+
+    // init empty
+    buffer::Vbo::InitEmpty(vbo, numberOfFloatsPerInstance * t_particleEmitter->GetMaxParticles(), GL_STREAM_DRAW);
+
+    // bind empty Vbo to the mesh Vao
+    // todo
+    auto mesh{ m_application->GetModelManager().GetStaticMeshByName(resource::ModelManager::PARTICLE_MESH) };
+
+    // get Vao of the mesh
+    auto& vao{ mesh->GetVao() };
+    vao.BindVao();
+
+    // set Vbo attributes
+    buffer::Vbo::AddInstancedAttribute(vbo, 1, 4, numberOfFloatsPerInstance, 0);
+    buffer::Vbo::AddInstancedAttribute(vbo, 2, 4, numberOfFloatsPerInstance, 4);
+    buffer::Vbo::AddInstancedAttribute(vbo, 3, 4, numberOfFloatsPerInstance, 8);
+    buffer::Vbo::AddInstancedAttribute(vbo, 4, 4, numberOfFloatsPerInstance, 12);
+    buffer::Vbo::AddInstancedAttribute(vbo, 5, 4, numberOfFloatsPerInstance, 16);
+    buffer::Vbo::AddInstancedAttribute(vbo, 6, 4, numberOfFloatsPerInstance, 20);
+
+    SG_OGL_CORE_LOG_WARN("[EntityFactory::CreateParticleEntity()] The Vao for the static Particle Mesh has been changed.");
+
+    // unbind Vao
+    buffer::Vao::UnbindVao();
+
+    // store Vbo Id
+    t_particleEmitter->SetVboId(vbo);
+
     // create an entity
     const auto entity{ m_application->registry.create() };
+
+    // add particle emitter component
+    m_application->registry.assign<component::ParticleEmitterComponent>(
+        entity,
+        t_particleEmitter
+    );
 
     // add mesh component
     m_application->registry.assign<component::MeshComponent>(

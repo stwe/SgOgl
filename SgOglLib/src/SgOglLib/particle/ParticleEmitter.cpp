@@ -8,6 +8,7 @@
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include <glm/gtx/norm.hpp>
+#include <random>
 #include "Core.h"
 #include "Application.h"
 #include "ParticleEmitter.h"
@@ -15,9 +16,6 @@
 #include "Log.h"
 #include "Window.h"
 #include "OpenGl.h"
-#include "buffer/Vao.h"
-#include "buffer/BufferLayout.h"
-#include "buffer/VertexAttribute.h"
 #include "camera/LookAtCamera.h"
 #include "scene/Scene.h"
 #include "resource/TextureManager.h"
@@ -30,31 +28,47 @@
 sg::ogl::particle::ParticleEmitter::ParticleEmitter(
     scene::Scene* t_scene,
     const size_t t_maxParticles,
+    const size_t t_newParticles,
     const std::string& t_texturePath,
     const int t_nrOfTextureRows
 )
     : m_scene{ t_scene }
     , m_maxParticles{ t_maxParticles }
-    , m_vao{ std::make_unique<buffer::Vao>() }
+    , m_newParticles{ t_newParticles }
     , m_nrOfTextureRows{ t_nrOfTextureRows }
 {
     SG_OGL_CORE_ASSERT(m_scene, "[ParticleEmitter::ParticleEmitter()] Null pointer.")
     SG_OGL_CORE_ASSERT(m_maxParticles > 0, "[ParticleEmitter::ParticleEmitter()] Invalid value.")
-    SG_OGL_CORE_ASSERT(m_vao, "[ParticleEmitter::ParticleEmitter()] Null pointer.")
-
-    InitVao();
 
     // get texture handle for the given texture path
     m_textureId = m_scene->GetApplicationContext()->GetTextureManager().GetTextureIdFromPath(t_texturePath);
 
-    // get a pointer to the shader program
-    m_shaderProgram = &m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram("particle_anim");
-    SG_OGL_CORE_ASSERT(m_shaderProgram, "[ParticleEmitter::ParticleEmitter()] Null pointer.")
+    BuildNewParticles();
 }
 
 //-------------------------------------------------
 // Getter
 //-------------------------------------------------
+
+size_t sg::ogl::particle::ParticleEmitter::GetMaxParticles() const
+{
+    return m_maxParticles;
+}
+
+int sg::ogl::particle::ParticleEmitter::GetNumberOfTextureRows() const
+{
+    return m_nrOfTextureRows;
+}
+
+uint32_t sg::ogl::particle::ParticleEmitter::GetTextureId() const
+{
+    return m_textureId;
+}
+
+uint32_t sg::ogl::particle::ParticleEmitter::GetVboId() const
+{
+    return m_vbo;
+}
 
 sg::ogl::particle::ParticleEmitter::ParticleContainer& sg::ogl::particle::ParticleEmitter::GetParticles()
 {
@@ -62,8 +76,51 @@ sg::ogl::particle::ParticleEmitter::ParticleContainer& sg::ogl::particle::Partic
 }
 
 //-------------------------------------------------
+// Setter
+//-------------------------------------------------
+
+void sg::ogl::particle::ParticleEmitter::SetVboId(const uint32_t t_vboId)
+{
+    m_vbo = t_vboId;
+}
+
+//-------------------------------------------------
 // Add
 //-------------------------------------------------
+
+void sg::ogl::particle::ParticleEmitter::BuildNewParticles()
+{
+    std::random_device seeder;
+    std::mt19937 engine(seeder());
+
+    const std::uniform_real_distribution<float> velocityX(-0.5f, 0.5f);
+    const std::uniform_real_distribution<float> velocityZ(-0.5f, 0.5f);
+    const std::uniform_real_distribution<float> scale(2.0f, 4.0f);
+    const std::uniform_real_distribution<float> lifetime(1.0f, 4.0f);
+
+    const auto nrOfparticles{ m_particles.size() };
+
+    if (nrOfparticles < m_maxParticles)
+    {
+        auto newParticles{ m_maxParticles - nrOfparticles };
+        if (newParticles > m_newParticles)
+        {
+            newParticles = m_newParticles;
+        }
+
+        for (auto i{ 0u }; i < newParticles; ++i)
+        {
+            Particle particle;
+
+            particle.position = glm::vec3(0.0f, 20.0f, 0.0f);
+            particle.velocity = glm::vec3(velocityX(engine), 1.0f, velocityZ(engine));
+            particle.scale = scale(engine);
+            particle.lifetime = lifetime(engine);
+
+            AddParticle(particle);
+        }
+    }
+}
 
 bool sg::ogl::particle::ParticleEmitter::AddParticle(Particle& t_particle)
 {
@@ -141,17 +198,12 @@ void sg::ogl::particle::ParticleEmitter::Update(const double t_dt)
 
     // sort particles
     std::sort(m_particles.begin(), m_particles.end());
+
+    BuildNewParticles();
 }
 
 void sg::ogl::particle::ParticleEmitter::Render()
 {
-    PrepareRendering();
-
-    // set uniforms
-    m_shaderProgram->SetUniform("projectionMatrix", m_scene->GetApplicationContext()->GetWindow().GetProjectionMatrix());
-    m_shaderProgram->SetUniform("numberOfRows", static_cast<float>(m_nrOfTextureRows));
-    m_shaderProgram->SetUniform("particleTexture", 0);
-
     // get view matrix
     const auto viewMatrix{ m_scene->GetCurrentCamera().GetViewMatrix() };
 
@@ -217,42 +269,6 @@ void sg::ogl::particle::ParticleEmitter::Render()
 
     // update vbo
     UpdateVbo();
-
-    // render
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, VERTEX_COUNT, static_cast<int32_t>(m_particles.size()));
-
-    FinishRendering();
-}
-
-//-------------------------------------------------
-// Init
-//-------------------------------------------------
-
-void sg::ogl::particle::ParticleEmitter::InitVao()
-{
-    /*
-    const buffer::BufferLayout bufferLayout{
-        { buffer::VertexAttributeType::POSITION_2D, "vPosition" },
-    };
-
-    // create a Vbo for the particle vertices
-    m_vao->AddVertexDataVbo(
-        vertices.data(),
-        static_cast<int32_t>(vertices.size()),
-        bufferLayout
-    );
-
-    // create an empty Vbo for instanced data
-    m_vbo = m_vao->AddEmptyVbo(NUMBER_OF_FLOATS_PER_INSTANCE * static_cast<uint32_t>(m_maxParticles));
-
-    // set Vbo attributes
-    m_vao->AddInstancedAttribute(m_vbo, 1, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 0);
-    m_vao->AddInstancedAttribute(m_vbo, 2, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 4);
-    m_vao->AddInstancedAttribute(m_vbo, 3, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 8);
-    m_vao->AddInstancedAttribute(m_vbo, 4, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 12);
-    m_vao->AddInstancedAttribute(m_vbo, 5, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 16);
-    m_vao->AddInstancedAttribute(m_vbo, 6, 1, NUMBER_OF_FLOATS_PER_INSTANCE, 20);
-    */
 }
 
 //-------------------------------------------------
@@ -266,44 +282,6 @@ glm::vec2 sg::ogl::particle::ParticleEmitter::GetTextureOffset(const int t_textu
     const auto rows{ static_cast<float>(m_nrOfTextureRows) };
 
     return glm::vec2(col / rows, row / rows);
-}
-
-void sg::ogl::particle::ParticleEmitter::PrepareRendering() const
-{
-    m_vao->BindVao();
-    m_shaderProgram->Bind();
-
-    // todo -> during Vao creation
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    glEnableVertexAttribArray(3);
-    glEnableVertexAttribArray(4);
-    glEnableVertexAttribArray(5);
-    glEnableVertexAttribArray(6);
-
-    OpenGl::EnableAlphaBlending();
-    OpenGl::DisableWritingIntoDepthBuffer();
-
-    resource::TextureManager::BindForReading(m_textureId, GL_TEXTURE0);
-}
-
-void sg::ogl::particle::ParticleEmitter::FinishRendering()
-{
-    // todo
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
-    glDisableVertexAttribArray(3);
-    glDisableVertexAttribArray(4);
-    glDisableVertexAttribArray(5);
-    glDisableVertexAttribArray(6);
-
-    OpenGl::EnableWritingIntoDepthBuffer();
-    OpenGl::DisableBlending();
-
-    resource::ShaderProgram::Unbind();
-    buffer::Vao::UnbindVao();
 }
 
 void sg::ogl::particle::ParticleEmitter::UpdateTextureInfo(Particle& t_particle) const

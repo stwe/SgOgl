@@ -30,6 +30,11 @@ namespace sg::ogl::water
     class Water;
 }
 
+namespace sg::ogl::particle
+{
+    class ParticleEmitter;
+}
+
 namespace sg::ogl::ecs::factory
 {
     class EntityFactory
@@ -80,7 +85,7 @@ namespace sg::ogl::ecs::factory
         ) const;
 
         void CreateWaterEntity(const std::shared_ptr<water::Water>& t_water) const;
-        void CreateParticleEntity(uint32_t t_instances) const;
+        void CreateParticleEntity(std::shared_ptr<particle::ParticleEmitter>& t_particleEmitter) const;
 
     protected:
 
