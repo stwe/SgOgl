@@ -230,6 +230,7 @@ void sg::ogl::particle::ParticleEmitter::Render()
 
 void sg::ogl::particle::ParticleEmitter::InitVao()
 {
+    /*
     const buffer::BufferLayout bufferLayout{
         { buffer::VertexAttributeType::POSITION_2D, "vPosition" },
     };
@@ -251,6 +252,7 @@ void sg::ogl::particle::ParticleEmitter::InitVao()
     m_vao->AddInstancedAttribute(m_vbo, 4, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 12);
     m_vao->AddInstancedAttribute(m_vbo, 5, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 16);
     m_vao->AddInstancedAttribute(m_vbo, 6, 1, NUMBER_OF_FLOATS_PER_INSTANCE, 20);
+    */
 }
 
 //-------------------------------------------------

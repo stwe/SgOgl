@@ -8,11 +8,11 @@
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include "Vao.h"
+#include "Vbo.h"
 #include "Log.h"
+#include "Core.h"
 #include "BufferLayout.h"
 #include "VertexAttribute.h"
-#include "SgOglException.h"
-#include "Core.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -96,93 +96,24 @@ void sg::ogl::buffer::Vao::DeleteVao() const
 }
 
 //-------------------------------------------------
-// Vbos
+// Add buffer
 //-------------------------------------------------
-
-uint32_t sg::ogl::buffer::Vao::GenerateVbo()
-{
-    uint32_t vboId{ 0 };
-    glGenBuffers(1, &vboId);
-    SG_OGL_CORE_ASSERT(vboId, "[Vao::GenerateVbo()] Error while creating a new Vbo.")
-
-    m_vbos.push_back(vboId);
-
-    SG_OGL_CORE_LOG_DEBUG("[Vao::GenerateVbo()] A new Vbo was created. Id: {}", vboId);
-
-    return vboId;
-}
-
-void sg::ogl::buffer::Vao::BindVbo(const uint32_t t_id) const
-{
-    if (std::find(m_vbos.begin(), m_vbos.end(), t_id) != m_vbos.end())
-    {
-        glBindBuffer(GL_ARRAY_BUFFER, t_id);
-    }
-    else
-    {
-        throw SG_OGL_EXCEPTION("[Vao::BindVbo()] Can't find the Vbo Id. Id: " + std::to_string(t_id));
-    }
-}
-
-void sg::ogl::buffer::Vao::UnbindVbo()
-{
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void sg::ogl::buffer::Vao::DeleteVbos() const
-{
-    for (const auto& vboId : m_vbos)
-    {
-        glDeleteBuffers(1, &vboId);
-        SG_OGL_CORE_LOG_DEBUG("[Vao::DeleteVbos()] Vbo was deleted. Id: {}", vboId);
-    }
-}
-
-uint32_t sg::ogl::buffer::Vao::AddEmptyVbo(const uint32_t t_floatCount, const uint32_t t_usage)
-{
-    // Bind our existing Vao.
-    BindVao();
-
-    // Generate and bind a new Vbo.
-    const auto vboId{ GenerateVbo() };
-    BindVbo(vboId);
-
-    // Create and initialize an empty buffer.
-    glBufferData(GL_ARRAY_BUFFER, t_floatCount * sizeof(float), nullptr, t_usage);
-
-    // Unbind buffers.
-    UnbindVbo();
-    UnbindVao();
-
-    return vboId;
-}
-
-void sg::ogl::buffer::Vao::StoreTransformationMatrices(const uint32_t t_vboId, const uint32_t t_floatCount, const std::vector<glm::mat4>& t_matrices) const
-{
-    // Bind our existing Vao.
-    BindVao();
-
-    // Bind the given Vbo.
-    BindVbo(t_vboId);
-
-    // Store data
-    glBufferData(GL_ARRAY_BUFFER, t_floatCount * sizeof(float), t_matrices.data(), GL_STATIC_DRAW);
-
-    // Unbind buffers.
-    UnbindVbo();
-    UnbindVao();
-}
 
 void sg::ogl::buffer::Vao::AddVertexDataVbo(float* const t_vertices, const int32_t t_drawCount, const BufferLayout& t_bufferLayout)
 {
     // Bind our existing Vao.
     BindVao();
 
-    // Generate and bind a new Vbo.
-    const auto vboId{ GenerateVbo() };
-    BindVbo(vboId);
+    // Generate a new Vbo.
+    const auto vboId{ Vbo::GenerateVbo() };
 
-    // calc number of floats
+    // Store the Vbo Id.
+    m_vbos.push_back(vboId);
+
+    // Bind the new Vbo.
+    Vbo::BindVbo(vboId);
+
+    // Calc the number of floats.
     const auto floatCount{ t_bufferLayout.GetNumberOfFloats() * t_drawCount };
 
     // Create and initialize a buffer.
@@ -206,61 +137,11 @@ void sg::ogl::buffer::Vao::AddVertexDataVbo(float* const t_vertices, const int32
     }
 
     // Unbind buffers.
-    UnbindVbo();
+    Vbo::UnbindVbo();
     UnbindVao();
 
     // Set draw count.
     SetDrawCount(t_drawCount);
-}
-
-void sg::ogl::buffer::Vao::AddInstancedAttribute(
-    const uint32_t t_vboId,
-    const uint32_t t_index,
-    const int32_t t_dataSize,
-    const int32_t t_instancedDataLength,
-    const uint64_t t_offset
-) const
-{
-    // Bind buffers.
-    BindVao();
-    BindVbo(t_vboId);
-
-    glEnableVertexAttribArray(t_index);
-    glVertexAttribPointer(t_index, t_dataSize, GL_FLOAT, GL_FALSE, t_instancedDataLength * sizeof(float), reinterpret_cast<uintptr_t*>(t_offset * sizeof(float)));
-    glVertexAttribDivisor(t_index, 1);
-
-    // Unbind buffers.
-    UnbindVbo();
-    UnbindVao();
-}
-
-//-------------------------------------------------
-// Ebo
-//-------------------------------------------------
-
-void sg::ogl::buffer::Vao::GenerateEbo()
-{
-    SG_OGL_CORE_ASSERT(!m_eboId, "[Vao::GenerateEbo()] An Ebo already exists.")
-
-    glGenBuffers(1, &m_eboId);
-    SG_OGL_CORE_ASSERT(m_eboId, "[Vao::GenerateEbo()] Error while creating a new Ebo.")
-
-    SG_OGL_CORE_LOG_DEBUG("[Vao::GenerateEbo()] A new Ebo was created. Id: {}", m_eboId);
-}
-
-void sg::ogl::buffer::Vao::BindEbo() const
-{
-    SG_OGL_CORE_ASSERT(m_eboId, "[Vao::BindEbo()] Invalid Ebo Id.")
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_eboId);
-}
-
-void sg::ogl::buffer::Vao::DeleteEbo() const
-{
-    if (m_eboId)
-    {
-        glDeleteBuffers(1, &m_eboId);
-        SG_OGL_CORE_LOG_DEBUG("[Vao::DeleteEbo()] Ebo was deleted. Id: {}", m_eboId);
-    }
 }
 
 void sg::ogl::buffer::Vao::AddIndexBuffer(const IndexContainer& t_indices)
@@ -277,8 +158,9 @@ void sg::ogl::buffer::Vao::AddIndexBuffer(const IndexContainer& t_indices)
     BindVao();
 
     // Generate and bind a new Ebo.
-    GenerateEbo();
-    BindEbo();
+    SG_OGL_CORE_ASSERT(!m_eboId, "[Vao::AddIndexBuffer()] The Ebo already exists.")
+    m_eboId = Vbo::GenerateEbo();
+    Vbo::BindEbo(m_eboId);
 
     // Create and initialize a buffer.
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfElements * ELEMENT_SIZE_IN_BYTES, t_indices.data(), GL_STATIC_DRAW);
@@ -328,11 +210,20 @@ void sg::ogl::buffer::Vao::CleanUp() const
 
     glDisableVertexAttribArray(0);
 
-    UnbindVbo();
-    DeleteVbos();
+    // delete Vbos
+    Vbo::UnbindVbo();
+    for (const auto& vboId : m_vbos)
+    {
+        Vbo::DeleteVbo(vboId);
+    }
 
-    DeleteEbo();
+    // delete Vbo / IndexBuffer
+    if (m_eboId)
+    {
+        Vbo::DeleteEbo(m_eboId);
+    }
 
+    // delete Vao
     UnbindVao();
     DeleteVao();
 }

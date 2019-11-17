@@ -80,6 +80,7 @@ namespace sg::ogl::ecs::factory
         ) const;
 
         void CreateWaterEntity(const std::shared_ptr<water::Water>& t_water) const;
+        void CreateParticleEntity(uint32_t t_instances) const;
 
     protected:
 

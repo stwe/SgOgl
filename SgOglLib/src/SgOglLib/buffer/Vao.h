@@ -11,7 +11,6 @@
 
 #include <cstdint>
 #include <vector>
-#include <glm/mat4x4.hpp>
 #include "OpenGl.h"
 
 namespace sg::ogl::buffer
@@ -64,31 +63,11 @@ namespace sg::ogl::buffer
         static void UnbindVao();
 
         //-------------------------------------------------
-        // Vbos
+        // Add buffer
         //-------------------------------------------------
 
-        uint32_t GenerateVbo();
-        void BindVbo(uint32_t t_id) const;
-        static void UnbindVbo();
-
         /**
-         * @brief Add an empty (nullptr) Vertex Buffer Object (Vbo).
-         * @param t_floatCount The maximum number of floats.
-         * @param t_usage Specifies the expected usage pattern of the data store.
-         * @return The id of the new created Vbo.
-         */
-        uint32_t AddEmptyVbo(uint32_t t_floatCount, uint32_t t_usage = GL_STREAM_DRAW);
-
-        /**
-         * @brief Store an instanced array of transformation matrices.
-         * @param t_vboId The Id of the Vbo in which the data should be stored.
-         * @param t_floatCount The number of floats.
-         * @param t_matrices The array of transformation matrices.
-         */
-        void StoreTransformationMatrices(uint32_t t_vboId, uint32_t t_floatCount, const std::vector<glm::mat4>& t_matrices) const;
-
-        /**
-         * @brief Add a Vertex Buffer Object (Vbo) an copy the given vertex data to the Gpu.
+         * @brief Add a Vertex Buffer Object (Vbo) to the Vao and copy the given vertex data to the Gpu.
          *        The function sets draw count.
          * @param t_vertices Pointer to vertex data.
          * @param t_drawCount The number of draw count.
@@ -97,21 +76,7 @@ namespace sg::ogl::buffer
         void AddVertexDataVbo(float* t_vertices, int32_t t_drawCount, const BufferLayout& t_bufferLayout);
 
         /**
-         * @brief Function to define per instance data.
-         * @param t_vboId The Vbo for which the attribute is to be defined.
-         * @param t_index The index of the vertex attribute.
-         * @param t_dataSize The number of components for this attribute. Must be 1, 2, 3, or 4.
-         * @param t_instancedDataLength Amount of bytes between each instance.
-         * @param t_offset Pointer to the starting point of this attribute.
-         */
-        void AddInstancedAttribute(uint32_t t_vboId, uint32_t t_index, int32_t t_dataSize, int32_t t_instancedDataLength, uint64_t t_offset) const;
-
-        //-------------------------------------------------
-        // Ebo
-        //-------------------------------------------------
-
-        /**
-         * @brief Add an index buffer and fill with the indices.
+         * @brief Add an index buffer to the Vao and fill with the indices.
          *        The function sets draw count to the number of indices.
          * @param t_indices The indices.
          */
@@ -153,20 +118,6 @@ namespace sg::ogl::buffer
 
         void GenerateVao();
         void DeleteVao() const;
-
-        //-------------------------------------------------
-        // Vbos
-        //-------------------------------------------------
-
-        void DeleteVbos() const;
-
-        //-------------------------------------------------
-        // Ebo
-        //-------------------------------------------------
-
-        void GenerateEbo();
-        void BindEbo() const;
-        void DeleteEbo() const;
 
         //-------------------------------------------------
         // CleanUp

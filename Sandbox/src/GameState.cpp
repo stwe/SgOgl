@@ -9,8 +9,6 @@
 
 #include <random>
 #include "GameState.h"
-#include "shader/ComputeSplatmap.h"
-#include "shader/ComputeNormalmap.h"
 
 //-------------------------------------------------
 // Logic
@@ -28,10 +26,8 @@ bool GameState::Input()
 
 bool GameState::Update(const double t_dt)
 {
-    m_particleEmitter->Update(t_dt);
-    BuildParticles();
-
-    m_waterRenderSystem->Update(t_dt);
+    //m_particleEmitter->Update(t_dt);
+    //BuildParticles();
 
     if (GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_W))
     {
@@ -74,21 +70,9 @@ bool GameState::Update(const double t_dt)
 
 void GameState::Render()
 {
-    // render to textures
-    m_waterRenderSystem->RenderReflectionTexture(m_modelRenderSystem, m_terrainRenderSystem, m_skyboxRenderSystem);
-    m_waterRenderSystem->RenderRefractionTexture(m_modelRenderSystem, m_terrainRenderSystem, m_skyboxRenderSystem);
-
-    //render to the screen
-    m_modelRenderSystem->Render();
-    m_terrainRenderSystem->Render();
+    //m_modelRenderSystem->Render();
     m_instancingRenderSystem->Render();
-    m_waterRenderSystem->Render();
-    m_skyboxRenderSystem->Render();
-    //m_skydomeRenderSystem->Render();
-
-    m_particleEmitter->Render();
-
-    //m_guiRenderSystem->Render();
+    //m_particleEmitter->Render();
 }
 
 //-------------------------------------------------
@@ -101,92 +85,18 @@ void GameState::Init()
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
     // create camera and set a camera position
-    m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>(glm::vec3(-818.0f, 151.0f, -1782.0f), -115.0f, -10.0f);
+    m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>(glm::vec3(0.0f, 5.0f, -10.0f), 0.0f, -10.0f);
 
     // create scene and set the camera as current
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
-    // create and add the sun to the scene
-    m_sun = std::make_shared<sg::ogl::light::DirectionalLight>();
-    m_sun->direction = glm::vec3(1000.0f, 1000.0f, 1000.0f);
-    m_sun->diffuseIntensity = glm::vec3(1.3f, 1.3f, 1.3f);
-    m_scene->SetDirectionalLight(m_sun);
-
-    // create terrain
-    m_terrain = std::make_shared<sg::ogl::terrain::Terrain>(GetApplicationContext(), "res/config/Terrain.xml");
-    m_terrain->GenerateTerrain<ComputeNormalmap, ComputeSplatmap>();
-
-    // create water
-    m_water = std::make_shared<sg::ogl::water::Water>(
-        GetApplicationContext(),
-        -400.0f, -2300.0f,
-        WATER_HEIGHT,
-        glm::vec3(750.0f * 2.0f, 750.0f, 750.0f),
-        "res/texture/water/waterDUDV.png",
-        "res/texture/water/normal.png"
-    );
-
     // create render systems
     m_modelRenderSystem = std::make_unique<ModelRenderSystem<ModelShaderProgram>>(m_scene.get());
-    m_skyboxRenderSystem = std::make_unique<SkyboxRenderSystem<SkyboxShaderProgram>>(m_scene.get());
-    m_skydomeRenderSystem = std::make_unique<SkydomeRenderSystem<DomeShaderProgram>>(m_scene.get());
-    m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
-    m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
     m_instancingRenderSystem = std::make_unique<InstancingRenderSystem<InstancingShaderProgram>>(m_scene.get());
-    m_particleRenderSystem = std::make_unique<ParticleRenderSystem<ParticleShaderProgram>>(m_scene.get());
-    m_waterRenderSystem = std::make_unique<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>>(m_scene.get());
+    //m_particleRenderSystem = std::make_unique<ParticleRenderSystem<ParticleShaderProgram>>(m_scene.get());
 
-    // house
-    auto height{ m_terrain->GetHeightAtWorldPosition(-1000.0f, -2000.0f) };
-    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
-        "res/model/OldHouse/Big_old_house.obj",
-        glm::vec3(-1000.0f, height, -2000.0f),
-        glm::vec3(0.0f),
-        glm::vec3(24.0f)
-    );
-
-    // tree
-    height = m_terrain->GetHeightAtWorldPosition(-758.0f, -2070.0f);
-    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
-        "res/model/Tree_02/tree02.obj",
-        glm::vec3(-758.0f, height, -2070.0f),
-        glm::vec3(0.0f),
-        glm::vec3(64.0f)
-    );
-
-    // skybox
-    const std::vector<std::string> cubemapFileNames{
-        "res/texture/sky/sRight.png",
-        "res/texture/sky/sLeft.png",
-        "res/texture/sky/sUp.png",
-        "res/texture/sky/sDown.png",
-        "res/texture/sky/sBack.png",
-        "res/texture/sky/sFront.png"
-    };
-    GetApplicationContext()->GetEntityFactory().CreateSkyboxEntity(cubemapFileNames);
-
-    // skydome
-    GetApplicationContext()->GetEntityFactory().CreateSkydomeEntity("res/model/dome/dome.obj");
-
-    // terrain
-    GetApplicationContext()->GetEntityFactory().CreateTerrainEntity(m_terrain);
-
-    // water
-    GetApplicationContext()->GetEntityFactory().CreateWaterEntity(m_water);
-
-    // gui
-    const auto posX{ 0.5f };
-    const auto posY{ 0.5f };
-    const auto scaleX{ 0.25f };
-    const auto scaleY{ 0.25f };
-    GetApplicationContext()->GetEntityFactory().CreateGuiEntity(
-        posX, posY,
-        scaleX, scaleY,
-        m_water->GetWaterFbos().GetReflectionColorTextureId()
-    );
-
-    // plants
+    // multiple grass instances
     const uint32_t instances{ 5000 };
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
         instances,
@@ -194,9 +104,18 @@ void GameState::Init()
         CreatePlantPositions(instances)
     );
 
+    // single grass
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        "res/model/Grass/grassmodel.obj",
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(64.0f)
+    );
+
     //////////////////////////
     //////////////////////////
 
+    /*
     m_particleEmitter = std::make_shared<sg::ogl::particle::ParticleEmitter>(
         m_scene.get(),
         MAX_PARTICLES,
@@ -205,6 +124,7 @@ void GameState::Init()
     );
 
     BuildParticles();
+    */
 }
 
 void GameState::BuildParticles() const
@@ -231,7 +151,7 @@ void GameState::BuildParticles() const
         {
             sg::ogl::particle::Particle particle;
 
-            particle.position = glm::vec3(-968.0f, 210.0f, -1977.0f);
+            particle.position = glm::vec3(0.0f, 20.0f, 0.0f);
             particle.velocity = glm::vec3(velocityX(engine), 1.0f, velocityZ(engine));
             particle.scale = scale(engine);
             particle.lifetime = lifetime(engine);
@@ -246,8 +166,8 @@ std::vector<glm::mat4> GameState::CreatePlantPositions(const uint32_t t_instance
     std::random_device seeder;
     std::mt19937 engine(seeder());
 
-    const std::uniform_real_distribution<float> posX(-1300.0f , -747.0f);
-    const std::uniform_real_distribution<float> posZ(-2038.0f , -1756.0);
+    const std::uniform_real_distribution<float> posX(-100.0f , 100.0f);
+    const std::uniform_real_distribution<float> posZ(-100.0f , 100.0);
 
     std::vector<glm::mat4> matrices;
 
@@ -256,9 +176,9 @@ std::vector<glm::mat4> GameState::CreatePlantPositions(const uint32_t t_instance
         sg::ogl::math::Transform transform;
 
         const auto pos{ glm::vec3(posX(engine), 0.0f, posZ(engine)) };
-        const auto height{ m_terrain->GetHeightAtWorldPosition(pos.x, pos.z) };
+        //const auto height{ m_terrain->GetHeightAtWorldPosition(pos.x, pos.z) };
 
-        transform.position = glm::vec3(pos.x, height, pos.z);
+        transform.position = glm::vec3(pos.x, 0.0f, pos.z);
         transform.scale = glm::vec3(8.0f);
 
         matrices.push_back(transform.GetModelMatrix());

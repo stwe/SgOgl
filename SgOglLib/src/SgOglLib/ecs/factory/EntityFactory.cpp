@@ -11,6 +11,7 @@
 #include "Application.h"
 #include "Log.h"
 #include "Core.h"
+#include "buffer/Vbo.h"
 #include "ecs/component/ModelComponent.h"
 #include "ecs/component/TransformComponent.h"
 #include "ecs/component/MeshComponent.h"
@@ -72,31 +73,38 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
 }
 
 void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
-    uint32_t t_instances,
+    const uint32_t t_instances,
     const std::string& t_fullModelFilePath,
     const std::vector<glm::mat4>& t_matrices
 ) const
 {
-    const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals };
+    const uint32_t numberOfFloatsPerInstance{ 16 };
 
+    // create an empty Vbo for instanced data
+    const auto vbo{ buffer::Vbo::GenerateVbo() };
+
+    // init empty
+    buffer::Vbo::InitEmpty(vbo, numberOfFloatsPerInstance * t_instances, GL_STATIC_DRAW);
+
+    // store data
+    buffer::Vbo::StoreTransformationMatrices(vbo, numberOfFloatsPerInstance * t_instances, t_matrices);
+
+    // bind Vbo to each mesh
+    const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals };
     for (auto& mesh : m_application->GetModelManager().GetModelByPath(t_fullModelFilePath, pFlags)->GetMeshes())
     {
         // get Vao of the mesh
         auto& vao{ mesh->GetVao() };
-
-        // create an empty Vbo for instanced data
-        const uint32_t numberOfFloatsPerInstance{ 16 };
-        const auto vbo{ vao.AddEmptyVbo(numberOfFloatsPerInstance * t_instances) };
+        vao.BindVao();
 
         // set Vbo attributes
-        vao.AddInstancedAttribute(vbo, 5, 4, numberOfFloatsPerInstance, 0);
-        vao.AddInstancedAttribute(vbo, 6, 4, numberOfFloatsPerInstance, 4);
-        vao.AddInstancedAttribute(vbo, 7, 4, numberOfFloatsPerInstance, 8);
-        vao.AddInstancedAttribute(vbo, 8, 4, numberOfFloatsPerInstance, 12);
-
-        // store data
-        vao.StoreTransformationMatrices(vbo, numberOfFloatsPerInstance * t_instances, t_matrices);
+        buffer::Vbo::AddInstancedAttribute(vbo, 5, 4, numberOfFloatsPerInstance, 0);
+        buffer::Vbo::AddInstancedAttribute(vbo, 6, 4, numberOfFloatsPerInstance, 4);
+        buffer::Vbo::AddInstancedAttribute(vbo, 7, 4, numberOfFloatsPerInstance, 8);
+        buffer::Vbo::AddInstancedAttribute(vbo, 8, 4, numberOfFloatsPerInstance, 12);
     }
+
+    SG_OGL_CORE_LOG_WARN("[EntityFactory::CreateModelEntity()] The Vao for the model {} has been changed.", t_fullModelFilePath);
 
     // create an entity
     const auto entity{ m_application->registry.create() };
@@ -110,7 +118,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     // add model component
     m_application->registry.assign<component::ModelComponent>(
         entity,
-        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath)
+        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath, pFlags)
     );
 }
 
@@ -225,5 +233,17 @@ void sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const std::shared_p
         glm::vec3(t_water->GetXPosition(), t_water->GetHeight(), t_water->GetZPosition()),
         glm::vec3(0.0f),
         t_water->GetTileSize()
+    );
+}
+
+void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(uint32_t t_instances) const
+{
+    // create an entity
+    const auto entity{ m_application->registry.create() };
+
+    // add mesh component
+    m_application->registry.assign<component::MeshComponent>(
+        entity,
+        m_application->GetModelManager().GetStaticMeshByName(resource::ModelManager::PARTICLE_MESH)
     );
 }

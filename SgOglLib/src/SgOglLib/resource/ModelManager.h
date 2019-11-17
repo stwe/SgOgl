@@ -49,6 +49,7 @@ namespace sg::ogl::resource
         inline static const StaticMeshKey SKYBOX_MESH{ "skybox" };
         inline static const StaticMeshKey GUI_MESH{ "gui" };
         inline static const StaticMeshKey WATER_MESH{ "water" };
+        inline static const StaticMeshKey PARTICLE_MESH{ "particle" };
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -103,6 +104,7 @@ namespace sg::ogl::resource
         void AddSkyboxStaticMesh();
         void AddGuiStaticMesh();
         void AddWaterStaticMesh();
+        void AddParticleStaticMesh();
 
         static std::vector<glm::vec3> CreateSkyboxVertices(float t_size = 500.0f);
     };

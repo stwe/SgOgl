@@ -20,6 +20,7 @@
 #include "SgOglLib/buffer/BufferLayout.h"
 #include "SgOglLib/buffer/Fbo.h"
 #include "SgOglLib/buffer/Vao.h"
+#include "SgOglLib/buffer/Vbo.h"
 #include "SgOglLib/buffer/WaterFbos.h"
 
 // camera

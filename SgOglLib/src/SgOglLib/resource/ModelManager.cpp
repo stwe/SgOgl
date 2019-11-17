@@ -133,6 +133,7 @@ void sg::ogl::resource::ModelManager::AddStaticMeshes()
     AddSkyboxStaticMesh();
     AddGuiStaticMesh();
     AddWaterStaticMesh();
+    AddParticleStaticMesh();
 }
 
 //-------------------------------------------------
@@ -173,6 +174,7 @@ void sg::ogl::resource::ModelManager::AddGuiStaticMesh()
         { buffer::VertexAttributeType::POSITION_2D, "aPosition" },
     };
 
+    // to render with GL_TRIANGLE_STRIP
     std::vector<float> vertices{
         -1.0f,  1.0f,
         -1.0f, -1.0f,
@@ -214,6 +216,33 @@ void sg::ogl::resource::ModelManager::AddWaterStaticMesh()
 
     // store Mesh
     m_staticMeshes.emplace(WATER_MESH, meshSharedPtr);
+}
+
+void sg::ogl::resource::ModelManager::AddParticleStaticMesh()
+{
+    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddParticleStaticMesh()] Add Particle mesh.");
+
+    // create Mesh
+    auto meshSharedPtr{ std::make_shared<Mesh>() };
+
+    // create BufferLayout
+    const buffer::BufferLayout bufferLayout{
+        { buffer::VertexAttributeType::POSITION_2D, "aPosition" },
+    };
+
+    // to render with GL_TRIANGLE_STRIP
+    std::vector<float> vertices{
+        -0.5f,  0.5f,
+        -0.5f, -0.5f,
+         0.5f,  0.5f,
+         0.5f, -0.5f
+    };
+
+    // add Vbo
+    meshSharedPtr->GetVao().AddVertexDataVbo(vertices.data(), static_cast<int32_t>(vertices.size()) / 2, bufferLayout);
+
+    // store Mesh
+    m_staticMeshes.emplace(PARTICLE_MESH, meshSharedPtr);
 }
 
 std::vector<glm::vec3> sg::ogl::resource::ModelManager::CreateSkyboxVertices(const float t_size)
