@@ -11,7 +11,6 @@
 
 #include <vector>
 #include <algorithm>
-#include <memory>
 #include <string>
 
 namespace sg::ogl::scene
@@ -63,6 +62,7 @@ namespace sg::ogl::particle
 
         ParticleEmitter(
             scene::Scene* t_scene,
+            const glm::vec3& t_rootPosition,
             size_t t_maxParticles,
             size_t t_newParticles,
             const std::string& t_texturePath,
@@ -81,23 +81,16 @@ namespace sg::ogl::particle
         //-------------------------------------------------
 
         size_t GetMaxParticles() const;
+        ParticleContainer& GetParticles();
         int GetNumberOfTextureRows() const;
         uint32_t GetTextureId() const;
         uint32_t GetVboId() const;
-        ParticleContainer& GetParticles();
 
         //-------------------------------------------------
         // Setter
         //-------------------------------------------------
 
         void SetVboId(uint32_t t_vboId);
-
-        //-------------------------------------------------
-        // Add
-        //-------------------------------------------------
-
-        void BuildNewParticles();
-        bool AddParticle(Particle& t_particle);
 
         //-------------------------------------------------
         // Logic
@@ -113,6 +106,11 @@ namespace sg::ogl::particle
          * @brief Pointer to the parent Scene object.
          */
         scene::Scene* m_scene{ nullptr };
+
+        /**
+         * @brief The root position of all particles.
+         */
+        glm::vec3 m_rootPosition{ glm::vec3(0.0f) };
 
         /**
          * @brief Number of max particles.
@@ -142,12 +140,19 @@ namespace sg::ogl::particle
         /**
          * @brief Vbo Id of instanced data.
          */
-        uint32_t m_vbo{ 0 };
+        uint32_t m_vboId{ 0 };
 
         /**
          * @brief A float buffer for instanced data.
          */
         InstancedDataContainer m_instancedData;
+
+        //-------------------------------------------------
+        // Add
+        //-------------------------------------------------
+
+        void BuildNewParticles();
+        bool AddParticle(Particle & t_particle);
 
         //-------------------------------------------------
         // Helper

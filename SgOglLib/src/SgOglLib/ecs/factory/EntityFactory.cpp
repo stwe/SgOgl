@@ -243,13 +243,12 @@ void sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const std::shared_p
 
 void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(std::shared_ptr<particle::ParticleEmitter>& t_particleEmitter) const
 {
-    const uint32_t numberOfFloatsPerInstance{ 21 };
-
     // create an empty Vbo for instanced data
     const auto vbo{ buffer::Vbo::GenerateVbo() };
 
     // init empty
-    buffer::Vbo::InitEmpty(vbo, numberOfFloatsPerInstance * t_particleEmitter->GetMaxParticles(), GL_STREAM_DRAW);
+    const auto floatCount{ particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE * static_cast<uint32_t>(t_particleEmitter->GetMaxParticles()) };
+    buffer::Vbo::InitEmpty(vbo, floatCount, GL_STREAM_DRAW);
 
     // bind empty Vbo to the mesh Vao
     // todo
@@ -260,12 +259,12 @@ void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(std::shared_ptr<
     vao.BindVao();
 
     // set Vbo attributes
-    buffer::Vbo::AddInstancedAttribute(vbo, 1, 4, numberOfFloatsPerInstance, 0);
-    buffer::Vbo::AddInstancedAttribute(vbo, 2, 4, numberOfFloatsPerInstance, 4);
-    buffer::Vbo::AddInstancedAttribute(vbo, 3, 4, numberOfFloatsPerInstance, 8);
-    buffer::Vbo::AddInstancedAttribute(vbo, 4, 4, numberOfFloatsPerInstance, 12);
-    buffer::Vbo::AddInstancedAttribute(vbo, 5, 4, numberOfFloatsPerInstance, 16);
-    buffer::Vbo::AddInstancedAttribute(vbo, 6, 4, numberOfFloatsPerInstance, 20);
+    buffer::Vbo::AddInstancedAttribute(vbo, 1, 4, particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE, 0);
+    buffer::Vbo::AddInstancedAttribute(vbo, 2, 4, particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE, 4);
+    buffer::Vbo::AddInstancedAttribute(vbo, 3, 4, particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE, 8);
+    buffer::Vbo::AddInstancedAttribute(vbo, 4, 4, particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE, 12);
+    buffer::Vbo::AddInstancedAttribute(vbo, 5, 4, particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE, 16);
+    buffer::Vbo::AddInstancedAttribute(vbo, 6, 4, particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE, 20);
 
     SG_OGL_CORE_LOG_WARN("[EntityFactory::CreateParticleEntity()] The Vao for the static Particle Mesh has been changed.");
 

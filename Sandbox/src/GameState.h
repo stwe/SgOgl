@@ -61,7 +61,8 @@ public:
 protected:
 
 private:
-    ParticleEmitterSharedPtr m_particleEmitter;
+    ParticleEmitterSharedPtr m_particleEmitter1;
+    ParticleEmitterSharedPtr m_particleEmitter2;
 
     std::unique_ptr<ParticleRenderSystem<ParticleShaderProgram>> m_particleRenderSystem;
 

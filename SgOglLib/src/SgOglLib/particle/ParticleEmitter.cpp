@@ -27,20 +27,23 @@
 
 sg::ogl::particle::ParticleEmitter::ParticleEmitter(
     scene::Scene* t_scene,
+    const glm::vec3& t_rootPosition,
     const size_t t_maxParticles,
     const size_t t_newParticles,
     const std::string& t_texturePath,
     const int t_nrOfTextureRows
 )
     : m_scene{ t_scene }
+    , m_rootPosition{ t_rootPosition }
     , m_maxParticles{ t_maxParticles }
     , m_newParticles{ t_newParticles }
     , m_nrOfTextureRows{ t_nrOfTextureRows }
 {
     SG_OGL_CORE_ASSERT(m_scene, "[ParticleEmitter::ParticleEmitter()] Null pointer.")
     SG_OGL_CORE_ASSERT(m_maxParticles > 0, "[ParticleEmitter::ParticleEmitter()] Invalid value.")
+    SG_OGL_CORE_ASSERT(m_newParticles > 0, "[ParticleEmitter::ParticleEmitter()] Invalid value.")
+    SG_OGL_CORE_ASSERT(m_nrOfTextureRows > 0, "[ParticleEmitter::ParticleEmitter()] Invalid value.")
 
-    // get texture handle for the given texture path
     m_textureId = m_scene->GetApplicationContext()->GetTextureManager().GetTextureIdFromPath(t_texturePath);
 
     BuildNewParticles();
@@ -55,6 +58,11 @@ size_t sg::ogl::particle::ParticleEmitter::GetMaxParticles() const
     return m_maxParticles;
 }
 
+sg::ogl::particle::ParticleEmitter::ParticleContainer& sg::ogl::particle::ParticleEmitter::GetParticles()
+{
+    return m_particles;
+}
+
 int sg::ogl::particle::ParticleEmitter::GetNumberOfTextureRows() const
 {
     return m_nrOfTextureRows;
@@ -67,12 +75,7 @@ uint32_t sg::ogl::particle::ParticleEmitter::GetTextureId() const
 
 uint32_t sg::ogl::particle::ParticleEmitter::GetVboId() const
 {
-    return m_vbo;
-}
-
-sg::ogl::particle::ParticleEmitter::ParticleContainer& sg::ogl::particle::ParticleEmitter::GetParticles()
-{
-    return m_particles;
+    return m_vboId;
 }
 
 //-------------------------------------------------
@@ -81,65 +84,7 @@ sg::ogl::particle::ParticleEmitter::ParticleContainer& sg::ogl::particle::Partic
 
 void sg::ogl::particle::ParticleEmitter::SetVboId(const uint32_t t_vboId)
 {
-    m_vbo = t_vboId;
-}
-
-//-------------------------------------------------
-// Add
-//-------------------------------------------------
-
-void sg::ogl::particle::ParticleEmitter::BuildNewParticles()
-{
-    std::random_device seeder;
-    std::mt19937 engine(seeder());
-
-    const std::uniform_real_distribution<float> velocityX(-0.5f, 0.5f);
-    const std::uniform_real_distribution<float> velocityZ(-0.5f, 0.5f);
-    const std::uniform_real_distribution<float> scale(2.0f, 4.0f);
-    const std::uniform_real_distribution<float> lifetime(1.0f, 4.0f);
-
-    const auto nrOfparticles{ m_particles.size() };
-
-    if (nrOfparticles < m_maxParticles)
-    {
-        auto newParticles{ m_maxParticles - nrOfparticles };
-        if (newParticles > m_newParticles)
-        {
-            newParticles = m_newParticles;
-        }
-
-        for (auto i{ 0u }; i < newParticles; ++i)
-        {
-            Particle particle;
-
-            particle.position = glm::vec3(0.0f, 20.0f, 0.0f);
-            particle.velocity = glm::vec3(velocityX(engine), 1.0f, velocityZ(engine));
-            particle.scale = scale(engine);
-            particle.lifetime = lifetime(engine);
-
-            AddParticle(particle);
-        }
-    }
-}
-
-bool sg::ogl::particle::ParticleEmitter::AddParticle(Particle& t_particle)
-{
-    if (m_particles.size() < m_maxParticles)
-    {
-        // make sure that the remaining lifetime has a valid value
-        t_particle.remainingLifetime = t_particle.lifetime;
-
-        /*
-        t_particle.cameraDistance = length2(m_scene->GetCurrentCamera().GetPosition() - t_particle.position);
-        std::sort(m_particles.begin(), m_particles.end());
-        */
-
-        m_particles.push_back(t_particle);
-
-        return true;
-    }
-
-    return false;
+    m_vboId = t_vboId;
 }
 
 //-------------------------------------------------
@@ -180,6 +125,7 @@ void sg::ogl::particle::ParticleEmitter::Update(const double t_dt)
                 particle.cameraDistance = length2(cameraPosition - particle.position);
             }
 
+            // todo
             //particle.velocity.y += -10 * 0.3f * frametime;
             particle.velocity.y += 10 * 0.5f * frametime;
             particle.position += particle.velocity * frametime;
@@ -272,6 +218,65 @@ void sg::ogl::particle::ParticleEmitter::Render()
 }
 
 //-------------------------------------------------
+// Add
+//-------------------------------------------------
+
+void sg::ogl::particle::ParticleEmitter::BuildNewParticles()
+{
+    // todo
+    std::random_device seeder;
+    std::mt19937 engine(seeder());
+
+    const std::uniform_real_distribution<float> velocityX(-0.5f, 0.5f);
+    const std::uniform_real_distribution<float> velocityZ(-0.5f, 0.5f);
+    const std::uniform_real_distribution<float> scale(2.0f, 4.0f);
+    const std::uniform_real_distribution<float> lifetime(1.0f, 4.0f);
+
+    const auto currentNrOfParticles{ m_particles.size() };
+
+    if (currentNrOfParticles < m_maxParticles)
+    {
+        auto newParticles{ m_maxParticles - currentNrOfParticles };
+        if (newParticles > m_newParticles)
+        {
+            newParticles = m_newParticles;
+        }
+
+        for (auto i{ 0u }; i < newParticles; ++i)
+        {
+            Particle particle;
+
+            particle.position = m_rootPosition;
+            particle.velocity = glm::vec3(velocityX(engine), 1.0f, velocityZ(engine));
+            particle.scale = scale(engine);
+            particle.lifetime = lifetime(engine);
+
+            AddParticle(particle);
+        }
+    }
+}
+
+bool sg::ogl::particle::ParticleEmitter::AddParticle(Particle& t_particle)
+{
+    if (m_particles.size() < m_maxParticles)
+    {
+        // make sure that the remaining lifetime has a valid value
+        t_particle.remainingLifetime = t_particle.lifetime;
+
+        /*
+        t_particle.cameraDistance = length2(m_scene->GetCurrentCamera().GetPosition() - t_particle.position);
+        std::sort(m_particles.begin(), m_particles.end());
+        */
+
+        m_particles.push_back(t_particle);
+
+        return true;
+    }
+
+    return false;
+}
+
+//-------------------------------------------------
 // Helper
 //-------------------------------------------------
 
@@ -306,7 +311,7 @@ void sg::ogl::particle::ParticleEmitter::UpdateTextureInfo(Particle& t_particle)
 
 void sg::ogl::particle::ParticleEmitter::UpdateVbo() const
 {
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboId);
     glBufferData(GL_ARRAY_BUFFER, NUMBER_OF_FLOATS_PER_INSTANCE * m_maxParticles * sizeof(float), nullptr, GL_STREAM_DRAW);
 
     glBufferSubData(

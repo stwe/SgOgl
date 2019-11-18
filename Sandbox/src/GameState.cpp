@@ -82,7 +82,7 @@ void GameState::Init()
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
     // create camera and set a camera position
-    m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>(glm::vec3(0.0f, 5.0f, -10.0f), 0.0f, -10.0f);
+    m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>(glm::vec3(0.0f, 5.0f, -10.0f), 270.0f, -240.0f);
 
     // create scene and set the camera as current
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
@@ -91,13 +91,25 @@ void GameState::Init()
     // create render systems
     m_particleRenderSystem = std::make_unique<ParticleRenderSystem<ParticleShaderProgram>>(m_scene.get());
 
-    m_particleEmitter = std::make_shared<sg::ogl::particle::ParticleEmitter>(
+    m_particleEmitter1 = std::make_shared<sg::ogl::particle::ParticleEmitter>(
         m_scene.get(),
-        400, // max particles
-        2,   // new particles
+        glm::vec3(0.0f, 20.0f, 0.0f), // root position
+        400,                                   // max particles
+        2,                                     // new particles
         "res/texture/particle/smoke.png",
-        8    // number of rows
+        8                                      // number of rows
     );
+    GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter1);
 
-    GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter);
+    /*
+    m_particleEmitter2 = std::make_shared<sg::ogl::particle::ParticleEmitter>(
+        m_scene.get(),
+        glm::vec3(20.0f, 20.0f, 0.0f), // root position
+        400,                                    // max particles
+        2,                                      // new particles
+        "res/texture/particle/fire.png",
+        8                                       // number of rows
+    );
+    GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter2);
+    */
 }
