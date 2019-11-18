@@ -107,7 +107,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
         buffer::Vbo::AddInstancedAttribute(vbo, 7, 4, numberOfFloatsPerInstance, 8);
         buffer::Vbo::AddInstancedAttribute(vbo, 8, 4, numberOfFloatsPerInstance, 12);
 
-        vao.UnbindVao();
+        buffer::Vao::UnbindVao();
     }
     SG_OGL_CORE_LOG_WARN("[EntityFactory::CreateModelEntity()] The Vao for the model {} has been changed.", t_fullModelFilePath);
 
@@ -250,15 +250,25 @@ void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(std::shared_ptr<
     const auto floatCount{ particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE * static_cast<uint32_t>(t_particleEmitter->GetMaxParticles()) };
     buffer::Vbo::InitEmpty(vbo, floatCount, GL_STREAM_DRAW);
 
-    // bind empty Vbo to the mesh Vao
-    // todo
-    auto mesh{ m_application->GetModelManager().GetStaticMeshByName(resource::ModelManager::PARTICLE_MESH) };
+    // create Mesh
+    auto meshSharedPtr{ std::make_shared<resource::Mesh>() };
 
-    // get Vao of the mesh
-    auto& vao{ mesh->GetVao() };
+    // create BufferLayout
+    const buffer::BufferLayout bufferLayout{
+        { buffer::VertexAttributeType::POSITION_2D, "aPosition" },
+    };
+
+    // add Vbo
+    meshSharedPtr->GetVao().AddVertexDataVbo(
+        resource::ModelManager::GetParticleVertices().data(),
+        static_cast<int32_t>(resource::ModelManager::GetParticleVertices().size()) / 2,
+        bufferLayout
+    );
+
+    // add empty Vbo to the Mesh
+    auto& vao{ meshSharedPtr->GetVao() };
     vao.BindVao();
 
-    // set Vbo attributes
     buffer::Vbo::AddInstancedAttribute(vbo, 1, 4, particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE, 0);
     buffer::Vbo::AddInstancedAttribute(vbo, 2, 4, particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE, 4);
     buffer::Vbo::AddInstancedAttribute(vbo, 3, 4, particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE, 8);
@@ -266,9 +276,6 @@ void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(std::shared_ptr<
     buffer::Vbo::AddInstancedAttribute(vbo, 5, 4, particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE, 16);
     buffer::Vbo::AddInstancedAttribute(vbo, 6, 4, particle::ParticleEmitter::NUMBER_OF_FLOATS_PER_INSTANCE, 20);
 
-    SG_OGL_CORE_LOG_WARN("[EntityFactory::CreateParticleEntity()] The Vao for the static Particle Mesh has been changed.");
-
-    // unbind Vao
     buffer::Vao::UnbindVao();
 
     // store Vbo Id
@@ -286,6 +293,6 @@ void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(std::shared_ptr<
     // add mesh component
     m_application->registry.assign<component::MeshComponent>(
         entity,
-        m_application->GetModelManager().GetStaticMeshByName(resource::ModelManager::PARTICLE_MESH)
+        meshSharedPtr
     );
 }

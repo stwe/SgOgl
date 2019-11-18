@@ -91,6 +91,7 @@ void GameState::Init()
     // create render systems
     m_particleRenderSystem = std::make_unique<ParticleRenderSystem<ParticleShaderProgram>>(m_scene.get());
 
+    // smoke
     m_particleEmitter1 = std::make_shared<sg::ogl::particle::ParticleEmitter>(
         m_scene.get(),
         glm::vec3(0.0f, 20.0f, 0.0f), // root position
@@ -101,7 +102,7 @@ void GameState::Init()
     );
     GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter1);
 
-    /*
+    // fire
     m_particleEmitter2 = std::make_shared<sg::ogl::particle::ParticleEmitter>(
         m_scene.get(),
         glm::vec3(20.0f, 20.0f, 0.0f), // root position
@@ -111,5 +112,4 @@ void GameState::Init()
         8                                       // number of rows
     );
     GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter2);
-    */
 }

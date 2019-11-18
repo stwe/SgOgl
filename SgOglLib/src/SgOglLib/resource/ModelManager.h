@@ -42,6 +42,8 @@ namespace sg::ogl::resource
         using ModelFullPathAsKey = std::string;
         using ModelContainer = std::map<ModelFullPathAsKey, ModelSharedPtr>;
 
+        using VertexContainer = std::vector<float>;
+
         //-------------------------------------------------
         // Built in mesh names
         //-------------------------------------------------
@@ -49,7 +51,6 @@ namespace sg::ogl::resource
         inline static const StaticMeshKey SKYBOX_MESH{ "skybox" };
         inline static const StaticMeshKey GUI_MESH{ "gui" };
         inline static const StaticMeshKey WATER_MESH{ "water" };
-        inline static const StaticMeshKey PARTICLE_MESH{ "particle" };
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -73,6 +74,8 @@ namespace sg::ogl::resource
         MaterialSharedPtr GetMaterialByName(const std::string& t_name);
         StaticMeshSharedPtr GetStaticMeshByName(const std::string& t_name);
         ModelSharedPtr GetModelByPath(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
+
+        static VertexContainer GetParticleVertices();
 
         //-------------------------------------------------
         // Add
@@ -104,7 +107,6 @@ namespace sg::ogl::resource
         void AddSkyboxStaticMesh();
         void AddGuiStaticMesh();
         void AddWaterStaticMesh();
-        void AddParticleStaticMesh();
 
         static std::vector<glm::vec3> CreateSkyboxVertices(float t_size = 500.0f);
     };
