@@ -100,6 +100,7 @@ void GameState::Init()
         "res/texture/particle/smoke.png",
         8                                      // number of rows
     );
+    m_particleEmitter1->SetGravityEffect(0.0f);
     GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter1);
 
     // fire

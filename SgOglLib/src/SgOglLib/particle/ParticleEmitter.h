@@ -91,6 +91,8 @@ namespace sg::ogl::particle
         //-------------------------------------------------
 
         void SetVboId(uint32_t t_vboId);
+        void SetGravity(float t_gravity);
+        void SetGravityEffect(float t_gravityEffect);
 
         //-------------------------------------------------
         // Logic
@@ -146,6 +148,16 @@ namespace sg::ogl::particle
          * @brief A float buffer for instanced data.
          */
         InstancedDataContainer m_instancedData;
+
+        /**
+         * @brief A downward acceleration to simulate gravity.
+         */
+        float m_gravity{ -9.81f };
+
+        /**
+         * @brief Determine how much the particles effected by gravity.
+         */
+        float m_gravityEffect{ 0.3f };
 
         //-------------------------------------------------
         // Add

@@ -87,6 +87,16 @@ void sg::ogl::particle::ParticleEmitter::SetVboId(const uint32_t t_vboId)
     m_vboId = t_vboId;
 }
 
+void sg::ogl::particle::ParticleEmitter::SetGravity(const float t_gravity)
+{
+    m_gravity = t_gravity;
+}
+
+void sg::ogl::particle::ParticleEmitter::SetGravityEffect(const float t_gravityEffect)
+{
+    m_gravityEffect = t_gravityEffect;
+}
+
 //-------------------------------------------------
 // Logic
 //-------------------------------------------------
@@ -125,9 +135,7 @@ void sg::ogl::particle::ParticleEmitter::Update(const double t_dt)
                 particle.cameraDistance = length2(cameraPosition - particle.position);
             }
 
-            // todo
-            //particle.velocity.y += -10 * 0.3f * frametime;
-            particle.velocity.y += 10 * 0.5f * frametime;
+            particle.velocity.y += m_gravity * m_gravityEffect * frametime;
             particle.position += particle.velocity * frametime;
 
             // update texture info
