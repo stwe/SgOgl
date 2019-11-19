@@ -11,13 +11,28 @@
 
 #include "SgOgl.h"
 
+#include "shader/ModelShaderProgram.h"
+#include "shader/SkyboxShaderProgram.h"
+#include "shader/DomeShaderProgram.h"
+#include "shader/TerrainShaderProgram.h"
+#include "shader/GuiShaderProgram.h"
+#include "shader/InstancingShaderProgram.h"
+#include "shader/WaterShaderProgram.h"
 #include "shader/ParticleShaderProgram.h"
+
+#include "renderer/ModelRenderSystem.h"
+#include "renderer/SkyboxRenderSystem.h"
+#include "renderer/SkydomeRenderSystem.h"
+#include "renderer/TerrainRenderSystem.h"
+#include "renderer/GuiRenderSystem.h"
+#include "renderer/InstancingRenderSystem.h"
 #include "renderer/ParticleRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 8.0f };
+    static constexpr auto CAMERA_VELOCITY{ 128.0f };
+    static constexpr auto WATER_HEIGHT{ 50.0f };
 
     // scene graph
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
@@ -25,7 +40,13 @@ public:
     // camera
     using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
 
-    // particles
+    // terrain
+    using TerrainSharedPtr = std::shared_ptr<sg::ogl::terrain::Terrain>;
+
+    // water
+    using WaterSharedPtr = std::shared_ptr<sg::ogl::water::Water>;
+
+    // particle emitter
     using ParticleEmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
 
     //-------------------------------------------------
@@ -61,17 +82,29 @@ public:
 protected:
 
 private:
+    SceneUniquePtr m_scene;
+    CameraSharedPtr m_camera;
+    TerrainSharedPtr m_terrain;
+    WaterSharedPtr m_water;
     ParticleEmitterSharedPtr m_particleEmitter1;
     ParticleEmitterSharedPtr m_particleEmitter2;
 
+    std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
+    std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
+    std::unique_ptr<SkydomeRenderSystem<DomeShaderProgram>> m_skydomeRenderSystem;
+    std::unique_ptr<TerrainRenderSystem<TerrainShaderProgram>> m_terrainRenderSystem;
+    std::unique_ptr<GuiRenderSystem<GuiShaderProgram>> m_guiRenderSystem;
+    std::unique_ptr<InstancingRenderSystem<InstancingShaderProgram>> m_instancingRenderSystem;
+    std::unique_ptr<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>> m_waterRenderSystem;
     std::unique_ptr<ParticleRenderSystem<ParticleShaderProgram>> m_particleRenderSystem;
 
-    SceneUniquePtr m_scene;
-    CameraSharedPtr m_camera;
+    std::shared_ptr<sg::ogl::light::DirectionalLight> m_sun;
 
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------
 
     void Init();
+
+    std::vector<glm::mat4> CreatePlantPositions(uint32_t t_instances) const;
 };
