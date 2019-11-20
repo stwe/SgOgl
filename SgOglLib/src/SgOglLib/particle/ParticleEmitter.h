@@ -20,6 +20,15 @@ namespace sg::ogl::scene
 
 namespace sg::ogl::particle
 {
+    struct BuildConfig
+    {
+        glm::vec2 xRange{-0.5f, 0.5f };
+        glm::vec2 yRange{ 0.5f, 1.0f };
+        glm::vec2 zRange{ -0.5f, 0.5f };
+        glm::vec2 scaleRange{ 2.0f, 4.0f };
+        glm::vec2 lifetimeRange{ 1.0f, 4.0f };
+    };
+
     struct Particle;
 
     class ParticleEmitter
@@ -93,6 +102,7 @@ namespace sg::ogl::particle
         void SetVboId(uint32_t t_vboId);
         void SetGravity(float t_gravity);
         void SetGravityEffect(float t_gravityEffect);
+        void SetBuildConfig(BuildConfig t_buildConfig);
 
         //-------------------------------------------------
         // Logic
@@ -158,6 +168,8 @@ namespace sg::ogl::particle
          * @brief Determine how much the particles effected by gravity.
          */
         float m_gravityEffect{ 0.3f };
+
+        BuildConfig m_buildConfig;
 
         //-------------------------------------------------
         // Add

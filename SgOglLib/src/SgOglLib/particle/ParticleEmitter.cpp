@@ -97,6 +97,11 @@ void sg::ogl::particle::ParticleEmitter::SetGravityEffect(const float t_gravityE
     m_gravityEffect = t_gravityEffect;
 }
 
+void sg::ogl::particle::ParticleEmitter::SetBuildConfig(const BuildConfig t_buildConfig)
+{
+    m_buildConfig = t_buildConfig;
+}
+
 //-------------------------------------------------
 // Logic
 //-------------------------------------------------
@@ -231,14 +236,14 @@ void sg::ogl::particle::ParticleEmitter::Render()
 
 void sg::ogl::particle::ParticleEmitter::BuildNewParticles()
 {
-    // todo
     std::random_device seeder;
     std::mt19937 engine(seeder());
 
-    const std::uniform_real_distribution<float> velocityX(-0.5f, 0.5f);
-    const std::uniform_real_distribution<float> velocityZ(-0.5f, 0.5f);
-    const std::uniform_real_distribution<float> scale(2.0f, 4.0f);
-    const std::uniform_real_distribution<float> lifetime(1.0f, 4.0f);
+    const std::uniform_real_distribution<float> velocityX(m_buildConfig.xRange.x, m_buildConfig.xRange.y);
+    const std::uniform_real_distribution<float> velocityY(m_buildConfig.yRange.x, m_buildConfig.yRange.y);
+    const std::uniform_real_distribution<float> velocityZ(m_buildConfig.zRange.x, m_buildConfig.zRange.y);
+    const std::uniform_real_distribution<float> scale(m_buildConfig.scaleRange.x, m_buildConfig.scaleRange.y);
+    const std::uniform_real_distribution<float> lifetime(m_buildConfig.lifetimeRange.x, m_buildConfig.lifetimeRange.y);
 
     const auto currentNrOfParticles{ m_particles.size() };
 
@@ -255,7 +260,7 @@ void sg::ogl::particle::ParticleEmitter::BuildNewParticles()
             Particle particle;
 
             particle.position = m_rootPosition;
-            particle.velocity = glm::vec3(velocityX(engine), 1.0f, velocityZ(engine));
+            particle.velocity = glm::vec3(velocityX(engine), velocityY(engine), velocityZ(engine));
             particle.scale = scale(engine);
             particle.lifetime = lifetime(engine);
 

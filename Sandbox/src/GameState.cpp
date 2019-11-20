@@ -192,6 +192,11 @@ void GameState::Init()
         CreatePlantPositions(instances)
     );
 
+    // change particle random generator setup
+    sg::ogl::particle::BuildConfig buildConfig;
+    buildConfig.yRange.x = 6.0f;
+    buildConfig.yRange.y = 10.0f;
+
     // create smoke entity (instancing - particle system)
     m_particleEmitter1 = std::make_shared<sg::ogl::particle::ParticleEmitter>(
         m_scene.get(),
@@ -202,6 +207,7 @@ void GameState::Init()
         8                                               // number of rows
     );
     m_particleEmitter1->SetGravityEffect(0.0f);
+    m_particleEmitter1->SetBuildConfig(buildConfig);
     GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter1);
 
     // create fire entity (instancing - particle system)
@@ -214,6 +220,7 @@ void GameState::Init()
         8                                              // number of rows
     );
     m_particleEmitter2->SetGravityEffect(0.0f);
+    m_particleEmitter2->SetBuildConfig(buildConfig);
     GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter2);
 }
 
