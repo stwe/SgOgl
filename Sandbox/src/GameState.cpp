@@ -86,7 +86,7 @@ void GameState::Render()
     m_skyboxRenderSystem->Render();
     //m_skydomeRenderSystem->Render();
 
-    m_guiRenderSystem->Render();
+    //m_guiRenderSystem->Render();
 }
 
 //-------------------------------------------------
@@ -153,7 +153,7 @@ void GameState::Init()
         glm::vec3(64.0f)
     );
 
-    // crate skybox entity
+    // create skybox entity
     const std::vector<std::string> cubemapFileNames{
         "res/texture/sky/sRight.png",
         "res/texture/sky/sLeft.png",

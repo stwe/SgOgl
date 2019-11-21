@@ -15,7 +15,8 @@
 1. [Advanced](#4-advanced)
     1. [Instancing](#a-instancing)
     1. [Water rendering](#b-water-rendering)
-    1. [Lighting](#c-lighting)
+    1. [Particle systems](#c-particle-systems)
+    1. [Lighting](#d-lighting)
 
 ***
 
@@ -29,9 +30,10 @@ Install Visual Studio 2019 and use Premake5 and the premake5.lua file to create 
 
 ## 3. Getting started
 
-In the next few points a Skybox, a Terrain and the model of a house will be loaded. Finally the normalmap of the Terrain should be displayed in a Gui.
+In the next few points, a skybox, a terrain with a water surface and several models are loaded.
+In addition, two particle systems are created (smoke and fire). The result should look something like this.
 
-![Result](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/SkyHouseTerrainGui.png)
+![Result](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/TestAll.png)
 
 ### a) Create application class and entry point
 
@@ -213,7 +215,7 @@ The config file can look like this.
 
 ### b) Load a model from a obj file
 
-The next step is render the model of a house. To do this we add to the `GameState` a render system, a scene and a camera. In addition, a private function `Init()` is required.
+The next step is to render two obj models. To do this we add to the `GameState` a render system, a scene and a camera. In addition, a private function `Init()` is required.
 
 As shown below, two more classes are included. This is the `ModelShaderProgram` and the `ModelRenderSystem`.
 We'll talk about the classes later.
@@ -248,20 +250,17 @@ public:
 protected:
 
 private:
-    std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
-
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
+
+    std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
 
     void Init();
 };
 ```
 
 Let's start with the `Init()` method. Nothing is complicated here.
-It will create a camera and a scene. Then the camera is added to the scene. An entity is created with the `registry`.
-Now two components (ModelComponent and TransformComponent) are added to the entity.
-All obj models are stored in the `ModelManager` as `std::shared_ptr<Model>`. The call `GetApplicationContext()->GetModelManager().GetModelByPath("res/model/House/farmhouse_obj.obj")` returns the smart pointer by value. When the method is called for the first time with this model, the model is preloaded and stored in the `ModelManager`.
-Finally, the render system is created.
+It will create a camera and a scene. Then the camera is added to the scene and the `ModelRenderSystem` is created.
 
 ```cpp
 // File: GameState.cpp
@@ -269,27 +268,45 @@ Finally, the render system is created.
 void GameState::Init()
 {
     // create camera and set a camera position
-    m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>();
-    m_camera->SetPosition(glm::vec3(0.0f, 10.0f, -40.0f));
+    m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>(glm::vec3(-1163.0f, 119.0f, -2246.0f), 74.0f, -9.0f);
 
-    // create scene and set a camera
+    // create scene and set the camera as current
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
+    // create render systems
+    m_modelRenderSystem = std::make_unique<ModelRenderSystem<ModelShaderProgram>>(m_scene.get());
+}
+```
 
-    // add model component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
-        entity,
-        GetApplicationContext()->GetModelManager().GetModelByPath("res/model/House/farmhouse_obj.obj")
+The `ModelRenderSystem` renders entities with specific components. Entities for this render system can be created as follows:
+
+
+```cpp
+// File: GameState.cpp
+
+void GameState::Init()
+{
+    // ...
+
+    // create house entity
+    //auto height{ m_terrain->GetHeightAtWorldPosition(-1000.0f, -2000.0f) };
+    auto height{ 0.0f };
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        "res/model/House/farmhouse_obj.obj",
+        glm::vec3(-1000.0f, height, -2000.0f),
+        glm::vec3(0.0f),
+        glm::vec3(2.0f)
     );
 
-    // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(entity);
-
-    // create a render system for the entity
-    m_modelRenderSystem = std::make_unique<ModelRenderSystem<ModelShaderProgram>>(m_scene.get());
+    // create tree entity
+    //height = m_terrain->GetHeightAtWorldPosition(-1090.0f, -2060.0f);
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        "res/model/Tree_02/tree02.obj",
+        glm::vec3(-1090.0f, height, -2060.0f),
+        glm::vec3(0.0f),
+        glm::vec3(64.0f)
+    );
 }
 ```
 
@@ -321,7 +338,8 @@ private:
 };
 ```
 
-The first class creates a class for our shader program. The `UpdateUniforms()` method must be implemented. This determines which values ​​the uniforms receive. The `GetFolderName()` method needs to be implemented further. Here, the name is returned from the directory under `res/shader` where the shaders are stored. The ShaderManager automatically loads the shaders and finds all the uniforms themselves. There are conventions for naming the shaders. See the examples on Github.
+The first class creates a class for our shader program. The `UpdateUniforms()` method must be implemented. This determines which values ​​the uniforms receive. The `GetFolderName()` method needs to be implemented further. Here, the name is returned from the directory under `res/shader` where the shaders are stored. The `ShaderManager` automatically loads the shaders and finds all the uniforms themselves. There are conventions for naming the shaders. See the examples on Github.
+
 
 ```cpp
 // File: ModelShaderProgram.cpp
@@ -337,7 +355,7 @@ public:
         const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };
 
         SetUniform("modelMatrix", static_cast<glm::mat4>(transformComponent));
-        SetUniform("plane", glm::vec4(0.0f));
+        SetUniform("plane", t_scene.GetCurrentClipPlane());
         SetUniform("mvpMatrix", mvp);
         SetUniform("ambientIntensity", glm::vec3(1.0f));
         SetUniform("diffuseColor", t_currentMesh.GetDefaultMaterial()->kd);
@@ -352,12 +370,12 @@ public:
 
     std::string GetFolderName() override
     {
-        return "model"; // that means: load Vertex.vert and Fragment.frag from res/shader/model
+        return "model";
     }
 };
 ```
 
-Finally the "ModelRenderSystem". It iterates and renders all entities with specific components.
+Finally the `ModelRenderSystem`. It iterates and renders all entities with specific components.
 
 ```cpp
 // File: ModelRenderSystem.cpp
@@ -376,7 +394,9 @@ public:
     {
         PrepareRendering();
 
-        auto view = m_scene->GetApplicationContext()->registry.view<sg::ogl::ecs::component::ModelComponent, sg::ogl::ecs::component::TransformComponent>();
+        auto view = m_scene->GetApplicationContext()->registry.view<
+            sg::ogl::ecs::component::ModelComponent,
+            sg::ogl::ecs::component::TransformComponent>();
 
         auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
 
@@ -384,16 +404,18 @@ public:
 
         for (auto entity : view)
         {
-            auto& modelComponent = view.get<sg::ogl::ecs::component::ModelComponent>(entity);
-
-            for (auto& mesh : modelComponent.model->GetMeshes())
+            // todo
+            if (!m_scene->GetApplicationContext()->registry.has<sg::ogl::ecs::component::SkydomeComponent>(entity))
             {
-                mesh->InitDraw();
+                auto& modelComponent = view.get<sg::ogl::ecs::component::ModelComponent>(entity);
 
-                shaderProgram.UpdateUniforms(*m_scene, entity, *mesh);
-
-                mesh->DrawPrimitives();
-                mesh->EndDraw();
+                for (auto& mesh : modelComponent.model->GetMeshes())
+                {
+                    mesh->InitDraw();
+                    shaderProgram.UpdateUniforms(*m_scene, entity, *mesh);
+                    mesh->DrawPrimitives();
+                    mesh->EndDraw();
+                }
             }
         }
 
@@ -415,6 +437,12 @@ As with the obj model a render system is needed.
 ```cpp
 // File: GameState.h
 
+#pragma once
+
+#include "SgOgl.h"
+#include "renderer/SkyboxRenderSystem.h"
+#include "shader/SkyboxShaderProgram.h"
+
 class GameState : public sg::ogl::state::State
 {
 public:
@@ -422,19 +450,13 @@ public:
     // ...
 
 private:
-    std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
+    // ...
+
     std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
-
-    SceneUniquePtr m_scene;
-    CameraSharedPtr m_camera;
-
-    void Init();
-    void CreateHouseEntity();
-    void CreateSkyboxEntity();
 };
 ```
 
-We create a method for creating each entity (`CreateHouseEntity()` and `CreateSkyboxEntity()`).
+Call the render system for the Skybox. The Skyboy itself is created in the `Init()` method.
 
 ```cpp
 // File: GameState.cpp
@@ -448,31 +470,10 @@ void GameState::Render()
 void GameState::Init()
 {
     // ...
+
     m_skyboxRenderSystem = std::make_unique<SkyboxRenderSystem<SkyboxShaderProgram>>(m_scene.get());
 
-    CreateHouseEntity();
-    CreateSkyboxEntity();
-}
-```
-
-Nothing new here. Create entity and add components.
-The method `GetStaticMeshByName(sg::ogl::resource::ModelManager::SKYBOX_MESH)` retrieves a built-in Mesh for a Skybox from the ModelManager.
-
-```cpp
-// File: GameState.cpp
-
-void GameState::CreateSkyboxEntity()
-{
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
-
-    // add mesh component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
-        entity,
-        GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::SKYBOX_MESH)
-    );
-
-    // add cubemap component
+    // create skybox entity
     const std::vector<std::string> cubemapFileNames{
         "res/texture/sky/sRight.png",
         "res/texture/sky/sLeft.png",
@@ -481,16 +482,11 @@ void GameState::CreateSkyboxEntity()
         "res/texture/sky/sBack.png",
         "res/texture/sky/sFront.png"
     };
-
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::CubemapComponent>(
-        entity,
-        GetApplicationContext()->GetTextureManager().GetCubemapId(cubemapFileNames)
-    );
+    GetApplicationContext()->GetEntityFactory().CreateSkyboxEntity(cubemapFileNames);
 }
 ```
 
 The Skybox shader program.
-
 
 ```cpp
 // File: SkyboxShaderProgram.h
@@ -584,7 +580,7 @@ protected:
 
 ### d) Create a Terrain
 
-For the terrain, a config file must first be created.
+For the terrain, a config file must be created.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -610,6 +606,12 @@ In addition to the render system an instance of `Terrain()` is needed.
 ```cpp
 // File: GameState.h
 
+#pragma once
+
+#include "SgOgl.h"
+#include "shader/TerrainShaderProgram.h"
+#include "renderer/TerrainRenderSystem.h"
+
 class GameState : public sg::ogl::state::State
 {
 public:
@@ -629,9 +631,7 @@ private:
 
     std::unique_ptr<TerrainRenderSystem<TerrainShaderProgram>> m_terrainRenderSystem;
 
-    void Init();
-
-    void CreateTerrainEntity();
+    // ...
 };
 ```
 
@@ -643,6 +643,7 @@ As always.
 void GameState::Render()
 {
     // ...
+
     m_terrainRenderSystem->Render();
 }
 ```
@@ -656,42 +657,19 @@ void GameState::Init()
 {
     // ...
 
-    m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
-
+    // create terrain
     m_terrain = std::make_shared<sg::ogl::terrain::Terrain>(GetApplicationContext(), "res/config/Terrain.xml");
     m_terrain->GenerateTerrain<ComputeNormalmap, ComputeSplatmap>();
 
-    // ...
+    m_terrainRenderSystem = std::make_unique<TerrainRenderSystem<TerrainShaderProgram>>(m_scene.get());
 
-    CreateTerrainEntity();
-}
-```
-
-Create an entity and add components.
-
-```cpp
-// File: GameState.cpp
-
-void GameState::CreateTerrainEntity()
-{
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
-
-    // add terrain component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TerrainComponent>(
-        entity,
-        m_terrain
-    );
-
-    // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        entity,
-        glm::vec3(m_terrain->GetTerrainOptions().xPos, 0.0f, m_terrain->GetTerrainOptions().zPos)
-    );
+    // create terrain entity
+    GetApplicationContext()->GetEntityFactory().CreateTerrainEntity(m_terrain);
 }
 ```
 
 The shader program and the renderer.
+
 
 ```cpp
 // File: TerrainShaderProgram.h
@@ -782,18 +760,28 @@ public:
     }
 
 protected:
-    void PrepareRendering() override {}
-    void FinishRendering() override {}
+    void PrepareRendering() override
+    {
+        sg::ogl::OpenGl::EnableFaceCulling();
+    }
+
+    void FinishRendering() override
+    {
+        sg::ogl::OpenGl::DisableFaceCulling();
+    }
 };
 ```
 
-
 ### e) Create a Gui
 
-Here, a `Gui` should be created and the content should be the terrain-generated normalmap.
+Here, a `Gui` should be created and the content should be a water reflection texture.
 
 ```cpp
 // File: GameState.h
+
+#include "SgOgl.h"
+#include "shader/GuiShaderProgram.h"
+#include "renderer/GuiRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
@@ -808,12 +796,10 @@ private:
     // ...
 
     void Init();
-
-    void CreateGuiEntity();
 };
 ```
 
-Create an entity and add components.
+Create an Gui entity.
 
 ```cpp
 // File: GameState.cpp
@@ -822,6 +808,7 @@ void GameState::Render()
 {
     // ...
 
+    // Always render last.
     m_guiRenderSystem->Render();
 }
 
@@ -831,45 +818,15 @@ void GameState::Init()
 
     m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
 
-    CreateGuiEntity();
-}
-
-void GameState::CreateGuiEntity()
-{
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
-
+    // create gui entity
     const auto posX{ 0.5f };
     const auto posY{ 0.5f };
-
     const auto scaleX{ 0.25f };
     const auto scaleY{ 0.25f };
-
-    // add transform component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::TransformComponent>(
-        entity,
-        glm::vec3(posX, posY, 0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(scaleX, scaleY, 1.0f)
-    );
-
-    // add mesh component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::MeshComponent>(
-        entity,
-        GetApplicationContext()->GetModelManager().GetStaticMeshByName(sg::ogl::resource::ModelManager::GUI_MESH)
-    );
-
-    // add gui component
-    /*
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::GuiComponent>(
-        m_guiEntity,
-        GetApplicationContext()->GetTextureManager().GetTextureIdFromPath("res/texture/test.png")
-    );
-    */
-
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::GuiComponent>(
-        entity,
-        m_terrain->GetNormalmapTextureId()
+    GetApplicationContext()->GetEntityFactory().CreateGuiEntity(
+        posX, posY,
+        scaleX, scaleY,
+        m_water->GetWaterFbos().GetReflectionColorTextureId() // your texture Id
     );
 }
 ```
@@ -959,14 +916,20 @@ protected:
 
 ### a) Instancing
 
-The next step is to add grass to the scene. The following image shows 50,000 grass models that were rendered with a single draw call. Of course, without lighting.
+The next step is to add grass to the scene. The following image shows 50,000 grass models that were rendered with a single draw call without lighting.
 
 ![Result](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/GrassInstancing.png)
 
-Our `GameState` class gets some new methods: `AddGrass()` and `CreateGrassPositions()`.
+The `CreatePlantPositions()` method generates random positions for all grass instances.
 
 ```cpp
 // File: GameState.h
+
+#pragma once
+
+#include "SgOgl.h"
+#include "shader/InstancingShaderProgram.h"
+#include "renderer/InstancingRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
@@ -987,23 +950,24 @@ private:
 
     // ...
 
-    void AddGrass(uint32_t t_instances, const std::string& t_path);
-    void CreateGrassPositions(uint32_t t_instances, std::vector<glm::mat4>& t_matrices) const;
+    std::vector<glm::mat4> CreatePlantPositions(uint32_t t_instances) const;
 };
 ```
 
-The `CreateGrassPositions()` method generates random positions for all instances.
+The `CreatePlantPositions()` method.
 
 ```cpp
 // File: GameState.cpp
 
-void GameState::CreateGrassPositions(const uint32_t t_instances, std::vector<glm::mat4>& t_matrices) const
+std::vector<glm::mat4> GameState::CreatePlantPositions(const uint32_t t_instances) const
 {
     std::random_device seeder;
     std::mt19937 engine(seeder());
 
-    const std::uniform_real_distribution<float> posX(1.0f, 550.0f);
-    const std::uniform_real_distribution<float> posZ(-350.0f, 350.0f);
+    const std::uniform_real_distribution<float> posX(-1100.0f, -800.0f);
+    const std::uniform_real_distribution<float> posZ(-2050.0f, -1900.0);
+
+    std::vector<glm::mat4> matrices;
 
     for (auto i{ 0u }; i < t_instances; ++i)
     {
@@ -1015,61 +979,15 @@ void GameState::CreateGrassPositions(const uint32_t t_instances, std::vector<glm
         transform.position = glm::vec3(pos.x, height, pos.z);
         transform.scale = glm::vec3(2.0f);
 
-        t_matrices.push_back(transform.GetModelMatrix());
+        matrices.push_back(transform.GetModelMatrix());
     }
+
+    return matrices;
 }
 ```
 
-The `AddGrass()` method creates an Entity with a model. Then we add a VBO with the positions for each Mesh of the Model. There is an `InstancesComponent()` which stores only the number of instances.
+The `Render()` and `Init()` methods.
 
-```cpp
-// File: GameState.cpp
-
-void GameState::AddGrass(const uint32_t t_instances, const std::string& t_path)
-{
-    std::vector<glm::mat4> matrices;
-
-    CreateGrassPositions(t_instances, matrices);
-
-    const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals };
-
-    for (auto& mesh : GetApplicationContext()->GetModelManager().GetModelByPath(t_path, pFlags)->GetMeshes())
-    {
-        // get Vao of the mesh
-        auto& vao{ mesh->GetVao() };
-
-        // create an empty Vbo for instanced data
-        const uint32_t numberOfFloatsPerInstance{ 16 };
-        const auto vbo{ vao.AddEmptyVbo(numberOfFloatsPerInstance * t_instances) };
-
-        // set Vbo attributes
-        vao.AddInstancedAttribute(vbo, 5, 4, numberOfFloatsPerInstance, 0);
-        vao.AddInstancedAttribute(vbo, 6, 4, numberOfFloatsPerInstance, 4);
-        vao.AddInstancedAttribute(vbo, 7, 4, numberOfFloatsPerInstance, 8);
-        vao.AddInstancedAttribute(vbo, 8, 4, numberOfFloatsPerInstance, 12);
-
-        // store data
-        vao.StoreTransformationMatrices(vbo, numberOfFloatsPerInstance * t_instances, matrices);
-    }
-
-    // create an entity
-    const auto entity{ GetApplicationContext()->registry.create() };
-
-    // add instances component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::InstancesComponent>(
-        entity,
-        t_instances
-    );
-
-    // add model component
-    GetApplicationContext()->registry.assign<sg::ogl::ecs::component::ModelComponent>(
-        entity,
-        GetApplicationContext()->GetModelManager().GetModelByPath(t_path)
-    );
-}
-```
-
-The `Render()` and `Init()` Method: We render 50.000 instances.
 
 ```cpp
 // File: GameState.cpp
@@ -1089,7 +1007,13 @@ void GameState::Init()
 
     // ...
 
-    AddGrass(50000, "res/model/Grass/grassmodel.obj");
+    // create plant entity (instancing)
+    const uint32_t instances{ 10000 };
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        instances,
+        "res/model/Grass/grassmodel.obj",
+        CreatePlantPositions(instances)
+    );
 }
 ```
 
@@ -1181,7 +1105,10 @@ protected:
 ![Result](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/TestWater.png)
 
 
-### c) Lighting
+### c) Particle systems
+
+
+### d) Lighting
 
 
 
