@@ -336,15 +336,6 @@ void sg::ogl::Application::Input(event::CircularEventQueue& t_circularEventQueue
             {
                 glfwSetWindowShouldClose(t_event.window, GLFW_TRUE);
             }
-
-            // Show Triangles
-            /*
-            if (t_event.eventType == event::EventType::KEY_PRESSED && t_event.key == GLFW_KEY_T)
-            {
-                m_windowOptions.showTriangles = !m_windowOptions.showTriangles;
-                m_windowOptions.showTriangles ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            }
-            */
         })
     );
 

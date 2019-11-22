@@ -22,7 +22,7 @@
 #include "ecs/component/InstancesComponent.h"
 #include "ecs/component/WaterComponent.h"
 #include "ecs/component/ParticleEmitterComponent.h"
-#include "ecs/component/SphereComponent.h"
+#include "ecs/component/MoveableComponent.h"
 #include "resource/Model.h"
 #include "resource/ModelManager.h"
 #include "resource/TextureManager.h"
@@ -55,6 +55,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const glm::vec3& t_position,
     const glm::vec3& t_rotation,
     const glm::vec3& t_scale,
+    const bool t_moveable,
     const bool t_showTriangles
 ) const
 {
@@ -76,10 +77,10 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
         glm::vec3(t_scale.x, t_scale.y, t_scale.z)
     );
 
-    // todo this is a hack - temp code
-    if (t_showTriangles)
+    // add moveable component
+    if (t_moveable)
     {
-        m_application->registry.assign<component::SphereComponent>(entity);
+        m_application->registry.assign<component::MoveableComponent>(entity);
     }
 }
 
@@ -95,7 +96,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const auto vbo{ buffer::Vbo::GenerateVbo() };
 
     // init empty
-    // todo: remove
+    // todo: remove?
     buffer::Vbo::InitEmpty(vbo, numberOfFloatsPerInstance * t_instances, GL_STATIC_DRAW);
 
     // store data

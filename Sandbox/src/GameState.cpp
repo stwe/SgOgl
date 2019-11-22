@@ -30,6 +30,7 @@ bool GameState::Update(const double t_dt)
 {
     m_waterRenderSystem->Update(t_dt);
     m_particleRenderSystem->Update(t_dt);
+    m_mousePicker->Update();
 
     if (GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_W))
     {
@@ -67,44 +68,22 @@ bool GameState::Update(const double t_dt)
         SG_OGL_LOG_INFO("Camera yaw: {}  pitch: {}", m_scene->GetCurrentCamera().GetYaw(), m_scene->GetCurrentCamera().GetPitch());
     }
 
-
-    ////////////////////////////////
-
-    // generate the actual mouse ray
-    m_mousePicker->Update();
-
-    //SG_OGL_CORE_LOG_DEBUG("x: {}  y: {}  z: {}", m_mousePicker->GetCurrentTerrainPoint().x, m_mousePicker->GetCurrentTerrainPoint().y, m_mousePicker->GetCurrentTerrainPoint().z);
-
-    // check for collision
-    const auto result{ m_mousePicker->RaySphere(
-        m_scene->GetCurrentCamera().GetPosition(),
-        m_mousePicker->GetCurrentRay(),
-        m_spherePosition,
-        m_sphereRadius,
-        &m_dist
-    ) };
-
+    // move lamp with mouse
     auto view = m_scene->GetApplicationContext()->registry.view<
-        sg::ogl::ecs::component::SphereComponent,
+        sg::ogl::ecs::component::MoveableComponent,
         sg::ogl::ecs::component::ModelComponent,
         sg::ogl::ecs::component::TransformComponent>();
 
     for (auto entity : view)
     {
-        // get pos from entity and change if collision
-        if (result && GetApplicationContext()->GetMouseInput().IsLeftButtonPressed())
+        if (GetApplicationContext()->GetMouseInput().IsLeftButtonPressed())
         {
             auto& transformComponent = view.get<sg::ogl::ecs::component::TransformComponent>(entity);
-
             transformComponent.position = m_mousePicker->GetCurrentTerrainPoint();
-            m_spherePosition = transformComponent.position;
 
-            SG_OGL_CORE_LOG_DEBUG("Result: {}, Dist: {}", result, m_dist);
+            SG_OGL_CORE_LOG_DEBUG("x: {}  y: {}  z: {}", m_mousePicker->GetCurrentTerrainPoint().x, m_mousePicker->GetCurrentTerrainPoint().y, m_mousePicker->GetCurrentTerrainPoint().z);
         }
     }
-
-    ////////////////////////////////
-
 
     return true;
 }
@@ -183,13 +162,14 @@ void GameState::Init()
         glm::vec3(2.0f)
     );
 
-    // create sphere entity
+    // create lamp entity
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
-        "res/model/sphere/sphere.obj",
-        m_spherePosition,
-        glm::vec3(0.0f),
-        glm::vec3(m_sphereRadius),
-        true
+        "res/model/lamp/Lamp.obj",
+        m_lampPosition,
+        glm::vec3(-90.0f, 0.0f, 0.0f),
+        glm::vec3(0.125f),
+        true,
+        false
     );
 
     // create tree entity

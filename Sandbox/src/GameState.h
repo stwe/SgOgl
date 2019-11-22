@@ -103,13 +103,9 @@ private:
 
     std::shared_ptr<sg::ogl::light::DirectionalLight> m_sun;
 
-
-
     MousePickerUniquePtr m_mousePicker;
-    float m_dist{ 0.0f };
-    glm::vec3 m_spherePosition{ glm::vec3(-1000.0f, 70.0f, -2000.0f) };
-    float m_sphereRadius{ 40.0f };
 
+    glm::vec3 m_lampPosition{ glm::vec3(-965.0f, 56.0f, -2037.0f) };
 
     //-------------------------------------------------
     // Helper

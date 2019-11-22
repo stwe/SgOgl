@@ -2,5 +2,5 @@
 
 namespace sg::ogl::ecs::component
 {
-    struct SphereComponent {};
+    struct MoveableComponent {};
 }
