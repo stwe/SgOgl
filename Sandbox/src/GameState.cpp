@@ -70,18 +70,15 @@ bool GameState::Update(const double t_dt)
 
     ////////////////////////////////
 
-    // get actual mouse ray
-    m_mouseRay = m_mousePicker->GetRayFromMouse(
-        static_cast<float>(GetApplicationContext()->GetMouseInput().GetCurrentPos().x),
-        static_cast<float>(GetApplicationContext()->GetMouseInput().GetCurrentPos().y)
-    );
+    // generate the actual mouse ray
+    m_mousePicker->Update();
 
-    //SG_OGL_CORE_LOG_DEBUG("x: {}  y: {}  z: {}", m_mouseRay.x, m_mouseRay.y, m_mouseRay.z);
+    //SG_OGL_CORE_LOG_DEBUG("x: {}  y: {}  z: {}", m_mousePicker->GetCurrentTerrainPoint().x, m_mousePicker->GetCurrentTerrainPoint().y, m_mousePicker->GetCurrentTerrainPoint().z);
 
     // check for collision
     const auto result{ m_mousePicker->RaySphere(
         m_scene->GetCurrentCamera().GetPosition(),
-        m_mouseRay,
+        m_mousePicker->GetCurrentRay(),
         m_spherePosition,
         m_sphereRadius,
         &m_dist
@@ -99,8 +96,7 @@ bool GameState::Update(const double t_dt)
         {
             auto& transformComponent = view.get<sg::ogl::ecs::component::TransformComponent>(entity);
 
-            transformComponent.position.x += GetApplicationContext()->GetMouseInput().GetDisplVec().x * t_dt * 8.0f;
-            transformComponent.position.y += -GetApplicationContext()->GetMouseInput().GetDisplVec().y * t_dt * 8.0f;
+            transformComponent.position = m_mousePicker->GetCurrentTerrainPoint();
             m_spherePosition = transformComponent.position;
 
             SG_OGL_CORE_LOG_DEBUG("Result: {}, Dist: {}", result, m_dist);
@@ -276,7 +272,7 @@ void GameState::Init()
     GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter2);
 
     // create mouse picker
-    m_mousePicker = std::make_unique<sg::ogl::input::MousePicker>(m_scene.get());
+    m_mousePicker = std::make_unique<sg::ogl::input::MousePicker>(m_scene.get(), m_terrain.get());
 }
 
 std::vector<glm::mat4> GameState::CreatePlantPositions(const uint32_t t_instances) const

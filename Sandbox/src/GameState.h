@@ -106,7 +106,6 @@ private:
 
 
     MousePickerUniquePtr m_mousePicker;
-    glm::vec3 m_mouseRay{ glm::vec3(0.0f) };
     float m_dist{ 0.0f };
     glm::vec3 m_spherePosition{ glm::vec3(-1000.0f, 70.0f, -2000.0f) };
     float m_sphereRadius{ 40.0f };
