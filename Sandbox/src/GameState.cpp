@@ -67,6 +67,49 @@ bool GameState::Update(const double t_dt)
         SG_OGL_LOG_INFO("Camera yaw: {}  pitch: {}", m_scene->GetCurrentCamera().GetYaw(), m_scene->GetCurrentCamera().GetPitch());
     }
 
+
+    ////////////////////////////////
+
+    // get actual mouse ray
+    m_mouseRay = m_mousePicker->GetRayFromMouse(
+        static_cast<float>(GetApplicationContext()->GetMouseInput().GetCurrentPos().x),
+        static_cast<float>(GetApplicationContext()->GetMouseInput().GetCurrentPos().y)
+    );
+
+    //SG_OGL_CORE_LOG_DEBUG("x: {}  y: {}  z: {}", m_mouseRay.x, m_mouseRay.y, m_mouseRay.z);
+
+    // check for collision
+    const auto result{ m_mousePicker->RaySphere(
+        m_scene->GetCurrentCamera().GetPosition(),
+        m_mouseRay,
+        m_spherePosition,
+        m_sphereRadius,
+        &m_dist
+    ) };
+
+    auto view = m_scene->GetApplicationContext()->registry.view<
+        sg::ogl::ecs::component::SphereComponent,
+        sg::ogl::ecs::component::ModelComponent,
+        sg::ogl::ecs::component::TransformComponent>();
+
+    for (auto entity : view)
+    {
+        // get pos from entity and change if collision
+        if (result && GetApplicationContext()->GetMouseInput().IsLeftButtonPressed())
+        {
+            auto& transformComponent = view.get<sg::ogl::ecs::component::TransformComponent>(entity);
+
+            transformComponent.position.x += GetApplicationContext()->GetMouseInput().GetDisplVec().x * t_dt * 8.0f;
+            transformComponent.position.y += -GetApplicationContext()->GetMouseInput().GetDisplVec().y * t_dt * 8.0f;
+            m_spherePosition = transformComponent.position;
+
+            SG_OGL_CORE_LOG_DEBUG("Result: {}, Dist: {}", result, m_dist);
+        }
+    }
+
+    ////////////////////////////////
+
+
     return true;
 }
 
@@ -142,6 +185,15 @@ void GameState::Init()
         glm::vec3(-1000.0f, height, -2000.0f),
         glm::vec3(0.0f),
         glm::vec3(2.0f)
+    );
+
+    // create sphere entity
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        "res/model/sphere/sphere.obj",
+        m_spherePosition,
+        glm::vec3(0.0f),
+        glm::vec3(m_sphereRadius),
+        true
     );
 
     // create tree entity
@@ -222,6 +274,9 @@ void GameState::Init()
     m_particleEmitter2->SetGravityEffect(0.0f);
     m_particleEmitter2->SetBuildConfig(buildConfig);
     GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter2);
+
+    // create mouse picker
+    m_mousePicker = std::make_unique<sg::ogl::input::MousePicker>(m_scene.get());
 }
 
 std::vector<glm::mat4> GameState::CreatePlantPositions(const uint32_t t_instances) const

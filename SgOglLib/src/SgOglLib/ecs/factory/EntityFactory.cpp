@@ -22,6 +22,7 @@
 #include "ecs/component/InstancesComponent.h"
 #include "ecs/component/WaterComponent.h"
 #include "ecs/component/ParticleEmitterComponent.h"
+#include "ecs/component/SphereComponent.h"
 #include "resource/Model.h"
 #include "resource/ModelManager.h"
 #include "resource/TextureManager.h"
@@ -53,7 +54,8 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const std::string& t_fullModelFilePath,
     const glm::vec3& t_position,
     const glm::vec3& t_rotation,
-    const glm::vec3& t_scale
+    const glm::vec3& t_scale,
+    const bool t_showTriangles
 ) const
 {
     // create an entity
@@ -62,7 +64,8 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     // add model component
     m_application->registry.assign<component::ModelComponent>(
         entity,
-        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath)
+        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath),
+        t_showTriangles
     );
 
     // add transform component
@@ -72,6 +75,12 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
         glm::vec3(t_rotation.x, t_rotation.y, t_rotation.z),
         glm::vec3(t_scale.x, t_scale.y, t_scale.z)
     );
+
+    // todo this is a hack - temp code
+    if (t_showTriangles)
+    {
+        m_application->registry.assign<component::SphereComponent>(entity);
+    }
 }
 
 void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(

@@ -63,7 +63,8 @@ namespace sg::ogl::ecs::factory
             const std::string& t_fullModelFilePath,
             const glm::vec3& t_position,
             const glm::vec3& t_rotation,
-            const glm::vec3& t_scale
+            const glm::vec3& t_scale,
+            bool t_showTriangles = false
         ) const;
 
         void CreateModelEntity(

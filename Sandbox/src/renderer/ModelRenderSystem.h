@@ -38,12 +38,24 @@ public:
             {
                 auto& modelComponent = view.get<sg::ogl::ecs::component::ModelComponent>(entity);
 
+                // todo
+                if (modelComponent.showTriangles)
+                {
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                }
+
                 for (auto& mesh : modelComponent.model->GetMeshes())
                 {
                     mesh->InitDraw();
                     shaderProgram.UpdateUniforms(*m_scene, entity, *mesh);
                     mesh->DrawPrimitives();
                     mesh->EndDraw();
+                }
+
+                // todo
+                if (modelComponent.showTriangles)
+                {
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 }
             }
         }

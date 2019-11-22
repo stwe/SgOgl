@@ -35,6 +35,7 @@
 #include "SgOglLib/ecs/component/ModelComponent.h"
 #include "SgOglLib/ecs/component/ParticleEmitterComponent.h"
 #include "SgOglLib/ecs/component/SkydomeComponent.h"
+#include "SgOglLib/ecs/component/SphereComponent.h"
 #include "SgOglLib/ecs/component/TerrainComponent.h"
 #include "SgOglLib/ecs/component/TransformComponent.h"
 #include "SgOglLib/ecs/component/WaterComponent.h"
@@ -44,6 +45,7 @@
 
 // input
 #include "SgOglLib/input/MouseInput.h"
+#include "SgOglLib/input/MousePicker.h"
 
 // light
 #include "SgOglLib/light/DirectionalLight.h"

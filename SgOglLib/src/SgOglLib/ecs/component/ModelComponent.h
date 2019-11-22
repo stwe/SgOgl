@@ -21,5 +21,6 @@ namespace sg::ogl::ecs::component
     struct ModelComponent
     {
         std::shared_ptr<resource::Model> model;
+        bool showTriangles{ false };
     };
 }
