@@ -27,6 +27,13 @@ sg::ogl::input::MousePicker::MousePicker(scene::Scene* t_scene, terrain::Terrain
     , m_terrain{ t_terrain }
 {
     SG_OGL_CORE_ASSERT(m_scene, "[MousePicker::MousePicker()] Null pointer.")
+
+    SG_OGL_CORE_LOG_DEBUG("[MousePicker::MousePicker()] Create MousePicker.");
+}
+
+sg::ogl::input::MousePicker::~MousePicker()
+{
+    SG_OGL_CORE_LOG_DEBUG("[MousePicker::~MousePicker()] Destruct MousePicker.");
 }
 
 //-------------------------------------------------
@@ -60,15 +67,11 @@ void sg::ogl::input::MousePicker::Update()
         {
             m_currentTerrainPoint = BinarySearch(0, 0.0f, RAY_RANGE, m_currentRay);
         }
-        else
-        {
-            m_currentTerrainPoint = glm::vec3(-1000000.0);
-        }
     }
 }
 
 //-------------------------------------------------
-// Collision
+// Collision detection
 //-------------------------------------------------
 
 bool sg::ogl::input::MousePicker::RayAabb(
@@ -233,7 +236,7 @@ glm::vec3 sg::ogl::input::MousePicker::GetRayFromMouse(const float t_mouseX, con
 }
 
 //-------------------------------------------------
-// Terrain
+// Terrain collision detection
 //-------------------------------------------------
 
 glm::vec3 sg::ogl::input::MousePicker::GetPointOnRay(const glm::vec3 t_ray, const float t_distance) const
@@ -250,8 +253,7 @@ glm::vec3 sg::ogl::input::MousePicker::BinarySearch(const int t_count, const flo
 
     if (t_count >= RECURSION_COUNT)
     {
-        auto end{ GetPointOnRay(t_ray, half) };
-        return end;
+        return GetPointOnRay(t_ray, half);
     }
 
     if (IntersectionInRange(t_start, half, t_ray))

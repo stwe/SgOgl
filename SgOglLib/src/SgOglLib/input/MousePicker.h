@@ -42,7 +42,7 @@ namespace sg::ogl::input
         MousePicker& operator=(const MousePicker& t_other) = delete;
         MousePicker& operator=(MousePicker&& t_other) noexcept = delete;
 
-        ~MousePicker() = default;
+        ~MousePicker();
 
         //-------------------------------------------------
         // Getter
@@ -58,7 +58,7 @@ namespace sg::ogl::input
         void Update();
 
         //-------------------------------------------------
-        // Collision
+        // Collision detection
         //-------------------------------------------------
 
         bool RayAabb
@@ -96,6 +96,9 @@ namespace sg::ogl::input
          */
         glm::vec3 m_currentRay{ glm::vec3(0.0f) };
 
+        /**
+         * @brief The current intersection point of the mouse ray and the terrain.
+         */
         glm::vec3 m_currentTerrainPoint{ glm::vec3(0.0f) };
 
         //-------------------------------------------------
@@ -111,7 +114,7 @@ namespace sg::ogl::input
         glm::vec3 GetRayFromMouse(float t_mouseX, float t_mouseY) const;
 
         //-------------------------------------------------
-        // Terrain
+        // Terrain collision detection
         //-------------------------------------------------
 
         glm::vec3 GetPointOnRay(glm::vec3 t_ray, float t_distance) const;
