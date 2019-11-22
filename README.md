@@ -920,7 +920,7 @@ The next step is to add grass to the scene. The following image shows 50,000 gra
 
 ![Result](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/GrassInstancing.png)
 
-The `CreatePlantPositions()` method generates random positions for all grass instances.
+The `CreatePlantPositions()` method generates random positions for all grass instances. Otherwise, there is nothing new here.
 
 ```cpp
 // File: GameState.h
@@ -954,7 +954,9 @@ private:
 };
 ```
 
-The `CreatePlantPositions()` method.
+
+The `CreatePlantPositions()` method to generate our random positions.
+
 
 ```cpp
 // File: GameState.cpp
@@ -1105,7 +1107,176 @@ protected:
 ![Result](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/TestWater.png)
 
 
+In addition to the render system an instance of `Water()` is needed. We also create a direct light source.
+
+```cpp
+// File: GameState.h
+
+#pragma once
+
+#include "SgOgl.h"
+#include "shader/WaterShaderProgram.h"
+
+class GameState : public sg::ogl::state::State
+{
+public:
+    static constexpr auto WATER_HEIGHT{ 50.0f };
+    // ...
+
+    // water
+    using WaterSharedPtr = std::shared_ptr<sg::ogl::water::Water>;
+
+    // ...
+
+    bool Update(double t_dt) override;
+    void Render() override;
+
+private:
+    // ...
+
+    WaterSharedPtr m_water;
+
+    std::unique_ptr<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>> m_waterRenderSystem;
+    std::shared_ptr<sg::ogl::light::DirectionalLight> m_sun;
+
+    // ...
+
+    void Init();
+};
+```
+
+The scene must be rendered multiple times. The first pass creates the Reflection Texture. In the second pass the Refraction Texture. The last run will render the scene on the screen.
+
+
+The `Init()` method creates a direct light source and a new Water object. Finally, the render system and entity are created.
+
+
+```cpp
+// File: GameState.cpp
+
+bool GameState::Update(const double t_dt)
+{
+    m_waterRenderSystem->Update(t_dt);
+
+    return true;
+}
+
+void GameState::Render()
+{
+    // render to textures
+    m_waterRenderSystem->RenderReflectionTexture(m_modelRenderSystem, m_terrainRenderSystem, m_skyboxRenderSystem);
+    m_waterRenderSystem->RenderRefractionTexture(m_modelRenderSystem, m_terrainRenderSystem, m_skyboxRenderSystem);
+
+    //render to the screen
+    m_modelRenderSystem->Render();
+    m_terrainRenderSystem->Render();
+    m_instancingRenderSystem->Render();
+    m_waterRenderSystem->Render();
+    m_particleRenderSystem->Render();
+
+    m_skyboxRenderSystem->Render();
+    //m_skydomeRenderSystem->Render();
+
+    //m_guiRenderSystem->Render();
+}
+
+void GameState::Init()
+{
+    // create and add the sun to the scene
+    m_sun = std::make_shared<sg::ogl::light::DirectionalLight>();
+    m_sun->direction = glm::vec3(1000.0f, 1000.0f, 1000.0f);
+    m_sun->diffuseIntensity = glm::vec3(1.3f, 1.3f, 1.3f);
+    m_scene->SetDirectionalLight(m_sun);
+
+    // ...
+
+    // create water
+    m_water = std::make_shared<sg::ogl::water::Water>(
+        GetApplicationContext(),
+        -400.0f, -2300.0f,
+        WATER_HEIGHT,
+        glm::vec3(750.0f * 2.0f, 750.0f, 750.0f),
+        "res/texture/water/waterDUDV.png",
+        "res/texture/water/normal.png"
+    );
+
+    // create render systems
+    m_waterRenderSystem = std::make_unique<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>>(m_scene.get());
+
+    // ...
+
+    // crate water entity
+    GetApplicationContext()->GetEntityFactory().CreateWaterEntity(m_water);
+
+    // ...
+}
+```
+
+The shader program and the renderer.
+
+
+```cpp
+class WaterShaderProgram : public sg::ogl::resource::ShaderProgram
+{
+public:
+    void UpdateUniforms(const sg::ogl::scene::Scene& t_scene, const entt::entity t_entity, const sg::ogl::resource::Mesh& t_currentMesh) override
+    {
+        // get components
+        auto& waterComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::WaterComponent>(t_entity);
+        auto& transformComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TransformComponent>(t_entity);
+
+        // get projection matrix
+        const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
+
+        // set model matrix
+        SetUniform("modelMatrix", static_cast<glm::mat4>(transformComponent));
+
+        // set vp matrix
+        const auto vp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() };
+        SetUniform("vpMatrix", vp);
+
+        // set camera position
+        SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
+
+        // set near and far
+        SetUniform("near", t_scene.GetApplicationContext()->GetProjectionOptions().nearPlane);
+        SetUniform("far", t_scene.GetApplicationContext()->GetProjectionOptions().farPlane);
+
+        // set textures
+        SetUniform("reflectionMap", 0);
+        SetUniform("refractionMap", 1);
+        SetUniform("dudvMap", 2);
+        SetUniform("normalMap", 3);
+        SetUniform("depthMap", 4);
+
+        // set light
+        SetUniform("lightPosition", t_scene.GetDirectionalLight().direction);
+        SetUniform("lightColor", t_scene.GetDirectionalLight().diffuseIntensity);
+
+        // set move factor
+        SetUniform("moveFactor", waterComponent.water->moveFactor);
+
+        // bind textures
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.water->GetWaterFbos().GetReflectionColorTextureId(), GL_TEXTURE0);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.water->GetWaterFbos().GetRefractionColorTextureId(), GL_TEXTURE1);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.water->GetDudvTextureId(), GL_TEXTURE2);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.water->GetNormalTextureId(), GL_TEXTURE3);
+        sg::ogl::resource::TextureManager::BindForReading(waterComponent.water->GetWaterFbos().GetRefractionDepthTextureId(), GL_TEXTURE4);
+    }
+
+    std::string GetFolderName() override
+    {
+        return "water";
+    }
+
+};
+```
+
+The render system is built in as a special case. So it does not have to be created separately.
+
+
 ### c) Particle systems
+
 
 
 ### d) Lighting
