@@ -17,6 +17,7 @@ public:
         // get components
         auto& terrainComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TerrainComponent>(t_entity);
         auto& transformComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TransformComponent>(t_entity);
+        auto& directionalLightComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::DirectionalLightComponent>(t_entity);
 
         // get terrain options
         const auto& terrainOptions{ terrainComponent.terrain->GetTerrainOptions() };
@@ -25,8 +26,20 @@ public:
         const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
         const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };
 
+        // set model matrix
+        SetUniform("modelMatrix", static_cast<glm::mat4>(transformComponent));
+
         // set mvp uniform
         SetUniform("mvpMatrix", mvp);
+
+        // set ambient intensity
+        SetUniform("ambientIntensity", terrainComponent.terrain->GetAmbientIntensity());
+
+        // set directional light
+        SetUniform("directionalLight", *directionalLightComponent.directionalLight);
+
+        // set camera position
+        SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
         // set and bind textures
         auto counter{ 0 };

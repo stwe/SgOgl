@@ -20,6 +20,11 @@ namespace sg::ogl
     class Application;
 }
 
+namespace sg::ogl::light
+{
+    struct DirectionalLight;
+}
+
 namespace sg::ogl::terrain
 {
     class Terrain;
@@ -76,7 +81,7 @@ namespace sg::ogl::ecs::factory
 
         void CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const;
         void CreateSkydomeEntity(const std::string& t_fullModelFilePath) const;
-        void CreateTerrainEntity(const std::shared_ptr<terrain::Terrain>& t_terrain) const;
+        void CreateTerrainEntity(const std::shared_ptr<terrain::Terrain>& t_terrain, const std::shared_ptr<light::DirectionalLight>& t_directionalLight) const;
 
         void CreateGuiEntity(
             float t_x,

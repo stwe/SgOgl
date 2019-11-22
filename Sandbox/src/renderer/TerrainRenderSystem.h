@@ -24,6 +24,7 @@ public:
         PrepareRendering();
 
         auto view = m_scene->GetApplicationContext()->registry.view<
+            sg::ogl::ecs::component::DirectionalLightComponent,
             sg::ogl::ecs::component::TerrainComponent,
             sg::ogl::ecs::component::TransformComponent>();
 

@@ -10,17 +10,20 @@ layout (location = 2) in vec2 aUv;
 
 // Out
 
+out vec3 vPosition;
 out vec2 vUvOrig;
 out vec2 vUv;
 
 // Uniforms
 
+uniform mat4 modelMatrix;
 uniform mat4 mvpMatrix;
 
 // Main
 
 void main()
 {
+    vPosition = vec3(modelMatrix * vec4(aPosition, 1.0));
     gl_Position = mvpMatrix * vec4(aPosition, 1.0);
 
     vUvOrig = aUv;

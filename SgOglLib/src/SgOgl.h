@@ -28,6 +28,7 @@
 
 // ecs
 #include "SgOglLib/ecs/component/CubemapComponent.h"
+#include "SgOglLib/ecs/component/DirectionalLightComponent.h"
 #include "SgOglLib/ecs/component/GuiComponent.h"
 #include "SgOglLib/ecs/component/InstancesComponent.h"
 #include "SgOglLib/ecs/component/MaterialComponent.h"

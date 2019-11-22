@@ -29,7 +29,6 @@ bool GameState::Input()
 bool GameState::Update(const double t_dt)
 {
     m_waterRenderSystem->Update(t_dt);
-    m_particleRenderSystem->Update(t_dt);
     m_mousePicker->Update();
 
     if (GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_W))
@@ -99,7 +98,6 @@ void GameState::Render()
     m_terrainRenderSystem->Render();
     m_instancingRenderSystem->Render();
     m_waterRenderSystem->Render();
-    m_particleRenderSystem->Render();
 
     m_skyboxRenderSystem->Render();
     //m_skydomeRenderSystem->Render();
@@ -151,7 +149,6 @@ void GameState::Init()
     m_guiRenderSystem = std::make_unique<GuiRenderSystem<GuiShaderProgram>>(m_scene.get());
     m_instancingRenderSystem = std::make_unique<InstancingRenderSystem<InstancingShaderProgram>>(m_scene.get());
     m_waterRenderSystem = std::make_unique<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>>(m_scene.get());
-    m_particleRenderSystem = std::make_unique<ParticleRenderSystem<ParticleShaderProgram>>(m_scene.get());
 
     // create house entity
     auto height{ m_terrain->GetHeightAtWorldPosition(-1000.0f, -2000.0f) };
@@ -196,7 +193,11 @@ void GameState::Init()
     GetApplicationContext()->GetEntityFactory().CreateSkydomeEntity("res/model/dome/dome.obj");
 
     // create terrain entity
-    GetApplicationContext()->GetEntityFactory().CreateTerrainEntity(m_terrain);
+    m_directionalLight = std::make_shared<sg::ogl::light::DirectionalLight>();
+    m_directionalLight->direction = glm::vec3(-0.2f, -1.0f, -0.3f);
+    m_directionalLight->diffuseIntensity = glm::vec3(0.5f, 0.5f, 0.5f);
+    m_directionalLight->specularIntensity = glm::vec3(0.5f, 0.6f, 0.5f);
+    GetApplicationContext()->GetEntityFactory().CreateTerrainEntity(m_terrain, m_directionalLight);
 
     // crate water entity
     GetApplicationContext()->GetEntityFactory().CreateWaterEntity(m_water);
@@ -219,37 +220,6 @@ void GameState::Init()
         "res/model/Grass/grassmodel.obj",
         CreatePlantPositions(instances)
     );
-
-    // change particle random generator setup
-    sg::ogl::particle::BuildConfig buildConfig;
-    buildConfig.yRange.x = 6.0f;
-    buildConfig.yRange.y = 10.0f;
-
-    // create smoke entity (instancing - particle system)
-    m_particleEmitter1 = std::make_shared<sg::ogl::particle::ParticleEmitter>(
-        m_scene.get(),
-        glm::vec3(-1000.0f, 100.0f, -2000.0f), // root position
-        400,                                            // max particles
-        2,                                              // new particles
-        "res/texture/particle/smoke.png",
-        8                                               // number of rows
-    );
-    m_particleEmitter1->SetGravityEffect(0.0f);
-    m_particleEmitter1->SetBuildConfig(buildConfig);
-    GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter1);
-
-    // create fire entity (instancing - particle system)
-    m_particleEmitter2 = std::make_shared<sg::ogl::particle::ParticleEmitter>(
-        m_scene.get(),
-        glm::vec3(-1163.0f, 65.0f, -2036.0f), // root position
-        400,                                           // max particles
-        2,                                             // new particles
-        "res/texture/particle/fire.png",
-        8                                              // number of rows
-    );
-    m_particleEmitter2->SetGravityEffect(0.0f);
-    m_particleEmitter2->SetBuildConfig(buildConfig);
-    GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter2);
 
     // create mouse picker
     m_mousePicker = std::make_unique<sg::ogl::input::MousePicker>(m_scene.get(), m_terrain.get());

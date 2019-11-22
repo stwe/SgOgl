@@ -67,6 +67,14 @@ namespace sg::ogl::terrain
 
         const resource::Mesh& GetMesh() const;
 
+        auto GetAmbientIntensity() const { return m_ambientIntensity; }
+
+        //-------------------------------------------------
+        // Setter
+        //-------------------------------------------------
+
+        void SetAmbientIntensity(const glm::vec3& t_ambientIntensity) { m_ambientIntensity = t_ambientIntensity; }
+
         //-------------------------------------------------
         // Generate
         //-------------------------------------------------
@@ -230,6 +238,8 @@ namespace sg::ogl::terrain
         MeshUniquePtr m_mesh;
 
         HeightContainer m_terrainHeights;
+
+        glm::vec3 m_ambientIntensity{ glm::vec3(0.3f) };
 
         //-------------------------------------------------
         // Helper

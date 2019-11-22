@@ -18,7 +18,6 @@
 #include "shader/GuiShaderProgram.h"
 #include "shader/InstancingShaderProgram.h"
 #include "shader/WaterShaderProgram.h"
-#include "shader/ParticleShaderProgram.h"
 
 #include "renderer/ModelRenderSystem.h"
 #include "renderer/SkyboxRenderSystem.h"
@@ -26,7 +25,6 @@
 #include "renderer/TerrainRenderSystem.h"
 #include "renderer/GuiRenderSystem.h"
 #include "renderer/InstancingRenderSystem.h"
-#include "renderer/ParticleRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
@@ -89,8 +87,6 @@ private:
     CameraSharedPtr m_camera;
     TerrainSharedPtr m_terrain;
     WaterSharedPtr m_water;
-    ParticleEmitterSharedPtr m_particleEmitter1;
-    ParticleEmitterSharedPtr m_particleEmitter2;
 
     std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
     std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
@@ -99,9 +95,9 @@ private:
     std::unique_ptr<GuiRenderSystem<GuiShaderProgram>> m_guiRenderSystem;
     std::unique_ptr<InstancingRenderSystem<InstancingShaderProgram>> m_instancingRenderSystem;
     std::unique_ptr<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>> m_waterRenderSystem;
-    std::unique_ptr<ParticleRenderSystem<ParticleShaderProgram>> m_particleRenderSystem;
 
     std::shared_ptr<sg::ogl::light::DirectionalLight> m_sun;
+    std::shared_ptr<sg::ogl::light::DirectionalLight> m_directionalLight;
 
     MousePickerUniquePtr m_mousePicker;
 

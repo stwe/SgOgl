@@ -12,6 +12,7 @@
 #include "Log.h"
 #include "Core.h"
 #include "buffer/Vbo.h"
+#include "ecs/component/DirectionalLightComponent.h"
 #include "ecs/component/ModelComponent.h"
 #include "ecs/component/TransformComponent.h"
 #include "ecs/component/MeshComponent.h"
@@ -149,7 +150,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateSkyboxEntity(const std::vector<
     );
 
     // add cubemap component
-    m_application->registry.assign<sg::ogl::ecs::component::CubemapComponent>(
+    m_application->registry.assign<component::CubemapComponent>(
         entity,
         m_application->GetTextureManager().GetCubemapId(t_cubemapFileNames)
     );
@@ -178,7 +179,10 @@ void sg::ogl::ecs::factory::EntityFactory::CreateSkydomeEntity(const std::string
     m_application->registry.assign<component::SkydomeComponent>(entity);
 }
 
-void sg::ogl::ecs::factory::EntityFactory::CreateTerrainEntity(const std::shared_ptr<terrain::Terrain>& t_terrain) const
+void sg::ogl::ecs::factory::EntityFactory::CreateTerrainEntity(
+    const std::shared_ptr<terrain::Terrain>& t_terrain,
+    const std::shared_ptr<light::DirectionalLight>& t_directionalLight
+) const
 {
     // create an entity
     const auto entity{ m_application->registry.create() };
@@ -193,6 +197,12 @@ void sg::ogl::ecs::factory::EntityFactory::CreateTerrainEntity(const std::shared
     m_application->registry.assign<component::TransformComponent>(
         entity,
         glm::vec3(t_terrain->GetTerrainOptions().xPos, 0.0f, t_terrain->GetTerrainOptions().zPos)
+    );
+
+    // add directional light component
+    m_application->registry.assign<component::DirectionalLightComponent>(
+        entity,
+        t_directionalLight
     );
 }
 
