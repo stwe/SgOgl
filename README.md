@@ -17,6 +17,10 @@
     1. [Water rendering](#b-water-rendering)
     1. [Particle systems](#c-particle-systems)
     1. [Lighting](#d-lighting)
+        1. [Ambient lighting]
+        1. [Directional light]
+        1. [Point lights]
+    1. [Mouse picking](#e-mouse-picking)
 
 ***
 
@@ -327,6 +331,8 @@ Here again as a reminder of how the render system was declared:
 ```cpp
 // File: GameState.h
 
+#pragma once
+
 class GameState : public sg::ogl::state::State
 {
     // ...
@@ -491,6 +497,8 @@ The Skybox shader program.
 ```cpp
 // File: SkyboxShaderProgram.h
 
+#pragma once
+
 class SkyboxShaderProgram : public sg::ogl::resource::ShaderProgram
 {
 public:
@@ -526,6 +534,8 @@ The skybox render system. Here, the `DepthFunc` is changed in `PrepareRendering(
 
 ```cpp
 // File: SkyboxRenderSystem.h
+
+#pragma once
 
 template <typename TShaderProgram>
 class SkyboxRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
@@ -674,6 +684,8 @@ The shader program and the renderer.
 ```cpp
 // File: TerrainShaderProgram.h
 
+#pragma once
+
 class TerrainShaderProgram : public sg::ogl::resource::ShaderProgram
 {
 public:
@@ -721,6 +733,8 @@ public:
 
 ```cpp
 // File: TerrainRenderSystem.h
+
+#pragma once
 
 template <typename TShaderProgram>
 class TerrainRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
@@ -779,6 +793,8 @@ Here, a `Gui` should be created and the content should be a water reflection tex
 ```cpp
 // File: GameState.h
 
+#pragma once
+
 #include "SgOgl.h"
 #include "shader/GuiShaderProgram.h"
 #include "renderer/GuiRenderSystem.h"
@@ -836,6 +852,8 @@ The shader program and the renderer.
 ```cpp
 // File: GuiShaderProgram.h
 
+#pragma once
+
 class GuiShaderProgram : public sg::ogl::resource::ShaderProgram
 {
 public:
@@ -858,6 +876,8 @@ public:
 
 ```cpp
 // File: GuiRenderSystem.h
+
+#pragma once
 
 template <typename TShaderProgram>
 class GuiRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
@@ -1024,6 +1044,8 @@ The shader program and the renderer.
 ```cpp
 // File: InstancingShaderProgram.h
 
+#pragma once
+
 class InstancingShaderProgram : public sg::ogl::resource::ShaderProgram
 {
 public:
@@ -1045,6 +1067,8 @@ public:
 
 ```cpp
 // File: InstancingRenderSystem.h
+
+#pragma once
 
 template <typename TShaderProgram>
 class InstancingRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
@@ -1216,6 +1240,10 @@ The shader program and the renderer.
 
 
 ```cpp
+// File: WaterShaderProgram.h
+
+#pragma once
+
 class WaterShaderProgram : public sg::ogl::resource::ShaderProgram
 {
 public:
@@ -1278,8 +1306,211 @@ The render system is built in as a special case. So it does not have to be creat
 ### c) Particle systems
 
 
+It is also possible to add particle systems to the scene, such as smoke or fire.
+Here we create two particle systems:
+
+```cpp
+// File: GameState.h
+
+#pragma once
+
+#include "SgOgl.h"
+#include "shader/ParticleShaderProgram.h"
+#include "renderer/ParticleRenderSystem.h"
+
+class GameState : public sg::ogl::state::State
+{
+public:
+    // particle emitter
+    using ParticleEmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
+
+    bool Update(double t_dt) override;
+    void Render() override;
+
+private:
+    // ...
+
+    ParticleEmitterSharedPtr m_particleEmitter1;
+    ParticleEmitterSharedPtr m_particleEmitter2;
+
+    std::unique_ptr<ParticleRenderSystem<ParticleShaderProgram>> m_particleRenderSystem;
+
+    void Init();
+};
+```
+
+```cpp
+// File: GameState.cpp
+
+bool GameState::Update(const double t_dt)
+{
+    m_particleRenderSystem->Update(t_dt);
+
+    return true;
+}
+
+void GameState::Render()
+{
+    // ...
+
+    m_particleRenderSystem->Render();
+
+    // ...
+}
+
+void GameState::Init()
+{
+    // ...
+
+    m_particleRenderSystem = std::make_unique<ParticleRenderSystem<ParticleShaderProgram>>(m_scene.get());
+
+    // ...
+
+    // change particle random generator setup
+    sg::ogl::particle::BuildConfig buildConfig;
+    buildConfig.yRange.x = 6.0f;
+    buildConfig.yRange.y = 10.0f;
+
+    // create smoke entity (instancing - particle system)
+    m_particleEmitter1 = std::make_shared<sg::ogl::particle::ParticleEmitter>(
+        m_scene.get(),
+        glm::vec3(-1000.0f, 100.0f, -2000.0f), // root position
+        400,                                            // max particles
+        2,                                              // new particles
+        "res/texture/particle/smoke.png",
+        8                                               // number of rows
+    );
+    m_particleEmitter1->SetGravityEffect(0.0f);
+    m_particleEmitter1->SetBuildConfig(buildConfig);
+    GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter1);
+
+    // create fire entity (instancing - particle system)
+    m_particleEmitter2 = std::make_shared<sg::ogl::particle::ParticleEmitter>(
+        m_scene.get(),
+        glm::vec3(-1163.0f, 65.0f, -2036.0f), // root position
+        400,                                           // max particles
+        2,                                             // new particles
+        "res/texture/particle/fire.png",
+        8                                              // number of rows
+    );
+    m_particleEmitter2->SetGravityEffect(0.0f);
+    m_particleEmitter2->SetBuildConfig(buildConfig);
+    GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter2);
+}
+```
+
+The shader program and the renderer.
+
+
+```cpp
+// File: ParticleShaderProgram.h
+
+#pragma once
+
+class ParticleShaderProgram : public sg::ogl::resource::ShaderProgram
+{
+public:
+    void UpdateUniforms(const sg::ogl::scene::Scene& t_scene, const entt::entity t_entity, const sg::ogl::resource::Mesh& t_currentMesh) override
+    {
+        auto& emitterComponent{ t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::ParticleEmitterComponent>(t_entity) };
+
+        SetUniform("projectionMatrix", t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix());
+        SetUniform("numberOfRows", static_cast<float>(emitterComponent.particleEmitter->GetNumberOfTextureRows()));
+        SetUniform("particleTexture", 0);
+        sg::ogl::resource::TextureManager::BindForReading(emitterComponent.particleEmitter->GetTextureId(), GL_TEXTURE0);
+    }
+
+    std::string GetFolderName() override
+    {
+        return "particle_anim";
+    }
+};
+```
+
+
+```cpp
+// File: ParticleRenderSystem.h
+
+#pragma once
+
+template <typename TShaderProgram>
+class ParticleRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
+{
+public:
+    explicit ParticleRenderSystem(sg::ogl::scene::Scene* t_scene)
+        : sg::ogl::ecs::system::RenderSystem<TShaderProgram>(t_scene)
+    {}
+
+    void Update(double t_dt) override
+    {
+        auto view = m_scene->GetApplicationContext()->registry.view<
+            sg::ogl::ecs::component::ParticleEmitterComponent,
+            sg::ogl::ecs::component::MeshComponent>();
+
+        for (auto entity : view)
+        {
+            auto& emitterComponent = view.get<sg::ogl::ecs::component::ParticleEmitterComponent>(entity);
+
+            emitterComponent.particleEmitter->Update(t_dt);
+        }
+    }
+
+    void Render() override
+    {
+        PrepareRendering();
+
+        auto view = m_scene->GetApplicationContext()->registry.view<
+            sg::ogl::ecs::component::ParticleEmitterComponent,
+            sg::ogl::ecs::component::MeshComponent>();
+
+        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
+
+        shaderProgram.Bind();
+
+        for (auto entity : view)
+        {
+            auto& meshComponent = view.get<sg::ogl::ecs::component::MeshComponent>(entity);
+            auto& emitterComponent = view.get<sg::ogl::ecs::component::ParticleEmitterComponent>(entity);
+
+            meshComponent.mesh->InitDraw();
+            shaderProgram.UpdateUniforms(*m_scene, entity, *meshComponent.mesh);
+            emitterComponent.particleEmitter->Render();
+            glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<int32_t>(emitterComponent.particleEmitter->GetParticles().size()));
+            //meshComponent.mesh->DrawPrimitives(GL_TRIANGLE_STRIP);
+            meshComponent.mesh->EndDraw();
+        }
+
+        sg::ogl::resource::ShaderProgram::Unbind();
+
+        FinishRendering();
+    }
+
+protected:
+    void PrepareRendering() override
+    {
+        sg::ogl::OpenGl::EnableAlphaBlending();
+        sg::ogl::OpenGl::DisableWritingIntoDepthBuffer();
+    }
+
+    void FinishRendering() override
+    {
+        sg::ogl::OpenGl::EnableWritingIntoDepthBuffer();
+        sg::ogl::OpenGl::DisableBlending();
+    }
+};
+```
 
 ### d) Lighting
 
 
+#### Ambient lighting
 
+
+#### Directional light
+
+
+#### Point lights
+
+
+
+### e) Mouse picking
