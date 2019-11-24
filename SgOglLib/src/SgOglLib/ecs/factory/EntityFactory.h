@@ -20,11 +20,6 @@ namespace sg::ogl
     class Application;
 }
 
-namespace sg::ogl::light
-{
-    struct DirectionalLight;
-}
-
 namespace sg::ogl::terrain
 {
     class Terrain;
@@ -69,7 +64,6 @@ namespace sg::ogl::ecs::factory
             const glm::vec3& t_position,
             const glm::vec3& t_rotation,
             const glm::vec3& t_scale,
-            const std::shared_ptr<light::DirectionalLight>& t_directionalLight,
             bool t_moveable = false,
             bool t_showTriangles = false
         ) const;
@@ -78,13 +72,12 @@ namespace sg::ogl::ecs::factory
             uint32_t t_instances,
             const std::string& t_fullModelFilePath,
             const std::vector<glm::mat4>& t_matrices,
-            const std::shared_ptr<light::DirectionalLight>& t_directionalLight,
             bool t_fakeNormals = false
         ) const;
 
         void CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const;
         void CreateSkydomeEntity(const std::string& t_fullModelFilePath) const;
-        void CreateTerrainEntity(const std::shared_ptr<terrain::Terrain>& t_terrain, const std::shared_ptr<light::DirectionalLight>& t_directionalLight) const;
+        void CreateTerrainEntity(const std::shared_ptr<terrain::Terrain>& t_terrain) const;
 
         void CreateGuiEntity(
             float t_x,

@@ -42,7 +42,7 @@ public:
         SetUniform("normalMap", 3);
         SetUniform("depthMap", 4);
 
-        // set light
+        // set directional light from the scene
         SetUniform("lightPosition", t_scene.GetDirectionalLight().direction);
         SetUniform("lightColor", t_scene.GetDirectionalLight().diffuseIntensity);
 

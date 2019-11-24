@@ -50,6 +50,9 @@ public:
     // mouse picker
     using MousePickerUniquePtr = std::unique_ptr<sg::ogl::input::MousePicker>;
 
+    // directional light
+    using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
+
     //-------------------------------------------------
     // Ctors. / Dtor.
     //-------------------------------------------------
@@ -87,6 +90,8 @@ private:
     CameraSharedPtr m_camera;
     TerrainSharedPtr m_terrain;
     WaterSharedPtr m_water;
+    MousePickerUniquePtr m_mousePicker;
+    DirectionalLightSharedPtr m_sun;
 
     std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
     std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
@@ -95,11 +100,6 @@ private:
     std::unique_ptr<GuiRenderSystem<GuiShaderProgram>> m_guiRenderSystem;
     std::unique_ptr<InstancingRenderSystem<InstancingShaderProgram>> m_instancingRenderSystem;
     std::unique_ptr<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>> m_waterRenderSystem;
-
-    std::shared_ptr<sg::ogl::light::DirectionalLight> m_sun;
-    std::shared_ptr<sg::ogl::light::DirectionalLight> m_directionalLight;
-
-    MousePickerUniquePtr m_mousePicker;
 
     glm::vec3 m_lampPosition{ glm::vec3(-965.0f, 56.0f, -2037.0f) };
 

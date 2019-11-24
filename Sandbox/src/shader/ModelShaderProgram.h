@@ -15,7 +15,6 @@ public:
     void UpdateUniforms(const sg::ogl::scene::Scene& t_scene, const entt::entity t_entity, const sg::ogl::resource::Mesh& t_currentMesh) override
     {
         auto& transformComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TransformComponent>(t_entity);
-        auto& directionalLightComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::DirectionalLightComponent>(t_entity);
 
         const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
         const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };
@@ -25,7 +24,7 @@ public:
         SetUniform("mvpMatrix", mvp);
 
         SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
-        SetUniform("directionalLight", *directionalLightComponent.directionalLight);
+        SetUniform("directionalLight", t_scene.GetDirectionalLight());
 
         SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 

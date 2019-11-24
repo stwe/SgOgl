@@ -14,14 +14,13 @@ class InstancingShaderProgram : public sg::ogl::resource::ShaderProgram
 public:
     void UpdateUniforms(const sg::ogl::scene::Scene& t_scene, const entt::entity t_entity, const sg::ogl::resource::Mesh& t_currentMesh) override
     {
-        auto& directionalLightComponent{ t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::DirectionalLightComponent>(t_entity) };
         auto& modelComponent{ t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::ModelComponent>(t_entity) };
 
         SetUniform("projectionMatrix", t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix());
         SetUniform("viewMatrix", t_scene.GetCurrentCamera().GetViewMatrix());
 
         SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
-        SetUniform("directionalLight", *directionalLightComponent.directionalLight);
+        SetUniform("directionalLight", t_scene.GetDirectionalLight());
 
         SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 

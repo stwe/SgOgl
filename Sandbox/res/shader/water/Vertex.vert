@@ -33,5 +33,7 @@ void main()
     vUv = vec2(aPosition.x / 2.0 + 0.5, aPosition.y / 2.0 + 0.5) * tiling;
 
     vToCameraVector = cameraPosition - worldPosition.xyz;
-    vFromLightVector = worldPosition.xyz - lightPosition;
+
+    vec3 lightPos = -lightPosition;
+    vFromLightVector = worldPosition.xyz - lightPos;
 }

@@ -12,7 +12,6 @@
 #include "Log.h"
 #include "Core.h"
 #include "buffer/Vbo.h"
-#include "ecs/component/DirectionalLightComponent.h"
 #include "ecs/component/ModelComponent.h"
 #include "ecs/component/TransformComponent.h"
 #include "ecs/component/MeshComponent.h"
@@ -56,7 +55,6 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const glm::vec3& t_position,
     const glm::vec3& t_rotation,
     const glm::vec3& t_scale,
-    const std::shared_ptr<light::DirectionalLight>& t_directionalLight,
     const bool t_moveable,
     const bool t_showTriangles
 ) const
@@ -85,19 +83,12 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     {
         m_application->registry.assign<component::MoveableComponent>(entity);
     }
-
-    // add directional light component
-    m_application->registry.assign<component::DirectionalLightComponent>(
-        entity,
-        t_directionalLight
-    );
 }
 
 void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const uint32_t t_instances,
     const std::string& t_fullModelFilePath,
     const std::vector<glm::mat4>& t_matrices,
-    const std::shared_ptr<light::DirectionalLight>& t_directionalLight,
     bool t_fakeNormals
 ) const
 {
@@ -148,12 +139,6 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
         false, // showTriangles - todo
         t_fakeNormals
     );
-
-    // add directional light component
-    m_application->registry.assign<component::DirectionalLightComponent>(
-        entity,
-        t_directionalLight
-    );
 }
 
 void sg::ogl::ecs::factory::EntityFactory::CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const
@@ -197,10 +182,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateSkydomeEntity(const std::string
     m_application->registry.assign<component::SkydomeComponent>(entity);
 }
 
-void sg::ogl::ecs::factory::EntityFactory::CreateTerrainEntity(
-    const std::shared_ptr<terrain::Terrain>& t_terrain,
-    const std::shared_ptr<light::DirectionalLight>& t_directionalLight
-) const
+void sg::ogl::ecs::factory::EntityFactory::CreateTerrainEntity(const std::shared_ptr<terrain::Terrain>& t_terrain) const
 {
     // create an entity
     const auto entity{ m_application->registry.create() };
@@ -215,12 +197,6 @@ void sg::ogl::ecs::factory::EntityFactory::CreateTerrainEntity(
     m_application->registry.assign<component::TransformComponent>(
         entity,
         glm::vec3(t_terrain->GetTerrainOptions().xPos, 0.0f, t_terrain->GetTerrainOptions().zPos)
-    );
-
-    // add directional light component
-    m_application->registry.assign<component::DirectionalLightComponent>(
-        entity,
-        t_directionalLight
     );
 }
 

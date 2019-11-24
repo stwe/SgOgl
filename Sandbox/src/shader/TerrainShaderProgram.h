@@ -17,7 +17,6 @@ public:
         // get components
         auto& terrainComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TerrainComponent>(t_entity);
         auto& transformComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::TransformComponent>(t_entity);
-        auto& directionalLightComponent = t_scene.GetApplicationContext()->registry.get<sg::ogl::ecs::component::DirectionalLightComponent>(t_entity);
 
         // get terrain options
         const auto& terrainOptions{ terrainComponent.terrain->GetTerrainOptions() };
@@ -35,8 +34,8 @@ public:
         // set ambient intensity
         SetUniform("ambientIntensity", terrainComponent.terrain->GetAmbientIntensity());
 
-        // set directional light
-        SetUniform("directionalLight", *directionalLightComponent.directionalLight);
+        // set directional light from the scene
+        SetUniform("directionalLight", t_scene.GetDirectionalLight());
 
         // set camera position
         SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
