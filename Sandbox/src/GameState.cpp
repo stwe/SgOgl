@@ -67,7 +67,7 @@ bool GameState::Update(const double t_dt)
         SG_OGL_LOG_INFO("Camera yaw: {}  pitch: {}", m_scene->GetCurrentCamera().GetYaw(), m_scene->GetCurrentCamera().GetPitch());
     }
 
-    // move lamp with mouse
+    // move the lamp model with mouse and change point light position
     auto view = m_scene->GetApplicationContext()->registry.view<
         sg::ogl::ecs::component::MoveableComponent,
         sg::ogl::ecs::component::ModelComponent,
@@ -79,6 +79,8 @@ bool GameState::Update(const double t_dt)
         {
             auto& transformComponent = view.get<sg::ogl::ecs::component::TransformComponent>(entity);
             transformComponent.position = m_mousePicker->GetCurrentTerrainPoint();
+
+            m_pointLight->position = transformComponent.position;
 
             SG_OGL_CORE_LOG_DEBUG("x: {}  y: {}  z: {}", m_mousePicker->GetCurrentTerrainPoint().x, m_mousePicker->GetCurrentTerrainPoint().y, m_mousePicker->GetCurrentTerrainPoint().z);
         }
@@ -96,7 +98,7 @@ void GameState::Render()
     //render to the screen
     m_modelRenderSystem->Render();
     m_terrainRenderSystem->Render();
-    m_instancingRenderSystem->Render();
+    //m_instancingRenderSystem->Render();
     m_waterRenderSystem->Render();
 
     m_skyboxRenderSystem->Render();
@@ -127,6 +129,12 @@ void GameState::Init()
     m_sun->diffuseIntensity = glm::vec3(0.5f, 0.5f, 0.5f);
     m_sun->specularIntensity = glm::vec3(0.5f, 0.6f, 0.5f);
     m_scene->SetDirectionalLight(m_sun);
+
+    // create and add a point light to the scene
+    m_pointLight = std::make_shared<sg::ogl::light::PointLight>();
+    m_pointLight->position = m_lampPosition;
+    m_pointLight->diffuseIntensity = glm::vec3(10.0f, 0.2f, 0.2f);
+    m_scene->SetPointLight(m_pointLight);
 
     // create terrain
     m_terrain = std::make_shared<sg::ogl::terrain::Terrain>(GetApplicationContext(), "res/config/Terrain.xml");
@@ -168,13 +176,11 @@ void GameState::Init()
         "res/model/Tree_02/tree02.obj",
         glm::vec3(-1090.0f, height, -2060.0f),
         glm::vec3(0.0f),
-        glm::vec3(64.0f),
+        glm::vec3(48.0f),
         false,
         false
     );
 
-    /*
- 
     // create lamp entity
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
         "res/model/lamp/Lamp.obj",
@@ -184,8 +190,6 @@ void GameState::Init()
         true,
         false
     );
-
-    */
 
     // create skybox entity
     const std::vector<std::string> cubemapFileNames{

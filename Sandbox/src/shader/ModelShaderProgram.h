@@ -25,6 +25,7 @@ public:
 
         SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
         SetUniform("directionalLight", t_scene.GetDirectionalLight());
+        SetUniform("pointLight", t_scene.GetPointLight());
 
         SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 

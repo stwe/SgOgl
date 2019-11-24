@@ -32,26 +32,14 @@ public:
     static constexpr auto CAMERA_VELOCITY{ 128.0f };
     static constexpr auto WATER_HEIGHT{ 50.0f };
 
-    // scene graph
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
-
-    // camera
     using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
-
-    // terrain
     using TerrainSharedPtr = std::shared_ptr<sg::ogl::terrain::Terrain>;
-
-    // water
     using WaterSharedPtr = std::shared_ptr<sg::ogl::water::Water>;
-
-    // particle emitter
     using ParticleEmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
-
-    // mouse picker
     using MousePickerUniquePtr = std::unique_ptr<sg::ogl::input::MousePicker>;
-
-    // directional light
     using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
+    using PointLightSharedPtr = std::shared_ptr<sg::ogl::light::PointLight>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -92,6 +80,7 @@ private:
     WaterSharedPtr m_water;
     MousePickerUniquePtr m_mousePicker;
     DirectionalLightSharedPtr m_sun;
+    PointLightSharedPtr m_pointLight;
 
     std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
     std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
