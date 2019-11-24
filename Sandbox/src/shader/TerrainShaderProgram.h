@@ -32,7 +32,7 @@ public:
         SetUniform("mvpMatrix", mvp);
 
         // set ambient intensity
-        SetUniform("ambientIntensity", terrainComponent.terrain->GetAmbientIntensity());
+        SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
 
         // set directional light from the scene
         SetUniform("directionalLight", t_scene.GetDirectionalLight());

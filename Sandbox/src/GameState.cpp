@@ -123,17 +123,20 @@ void GameState::Init()
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_camera);
 
+    // set ambient
+    m_scene->SetAmbientIntensity(glm::vec3(0.2f));
+
     // create and add the sun to the scene
     m_sun = std::make_shared<sg::ogl::light::DirectionalLight>();
     m_sun->direction = glm::vec3(-0.5f, -1.0f, 0.0f);
-    m_sun->diffuseIntensity = glm::vec3(0.5f, 0.5f, 0.5f);
-    m_sun->specularIntensity = glm::vec3(0.5f, 0.6f, 0.5f);
+    m_sun->diffuseIntensity = glm::vec3(0.125f, 0.125f, 0.125f);
+    m_sun->specularIntensity = glm::vec3(0.125f, 0.13f, 0.125f);
     m_scene->SetDirectionalLight(m_sun);
 
     // create and add a point light to the scene
     m_pointLight = std::make_shared<sg::ogl::light::PointLight>();
     m_pointLight->position = m_lampPosition;
-    m_pointLight->diffuseIntensity = glm::vec3(10.0f, 0.2f, 0.2f);
+    m_pointLight->diffuseIntensity = glm::vec3(1.0f, 0.57f, 0.16f);
     m_scene->SetPointLight(m_pointLight);
 
     // create terrain
@@ -192,6 +195,7 @@ void GameState::Init()
     );
 
     // create skybox entity
+    /*
     const std::vector<std::string> cubemapFileNames{
         "res/texture/sky/sRight.png",
         "res/texture/sky/sLeft.png",
@@ -199,6 +203,15 @@ void GameState::Init()
         "res/texture/sky/sDown.png",
         "res/texture/sky/sBack.png",
         "res/texture/sky/sFront.png"
+    };
+    */
+    const std::vector<std::string> cubemapFileNames{
+        "res/texture/starfield/starfield_rt.jpg",
+        "res/texture/starfield/starfield_lf.jpg",
+        "res/texture/starfield/starfield_up.jpg",
+        "res/texture/starfield/starfield_dn.jpg",
+        "res/texture/starfield/starfield_bk.jpg",
+        "res/texture/starfield/starfield_ft.jpg"
     };
     GetApplicationContext()->GetEntityFactory().CreateSkyboxEntity(cubemapFileNames);
 
