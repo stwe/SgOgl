@@ -13,21 +13,31 @@ layout (location = 5) in mat4 aInstanceMatrix;
 
 // Out
 
+out vec3 vPosition;
+out vec3 vNormal;
 out vec2 vUv;
 
 // Uniforms
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
+uniform float fakeNormals;
 
 // Main
 
 void main()
 {
     vec3 position = vec3(aInstanceMatrix * vec4(aPosition, 1.0));
-    vUv = aUv;
 
-    //vUv.y = 1 - vUv.y;
+    vPosition = position;
+
+    vNormal = vec3(0.0, 1.0, 0.0);
+    if (fakeNormals < 0.5)
+    {
+        vNormal = mat3(transpose(inverse(aInstanceMatrix))) * aNormal;
+    }
+
+    vUv = aUv;
 
     gl_Position = projectionMatrix * viewMatrix * vec4(position, 1.0);
 }

@@ -77,7 +77,9 @@ namespace sg::ogl::ecs::factory
         void CreateModelEntity(
             uint32_t t_instances,
             const std::string& t_fullModelFilePath,
-            const std::vector<glm::mat4>& t_matrices
+            const std::vector<glm::mat4>& t_matrices,
+            const std::shared_ptr<light::DirectionalLight>& t_directionalLight,
+            bool t_fakeNormals = false
         ) const;
 
         void CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const;

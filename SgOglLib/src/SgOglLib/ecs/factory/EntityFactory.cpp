@@ -68,7 +68,8 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     m_application->registry.assign<component::ModelComponent>(
         entity,
         m_application->GetModelManager().GetModelByPath(t_fullModelFilePath),
-        t_showTriangles
+        t_showTriangles,
+        false // todo fakeNormals
     );
 
     // add transform component
@@ -95,7 +96,9 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
 void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const uint32_t t_instances,
     const std::string& t_fullModelFilePath,
-    const std::vector<glm::mat4>& t_matrices
+    const std::vector<glm::mat4>& t_matrices,
+    const std::shared_ptr<light::DirectionalLight>& t_directionalLight,
+    bool t_fakeNormals
 ) const
 {
     const uint32_t numberOfFloatsPerInstance{ 16 };
@@ -141,7 +144,15 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     // add model component
     m_application->registry.assign<component::ModelComponent>(
         entity,
-        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath, pFlags)
+        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath, pFlags),
+        false, // showTriangles - todo
+        t_fakeNormals
+    );
+
+    // add directional light component
+    m_application->registry.assign<component::DirectionalLightComponent>(
+        entity,
+        t_directionalLight
     );
 }
 

@@ -156,6 +156,8 @@ void GameState::Init()
     m_directionalLight->diffuseIntensity = glm::vec3(0.5f, 0.5f, 0.5f);
     m_directionalLight->specularIntensity = glm::vec3(0.5f, 0.6f, 0.5f);
 
+    /*
+
     // create house entity
     auto height{ m_terrain->GetHeightAtWorldPosition(-1000.0f, -2000.0f) };
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
@@ -175,8 +177,6 @@ void GameState::Init()
         glm::vec3(64.0f),
         m_directionalLight
     );
-
-    /*
 
     // create lamp entity
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
@@ -227,7 +227,9 @@ void GameState::Init()
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
         instances,
         "res/model/Grass/grassmodel.obj",
-        CreatePlantPositions(instances)
+        CreatePlantPositions(instances),
+        m_directionalLight,
+        true
     );
 
     // create mouse picker
