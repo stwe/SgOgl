@@ -89,9 +89,19 @@ glm::vec4 sg::ogl::scene::Scene::GetCurrentClipPlane() const
     return m_currentClipPlane;
 }
 
+glm::vec3 sg::ogl::scene::Scene::GetAmbientIntensity() const
+{
+    return m_ambientIntensity;
+}
+
 //-------------------------------------------------
 // Setter
 //-------------------------------------------------
+
+void sg::ogl::scene::Scene::SetAmbientIntensity(const glm::vec3& t_ambientIntensity)
+{
+    m_ambientIntensity = t_ambientIntensity;
+}
 
 void sg::ogl::scene::Scene::SetCurrentCamera(const CameraSharedPtr& t_camera)
 {

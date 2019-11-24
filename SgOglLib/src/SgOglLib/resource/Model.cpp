@@ -190,53 +190,21 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
 
     // Set material name.
     aiString name;
-    auto result{ aiMeshMaterial->Get(AI_MATKEY_NAME, name) };
-    if (result == aiReturn_FAILURE)
-    {
-        throw SG_OGL_EXCEPTION("[Model::ProcessMesh()] Unable to get the material name.");
-    }
+    aiMeshMaterial->Get(AI_MATKEY_NAME, name);
     materialUniquePtr->newmtl = name.C_Str();
 
-    // Set ambient color.
-    aiColor3D ambient;
-    result = aiMeshMaterial->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
-    if (result == aiReturn_FAILURE)
-    {
-        throw SG_OGL_EXCEPTION("[Model::ProcessMesh()] Unable to get the ambient color.");
-    }
-    materialUniquePtr->ka.x = ambient.r;
-    materialUniquePtr->ka.y = ambient.g;
-    materialUniquePtr->ka.z = ambient.b;
+    // Set material colors.
+    aiColor3D color;
+    aiMeshMaterial->Get(AI_MATKEY_COLOR_AMBIENT, color);
+    materialUniquePtr->ka = glm::vec3(color.r, color.g, color.b);
+    aiMeshMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+    materialUniquePtr->kd = glm::vec3(color.r, color.g, color.b);
+    aiMeshMaterial->Get(AI_MATKEY_COLOR_SPECULAR, color);
+    materialUniquePtr->ks = glm::vec3(color.r, color.g, color.b);
 
-    // Set diffuse color.
-    aiColor3D diffuse;
-    result = aiMeshMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
-    if (result == aiReturn_FAILURE)
-    {
-        throw SG_OGL_EXCEPTION("[Model::ProcessMesh()] Unable to get the diffuse color.");
-    }
-    materialUniquePtr->kd.x = diffuse.r;
-    materialUniquePtr->kd.y = diffuse.g;
-    materialUniquePtr->kd.z = diffuse.b;
-
-    // Set specular color.
-    aiColor3D specular;
-    result = aiMeshMaterial->Get(AI_MATKEY_COLOR_SPECULAR, specular);
-    if (result == aiReturn_FAILURE)
-    {
-        throw SG_OGL_EXCEPTION("[Model::ProcessMesh()] Unable to get the specular color.");
-    }
-    materialUniquePtr->ks.x = specular.r;
-    materialUniquePtr->ks.y = specular.g;
-    materialUniquePtr->ks.z = specular.b;
-
-    // Set the shininess.
+    // Set the material shininess.
     float shininess;
-    result = aiMeshMaterial->Get(AI_MATKEY_SHININESS, shininess);
-    if (result == aiReturn_FAILURE)
-    {
-        throw SG_OGL_EXCEPTION("[Model::ProcessMesh()] Unable to get the shininess.");
-    }
+    aiMeshMaterial->Get(AI_MATKEY_SHININESS, shininess);
     materialUniquePtr->ns = shininess;
 
     // Load textures.

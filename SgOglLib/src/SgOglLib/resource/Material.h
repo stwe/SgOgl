@@ -24,17 +24,17 @@ namespace sg::ogl::resource
         /**
          * @brief The ambient color of the material.
          */
-        glm::vec3 ka{ glm::vec3(0.2f, 0.2f, 0.2f) };
+        glm::vec3 ka{ glm::vec3(0.0f) };
 
         /**
          * @brief The diffuse color of the material.
          */
-        glm::vec3 kd{ glm::vec3(0.8f, 0.8f, 0.8f) };
+        glm::vec3 kd{ glm::vec3(0.0f) };
 
         /**
          * @brief The specular color of the material.
          */
-        glm::vec3 ks{ glm::vec3(1.0f, 1.0f, 1.0f) };
+        glm::vec3 ks{ glm::vec3(0.0f) };
 
         /**
          * @brief Can be a number from 0 to 10 which represents

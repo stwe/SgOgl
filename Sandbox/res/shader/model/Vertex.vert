@@ -12,6 +12,8 @@ layout (location = 4) in vec3 aBiTangent;
 
 // Out
 
+out vec3 vPosition;
+out vec3 vNormal;
 out vec2 vUv;
 
 // Uniforms
@@ -29,5 +31,7 @@ void main()
     vec4 worldPosition = modelMatrix * vec4(aPosition, 1.0);
     gl_ClipDistance[0] = dot(worldPosition, plane);
 
+    vPosition = vec3(worldPosition);
+    vNormal = mat3(transpose(inverse(modelMatrix))) * aNormal;
     vUv = aUv;
 }

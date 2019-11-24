@@ -56,6 +56,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const glm::vec3& t_position,
     const glm::vec3& t_rotation,
     const glm::vec3& t_scale,
+    const std::shared_ptr<light::DirectionalLight>& t_directionalLight,
     const bool t_moveable,
     const bool t_showTriangles
 ) const
@@ -83,6 +84,12 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     {
         m_application->registry.assign<component::MoveableComponent>(entity);
     }
+
+    // add directional light component
+    m_application->registry.assign<component::DirectionalLightComponent>(
+        entity,
+        t_directionalLight
+    );
 }
 
 void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(

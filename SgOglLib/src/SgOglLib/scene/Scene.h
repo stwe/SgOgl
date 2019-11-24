@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <glm/vec4.hpp>
+#include <glm/vec3.hpp>
 
 namespace sg::ogl
 {
@@ -73,10 +74,13 @@ namespace sg::ogl::scene
 
         glm::vec4 GetCurrentClipPlane() const;
 
+        glm::vec3 GetAmbientIntensity() const;
+
         //-------------------------------------------------
         // Setter
         //-------------------------------------------------
 
+        void SetAmbientIntensity(const glm::vec3& t_ambientIntensity);
         void SetCurrentCamera(const CameraSharedPtr& t_camera);
         void SetDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
         void SetPointLight(const PointLightSharedPtr& t_pointLight);
@@ -93,5 +97,7 @@ namespace sg::ogl::scene
         PointLightSharedPtr m_pointLight;
 
         glm::vec4 m_currentClipPlane{ glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f) };
+
+        glm::vec3 m_ambientIntensity{ glm::vec3(0.3f) };
     };
 }

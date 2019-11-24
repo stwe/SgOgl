@@ -69,6 +69,7 @@ namespace sg::ogl::ecs::factory
             const glm::vec3& t_position,
             const glm::vec3& t_rotation,
             const glm::vec3& t_scale,
+            const std::shared_ptr<light::DirectionalLight>& t_directionalLight,
             bool t_moveable = false,
             bool t_showTriangles = false
         ) const;

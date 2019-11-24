@@ -150,23 +150,20 @@ void GameState::Init()
     m_instancingRenderSystem = std::make_unique<InstancingRenderSystem<InstancingShaderProgram>>(m_scene.get());
     m_waterRenderSystem = std::make_unique<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>>(m_scene.get());
 
+    // create a directional light
+    m_directionalLight = std::make_shared<sg::ogl::light::DirectionalLight>();
+    m_directionalLight->direction = glm::vec3(-0.2f, -1.0f, 0.3f);
+    m_directionalLight->diffuseIntensity = glm::vec3(0.5f, 0.5f, 0.5f);
+    m_directionalLight->specularIntensity = glm::vec3(0.5f, 0.6f, 0.5f);
+
     // create house entity
     auto height{ m_terrain->GetHeightAtWorldPosition(-1000.0f, -2000.0f) };
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
         "res/model/House/farmhouse_obj.obj",
         glm::vec3(-1000.0f, height, -2000.0f),
         glm::vec3(0.0f),
-        glm::vec3(2.0f)
-    );
-
-    // create lamp entity
-    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
-        "res/model/lamp/Lamp.obj",
-        m_lampPosition,
-        glm::vec3(-90.0f, 0.0f, 0.0f),
-        glm::vec3(0.125f),
-        true,
-        false
+        glm::vec3(2.0f),
+        m_directionalLight
     );
 
     // create tree entity
@@ -175,8 +172,24 @@ void GameState::Init()
         "res/model/Tree_02/tree02.obj",
         glm::vec3(-1090.0f, height, -2060.0f),
         glm::vec3(0.0f),
-        glm::vec3(64.0f)
+        glm::vec3(64.0f),
+        m_directionalLight
     );
+
+    /*
+
+    // create lamp entity
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        "res/model/lamp/Lamp.obj",
+        m_lampPosition,
+        glm::vec3(-90.0f, 0.0f, 0.0f),
+        glm::vec3(0.125f),
+        m_directionalLight,
+        true,
+        false
+    );
+
+    */
 
     // create skybox entity
     const std::vector<std::string> cubemapFileNames{
@@ -193,10 +206,6 @@ void GameState::Init()
     GetApplicationContext()->GetEntityFactory().CreateSkydomeEntity("res/model/dome/dome.obj");
 
     // create terrain entity
-    m_directionalLight = std::make_shared<sg::ogl::light::DirectionalLight>();
-    m_directionalLight->direction = glm::vec3(-0.2f, -1.0f, -0.3f);
-    m_directionalLight->diffuseIntensity = glm::vec3(0.5f, 0.5f, 0.5f);
-    m_directionalLight->specularIntensity = glm::vec3(0.5f, 0.6f, 0.5f);
     GetApplicationContext()->GetEntityFactory().CreateTerrainEntity(m_terrain, m_directionalLight);
 
     // crate water entity
