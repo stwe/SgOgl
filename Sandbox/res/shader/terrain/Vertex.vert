@@ -23,9 +23,9 @@ uniform mat4 mvpMatrix;
 
 void main()
 {
-    vPosition = vec3(modelMatrix * vec4(aPosition, 1.0));
     gl_Position = mvpMatrix * vec4(aPosition, 1.0);
 
+    vPosition = vec3(modelMatrix * vec4(aPosition, 1.0));
     vUvOrig = aUv;
     vUv = aUv * 80;
 }

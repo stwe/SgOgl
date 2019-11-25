@@ -136,7 +136,7 @@ void GameState::Init()
     // create and add a point light to the scene
     m_pointLight = std::make_shared<sg::ogl::light::PointLight>();
     m_pointLight->position = m_lampPosition;
-    m_pointLight->diffuseIntensity = glm::vec3(1.0f, 0.57f, 0.16f);
+    m_pointLight->diffuseIntensity = glm::vec3(6.0f, 0.57f, 0.16f);
     m_scene->SetPointLight(m_pointLight);
 
     // create terrain

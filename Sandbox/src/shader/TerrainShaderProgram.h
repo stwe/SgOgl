@@ -37,6 +37,9 @@ public:
         // set directional light from the scene
         SetUniform("directionalLight", t_scene.GetDirectionalLight());
 
+        // set point light from the scene
+        SetUniform("pointLight", t_scene.GetPointLight());
+
         // set camera position
         SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
