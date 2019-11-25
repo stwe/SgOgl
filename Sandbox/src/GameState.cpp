@@ -81,6 +81,7 @@ bool GameState::Update(const double t_dt)
             transformComponent.position = m_mousePicker->GetCurrentTerrainPoint();
 
             m_pointLight->position = transformComponent.position;
+            m_pointLight->position.y += 20.0f;
 
             SG_OGL_CORE_LOG_DEBUG("x: {}  y: {}  z: {}", m_mousePicker->GetCurrentTerrainPoint().x, m_mousePicker->GetCurrentTerrainPoint().y, m_mousePicker->GetCurrentTerrainPoint().z);
         }
@@ -98,7 +99,7 @@ void GameState::Render()
     //render to the screen
     m_modelRenderSystem->Render();
     m_terrainRenderSystem->Render();
-    //m_instancingRenderSystem->Render();
+    m_instancingRenderSystem->Render();
     m_waterRenderSystem->Render();
 
     m_skyboxRenderSystem->Render();
@@ -136,6 +137,7 @@ void GameState::Init()
     // create and add a point light to the scene
     m_pointLight = std::make_shared<sg::ogl::light::PointLight>();
     m_pointLight->position = m_lampPosition;
+    m_pointLight->position.y += 20.0f;
     m_pointLight->diffuseIntensity = glm::vec3(6.0f, 0.57f, 0.16f);
     m_scene->SetPointLight(m_pointLight);
 
