@@ -1,6 +1,6 @@
 // This file is part of the SgOgl package.
 // 
-// Filename: ModelRenderSystem.h
+// Filename: ModelNormalmapRenderSystem.h
 // Author:   stwe
 // 
 // License:  MIT
@@ -10,10 +10,10 @@
 #pragma once
 
 template <typename TShaderProgram>
-class ModelRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
+class ModelNormalmapRenderSystem : public sg::ogl::ecs::system::RenderSystem<TShaderProgram>
 {
 public:
-    explicit ModelRenderSystem(sg::ogl::scene::Scene* t_scene)
+    explicit ModelNormalmapRenderSystem(sg::ogl::scene::Scene* t_scene)
         : sg::ogl::ecs::system::RenderSystem<TShaderProgram>(t_scene)
     {}
 
@@ -24,10 +24,9 @@ public:
         PrepareRendering();
 
         auto view = m_scene->GetApplicationContext()->registry.view<
+            sg::ogl::ecs::component::NormalmapComponent,
             sg::ogl::ecs::component::ModelComponent,
-            sg::ogl::ecs::component::TransformComponent>(
-                entt::exclude<sg::ogl::ecs::component::NormalmapComponent, sg::ogl::ecs::component::SkydomeComponent>
-            );
+            sg::ogl::ecs::component::TransformComponent>();
 
         auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
 

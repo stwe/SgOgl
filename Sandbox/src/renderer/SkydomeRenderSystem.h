@@ -50,12 +50,12 @@ public:
 protected:
     void PrepareRendering() override
     {
-        sg::ogl::OpenGl::EnableFaceCulling();
+        //sg::ogl::OpenGl::EnableFaceCulling();
     }
 
     void FinishRendering() override
     {
-        sg::ogl::OpenGl::DisableFaceCulling();
+        //sg::ogl::OpenGl::DisableFaceCulling();
     }
 
 private:

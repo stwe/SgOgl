@@ -64,6 +64,7 @@ namespace sg::ogl::ecs::factory
             const glm::vec3& t_position,
             const glm::vec3& t_rotation,
             const glm::vec3& t_scale,
+            bool t_normalmap = false,
             bool t_moveable = false,
             bool t_showTriangles = false
         ) const;

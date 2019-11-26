@@ -23,6 +23,7 @@
 #include "ecs/component/WaterComponent.h"
 #include "ecs/component/ParticleEmitterComponent.h"
 #include "ecs/component/MoveableComponent.h"
+#include "ecs/component/NormalmapComponent.h"
 #include "resource/Model.h"
 #include "resource/ModelManager.h"
 #include "resource/TextureManager.h"
@@ -55,6 +56,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const glm::vec3& t_position,
     const glm::vec3& t_rotation,
     const glm::vec3& t_scale,
+    const bool t_normalmap,
     const bool t_moveable,
     const bool t_showTriangles
 ) const
@@ -77,6 +79,12 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
         glm::vec3(t_rotation.x, t_rotation.y, t_rotation.z),
         glm::vec3(t_scale.x, t_scale.y, t_scale.z)
     );
+
+    // add normalmap component
+    if (t_normalmap)
+    {
+        m_application->registry.assign<component::NormalmapComponent>(entity);
+    }
 
     // add moveable component
     if (t_moveable)

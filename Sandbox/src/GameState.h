@@ -12,32 +12,20 @@
 #include "SgOgl.h"
 
 #include "shader/ModelShaderProgram.h"
-#include "shader/SkyboxShaderProgram.h"
+#include "shader/ModelNormalmapShaderProgram.h"
 #include "shader/DomeShaderProgram.h"
-#include "shader/TerrainShaderProgram.h"
-#include "shader/GuiShaderProgram.h"
-#include "shader/InstancingShaderProgram.h"
-#include "shader/WaterShaderProgram.h"
 
 #include "renderer/ModelRenderSystem.h"
-#include "renderer/SkyboxRenderSystem.h"
+#include "renderer/ModelNormalmapRenderSystem.h"
 #include "renderer/SkydomeRenderSystem.h"
-#include "renderer/TerrainRenderSystem.h"
-#include "renderer/GuiRenderSystem.h"
-#include "renderer/InstancingRenderSystem.h"
 
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 128.0f };
-    static constexpr auto WATER_HEIGHT{ 50.0f };
+    static constexpr auto CAMERA_VELOCITY{ 4.0f };
 
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
     using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
-    using TerrainSharedPtr = std::shared_ptr<sg::ogl::terrain::Terrain>;
-    using WaterSharedPtr = std::shared_ptr<sg::ogl::water::Water>;
-    using ParticleEmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
-    using MousePickerUniquePtr = std::unique_ptr<sg::ogl::input::MousePicker>;
     using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
     using PointLightSharedPtr = std::shared_ptr<sg::ogl::light::PointLight>;
 
@@ -76,27 +64,16 @@ protected:
 private:
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
-    TerrainSharedPtr m_terrain;
-    WaterSharedPtr m_water;
-    MousePickerUniquePtr m_mousePicker;
     DirectionalLightSharedPtr m_sun;
     PointLightSharedPtr m_pointLight;
 
     std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
-    std::unique_ptr<SkyboxRenderSystem<SkyboxShaderProgram>> m_skyboxRenderSystem;
+    std::unique_ptr<ModelNormalmapRenderSystem<ModelNormalmapShaderProgram>> m_modelNormalmapRenderSystem;
     std::unique_ptr<SkydomeRenderSystem<DomeShaderProgram>> m_skydomeRenderSystem;
-    std::unique_ptr<TerrainRenderSystem<TerrainShaderProgram>> m_terrainRenderSystem;
-    std::unique_ptr<GuiRenderSystem<GuiShaderProgram>> m_guiRenderSystem;
-    std::unique_ptr<InstancingRenderSystem<InstancingShaderProgram>> m_instancingRenderSystem;
-    std::unique_ptr<sg::ogl::ecs::system::WaterRenderSystem<WaterShaderProgram>> m_waterRenderSystem;
-
-    glm::vec3 m_lampPosition{ glm::vec3(-965.0f, 56.0f, -2037.0f) };
 
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------
 
     void Init();
-
-    std::vector<glm::mat4> CreatePlantPositions(uint32_t t_instances) const;
 };

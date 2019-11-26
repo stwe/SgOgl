@@ -35,6 +35,7 @@
 #include "SgOglLib/ecs/component/MeshComponent.h"
 #include "SgOglLib/ecs/component/ModelComponent.h"
 #include "SgOglLib/ecs/component/MoveableComponent.h"
+#include "SgOglLib/ecs/component/NormalmapComponent.h"
 #include "SgOglLib/ecs/component/ParticleEmitterComponent.h"
 #include "SgOglLib/ecs/component/SkydomeComponent.h"
 #include "SgOglLib/ecs/component/TerrainComponent.h"
