@@ -27,7 +27,7 @@ public:
             sg::ogl::ecs::component::TerrainComponent,
             sg::ogl::ecs::component::TransformComponent>();
 
-        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
+        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<TShaderProgram>() };
 
         shaderProgram.Bind();
 

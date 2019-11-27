@@ -27,7 +27,7 @@ public:
             sg::ogl::ecs::component::MeshComponent,
             sg::ogl::ecs::component::CubemapComponent>();
 
-        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
+        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<TShaderProgram>() };
 
         shaderProgram.Bind();
 

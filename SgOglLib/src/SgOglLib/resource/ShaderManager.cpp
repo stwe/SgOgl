@@ -27,26 +27,6 @@ sg::ogl::resource::ShaderManager::~ShaderManager() noexcept
 // Getter
 //-------------------------------------------------
 
-sg::ogl::resource::ShaderProgram& sg::ogl::resource::ShaderManager::GetShaderProgram(const std::string& t_name)
-{
-    if (m_shaderPrograms.count(t_name) == 0)
-    {
-        throw SG_OGL_EXCEPTION("[ShaderManager::GetShaderProgram()] Shader program " + t_name + " not exist.");
-    }
-
-    return *m_shaderPrograms.at(t_name);
-}
-
-const sg::ogl::resource::ShaderProgram& sg::ogl::resource::ShaderManager::GetShaderProgram(const std::string& t_name) const
-{
-    if (m_shaderPrograms.count(t_name) == 0)
-    {
-        throw SG_OGL_EXCEPTION("[ShaderManager::GetShaderProgram()] Shader program " + t_name + " not exist.");
-    }
-
-    return *m_shaderPrograms.at(t_name);
-}
-
 sg::ogl::resource::ShaderProgram& sg::ogl::resource::ShaderManager::GetComputeShaderProgram(const std::string& t_name)
 {
     if (m_computeShaderPrograms.count(t_name) == 0)

@@ -128,7 +128,7 @@ namespace sg::ogl::ecs::system
                 component::WaterComponent,
                 component::TransformComponent>();
 
-            auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
+            auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<TShaderProgram>() };
 
             shaderProgram.Bind();
 

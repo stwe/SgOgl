@@ -14,7 +14,7 @@
 
 namespace sg::ogl::ecs::system
 {
-    template <typename TShaderProgram>
+    template <typename ...TShaderProgram>
     class RenderSystem
     {
     public:
@@ -43,12 +43,6 @@ namespace sg::ogl::ecs::system
         // Logic
         //-------------------------------------------------
 
-        std::string GetShaderFolderName() const { return m_shaderFolderName; }
-
-        //-------------------------------------------------
-        // Logic
-        //-------------------------------------------------
-
         virtual void Update(double t_dt) {}
         virtual void Render() = 0;
 
@@ -58,19 +52,14 @@ namespace sg::ogl::ecs::system
          */
         scene::Scene* m_scene{ nullptr };
 
-        /**
-         * @brief Folder name of the loaded shader.
-         */
-        std::string m_shaderFolderName;
-
         // todo
         virtual void PrepareRendering() {}
         virtual void FinishRendering() {}
 
     private:
-        void LoadShader()
+        void LoadShader() const
         {
-            m_shaderFolderName = m_scene->GetApplicationContext()->GetShaderManager().AddShaderProgram<TShaderProgram>();
+            (m_scene->GetApplicationContext()->GetShaderManager().AddShaderProgram<TShaderProgram>(), ...);
         }
     };
 }

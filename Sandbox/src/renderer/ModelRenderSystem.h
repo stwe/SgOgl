@@ -29,7 +29,7 @@ public:
                 entt::exclude<sg::ogl::ecs::component::NormalmapComponent, sg::ogl::ecs::component::SkydomeComponent>
             );
 
-        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram(m_shaderFolderName) };
+        auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<TShaderProgram>() };
 
         shaderProgram.Bind();
 

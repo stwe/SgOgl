@@ -12,6 +12,7 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <typeindex>
 #include "Log.h"
 #include "ShaderUtil.h"
 #include "SgOglException.h"
@@ -24,7 +25,8 @@ namespace sg::ogl::resource
     {
     public:
         using ShaderProgramUniquePtr = std::unique_ptr<ShaderProgram>;
-        using ShaderProgramContainer = std::map<std::string, ShaderProgramUniquePtr>;
+        using ShaderProgramContainer = std::map<std::type_index, ShaderProgramUniquePtr>;
+        using ComputeShaderProgramContainer = std::map<std::string, ShaderProgramUniquePtr>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -44,24 +46,24 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         template <typename T>
-        std::string AddShaderProgram()
+        void AddShaderProgram()
         {
-            // create ShaderProgram
-            auto shaderProgram{ std::make_unique<T>() };
-            SG_OGL_CORE_ASSERT(shaderProgram, "[ShaderManager::AddShaderProgram()] Null pointer.")
-
-            // get folder name
-            auto folderName{ shaderProgram->GetFolderName() };
-
-            // create path
-            const auto shaderPath{ "res/shader/" + folderName };
-
-            // get options
-            const auto options{ shaderProgram->GetOptions() };
-
-            // add to ShaderManager
-            if (m_shaderPrograms.count(folderName) == 0)
+            // just add the shader program to the manager if it does not already exist
+            if (m_shaderPrograms.count(typeid(T)) == 0)
             {
+                // create ShaderProgram
+                auto shaderProgram{ std::make_unique<T>() };
+                SG_OGL_CORE_ASSERT(shaderProgram, "[ShaderManager::AddShaderProgram()] Null pointer.")
+
+                // get folder name
+                auto folderName{ shaderProgram->GetFolderName() };
+
+                // create path
+                const auto shaderPath{ "res/shader/" + folderName };
+
+                // get options
+                const auto options{ shaderProgram->GetOptions() };
+
                 SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] Start adding shader to program: {}.", folderName);
 
                 // add vertex shader
@@ -97,12 +99,10 @@ namespace sg::ogl::resource
                 shaderProgram->LinkAndValidateProgram();
                 shaderProgram->AddAllFoundUniforms();
 
-                m_shaderPrograms.emplace(folderName, std::move(shaderProgram));
+                m_shaderPrograms.emplace(typeid(T), std::move(shaderProgram));
 
                 SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] All shader was added successfully to program {}.", folderName);
             }
-
-            return folderName;
         }
 
         template <typename T>
@@ -133,8 +133,28 @@ namespace sg::ogl::resource
         // Getter
         //-------------------------------------------------
 
-        ShaderProgram& GetShaderProgram(const std::string& t_name);
-        const ShaderProgram& GetShaderProgram(const std::string& t_name) const;
+        template <typename T>
+        ShaderProgram& GetShaderProgram()
+        {
+            if (m_shaderPrograms.count(typeid(T)) == 0)
+            {
+                throw SG_OGL_EXCEPTION("[ShaderManager::GetShaderProgram()] Shader program not exist.");
+            }
+
+            return *m_shaderPrograms.at(typeid(T));
+        }
+
+        template <typename T>
+        const ShaderProgram& GetShaderProgram() const
+        {
+            if (m_shaderPrograms.count(typeid(T)) == 0)
+            {
+                throw SG_OGL_EXCEPTION("[ShaderManager::GetShaderProgram()] Shader program not exist.");
+            }
+
+            return *m_shaderPrograms.at(typeid(T));
+        }
+
         ShaderProgram& GetComputeShaderProgram(const std::string& t_name);
         const ShaderProgram& GetComputeShaderProgram(const std::string& t_name) const;
 
@@ -142,6 +162,6 @@ namespace sg::ogl::resource
 
     private:
         ShaderProgramContainer m_shaderPrograms;
-        ShaderProgramContainer m_computeShaderPrograms;
+        ComputeShaderProgramContainer m_computeShaderPrograms;
     };
 }
