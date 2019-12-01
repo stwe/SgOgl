@@ -58,29 +58,35 @@ namespace sg::ogl::resource
         float d{ 1.0f };
 
         /**
-         * @brief The ambient texture map id.
+         * @brief The ambientmap texture Id.
          */
         uint32_t mapKa{ 0 };
 
         /**
-         * @brief The diffuse texture map id. Most of time, it will be the same as
+         * @brief The diffusemap texture Id. Most of time, it will be the same as
          *        ambient texture map.
          */
         uint32_t mapKd{ 0 };
 
         /**
-         * @brief The specular texture map id.
+         * @brief The specularmap texture Id.
          */
         uint32_t mapKs{ 0 };
 
         /**
-         * @brief The normal texture map id.
+         * @brief The bumpmap texture Id.
          */
         uint32_t mapBump{ 0 };
+
+        /**
+         * @brief The normalmap texture Id.
+         */
+        uint32_t mapKn{ 0 };
 
         bool HasAmbientMap() const;
         bool HasDiffuseMap() const;
         bool HasSpecularMap() const;
+        bool HasBumpMap() const;
         bool HasNormalMap() const;
     };
 }

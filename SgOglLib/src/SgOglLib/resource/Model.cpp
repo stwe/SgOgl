@@ -213,7 +213,8 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
     auto ambientMaps{ LoadMaterialTextures(aiMeshMaterial, aiTextureType_AMBIENT) };
     auto diffuseMaps{ LoadMaterialTextures(aiMeshMaterial, aiTextureType_DIFFUSE) };
     auto specularMaps{ LoadMaterialTextures(aiMeshMaterial, aiTextureType_SPECULAR) };
-    auto normalMaps{ LoadMaterialTextures(aiMeshMaterial, aiTextureType_HEIGHT) }; // HeightMap = BumpMap/NormalMap
+    auto bumpMaps{ LoadMaterialTextures(aiMeshMaterial, aiTextureType_HEIGHT) };
+    auto normalMaps{ LoadMaterialTextures(aiMeshMaterial, aiTextureType_NORMALS) };
 
     // Always use the first texture Id.
     if (!ambientMaps.empty())
@@ -231,9 +232,14 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
         materialUniquePtr->mapKs = specularMaps[0];
     }
 
+    if (!bumpMaps.empty())
+    {
+        materialUniquePtr->mapBump = bumpMaps[0];
+    }
+
     if (!normalMaps.empty())
     {
-        materialUniquePtr->mapBump = normalMaps[0];
+        materialUniquePtr->mapKn = normalMaps[0];
     }
 
     // Set the BufferLayout.

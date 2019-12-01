@@ -11,23 +11,21 @@
 
 #include "SgOgl.h"
 
-#include "shader/ModelShaderProgram.h"
-#include "shader/ModelNormalmapShaderProgram.h"
-#include "shader/DomeShaderProgram.h"
-
-#include "renderer/ModelRenderSystem.h"
-#include "renderer/ModelNormalmapRenderSystem.h"
-#include "renderer/SkydomeRenderSystem.h"
-
 class GameState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 4.0f };
+    static constexpr auto CAMERA_VELOCITY{ 200.0f };
 
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
     using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
     using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
     using PointLightSharedPtr = std::shared_ptr<sg::ogl::light::PointLight>;
+    using ParticleEmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
+
+    using ModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ModelRenderSystem>;
+    using SkydomeRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkydomeRenderSystem>;
+    using SkyboxRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkyboxRenderSystem>;
+    using ParticleRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ParticleRenderSystem>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -66,10 +64,12 @@ private:
     CameraSharedPtr m_camera;
     DirectionalLightSharedPtr m_sun;
     PointLightSharedPtr m_pointLight;
+    ParticleEmitterSharedPtr m_particleEmitter;
 
-    std::unique_ptr<ModelRenderSystem<ModelShaderProgram>> m_modelRenderSystem;
-    std::unique_ptr<ModelNormalmapRenderSystem<ModelNormalmapShaderProgram>> m_modelNormalmapRenderSystem;
-    std::unique_ptr<SkydomeRenderSystem<DomeShaderProgram>> m_skydomeRenderSystem;
+    ModelRenderSystemUniquePtr m_modelRenderSystem;
+    SkydomeRenderSystemUniquePtr m_skydomeRenderSystem;
+    SkyboxRenderSystemUniquePtr m_skyboxRenderSystem;
+    ParticleRenderSystemUniquePtr m_particleRenderSystem;
 
     //-------------------------------------------------
     // Helper

@@ -56,20 +56,23 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const glm::vec3& t_position,
     const glm::vec3& t_rotation,
     const glm::vec3& t_scale,
-    const bool t_normalmap,
-    const bool t_moveable,
-    const bool t_showTriangles
+    const bool t_showTriangles,
+    const bool t_fakeNormals,
+    const bool t_useExistingNormalmaps,
+    const bool t_moveable
 ) const
 {
     // create an entity
     const auto entity{ m_application->registry.create() };
 
     // add model component
+    const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_FlipUVs };
     m_application->registry.assign<component::ModelComponent>(
         entity,
-        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath),
+        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath, pFlags),
         t_showTriangles,
-        false // todo fakeNormals
+        t_fakeNormals,
+        t_useExistingNormalmaps
     );
 
     // add transform component
@@ -79,12 +82,6 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
         glm::vec3(t_rotation.x, t_rotation.y, t_rotation.z),
         glm::vec3(t_scale.x, t_scale.y, t_scale.z)
     );
-
-    // add normalmap component
-    if (t_normalmap)
-    {
-        m_application->registry.assign<component::NormalmapComponent>(entity);
-    }
 
     // add moveable component
     if (t_moveable)

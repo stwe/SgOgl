@@ -24,7 +24,12 @@ bool sg::ogl::resource::Material::HasSpecularMap() const
     return mapKs != 0;
 }
 
-bool sg::ogl::resource::Material::HasNormalMap() const
+bool sg::ogl::resource::Material::HasBumpMap() const
 {
     return mapBump != 0;
+}
+
+bool sg::ogl::resource::Material::HasNormalMap() const
+{
+    return mapKn != 0;
 }

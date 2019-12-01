@@ -42,7 +42,14 @@
 #include "SgOglLib/ecs/component/TransformComponent.h"
 #include "SgOglLib/ecs/component/WaterComponent.h"
 #include "SgOglLib/ecs/factory/EntityFactory.h"
+#include "SgOglLib/ecs/system/GuiRenderSystem.h"
+#include "SgOglLib/ecs/system/InstancingRenderSystem.h"
+#include "SgOglLib/ecs/system/ModelRenderSystem.h"
+#include "SgOglLib/ecs/system/ParticleRenderSystem.h"
 #include "SgOglLib/ecs/system/RenderSystem.h"
+#include "SgOglLib/ecs/system/SkyboxRenderSystem.h"
+#include "SgOglLib/ecs/system/SkydomeRenderSystem.h"
+#include "SgOglLib/ecs/system/TerrainRenderSystem.h"
 #include "SgOglLib/ecs/system/WaterRenderSystem.h"
 
 // input
@@ -68,6 +75,17 @@
 #include "SgOglLib/resource/ShaderManager.h"
 #include "SgOglLib/resource/ShaderProgram.h"
 #include "SgOglLib/resource/TextureManager.h"
+#include "SgOglLib/resource/shaderprogram/ComputeNormalmap.h"
+#include "SgOglLib/resource/shaderprogram/ComputeSplatmap.h"
+#include "SgOglLib/resource/shaderprogram/DomeShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/GuiShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/InstancingShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/ModelNormalmapShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/ModelShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/ParticleShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/SkyboxShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/TerrainShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/WaterShaderProgram.h"
 
 // scene
 #include "SgOglLib/scene/Scene.h"

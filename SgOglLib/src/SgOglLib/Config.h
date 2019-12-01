@@ -78,6 +78,7 @@ namespace sg::ogl
 
         static void LoadOptions(
             const std::string& t_fileName,
+            std::string& t_libResFolder,
             WindowOptions& t_windowOptions,
             ProjectionOptions& t_projectionOptions
         );

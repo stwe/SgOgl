@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <init>
+    <libResFolder>D:\Dev\SgOgl\SgOglLib\res</libResFolder>
     <window>
         <title>Sandbox</title>
         <showTriangles>0</showTriangles>
         <compatibleProfile>0</compatibleProfile>
-        <debugContext>1</debugContext>
+        <debugContext>0</debugContext>
         <antialiasing>1</antialiasing>
         <printFrameRate>1</printFrameRate>
         <glMajor>4</glMajor>

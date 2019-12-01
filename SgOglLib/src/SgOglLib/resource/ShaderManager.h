@@ -32,7 +32,9 @@ namespace sg::ogl::resource
         // Ctors. / Dtor.
         //-------------------------------------------------
 
-        ShaderManager();
+        ShaderManager() = delete;
+
+        explicit ShaderManager(const std::string& t_libResFolder);
 
         ShaderManager(const ShaderManager& t_other) = delete;
         ShaderManager(ShaderManager&& t_other) noexcept = delete;
@@ -59,7 +61,15 @@ namespace sg::ogl::resource
                 auto folderName{ shaderProgram->GetFolderName() };
 
                 // create path
-                const auto shaderPath{ "res/shader/" + folderName };
+                std::string shaderPath;
+                if (shaderProgram->IsBuiltIn())
+                {
+                    shaderPath = m_libResFolder + "/shader/" + folderName;
+                }
+                else
+                {
+                    shaderPath = "res/shader/" + folderName;
+                }
 
                 // get options
                 const auto options{ shaderProgram->GetOptions() };
@@ -118,7 +128,16 @@ namespace sg::ogl::resource
 
             SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] Start adding compute shader to program: {}.", t_fileName);
 
-            const std::string shaderPath{ "res/shader/compute" };
+            // create path
+            std::string shaderPath;
+            if (shaderProgram->IsBuiltIn())
+            {
+                shaderPath = m_libResFolder + "/shader/compute";
+            }
+            else
+            {
+                shaderPath = "res/shader/compute";
+            }
 
             shaderProgram->AddComputeShader(ShaderUtil::ReadShaderFile(shaderPath + "/" + t_fileName + ".comp"));
             shaderProgram->LinkAndValidateProgram();
@@ -161,6 +180,7 @@ namespace sg::ogl::resource
     protected:
 
     private:
+        std::string m_libResFolder;
         ShaderProgramContainer m_shaderPrograms;
         ComputeShaderProgramContainer m_computeShaderPrograms;
     };

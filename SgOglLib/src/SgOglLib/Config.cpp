@@ -21,6 +21,7 @@ bool sg::ogl::Config::ToBool(const std::string& t_value)
 
 void sg::ogl::Config::LoadOptions(
     const std::string& t_fileName,
+    std::string& t_libResFolder,
     WindowOptions& t_windowOptions,
     ProjectionOptions& t_projectionOptions
 )
@@ -38,6 +39,16 @@ void sg::ogl::Config::LoadOptions(
     const auto* root{ document.FirstChildElement("init") };
     if (root)
     {
+        const auto* libResFolder{ root->FirstChildElement("libResFolder") };
+        if (libResFolder)
+        {
+            t_libResFolder = libResFolder->GetText();
+        }
+        else
+        {
+            throw SG_OGL_EXCEPTION("[Config::LoadOptions()] The <libResFolder> element could not be found.");
+        }
+
         const auto* window{ root->FirstChildElement("window") };
         if (window)
         {

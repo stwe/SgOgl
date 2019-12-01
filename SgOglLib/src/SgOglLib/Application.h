@@ -1,7 +1,17 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Application.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 #include <memory>
 #include <entt/entt.hpp>
+#include <string>
 #include "Config.h"
 
 namespace sg::ogl::resource
@@ -112,6 +122,8 @@ namespace sg::ogl
         // Getter
         //-------------------------------------------------
 
+        std::string GetLibResFolder() const;
+
         const WindowOptions& GetWindowOptions() const noexcept;
         WindowOptions& GetWindowOptions() noexcept;
 
@@ -142,6 +154,7 @@ namespace sg::ogl
         virtual void Init();
 
     private:
+        std::string m_libResFolder;
         WindowOptions m_windowOptions{};
         ProjectionOptions m_projectionOptions{};
 

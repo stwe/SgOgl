@@ -13,7 +13,8 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::resource::ShaderManager::ShaderManager()
+sg::ogl::resource::ShaderManager::ShaderManager(const std::string& t_libResFolder)
+    : m_libResFolder{ t_libResFolder }
 {
     SG_OGL_CORE_LOG_DEBUG("[ShaderManager::ShaderManager()] Create ShaderManager.");
 }

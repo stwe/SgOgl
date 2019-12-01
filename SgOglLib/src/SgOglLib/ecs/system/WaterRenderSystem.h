@@ -14,11 +14,13 @@
 #include "ecs/component/MeshComponent.h"
 #include "ecs/component/WaterComponent.h"
 #include "ecs/component/TransformComponent.h"
+#include "resource/Mesh.h"
+#include "resource/shaderprogram/WaterShaderProgram.h"
+#include "resource/ShaderManager.h"
 
 namespace sg::ogl::ecs::system
 {
-    template <typename TShaderProgram>
-    class WaterRenderSystem : public RenderSystem<TShaderProgram>
+    class WaterRenderSystem : public RenderSystem<resource::shaderprogram::WaterShaderProgram>
     {
     public:
         //-------------------------------------------------
@@ -26,7 +28,7 @@ namespace sg::ogl::ecs::system
         //-------------------------------------------------
 
         explicit WaterRenderSystem(scene::Scene* t_scene)
-            : RenderSystem<TShaderProgram>(t_scene)
+            : RenderSystem(t_scene)
         {}
 
         WaterRenderSystem(const WaterRenderSystem& t_other) = delete;
@@ -56,7 +58,7 @@ namespace sg::ogl::ecs::system
             }
         }
 
-        template <typename... Args>
+        template <typename ...Args>
         void RenderReflectionTexture(Args&&... t_args)
         {
             auto view = m_scene->GetApplicationContext()->registry.view<
@@ -91,7 +93,7 @@ namespace sg::ogl::ecs::system
             m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f));
         }
 
-        template <typename... Args>
+        template <typename ...Args>
         void RenderRefractionTexture(Args&&... t_args)
         {
             auto view = m_scene->GetApplicationContext()->registry.view<
@@ -128,7 +130,7 @@ namespace sg::ogl::ecs::system
                 component::WaterComponent,
                 component::TransformComponent>();
 
-            auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<TShaderProgram>() };
+            auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::WaterShaderProgram>() };
 
             shaderProgram.Bind();
 

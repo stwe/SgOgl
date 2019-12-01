@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Application.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include <sstream>
 #include "Application.h"
 #include "Core.h"
@@ -67,7 +76,7 @@ sg::ogl::Application::Application(const std::string& t_configFileName)
 {
     SG_OGL_CORE_LOG_DEBUG("[Application::Application()] Create Application.");
 
-    Config::LoadOptions(t_configFileName, m_windowOptions, m_projectionOptions);
+    Config::LoadOptions(t_configFileName, m_libResFolder, m_windowOptions, m_projectionOptions);
 }
 
 sg::ogl::Application::~Application() noexcept
@@ -78,6 +87,11 @@ sg::ogl::Application::~Application() noexcept
 //-------------------------------------------------
 // Getter
 //-------------------------------------------------
+
+std::string sg::ogl::Application::GetLibResFolder() const
+{
+    return m_libResFolder;
+}
 
 const sg::ogl::WindowOptions& sg::ogl::Application::GetWindowOptions() const noexcept
 {
@@ -174,7 +188,7 @@ void sg::ogl::Application::CoreInit()
     SG_OGL_CORE_ASSERT(m_window, "[Application::CoreInit()] Null pointer.")
     m_window->Init();
 
-    m_shaderManager.reset(new resource::ShaderManager);
+    m_shaderManager.reset(new resource::ShaderManager(m_libResFolder));
     SG_OGL_CORE_ASSERT(m_shaderManager, "[Application::CoreInit()] Null pointer.")
 
     m_textureManager.reset(new resource::TextureManager);

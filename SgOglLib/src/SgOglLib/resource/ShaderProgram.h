@@ -126,7 +126,8 @@ namespace sg::ogl::resource
         // To implement
         //-------------------------------------------------
 
-        virtual std::string GetFolderName() = 0;
+        virtual std::string GetFolderName() const = 0;
+        virtual bool IsBuiltIn() const;
         virtual Options GetOptions() const;
         virtual void UpdateUniforms(const scene::Scene& t_scene, entt::entity t_entity, const Mesh& t_currentMesh) {}
         virtual void UpdateUniforms(const terrain::Terrain& t_terrain) {}
