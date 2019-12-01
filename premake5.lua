@@ -30,7 +30,9 @@ project "SgOglLib"
     files
     {
         "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp"
+        "%{prj.name}/src/**.cpp",
+        "%{prj.name}/vendor/imgui/**.h",
+        "%{prj.name}/vendor/imgui/**.cpp"
     }
 
     includedirs
@@ -43,7 +45,8 @@ project "SgOglLib"
         "%{prj.name}/vendor/tinyxml2/include",
         "%{prj.name}/vendor/glm",
         "%{prj.name}/vendor/assimp/include",
-        "%{prj.name}/vendor/entt"
+        "%{prj.name}/vendor/entt",
+        "%{prj.name}/vendor/imgui"
     }
 
     linkoptions
@@ -130,7 +133,8 @@ project "Sandbox"
         "SgOglLib/vendor/tinyxml2/include",
         "SgOglLib/vendor/glm",
         "SgOglLib/vendor/assimp/include",
-        "SgOglLib/vendor/entt"
+        "SgOglLib/vendor/entt",
+        "SgOglLib/vendor/imgui"
     }
 
     links

@@ -52,6 +52,10 @@
 #include "SgOglLib/ecs/system/TerrainRenderSystem.h"
 #include "SgOglLib/ecs/system/WaterRenderSystem.h"
 
+// imgui
+#include "SgOglLib/imgui/imgui_impl_glfw.h"
+#include "SgOglLib/imgui/imgui_impl_opengl3.h"
+
 // input
 #include "SgOglLib/input/MouseInput.h"
 #include "SgOglLib/input/MousePicker.h"

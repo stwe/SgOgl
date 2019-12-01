@@ -69,10 +69,24 @@ bool GameState::Update(const double t_dt)
 
 void GameState::Render()
 {
+    // feed inputs to dear imgui, start new frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
     m_modelRenderSystem->Render();
     //m_skydomeRenderSystem->Render();
     m_particleRenderSystem->Render(),
     m_skyboxRenderSystem->Render();
+
+    // render your GUI
+    ImGui::Begin("Demo window");
+    ImGui::Button("Hello!");
+    ImGui::End();
+
+    // Render dear imgui into screen
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 //-------------------------------------------------
@@ -81,6 +95,22 @@ void GameState::Render()
 
 void GameState::Init()
 {
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsClassic();
+
+    // Setup Platform/Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(GetApplicationContext()->GetWindow().GetWindowHandle(), true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+
+
+
+
     // set clear color
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
@@ -160,7 +190,6 @@ void GameState::Init()
     };
     GetApplicationContext()->GetEntityFactory().CreateSkyboxEntity(cubemapFileNames);
     //GetApplicationContext()->GetEntityFactory().CreateSkydomeEntity("res/model/Dome/dome.obj");
-
 
     sg::ogl::particle::BuildConfig buildConfig;
     buildConfig.xRange.x = -2.0f;
