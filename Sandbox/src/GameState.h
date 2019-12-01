@@ -47,6 +47,10 @@ public:
     ~GameState() noexcept override
     {
         SG_OGL_LOG_DEBUG("[GameState::~GameState()] Destruct GameState.");
+
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
     }
 
     //-------------------------------------------------

@@ -9,6 +9,7 @@
 
 #include <random>
 #include "GameState.h"
+#include <glm/gtc/type_ptr.hpp>
 
 //-------------------------------------------------
 // Logic
@@ -64,12 +65,29 @@ bool GameState::Update(const double t_dt)
         SG_OGL_LOG_INFO("Camera yaw: {}  pitch: {}", m_scene->GetCurrentCamera().GetYaw(), m_scene->GetCurrentCamera().GetPitch());
     }
 
+    // move the lamp model
+    auto view = m_scene->GetApplicationContext()->registry.view<
+        sg::ogl::ecs::component::MoveableComponent,
+        sg::ogl::ecs::component::ModelComponent,
+        sg::ogl::ecs::component::TransformComponent>();
+
+    for (auto entity : view)
+    {
+        if (GetApplicationContext()->GetMouseInput().IsLeftButtonPressed())
+        {
+            auto& transformComponent = view.get<sg::ogl::ecs::component::TransformComponent>(entity);
+            transformComponent.position = m_pointLight->position;
+
+            m_pointLight->position = transformComponent.position;
+        }
+    }
+
     return true;
 }
 
 void GameState::Render()
 {
-    // feed inputs to dear imgui, start new frame
+    // feed inputs to ImGui, start new frame
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -80,11 +98,14 @@ void GameState::Render()
     m_skyboxRenderSystem->Render();
 
     // render your GUI
-    ImGui::Begin("Demo window");
-    ImGui::Button("Hello!");
+    ImGui::Begin("Sponza Playground");
+    ImGui::SliderFloat3("Directional Light Direction", value_ptr(m_sun->direction), -1.0, 1.0);
+    ImGui::SliderFloat3("Point Light Position", value_ptr(m_pointLight->position), -1000.0, 1000.0);
+    ImGui::SliderFloat("Point Light Linear", &m_pointLight->linear, 0.001, 0.9);
+    ImGui::SliderFloat("Point Light Quadratic", &m_pointLight->quadratic, 0.000007, 1.9);
     ImGui::End();
 
-    // Render dear imgui into screen
+    // render ImGui to the screen
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -95,21 +116,17 @@ void GameState::Render()
 
 void GameState::Init()
 {
-    // Setup Dear ImGui context
+    // setup ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-    // Setup Dear ImGui style
+    // setup ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
 
-    // Setup Platform/Renderer bindings
+    // setup platform/renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(GetApplicationContext()->GetWindow().GetWindowHandle(), true);
     ImGui_ImplOpenGL3_Init("#version 130");
-
-
-
 
     // set clear color
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
@@ -167,7 +184,7 @@ void GameState::Init()
         false,
         false,
         false,
-        false
+        true
     );
 
     /*
