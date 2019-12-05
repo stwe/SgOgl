@@ -1,6 +1,6 @@
 // This file is part of the SgOgl package.
 // 
-// Filename: GameState.cpp
+// Filename: SponzaPlaygroundState.cpp
 // Author:   stwe
 // 
 // License:  MIT
@@ -8,14 +8,14 @@
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include <random>
-#include "GameState.h"
 #include <glm/gtc/type_ptr.hpp>
+#include "SponzaPlaygroundState.h"
 
 //-------------------------------------------------
 // Logic
 //-------------------------------------------------
 
-bool GameState::Input()
+bool SponzaPlaygroundState::Input()
 {
     if (GetApplicationContext()->GetMouseInput().IsRightButtonPressed())
     {
@@ -25,7 +25,7 @@ bool GameState::Input()
     return true;
 }
 
-bool GameState::Update(const double t_dt)
+bool SponzaPlaygroundState::Update(const double t_dt)
 {
     m_particleRenderSystem->Update(t_dt);
 
@@ -85,7 +85,7 @@ bool GameState::Update(const double t_dt)
     return true;
 }
 
-void GameState::Render()
+void SponzaPlaygroundState::Render()
 {
     // feed inputs to ImGui, start new frame
     ImGui_ImplOpenGL3_NewFrame();
@@ -114,7 +114,7 @@ void GameState::Render()
 // Helper
 //-------------------------------------------------
 
-void GameState::Init()
+void SponzaPlaygroundState::Init()
 {
     // setup ImGui context
     IMGUI_CHECKVERSION();

@@ -9,7 +9,8 @@
 
 #include "SgOgl.h"
 #include "SgOglEntryPoint.h"
-#include "GameState.h"
+#include "SponzaPlaygroundState.h"
+#include "TestState.h"
 
 class Sandbox final : public sg::ogl::Application
 {
@@ -43,8 +44,11 @@ protected:
 
     void RegisterStates() override
     {
-        SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register Game State.");
-        GetStateStack().RegisterState<GameState>(sg::ogl::state::GAME);
+        //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: SponzaPlaygroundState as Game.");
+        //GetStateStack().RegisterState<SponzaPlaygroundState>(sg::ogl::state::GAME);
+
+        SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: TestState as Game.");
+        GetStateStack().RegisterState<TestState>(sg::ogl::state::GAME);
     }
 
     void Init() override

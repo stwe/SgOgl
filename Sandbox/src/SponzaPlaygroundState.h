@@ -1,6 +1,6 @@
 // This file is part of the SgOgl package.
 // 
-// Filename: GameState.h
+// Filename: SponzaPlaygroundState.h
 // Author:   stwe
 // 
 // License:  MIT
@@ -11,7 +11,7 @@
 
 #include "SgOgl.h"
 
-class GameState : public sg::ogl::state::State
+class SponzaPlaygroundState : public sg::ogl::state::State
 {
 public:
     static constexpr auto CAMERA_VELOCITY{ 200.0f };
@@ -31,22 +31,22 @@ public:
     // Ctors. / Dtor.
     //-------------------------------------------------
 
-    GameState() = delete;
+    SponzaPlaygroundState() = delete;
 
-    explicit GameState(sg::ogl::state::StateStack* t_stateStack)
-        : State{ t_stateStack, "GameState" }
+    explicit SponzaPlaygroundState(sg::ogl::state::StateStack* t_stateStack)
+        : State{ t_stateStack, "SponzaPlaygroundState" }
     {
         Init();
     }
 
-    GameState(const GameState& t_other) = delete;
-    GameState(GameState&& t_other) noexcept = delete;
-    GameState& operator=(const GameState& t_other) = delete;
-    GameState& operator=(GameState&& t_other) noexcept = delete;
+    SponzaPlaygroundState(const SponzaPlaygroundState& t_other) = delete;
+    SponzaPlaygroundState(SponzaPlaygroundState&& t_other) noexcept = delete;
+    SponzaPlaygroundState& operator=(const SponzaPlaygroundState& t_other) = delete;
+    SponzaPlaygroundState& operator=(SponzaPlaygroundState&& t_other) noexcept = delete;
 
-    ~GameState() noexcept override
+    ~SponzaPlaygroundState() noexcept override
     {
-        SG_OGL_LOG_DEBUG("[GameState::~GameState()] Destruct GameState.");
+        SG_OGL_LOG_DEBUG("[SponzaPlaygroundState::~SponzaPlaygroundState()] Destruct SponzaPlaygroundState.");
 
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
