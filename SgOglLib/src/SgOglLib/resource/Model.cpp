@@ -8,7 +8,6 @@
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
 #include "Model.h"
 #include "Mesh.h"
 #include "Material.h"

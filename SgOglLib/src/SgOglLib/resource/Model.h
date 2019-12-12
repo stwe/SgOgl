@@ -53,7 +53,7 @@ namespace sg::ogl::resource
         // Getter
         //-------------------------------------------------
 
-        const MeshContainer& GetMeshes() const noexcept;
+        [[nodiscard]] const MeshContainer& GetMeshes() const noexcept;
 
     protected:
 

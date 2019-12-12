@@ -35,6 +35,11 @@ namespace sg::ogl::particle
     class ParticleEmitter;
 }
 
+namespace sg::ogl::resource
+{
+    class SkeletalModel;
+}
+
 namespace sg::ogl::ecs::factory
 {
     class EntityFactory
@@ -75,6 +80,17 @@ namespace sg::ogl::ecs::factory
             const std::string& t_fullModelFilePath,
             const std::vector<glm::mat4>& t_matrices,
             bool t_fakeNormals = false
+        ) const;
+
+        void CreateSkeletalModelEntity(
+            const std::shared_ptr<resource::SkeletalModel>& t_skeletalModel,
+            const glm::vec3& t_position,
+            const glm::vec3& t_rotation,
+            const glm::vec3& t_scale,
+            bool t_showTriangles = false,
+            bool t_fakeNormals = false,
+            bool t_useExistingNormalmaps = false,
+            bool t_moveable = false
         ) const;
 
         void CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const;

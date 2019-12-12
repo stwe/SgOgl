@@ -13,6 +13,7 @@
 #include "Core.h"
 #include "buffer/Vbo.h"
 #include "ecs/component/ModelComponent.h"
+#include "ecs/component/SkeletalModelComponent.h"
 #include "ecs/component/TransformComponent.h"
 #include "ecs/component/MeshComponent.h"
 #include "ecs/component/CubemapComponent.h"
@@ -23,8 +24,8 @@
 #include "ecs/component/WaterComponent.h"
 #include "ecs/component/ParticleEmitterComponent.h"
 #include "ecs/component/MoveableComponent.h"
-#include "ecs/component/NormalmapComponent.h"
 #include "resource/Model.h"
+#include "resource/SkeletalModel.h"
 #include "resource/ModelManager.h"
 #include "resource/TextureManager.h"
 #include "terrain/Terrain.h"
@@ -144,6 +145,44 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
         false, // showTriangles - todo
         t_fakeNormals
     );
+}
+
+void sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
+    const std::shared_ptr<resource::SkeletalModel>& t_skeletalModel,
+    const glm::vec3& t_position,
+    const glm::vec3& t_rotation,
+    const glm::vec3& t_scale,
+    const bool t_showTriangles,
+    const bool t_fakeNormals,
+    const bool t_useExistingNormalmaps,
+    const bool t_moveable
+) const
+{
+    // create an entity
+    const auto entity{ m_application->registry.create() };
+
+    // add model component
+    m_application->registry.assign<component::SkeletalModelComponent>(
+        entity,
+        t_skeletalModel,
+        t_showTriangles,
+        t_fakeNormals,
+        t_useExistingNormalmaps
+    );
+
+    // add transform component
+    m_application->registry.assign<component::TransformComponent>(
+        entity,
+        glm::vec3(t_position.x, t_position.y, t_position.z),
+        glm::vec3(t_rotation.x, t_rotation.y, t_rotation.z),
+        glm::vec3(t_scale.x, t_scale.y, t_scale.z)
+    );
+
+    // add moveable component
+    if (t_moveable)
+    {
+        m_application->registry.assign<component::MoveableComponent>(entity);
+    }
 }
 
 void sg::ogl::ecs::factory::EntityFactory::CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const

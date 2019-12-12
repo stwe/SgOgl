@@ -35,6 +35,7 @@ int32_t sg::ogl::buffer::BufferLayout::GetStride() const
     return m_stride;
 }
 
+// todo: The name does not make sense if the layout contains other data types as floats.
 uint32_t sg::ogl::buffer::BufferLayout::GetNumberOfFloats() const
 {
     return m_numberOfFloats;
@@ -53,6 +54,8 @@ uint32_t sg::ogl::buffer::BufferLayout::GetVertexAttributeTypeSize(const VertexA
         case VertexAttributeType::NORMAL: return sizeof(float) * VertexAttributeMeta::GetComponentCount(VertexAttributeType::NORMAL);
         case VertexAttributeType::TANGENT: return sizeof(float) * VertexAttributeMeta::GetComponentCount(VertexAttributeType::TANGENT);
         case VertexAttributeType::BITANGENT: return sizeof(float) * VertexAttributeMeta::GetComponentCount(VertexAttributeType::BITANGENT);
+        case VertexAttributeType::BONE_IDS: return sizeof(int32_t) * VertexAttributeMeta::GetComponentCount(VertexAttributeType::BONE_IDS);
+        case VertexAttributeType::WEIGHTS: return sizeof(float) * VertexAttributeMeta::GetComponentCount(VertexAttributeType::WEIGHTS);
         default:;
     }
 
@@ -70,6 +73,8 @@ uint32_t sg::ogl::buffer::BufferLayout::GetOpenGlType(const VertexAttributeType 
         case VertexAttributeType::NORMAL:
         case VertexAttributeType::TANGENT:
         case VertexAttributeType::BITANGENT: return GL_FLOAT;
+        case VertexAttributeType::BONE_IDS: return GL_INT;
+        case VertexAttributeType::WEIGHTS: return GL_FLOAT;
         default:;
     }
 

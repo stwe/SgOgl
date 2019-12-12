@@ -57,12 +57,12 @@ namespace sg::ogl::camera
         // Getter
         //-------------------------------------------------
 
-        glm::vec3& GetPosition();
-        const glm::vec3& GetPosition() const;
-        glm::mat4 GetViewMatrix() const;
+        [[nodiscard]] glm::vec3& GetPosition();
+        [[nodiscard]] const glm::vec3& GetPosition() const;
+        [[nodiscard]] glm::mat4 GetViewMatrix() const;
 
-        float GetYaw() const;
-        float GetPitch() const;
+        [[nodiscard]] float GetYaw() const;
+        [[nodiscard]] float GetPitch() const;
 
         //-------------------------------------------------
         // Update

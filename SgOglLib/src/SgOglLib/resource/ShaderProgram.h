@@ -13,8 +13,10 @@
 #include <vector>
 #include <map>
 #include <glm/glm.hpp>
+#include <assimp/matrix4x4.h>
 
-namespace entt {
+namespace entt
+{
     enum class entity : unsigned;
 }
 
@@ -70,7 +72,7 @@ namespace sg::ogl::resource
         // Getter
         //-------------------------------------------------
 
-        uint32_t GetProgramId() const;
+        [[nodiscard]] uint32_t GetProgramId() const;
 
         //-------------------------------------------------
         // Add shader types
@@ -122,13 +124,24 @@ namespace sg::ogl::resource
         void SetUniform(const std::string& t_uniformName, const light::PointLight& t_pointLight);
         void SetUniform(const std::string& t_uniformName, const Material& t_material);
 
+        template <typename T>
+        void SetUniform(const std::string& t_uniformName, const std::vector<T>& t_values)
+        {
+            for (auto i{ 0u }; i < t_values.size(); ++i)
+            {
+                SetUniform(t_uniformName + "[" + std::to_string(i) + "]", t_values[i]);
+            }
+        }
+
+        void SetUniform(const std::string& t_uniformName, const std::vector<aiMatrix4x4>& t_values);
+
         //-------------------------------------------------
         // To implement
         //-------------------------------------------------
 
-        virtual std::string GetFolderName() const = 0;
-        virtual bool IsBuiltIn() const;
-        virtual Options GetOptions() const;
+        [[nodiscard]] virtual std::string GetFolderName() const = 0;
+        [[nodiscard]] virtual bool IsBuiltIn() const;
+        [[nodiscard]] virtual Options GetOptions() const;
         virtual void UpdateUniforms(const scene::Scene& t_scene, entt::entity t_entity, const Mesh& t_currentMesh) {}
         virtual void UpdateUniforms(const terrain::Terrain& t_terrain) {}
 

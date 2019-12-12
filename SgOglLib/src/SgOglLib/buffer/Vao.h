@@ -12,11 +12,12 @@
 #include <cstdint>
 #include <vector>
 #include "OpenGl.h"
+#include "Vbo.h"
+#include "BufferLayout.h"
+#include "VertexAttribute.h"
 
 namespace sg::ogl::buffer
 {
-    class BufferLayout;
-
     /**
      * @brief The Vao class wraps an OpenGL Vertex Array Object (Vao).
      *        A Vao is an object which contains one or more Vertex Buffer Objects (Vbo).
@@ -44,10 +45,10 @@ namespace sg::ogl::buffer
         // Getter
         //-------------------------------------------------
 
-        uint32_t GetVaoId() const;
-        const VboContainer& GetVbos() const;
-        uint32_t GetEboId() const;
-        bool HasIndexBuffer() const;
+        [[nodiscard]] uint32_t GetVaoId() const;
+        [[nodiscard]] const VboContainer& GetVbos() const;
+        [[nodiscard]] uint32_t GetEboId() const;
+        [[nodiscard]] bool HasIndexBuffer() const;
 
         //-------------------------------------------------
         // Setter
@@ -74,6 +75,69 @@ namespace sg::ogl::buffer
          * @param t_bufferLayout Metadata to interpret the vertex data.
          */
         void AddVertexDataVbo(float* t_vertices, int32_t t_drawCount, const BufferLayout& t_bufferLayout);
+
+        /**
+         * @brief Add a Vertex Buffer Object (Vbo) to the Vao and copy the given vertex data to the Gpu.
+         * @tparam T The data type of the data to be copied.
+         * @param t_data A container with the data.
+         * @param t_bufferLayout Metadata to interpret the vertex data.
+         * @param t_startIndex The start-index of the generic vertex attribute to be enabled.
+         */
+        template <typename T>
+        void AddDataVbo(const std::vector<T>& t_data, const BufferLayout& t_bufferLayout, const uint32_t t_startIndex)
+        {
+            // Bind our existing Vao.
+            BindVao();
+
+            // Generate a new Vbo.
+            const auto vboId{ Vbo::GenerateVbo() };
+
+            // Store the Vbo Id.
+            m_vbos.push_back(vboId);
+
+            // Bind the new Vbo.
+            Vbo::BindVbo(vboId);
+
+            // Create and initialize a buffer.
+            glBufferData(GL_ARRAY_BUFFER, t_data.size() * sizeof(t_data[0]), t_data.data(), GL_STATIC_DRAW);
+
+            // Specify how OpenGL should interpret the vertex data before rendering.
+            auto index{ t_startIndex };
+            for (const auto& attribute : t_bufferLayout.GetAttributes())
+            {
+                if (BufferLayout::GetOpenGlType(attribute.vertexAttributeType) == GL_FLOAT)
+                {
+                    glEnableVertexAttribArray(index);
+                    glVertexAttribPointer(
+                        index,
+                        VertexAttributeMeta::GetComponentCount(attribute.vertexAttributeType),
+                        GL_FLOAT,
+                        attribute.normalized ? GL_TRUE : GL_FALSE,
+                        t_bufferLayout.GetStride(),
+                        reinterpret_cast<uintptr_t*>(attribute.offset)
+                    );
+
+                    index++;
+                }
+                else if (BufferLayout::GetOpenGlType(attribute.vertexAttributeType) == GL_INT)
+                {
+                    glEnableVertexAttribArray(index);
+                    glVertexAttribIPointer(
+                        index,
+                        VertexAttributeMeta::GetComponentCount(attribute.vertexAttributeType),
+                        GL_INT,
+                        t_bufferLayout.GetStride(),
+                        reinterpret_cast<uintptr_t*>(attribute.offset)
+                    );
+
+                    index++;
+                }
+            }
+
+            // Unbind buffers.
+            Vbo::UnbindVbo();
+            UnbindVao();
+        }
 
         /**
          * @brief Add an index buffer to the Vao and fill with the indices.

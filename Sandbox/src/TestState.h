@@ -14,6 +14,15 @@
 class TestState : public sg::ogl::state::State
 {
 public:
+    static constexpr auto CAMERA_VELOCITY{ 4.0f };
+
+    using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
+    using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
+    using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
+    using PointLightSharedPtr = std::shared_ptr<sg::ogl::light::PointLight>;
+
+    using SkeletalModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkeletalModelRenderSystem>;
+
     //-------------------------------------------------
     // Ctors. / Dtor.
     //-------------------------------------------------
@@ -47,6 +56,13 @@ public:
 protected:
 
 private:
+    SceneUniquePtr m_scene;
+    CameraSharedPtr m_camera;
+    DirectionalLightSharedPtr m_sun;
+    PointLightSharedPtr m_pointLight;
+    std::shared_ptr<sg::ogl::resource::SkeletalModel> m_skeletalModel;
+    SkeletalModelRenderSystemUniquePtr m_skeletalModelRenderSystem;
+
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------

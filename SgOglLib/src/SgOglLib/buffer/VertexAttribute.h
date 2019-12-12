@@ -16,7 +16,7 @@ namespace sg::ogl::buffer
 {
     enum class VertexAttributeType
     {
-        NONE, POSITION, POSITION_2D, COLOR, UV, NORMAL, TANGENT, BITANGENT
+        NONE, POSITION, POSITION_2D, COLOR, UV, NORMAL, TANGENT, BITANGENT, BONE_IDS, WEIGHTS
     };
 
     struct VertexAttributeMeta
@@ -32,6 +32,8 @@ namespace sg::ogl::buffer
                 case VertexAttributeType::NORMAL: return 3;
                 case VertexAttributeType::TANGENT: return 3;
                 case VertexAttributeType::BITANGENT: return 3;
+                case VertexAttributeType::BONE_IDS: return 4;
+                case VertexAttributeType::WEIGHTS: return 4;
                 default:;
 
                 throw SG_OGL_EXCEPTION("[VertexAttributeMeta::GetComponentCount()] Unknown VertexAttributeType.");

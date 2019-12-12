@@ -39,9 +39,9 @@ namespace sg::ogl::buffer
         // Getter
         //-------------------------------------------------
 
-        const AttributeContainer& GetAttributes() const noexcept;
-        int32_t GetStride() const;
-        uint32_t GetNumberOfFloats() const;
+        [[nodiscard]] const AttributeContainer& GetAttributes() const noexcept;
+        [[nodiscard]] int32_t GetStride() const;
+        [[nodiscard]] uint32_t GetNumberOfFloats() const;
 
         static uint32_t GetVertexAttributeTypeSize(VertexAttributeType t_vertexAttributeType);
         static uint32_t GetOpenGlType(VertexAttributeType t_vertexAttributeType);

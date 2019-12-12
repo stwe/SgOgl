@@ -8,11 +8,8 @@
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include "Vao.h"
-#include "Vbo.h"
 #include "Log.h"
 #include "Core.h"
-#include "BufferLayout.h"
-#include "VertexAttribute.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
