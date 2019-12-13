@@ -10,6 +10,7 @@
 #include "ModelManager.h"
 #include "Material.h"
 #include "Model.h"
+#include "SkeletalModel.h"
 #include "Mesh.h"
 #include "Log.h"
 #include "Application.h"
@@ -73,6 +74,20 @@ sg::ogl::resource::ModelManager::ModelSharedPtr sg::ogl::resource::ModelManager:
     }
 
     return m_models.at(t_fullFilePath);
+}
+
+sg::ogl::resource::ModelManager::SkeletalModelSharedPtr sg::ogl::resource::ModelManager::GetSkeletalModelByPath(const std::string& t_fullFilePath, unsigned int t_pFlags)
+{
+    // load the skeletal model if it does not already exist
+    if (m_skeletalModels.count(t_fullFilePath) == 0)
+    {
+        auto skeletalModelSharedPtr{ std::make_shared<SkeletalModel>(t_fullFilePath, m_application, t_pFlags) };
+        SG_OGL_CORE_ASSERT(skeletalModelSharedPtr, "[ModelManager::GetSkeletalModelByPath()] Null pointer.")
+
+        m_skeletalModels.emplace(t_fullFilePath, skeletalModelSharedPtr);
+    }
+
+    return m_skeletalModels.at(t_fullFilePath);
 }
 
 sg::ogl::resource::ModelManager::VertexContainer sg::ogl::resource::ModelManager::GetParticleVertices()

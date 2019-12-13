@@ -83,7 +83,7 @@ namespace sg::ogl::ecs::factory
         ) const;
 
         void CreateSkeletalModelEntity(
-            const std::shared_ptr<resource::SkeletalModel>& t_skeletalModel,
+            const std::string& t_fullModelFilePath,
             const glm::vec3& t_position,
             const glm::vec3& t_rotation,
             const glm::vec3& t_scale,

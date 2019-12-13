@@ -58,9 +58,10 @@ protected:
 private:
     SceneUniquePtr m_scene;
     CameraSharedPtr m_camera;
+
     DirectionalLightSharedPtr m_sun;
     PointLightSharedPtr m_pointLight;
-    std::shared_ptr<sg::ogl::resource::SkeletalModel> m_skeletalModel;
+
     SkeletalModelRenderSystemUniquePtr m_skeletalModelRenderSystem;
 
     //-------------------------------------------------

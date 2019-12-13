@@ -148,7 +148,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
 }
 
 void sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
-    const std::shared_ptr<resource::SkeletalModel>& t_skeletalModel,
+    const std::string& t_fullModelFilePath,
     const glm::vec3& t_position,
     const glm::vec3& t_rotation,
     const glm::vec3& t_scale,
@@ -162,9 +162,10 @@ void sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
     const auto entity{ m_application->registry.create() };
 
     // add model component
+    const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_FlipUVs };
     m_application->registry.assign<component::SkeletalModelComponent>(
         entity,
-        t_skeletalModel,
+        m_application->GetModelManager().GetSkeletalModelByPath(t_fullModelFilePath, pFlags),
         t_showTriangles,
         t_fakeNormals,
         t_useExistingNormalmaps

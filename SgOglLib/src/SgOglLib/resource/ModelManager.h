@@ -26,6 +26,7 @@ namespace sg::ogl::resource
     struct Material;
     class Mesh;
     class Model;
+    class SkeletalModel;
 
     class ModelManager
     {
@@ -38,9 +39,13 @@ namespace sg::ogl::resource
         using StaticMeshKey = std::string;
         using StaticMeshContainer = std::map<StaticMeshKey, StaticMeshSharedPtr>;
 
+        using FullPathAsKey = std::string;
+
         using ModelSharedPtr = std::shared_ptr<Model>;
-        using ModelFullPathAsKey = std::string;
-        using ModelContainer = std::map<ModelFullPathAsKey, ModelSharedPtr>;
+        using ModelContainer = std::map<FullPathAsKey, ModelSharedPtr>;
+
+        using SkeletalModelSharedPtr = std::shared_ptr<SkeletalModel>;
+        using SkeletalModelContainer = std::map<FullPathAsKey, SkeletalModelSharedPtr>;
 
         using VertexContainer = std::vector<float>;
 
@@ -74,6 +79,7 @@ namespace sg::ogl::resource
         MaterialSharedPtr GetMaterialByName(const std::string& t_name);
         StaticMeshSharedPtr GetStaticMeshByName(const std::string& t_name);
         ModelSharedPtr GetModelByPath(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
+        SkeletalModelSharedPtr GetSkeletalModelByPath(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
 
         static VertexContainer GetParticleVertices();
 
@@ -92,6 +98,7 @@ namespace sg::ogl::resource
         MaterialContainer m_materials;
         StaticMeshContainer m_staticMeshes;
         ModelContainer m_models;
+        SkeletalModelContainer m_skeletalModels;
 
         //-------------------------------------------------
         // Built in

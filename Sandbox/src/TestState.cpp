@@ -109,10 +109,8 @@ void TestState::Init()
 
     ////////////////// Create Entities //////////////////
 
-    m_skeletalModel = std::make_shared<sg::ogl::resource::SkeletalModel>("res/model/Man/model.dae", GetApplicationContext());
-
     GetApplicationContext()->GetEntityFactory().CreateSkeletalModelEntity(
-        m_skeletalModel,
+        "res/model/Man/model.dae",
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f),
         glm::vec3(1.0f),
