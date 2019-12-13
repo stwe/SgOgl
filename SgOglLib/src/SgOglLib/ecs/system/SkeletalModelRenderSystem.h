@@ -46,7 +46,7 @@ namespace sg::ogl::ecs::system
 
                 ////////////////////
 
-                std::vector<aiMatrix4x4> transforms;
+                std::vector<glm::mat4> transforms;
                 skeletalModelComponent.model->BoneTransform(glfwGetTime(), transforms);
                 shaderProgram.SetUniform("bones", transforms);
 

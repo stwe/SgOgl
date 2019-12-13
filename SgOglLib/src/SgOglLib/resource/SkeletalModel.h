@@ -13,7 +13,6 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <vector>
 #include <array>
@@ -31,7 +30,7 @@ namespace sg::ogl::resource
     class Mesh;
 
     //-------------------------------------------------
-    // Converting between ASSIMPand glm
+    // Converting between Assimp and glm
     //-------------------------------------------------
 
     static glm::vec3 vec3_cast(const aiVector3D& t_v) { return glm::vec3(t_v.x, t_v.y, t_v.z); }
@@ -72,8 +71,8 @@ namespace sg::ogl::resource
 
     struct BoneMatrix
     {
-        aiMatrix4x4 offsetMatrix;
-        aiMatrix4x4 finalWorldTransform;
+        glm::mat4 offsetMatrix{ glm::mat4(0.0f) };
+        glm::mat4 finalWorldTransform{ glm::mat4(0.0f) };
     };
 
     //-------------------------------------------------
@@ -115,12 +114,19 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         [[nodiscard]] const MeshContainer& GetMeshes() const noexcept;
+        [[nodiscard]] uint32_t GetNumberOfAnimations() const;
+
+        //-------------------------------------------------
+        // Setter
+        //-------------------------------------------------
+
+        void SetCurrentAnimation(uint32_t t_animation);
 
         //-------------------------------------------------
         // Transform
         //-------------------------------------------------
 
-        void BoneTransform(double t_timeInSec, std::vector<aiMatrix4x4>& t_transforms);
+        void BoneTransform(double t_timeInSec, std::vector<glm::mat4>& t_transforms);
 
     protected:
 
@@ -143,14 +149,14 @@ namespace sg::ogl::resource
         const aiScene* m_scene{ nullptr };
 
         /**
-         * @brief Root inverse transform matrix.
+         * @brief The current animation index.
          */
-        aiMatrix4x4 m_globalInverseTransform;
+        uint32_t m_currentAnimation{ 0 };
 
         /**
-         * @brief Animation time.
+         * @brief Root inverse transform matrix.
          */
-        float m_ticksPerSecond{ 0.0f };
+        glm::mat4 m_globalInverseTransform{ glm::mat4(1.0f) };
 
         /**
          * @brief Stores the name for each bone Id.
@@ -181,7 +187,7 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         static const aiNodeAnim* FindNodeAnim(const aiAnimation* t_animation, const std::string& t_nodeName);
-        void ReadNodeHierarchy(float t_animationTime, const aiNode* t_node, const aiMatrix4x4& t_parentTransform);
+        void ReadNodeHierarchy(float t_animationTime, const aiNode* t_node, const glm::mat4& t_parentTransform);
 
         static uint32_t FindScaling(float t_animationTime, const aiNodeAnim* t_nodeAnim);
         static uint32_t FindRotation(float t_animationTime, const aiNodeAnim* t_nodeAnim);

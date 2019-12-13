@@ -328,14 +328,6 @@ void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformNa
     SetUniform(t_uniformName + ".hasSpecularMap", t_material.HasSpecularMap());
 }
 
-void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const std::vector<aiMatrix4x4>& t_values)
-{
-    for (auto i{ 0u }; i < t_values.size(); ++i)
-    {
-        glUniformMatrix4fv(GetUniformLocation(t_uniformName + "[" + std::to_string(i) + "]"), 1, GL_TRUE, reinterpret_cast<const float*>(&t_values[i]));
-    }
-}
-
 //-------------------------------------------------
 // To implement
 //-------------------------------------------------

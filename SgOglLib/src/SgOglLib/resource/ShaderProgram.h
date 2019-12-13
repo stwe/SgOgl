@@ -13,7 +13,6 @@
 #include <vector>
 #include <map>
 #include <glm/glm.hpp>
-#include <assimp/matrix4x4.h>
 
 namespace entt
 {
@@ -132,8 +131,6 @@ namespace sg::ogl::resource
                 SetUniform(t_uniformName + "[" + std::to_string(i) + "]", t_values[i]);
             }
         }
-
-        void SetUniform(const std::string& t_uniformName, const std::vector<aiMatrix4x4>& t_values);
 
         //-------------------------------------------------
         // To implement

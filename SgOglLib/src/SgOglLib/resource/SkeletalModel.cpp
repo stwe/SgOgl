@@ -7,6 +7,7 @@
 // 
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
+#include <glm/gtx/quaternion.hpp>
 #include "SkeletalModel.h"
 #include "Mesh.h"
 #include "Material.h"
@@ -48,6 +49,46 @@ const sg::ogl::resource::SkeletalModel::MeshContainer& sg::ogl::resource::Skelet
     return m_meshes;
 }
 
+uint32_t sg::ogl::resource::SkeletalModel::GetNumberOfAnimations() const
+{
+    SG_OGL_CORE_ASSERT(m_scene, "[SkeletalModel::GetNumberOfAnimations()] Null pointer.")
+    return m_scene->mNumAnimations;
+}
+
+//-------------------------------------------------
+// Setter
+//-------------------------------------------------
+
+void sg::ogl::resource::SkeletalModel::SetCurrentAnimation(const uint32_t t_animation)
+{
+    SG_OGL_CORE_ASSERT(t_animation <= m_scene->mNumAnimations, "[SkeletalModel::SetCurrentAnimation()] Invalid animation value.")
+    m_currentAnimation = t_animation;
+}
+
+//-------------------------------------------------
+// Transform
+//-------------------------------------------------
+
+void sg::ogl::resource::SkeletalModel::BoneTransform(const double t_timeInSec, std::vector<glm::mat4>& t_transforms)
+{
+    // calc animation duration
+    const auto numPosKeys{ m_scene->mAnimations[m_currentAnimation]->mChannels[0]->mNumPositionKeys };
+    const auto animDuration{ m_scene->mAnimations[m_currentAnimation]->mChannels[0]->mPositionKeys[numPosKeys - 1].mTime };
+
+    const auto ticksPerSecond{ static_cast<float>(m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond != 0 ? m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond : 25.0f) };
+    const auto timeInTicks{ t_timeInSec * ticksPerSecond };
+    const auto animationTime{ static_cast<float>(fmod(timeInTicks, animDuration)) };
+
+    ReadNodeHierarchy(animationTime, m_scene->mRootNode, glm::mat4(1.0f));
+
+    t_transforms.resize(m_numBones);
+
+    for (auto i{ 0u }; i < m_numBones; ++i)
+    {
+        t_transforms[i] = m_boneMatrices[i].finalWorldTransform;
+    }
+}
+
 //-------------------------------------------------
 // Load Model
 //-------------------------------------------------
@@ -62,28 +103,18 @@ void sg::ogl::resource::SkeletalModel::LoadModel(const unsigned int t_pFlags)
         throw SG_OGL_EXCEPTION("[SkeletalModel::LoadModel()] ERROR::ASSIMP:: " + std::string(m_importer.GetErrorString()));
     }
 
-    m_globalInverseTransform = m_scene->mRootNode->mTransformation;
-    m_globalInverseTransform.Inverse();
+    m_globalInverseTransform = mat4_cast(m_scene->mRootNode->mTransformation);
+    m_globalInverseTransform = inverse(m_globalInverseTransform);
 
     if (!m_scene->mAnimations)
     {
         throw SG_OGL_EXCEPTION("[SkeletalModel::LoadModel()] The model should contain animations.");
     }
 
-    if (m_scene->mAnimations[0]->mTicksPerSecond != 0.0)
-    {
-        m_ticksPerSecond = static_cast<float>(m_scene->mAnimations[0]->mTicksPerSecond);
-    }
-    else
-    {
-        m_ticksPerSecond = 25.0f;
-    }
-
     SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Num meshes: {}", m_scene->mNumMeshes);
     SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Num animations: {}", m_scene->mNumAnimations);
     SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Num channels: {}", m_scene->mAnimations[0]->mNumChannels);
     SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Duration: {}", m_scene->mAnimations[0]->mDuration);
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Ticks per second: {}, m_ticksPerSecond: {}", m_scene->mAnimations[0]->mTicksPerSecond, m_ticksPerSecond);
 
     ProcessNode(m_scene->mRootNode, m_scene);
 
@@ -212,7 +243,7 @@ sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel
         auto boneIndex{ 0u };
         std::string boneName{ t_mesh->mBones[i]->mName.data };
 
-        SG_OGL_LOG_DEBUG("[SkeletalModel::ProcessMesh()] Bone: {}", boneName);
+        SG_OGL_LOG_DEBUG("[SkeletalModel::ProcessMesh()] Load Bone: {}", boneName);
 
         if (m_boneContainer.count(boneName) == 0)
         {
@@ -221,7 +252,8 @@ sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel
 
             BoneMatrix boneMatrix;
             m_boneMatrices.push_back(boneMatrix);
-            m_boneMatrices[boneIndex].offsetMatrix = t_mesh->mBones[i]->mOffsetMatrix;
+
+            m_boneMatrices[boneIndex].offsetMatrix = mat4_cast(t_mesh->mBones[i]->mOffsetMatrix);
             m_boneContainer.emplace(boneName, boneIndex);
         }
         else
@@ -350,25 +382,6 @@ sg::ogl::resource::SkeletalModel::TextureContainer sg::ogl::resource::SkeletalMo
 }
 
 //-------------------------------------------------
-// Transform
-//-------------------------------------------------
-
-void sg::ogl::resource::SkeletalModel::BoneTransform(const double t_timeInSec, std::vector<aiMatrix4x4>& t_transforms)
-{
-    const auto timeInTicks{ t_timeInSec * m_ticksPerSecond };
-    const auto animationTime{ static_cast<float>(fmod(timeInTicks, m_scene->mAnimations[0]->mDuration)) };
-
-    ReadNodeHierarchy(animationTime, m_scene->mRootNode, aiMatrix4x4());
-
-    t_transforms.resize(m_numBones);
-
-    for (auto i{ 0u }; i < m_numBones; ++i)
-    {
-        t_transforms[i] = m_boneMatrices[i].finalWorldTransform;
-    }
-}
-
-//-------------------------------------------------
 // Helper
 //-------------------------------------------------
 
@@ -386,39 +399,42 @@ const aiNodeAnim* sg::ogl::resource::SkeletalModel::FindNodeAnim(const aiAnimati
     return nullptr;
 }
 
-void sg::ogl::resource::SkeletalModel::ReadNodeHierarchy(float t_animationTime, const aiNode* t_node, const aiMatrix4x4& t_parentTransform)
+void sg::ogl::resource::SkeletalModel::ReadNodeHierarchy(const float t_animationTime, const aiNode* t_node, const glm::mat4& t_parentTransform)
 {
-    std::string nodeName(t_node->mName.data);
+    const std::string nodeName(t_node->mName.data);
 
-    const aiAnimation* animation{ m_scene->mAnimations[0] };
-    auto nodeTransform{ t_node->mTransformation };
+    const aiAnimation* animation{ m_scene->mAnimations[m_currentAnimation] };
+    auto nodeTransform{ mat4_cast(t_node->mTransformation) };
 
     auto* nodeAnim{ FindNodeAnim(animation, nodeName) };
 
     if (nodeAnim)
     {
-        //scaling
-        auto scalingVector{ CalcInterpolatedScaling(t_animationTime, nodeAnim) };
-        aiMatrix4x4 scalingMatr;
-        aiMatrix4x4::Scaling(scalingVector, scalingMatr);
+        // interpolate scaling and generate scaling transformation matrix
+        const auto scalingVector{ CalcInterpolatedScaling(t_animationTime, nodeAnim) };
+        const auto scale{ glm::vec3(scalingVector.x, scalingVector.y, scalingVector.z) };
+        const auto scalingMat{ glm::scale(glm::mat4(1.0f), scale) };
 
-        //rotation
-        auto rotateQuat{ CalcInterpolatedRotation(t_animationTime, nodeAnim) };
-        auto rotateMatr{ aiMatrix4x4(rotateQuat.GetMatrix()) };
+        // interpolate rotation and generate rotation transformation matrix
+        const auto rotateQuat{ CalcInterpolatedRotation(t_animationTime, nodeAnim) };
+        const auto rotation{ quat_cast(rotateQuat) };
+        const auto rotationMat{ toMat4(rotation) };
 
-        //translation
-        auto translateVector{ CalcInterpolatedPosition(t_animationTime, nodeAnim) };
-        aiMatrix4x4 translateMatr;
-        aiMatrix4x4::Translation(translateVector, translateMatr);
+        // interpolate translation and generate translation transformation matrix
+        const auto translateVector{ CalcInterpolatedPosition(t_animationTime, nodeAnim) };
+        const auto translation{ glm::vec3(translateVector.x, translateVector.y, translateVector.z) };
+        const auto translationMat{ translate(glm::mat4(1.0f), translation) };
 
-        nodeTransform = translateMatr * rotateMatr * scalingMatr;
+        // combine transformations
+        nodeTransform = translationMat * rotationMat * scalingMat;
     }
 
-    auto globalTransform{ t_parentTransform * nodeTransform };
+    // combine with node transformation with parent transformation
+    const auto globalTransform{ t_parentTransform * nodeTransform };
 
     if (m_boneContainer.find(nodeName) != m_boneContainer.end())
     {
-        auto boneIndex{ m_boneContainer[nodeName] };
+        const auto boneIndex{ m_boneContainer[nodeName] };
         m_boneMatrices[boneIndex].finalWorldTransform = m_globalInverseTransform * globalTransform * m_boneMatrices[boneIndex].offsetMatrix;
     }
 
@@ -430,6 +446,8 @@ void sg::ogl::resource::SkeletalModel::ReadNodeHierarchy(float t_animationTime, 
 
 uint32_t sg::ogl::resource::SkeletalModel::FindScaling(const float t_animationTime, const aiNodeAnim* t_nodeAnim)
 {
+    SG_OGL_CORE_ASSERT(t_nodeAnim->mNumScalingKeys > 0, "[SkeletalModel::FindScaling()] Invalid number of scaling keys.")
+
     for (auto i{ 0u }; i < t_nodeAnim->mNumScalingKeys - 1; ++i)
     {
         if (t_animationTime < static_cast<float>(t_nodeAnim->mScalingKeys[i + 1].mTime))
@@ -443,6 +461,8 @@ uint32_t sg::ogl::resource::SkeletalModel::FindScaling(const float t_animationTi
 
 uint32_t sg::ogl::resource::SkeletalModel::FindRotation(const float t_animationTime, const aiNodeAnim* t_nodeAnim)
 {
+    SG_OGL_CORE_ASSERT(t_nodeAnim->mNumRotationKeys > 0, "[SkeletalModel::FindRotation()] Invalid number of rotation keys.")
+
     for (auto i{ 0u }; i < t_nodeAnim->mNumRotationKeys - 1; ++i)
     {
         if (t_animationTime < static_cast<float>(t_nodeAnim->mRotationKeys[i + 1].mTime))
@@ -456,6 +476,8 @@ uint32_t sg::ogl::resource::SkeletalModel::FindRotation(const float t_animationT
 
 uint32_t sg::ogl::resource::SkeletalModel::FindPosition(const float t_animationTime, const aiNodeAnim* t_nodeAnim)
 {
+    SG_OGL_CORE_ASSERT(t_nodeAnim->mNumPositionKeys > 0, "[SkeletalModel::FindPosition()] Invalid number of position keys.")
+
     for (auto i{ 0u }; i < t_nodeAnim->mNumPositionKeys - 1; ++i)
     {
         if (t_animationTime < static_cast<float>(t_nodeAnim->mPositionKeys[i + 1].mTime))
@@ -480,8 +502,9 @@ aiVector3D sg::ogl::resource::SkeletalModel::CalcInterpolatedPosition(const floa
     const auto deltaTime{ static_cast<float>(t_nodeAnim->mPositionKeys[nextPositionIndex].mTime - t_nodeAnim->mPositionKeys[positionIndex].mTime) };
     const auto factor{ (t_animationTime - static_cast<float>(t_nodeAnim->mPositionKeys[positionIndex].mTime)) / deltaTime };
 
-    const auto start{ t_nodeAnim->mPositionKeys[positionIndex].mValue };
-    const auto end{ t_nodeAnim->mPositionKeys[nextPositionIndex].mValue };
+    const auto& start{ t_nodeAnim->mPositionKeys[positionIndex].mValue };
+    const auto& end{ t_nodeAnim->mPositionKeys[nextPositionIndex].mValue };
+
     const auto delta{ end - start };
 
     return start + factor * delta;
@@ -500,8 +523,8 @@ aiQuaternion sg::ogl::resource::SkeletalModel::CalcInterpolatedRotation(const fl
     const auto deltaTime{ static_cast<float>(t_nodeAnim->mRotationKeys[nextRotationIndex].mTime - t_nodeAnim->mRotationKeys[rotationIndex].mTime) };
     const auto factor{ (t_animationTime - static_cast<float>(t_nodeAnim->mRotationKeys[rotationIndex].mTime)) / deltaTime };
 
-    const auto startQuat{ t_nodeAnim->mRotationKeys[rotationIndex].mValue };
-    const auto endQuat{ t_nodeAnim->mRotationKeys[nextRotationIndex].mValue };
+    const auto& startQuat{ t_nodeAnim->mRotationKeys[rotationIndex].mValue };
+    const auto& endQuat{ t_nodeAnim->mRotationKeys[nextRotationIndex].mValue };
 
     return Nlerp(startQuat, endQuat, factor);
 }
@@ -519,8 +542,9 @@ aiVector3D sg::ogl::resource::SkeletalModel::CalcInterpolatedScaling(const float
     const auto deltaTime{ static_cast<float>(t_nodeAnim->mScalingKeys[nextScalingIndex].mTime - t_nodeAnim->mScalingKeys[scalingIndex].mTime) };
     const auto factor{ (t_animationTime - static_cast<float>(t_nodeAnim->mScalingKeys[scalingIndex].mTime)) / deltaTime };
 
-    const auto start{ t_nodeAnim->mScalingKeys[scalingIndex].mValue };
-    const auto end{ t_nodeAnim->mScalingKeys[nextScalingIndex].mValue };
+    const auto& start{ t_nodeAnim->mScalingKeys[scalingIndex].mValue };
+    const auto& end{ t_nodeAnim->mScalingKeys[nextScalingIndex].mValue };
+
     const auto delta{ end - start };
 
     return start + factor * delta;

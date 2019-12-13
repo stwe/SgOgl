@@ -29,16 +29,15 @@ uniform mat4 bones[100];
 
 void main()
 {
-    mat4 bone_transform = bones[aBoneIds[0]] * aWeights[0];
-    bone_transform += bones[aBoneIds[1]] * aWeights[1];
-    bone_transform += bones[aBoneIds[2]] * aWeights[2];
-    bone_transform += bones[aBoneIds[3]] * aWeights[3];
+    mat4 boneTransform = bones[aBoneIds[0]] * aWeights[0];
+    boneTransform += bones[aBoneIds[1]] * aWeights[1];
+    boneTransform += bones[aBoneIds[2]] * aWeights[2];
+    boneTransform += bones[aBoneIds[3]] * aWeights[3];
 
-    vec4 boned_position = bone_transform * vec4(aPosition, 1.0);
+    vec4 bonedPosition = boneTransform * vec4(aPosition, 1.0);
+    gl_Position = mvpMatrix * bonedPosition;
 
-    gl_Position = mvpMatrix * boned_position;
-
-    vPosition = vec3(modelMatrix * boned_position);
+    vPosition = vec3(modelMatrix * bonedPosition);
     vNormal = mat3(transpose(inverse(modelMatrix))) * aNormal;
     vUv = aUv;
 }
