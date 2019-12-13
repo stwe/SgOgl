@@ -14,11 +14,13 @@
 #include "Window.h"
 #include "scene/Scene.h"
 #include "camera/LookAtCamera.h"
+#include "resource/SkeletalModel.h"
 #include "resource/Mesh.h"
 #include "resource/Material.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
 #include "ecs/component/TransformComponent.h"
+#include "ecs/component/SkeletalModelComponent.h"
 
 namespace sg::ogl::resource::shaderprogram
 {
@@ -28,6 +30,7 @@ namespace sg::ogl::resource::shaderprogram
         void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
         {
             auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::TransformComponent>(t_entity) };
+            auto& skeletalModelComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::SkeletalModelComponent>(t_entity) };
 
             const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
             const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };
@@ -35,6 +38,10 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("modelMatrix", static_cast<glm::mat4>(transformComponent));
             SetUniform("plane", t_scene.GetCurrentClipPlane());
             SetUniform("mvpMatrix", mvp);
+
+            std::vector<glm::mat4> transforms;
+            skeletalModelComponent.model->BoneTransform(glfwGetTime(), transforms);
+            SetUniform("bones", transforms);
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
             SetUniform("directionalLight", t_scene.GetDirectionalLight());

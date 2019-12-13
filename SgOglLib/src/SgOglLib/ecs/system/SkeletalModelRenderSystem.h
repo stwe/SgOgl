@@ -44,14 +44,6 @@ namespace sg::ogl::ecs::system
 
                 shaderProgram.Bind();
 
-                ////////////////////
-
-                std::vector<glm::mat4> transforms;
-                skeletalModelComponent.model->BoneTransform(glfwGetTime(), transforms);
-                shaderProgram.SetUniform("bones", transforms);
-
-                ////////////////////
-
                 if (skeletalModelComponent.showTriangles)
                 {
                     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
