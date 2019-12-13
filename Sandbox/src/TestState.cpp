@@ -79,7 +79,7 @@ void TestState::Init()
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
     // create camera and set a camera position
-    m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>(glm::vec3(0.6f, -13.0f, 5.0f), -90.0f, 88.0f);
+    m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>(glm::vec3(-2.7f, 99.0f, 225.0f), -86.0f, 1.6f);
     m_camera->SetMouseSensitivity(0.05f);
 
     // create scene and set the camera as current
@@ -110,13 +110,13 @@ void TestState::Init()
     ////////////////// Create Entities //////////////////
 
     GetApplicationContext()->GetEntityFactory().CreateSkeletalModelEntity(
-        "res/model/Man/model.dae",
+        "res/model/CastleGuard01/Idle.dae",
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f),
         glm::vec3(1.0f),
         false,
         false,
-        false,
+        true,
         false
     );
 }

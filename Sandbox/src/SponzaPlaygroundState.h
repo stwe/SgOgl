@@ -23,6 +23,7 @@ public:
     using ParticleEmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
 
     using ModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ModelRenderSystem>;
+    using SkeletalModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkeletalModelRenderSystem>;
     using SkydomeRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkydomeRenderSystem>;
     using SkyboxRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkyboxRenderSystem>;
     using ParticleRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ParticleRenderSystem>;
@@ -74,6 +75,7 @@ private:
     SkydomeRenderSystemUniquePtr m_skydomeRenderSystem;
     SkyboxRenderSystemUniquePtr m_skyboxRenderSystem;
     ParticleRenderSystemUniquePtr m_particleRenderSystem;
+    SkeletalModelRenderSystemUniquePtr m_skeletalModelRenderSystem;
 
     //-------------------------------------------------
     // Helper

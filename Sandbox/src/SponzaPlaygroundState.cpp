@@ -93,6 +93,7 @@ void SponzaPlaygroundState::Render()
     ImGui::NewFrame();
 
     m_modelRenderSystem->Render();
+    m_skeletalModelRenderSystem->Render();
     //m_skydomeRenderSystem->Render();
     m_particleRenderSystem->Render(),
     m_skyboxRenderSystem->Render();
@@ -159,6 +160,7 @@ void SponzaPlaygroundState::Init()
 
     // create render systems
     m_modelRenderSystem = std::make_unique<sg::ogl::ecs::system::ModelRenderSystem>(m_scene.get());
+    m_skeletalModelRenderSystem = std::make_unique<sg::ogl::ecs::system::SkeletalModelRenderSystem>(m_scene.get());
     m_skydomeRenderSystem = std::make_unique<sg::ogl::ecs::system::SkydomeRenderSystem>(m_scene.get());
     m_skyboxRenderSystem = std::make_unique<sg::ogl::ecs::system::SkyboxRenderSystem>(m_scene.get());
     m_particleRenderSystem = std::make_unique<sg::ogl::ecs::system::ParticleRenderSystem>(m_scene.get());
@@ -185,6 +187,17 @@ void SponzaPlaygroundState::Init()
         false,
         false,
         true
+    );
+
+    GetApplicationContext()->GetEntityFactory().CreateSkeletalModelEntity(
+        "res/model/CastleGuard01/Idle.dae",
+        glm::vec3(40.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, -180.0f, 0.0f),
+        glm::vec3(0.5f),
+        false,
+        false,
+        false,
+        false
     );
 
     /*
