@@ -12,6 +12,9 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <vector>
 #include <array>
 #include <map>
@@ -25,11 +28,26 @@ namespace sg::ogl
 
 namespace sg::ogl::resource
 {
+    class Mesh;
+
+    //-------------------------------------------------
+    // Converting between ASSIMPand glm
+    //-------------------------------------------------
+
+    static glm::vec3 vec3_cast(const aiVector3D& t_v) { return glm::vec3(t_v.x, t_v.y, t_v.z); }
+    static glm::vec2 vec2_cast(const aiVector3D& t_v) { return glm::vec2(t_v.x, t_v.y); }
+    static glm::quat quat_cast(const aiQuaternion& t_q) { return glm::quat(t_q.w, t_q.x, t_q.y, t_q.z); }
+    static glm::mat4 mat4_cast(const aiMatrix4x4& t_m) { return transpose(glm::make_mat4(&t_m.a1)); }
+    static glm::mat4 mat4_cast(const aiMatrix3x3& t_m) { return transpose(glm::make_mat3(&t_m.a1)); }
+
+    //-------------------------------------------------
+    // Per-vertex bone Ids and weights
+    //-------------------------------------------------
+
     struct VertexBoneData
     {
         static constexpr uint32_t NUM_BONES_PER_VERTEX{ 4 };
 
-        // we have 4 bone ids and 4 weights for each vertex
         std::array<uint32_t, NUM_BONES_PER_VERTEX> ids;
         std::array<float, NUM_BONES_PER_VERTEX> weights;
 
@@ -48,21 +66,31 @@ namespace sg::ogl::resource
         }
     };
 
+    //-------------------------------------------------
+    // Information about a single bone
+    //-------------------------------------------------
+
     struct BoneMatrix
     {
         aiMatrix4x4 offsetMatrix;
         aiMatrix4x4 finalWorldTransform;
     };
 
-    class Mesh;
+    //-------------------------------------------------
+    // Skeletal model
+    //-------------------------------------------------
 
     class SkeletalModel
     {
     public:
         using VertexContainer = std::vector<float>;
         using IndexContainer = std::vector<uint32_t>;
-        using VertexBones = std::vector<VertexBoneData>;
+
+        using BoneContainer = std::map<std::string, uint32_t>;
+        using VertexBonesContainer = std::vector<VertexBoneData>;
+
         using TextureContainer = std::vector<uint32_t>;
+
         using MeshUniquePtr = std::unique_ptr<Mesh>;
         using MeshSharedPtr = std::shared_ptr<Mesh>;
         using MeshContainer = std::vector<MeshSharedPtr>;
@@ -104,19 +132,44 @@ namespace sg::ogl::resource
         std::string m_fullFilePath;
         std::string m_directory;
 
+        /**
+         * @brief Instance of the Importer class to call ReadFile().
+         */
         Assimp::Importer m_importer;
+
+        /**
+         * @brief The root structure of the imported data.
+         */
         const aiScene* m_scene{ nullptr };
+
+        /**
+         * @brief Root inverse transform matrix.
+         */
         aiMatrix4x4 m_globalInverseTransform;
+
+        /**
+         * @brief Animation time.
+         */
         float m_ticksPerSecond{ 0.0f };
-        std::map<std::string, uint32_t> m_boneMapping;
+
+        /**
+         * @brief Stores the name for each bone Id.
+         */
+        BoneContainer m_boneContainer;
+
+        /**
+         * @brief Number of bones.
+         */
         uint32_t m_numBones{ 0 };
+
+        /**
+         * @brief Bone matrices container.
+         */
         std::vector<BoneMatrix> m_boneMatrices;
 
         //-------------------------------------------------
         // Load Model
         //-------------------------------------------------
-
-        static void ShowNodeName(aiNode* t_node);
 
         void LoadModel(unsigned int t_pFlags);
         void ProcessNode(aiNode* t_node, const aiScene* t_scene);

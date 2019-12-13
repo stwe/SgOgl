@@ -52,16 +52,6 @@ const sg::ogl::resource::SkeletalModel::MeshContainer& sg::ogl::resource::Skelet
 // Load Model
 //-------------------------------------------------
 
-void sg::ogl::resource::SkeletalModel::ShowNodeName(aiNode* t_node)
-{
-    SG_OGL_LOG_DEBUG("[SkeletalModel::ShowNodeName()] Node name: {}", t_node->mName.data);
-
-    for (auto i{ 0u }; i < t_node->mNumChildren; ++i)
-    {
-        ShowNodeName(t_node->mChildren[i]);
-    }
-}
-
 void sg::ogl::resource::SkeletalModel::LoadModel(const unsigned int t_pFlags)
 {
     SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Start loading skeletal model file at: {}", m_fullFilePath);
@@ -89,11 +79,11 @@ void sg::ogl::resource::SkeletalModel::LoadModel(const unsigned int t_pFlags)
         m_ticksPerSecond = 25.0f;
     }
 
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Meshes: {}", m_scene->mNumMeshes);
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Channels: {}", m_scene->mAnimations[0]->mNumChannels);
+    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Num meshes: {}", m_scene->mNumMeshes);
+    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Num animations: {}", m_scene->mNumAnimations);
+    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Num channels: {}", m_scene->mAnimations[0]->mNumChannels);
     SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Duration: {}", m_scene->mAnimations[0]->mDuration);
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Model ticks per second: {}, class ticks per second: {}", m_scene->mAnimations[0]->mTicksPerSecond, m_ticksPerSecond);
-    ShowNodeName(m_scene->mRootNode);
+    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Ticks per second: {}, m_ticksPerSecond: {}", m_scene->mAnimations[0]->mTicksPerSecond, m_ticksPerSecond);
 
     ProcessNode(m_scene->mRootNode, m_scene);
 
@@ -124,7 +114,7 @@ sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel
     // Data to fill.
     VertexContainer vertices;
     IndexContainer indices;
-    VertexBones vertexBones;
+    VertexBonesContainer vertexBones;
 
     vertexBones.resize(t_mesh->mNumVertices);
 
@@ -224,7 +214,7 @@ sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel
 
         SG_OGL_LOG_DEBUG("[SkeletalModel::ProcessMesh()] Bone: {}", boneName);
 
-        if (m_boneMapping.count(boneName) == 0)
+        if (m_boneContainer.count(boneName) == 0)
         {
             boneIndex = m_numBones;
             m_numBones++;
@@ -232,11 +222,11 @@ sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel
             BoneMatrix boneMatrix;
             m_boneMatrices.push_back(boneMatrix);
             m_boneMatrices[boneIndex].offsetMatrix = t_mesh->mBones[i]->mOffsetMatrix;
-            m_boneMapping.emplace(boneName, boneIndex);
+            m_boneContainer.emplace(boneName, boneIndex);
         }
         else
         {
-            boneIndex = m_boneMapping.at(boneName);
+            boneIndex = m_boneContainer.at(boneName);
         }
 
         for (auto j{ 0u }; j < t_mesh->mBones[i]->mNumWeights; ++j)
@@ -426,9 +416,9 @@ void sg::ogl::resource::SkeletalModel::ReadNodeHierarchy(float t_animationTime, 
 
     auto globalTransform{ t_parentTransform * nodeTransform };
 
-    if (m_boneMapping.find(nodeName) != m_boneMapping.end())
+    if (m_boneContainer.find(nodeName) != m_boneContainer.end())
     {
-        auto boneIndex{ m_boneMapping[nodeName] };
+        auto boneIndex{ m_boneContainer[nodeName] };
         m_boneMatrices[boneIndex].finalWorldTransform = m_globalInverseTransform * globalTransform * m_boneMatrices[boneIndex].offsetMatrix;
     }
 
