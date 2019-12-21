@@ -127,10 +127,10 @@ void main()
 {
     SetupColors();
 
-    if (diffuseCol.a < 0.5)
-    {
-        discard;
-    }
+    //if (diffuseCol.a < 0.5)
+    //{
+    //    discard;
+    //}
 
     vec3 normal = normalize(vNormal);
     vec3 viewDir = normalize(cameraPosition - vPosition);

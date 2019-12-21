@@ -32,16 +32,16 @@ namespace sg::ogl::resource::shaderprogram
             auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::TransformComponent>(t_entity) };
             auto& skeletalModelComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::SkeletalModelComponent>(t_entity) };
 
-            const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
-            const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };
-
-            SetUniform("modelMatrix", static_cast<glm::mat4>(transformComponent));
-            SetUniform("plane", t_scene.GetCurrentClipPlane());
-            SetUniform("mvpMatrix", mvp);
-
             std::vector<glm::mat4> transforms;
             skeletalModelComponent.model->BoneTransform(glfwGetTime(), transforms);
             SetUniform("bones", transforms);
+
+            SetUniform("modelMatrix", static_cast<glm::mat4>(transformComponent));
+            SetUniform("plane", t_scene.GetCurrentClipPlane());
+
+            const auto& projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
+            const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };
+            SetUniform("mvpMatrix", mvp);
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
             SetUniform("directionalLight", t_scene.GetDirectionalLight());

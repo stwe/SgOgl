@@ -14,11 +14,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-
-namespace sg::ogl
-{
-    class Application;
-}
+#include "Application.h"
 
 namespace sg::ogl::terrain
 {
@@ -82,7 +78,7 @@ namespace sg::ogl::ecs::factory
             bool t_fakeNormals = false
         ) const;
 
-        void CreateSkeletalModelEntity(
+        entt::entity CreateSkeletalModelEntity(
             const std::string& t_fullModelFilePath,
             const glm::vec3& t_position,
             const glm::vec3& t_rotation,

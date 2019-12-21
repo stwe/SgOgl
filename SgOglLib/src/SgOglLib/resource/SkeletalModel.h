@@ -115,12 +115,16 @@ namespace sg::ogl::resource
 
         [[nodiscard]] const MeshContainer& GetMeshes() const noexcept;
         [[nodiscard]] uint32_t GetNumberOfAnimations() const;
+        [[nodiscard]] double GetDurationInTicks() const;
+        [[nodiscard]] double GetNumberOfTicksPerSecond() const;
+        [[nodiscard]] float GetDefaultTicksPerSecond() const;
 
         //-------------------------------------------------
         // Setter
         //-------------------------------------------------
 
         void SetCurrentAnimation(uint32_t t_animation);
+        void SetDefaultTicksPerSecond(float t_ticksPerSecond);
 
         //-------------------------------------------------
         // Transform
@@ -172,6 +176,11 @@ namespace sg::ogl::resource
          * @brief Bone matrices container.
          */
         std::vector<BoneMatrix> m_boneMatrices;
+
+        /**
+         * @brief The number of ticks per second if it is not specified in the imported file.
+         */
+        float m_defaultTicksPerSecond{ 25.0f };
 
         //-------------------------------------------------
         // Load Model

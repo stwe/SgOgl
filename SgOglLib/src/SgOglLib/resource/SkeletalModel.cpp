@@ -51,8 +51,22 @@ const sg::ogl::resource::SkeletalModel::MeshContainer& sg::ogl::resource::Skelet
 
 uint32_t sg::ogl::resource::SkeletalModel::GetNumberOfAnimations() const
 {
-    SG_OGL_CORE_ASSERT(m_scene, "[SkeletalModel::GetNumberOfAnimations()] Null pointer.")
     return m_scene->mNumAnimations;
+}
+
+double sg::ogl::resource::SkeletalModel::GetDurationInTicks() const
+{
+    return m_scene->mAnimations[m_currentAnimation]->mDuration;
+}
+
+double sg::ogl::resource::SkeletalModel::GetNumberOfTicksPerSecond() const
+{
+    return m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond;
+}
+
+float sg::ogl::resource::SkeletalModel::GetDefaultTicksPerSecond() const
+{
+    return m_defaultTicksPerSecond;
 }
 
 //-------------------------------------------------
@@ -61,8 +75,14 @@ uint32_t sg::ogl::resource::SkeletalModel::GetNumberOfAnimations() const
 
 void sg::ogl::resource::SkeletalModel::SetCurrentAnimation(const uint32_t t_animation)
 {
-    SG_OGL_CORE_ASSERT(t_animation <= m_scene->mNumAnimations, "[SkeletalModel::SetCurrentAnimation()] Invalid animation value.")
+    SG_OGL_CORE_ASSERT(t_animation < m_scene->mNumAnimations, "[SkeletalModel::SetCurrentAnimation()] Invalid animation value.")
     m_currentAnimation = t_animation;
+}
+
+void sg::ogl::resource::SkeletalModel::SetDefaultTicksPerSecond(const float t_ticksPerSecond)
+{
+    SG_OGL_CORE_ASSERT(t_ticksPerSecond > 0, "[SkeletalModel::SetDefaultTicksPerSecond()] Invalid ticks per second.")
+    m_defaultTicksPerSecond = t_ticksPerSecond;
 }
 
 //-------------------------------------------------
@@ -74,11 +94,14 @@ void sg::ogl::resource::SkeletalModel::BoneTransform(const double t_timeInSec, s
     // calc animation duration
     const auto numPosKeys{ m_scene->mAnimations[m_currentAnimation]->mChannels[0]->mNumPositionKeys };
     const auto animDuration{ m_scene->mAnimations[m_currentAnimation]->mChannels[0]->mPositionKeys[numPosKeys - 1].mTime };
+    const auto ticksPerSecond{ static_cast<float>(m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond != 0 ? m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond : m_defaultTicksPerSecond) };
 
-    const auto ticksPerSecond{ static_cast<float>(m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond != 0 ? m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond : 25.0f) };
+    // zB 4 ticks gesamt und 1 tick pro Sekunde => Dauer der gesamten Animation = 4 Sekunden
+
     const auto timeInTicks{ t_timeInSec * ticksPerSecond };
     const auto animationTime{ static_cast<float>(fmod(timeInTicks, animDuration)) };
 
+    // animation Time = Restwert der Division
     ReadNodeHierarchy(animationTime, m_scene->mRootNode, glm::mat4(1.0f));
 
     t_transforms.resize(m_numBones);
@@ -113,8 +136,12 @@ void sg::ogl::resource::SkeletalModel::LoadModel(const unsigned int t_pFlags)
 
     SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Num meshes: {}", m_scene->mNumMeshes);
     SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Num animations: {}", m_scene->mNumAnimations);
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Num channels: {}", m_scene->mAnimations[0]->mNumChannels);
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Duration: {}", m_scene->mAnimations[0]->mDuration);
+    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Current animation: {}", m_currentAnimation);
+    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Current duration in ticks: {}", m_scene->mAnimations[m_currentAnimation]->mDuration);
+    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Current ticks per second: {}", m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond);
+    const auto ticksPerSecond{ static_cast<float>(m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond != 0 ? m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond : m_defaultTicksPerSecond) };
+    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] The current animation lasts {} seconds.", m_scene->mAnimations[m_currentAnimation]->mDuration / ticksPerSecond);
+    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Current number of bone animation channels: {}", m_scene->mAnimations[m_currentAnimation]->mNumChannels);
 
     ProcessNode(m_scene->mRootNode, m_scene);
 
@@ -456,6 +483,8 @@ uint32_t sg::ogl::resource::SkeletalModel::FindScaling(const float t_animationTi
         }
     }
 
+    SG_OGL_CORE_ASSERT(false, "[SkeletalModel::FindScaling()] Invalid animation time or scaling keys.")
+
     return 0;
 }
 
@@ -471,6 +500,8 @@ uint32_t sg::ogl::resource::SkeletalModel::FindRotation(const float t_animationT
         }
     }
 
+    SG_OGL_CORE_ASSERT(false, "[SkeletalModel::FindRotation()] Invalid animation time or rotation keys.")
+
     return 0;
 }
 
@@ -485,6 +516,8 @@ uint32_t sg::ogl::resource::SkeletalModel::FindPosition(const float t_animationT
             return i;
         }
     }
+
+    SG_OGL_CORE_ASSERT(false, "[SkeletalModel::FindPosition()] Invalid animation time or position keys.")
 
     return 0;
 }

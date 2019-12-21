@@ -46,7 +46,8 @@ project "SgOglLib"
         "%{prj.name}/vendor/glm",
         "%{prj.name}/vendor/assimp/include",
         "%{prj.name}/vendor/entt",
-        "%{prj.name}/vendor/imgui"
+        "%{prj.name}/vendor/imgui",
+        "%{prj.name}/vendor/gli",		
     }
 
     linkoptions

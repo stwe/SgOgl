@@ -43,6 +43,10 @@ public:
     ~TestState() noexcept override
     {
         SG_OGL_LOG_DEBUG("[TestState::~TestState()] Destruct TestState.");
+
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
     }
 
     //-------------------------------------------------
@@ -63,6 +67,12 @@ private:
     PointLightSharedPtr m_pointLight;
 
     SkeletalModelRenderSystemUniquePtr m_skeletalModelRenderSystem;
+
+    entt::entity m_castleGuardIdle;
+    entt::entity m_player;
+
+    uint32_t m_currentAnimation{ 0 };
+    float m_ticksPerSecond{ 1200.0f };
 
     //-------------------------------------------------
     // Helper

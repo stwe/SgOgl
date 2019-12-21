@@ -24,8 +24,55 @@ namespace sg::ogl::ecs::system
             : RenderSystem(t_scene)
         {}
 
-        void Update(double t_dt) override
+        void UpdateEntity(const double t_dt, const entt::entity t_entity, const uint32_t t_currentAnimation, const float t_ticksPerSecond)
         {
+            const auto view{ m_scene->GetApplicationContext()->registry.view<component::SkeletalModelComponent, component::TransformComponent>() };
+            auto& skeletalModelComponent{ view.get<component::SkeletalModelComponent>(t_entity) };
+
+            skeletalModelComponent.model->SetCurrentAnimation(t_currentAnimation);
+            skeletalModelComponent.model->SetDefaultTicksPerSecond(t_ticksPerSecond);
+        }
+
+        void Update(const double t_dt) override
+        {
+            /*
+            auto view{ m_scene->GetApplicationContext()->registry.view<component::SkeletalModelComponent, component::TransformComponent>() };
+
+            for (auto entity : view)
+            {
+
+            }
+            */
+        }
+
+        void RenderEntity(const entt::entity t_entity) const
+        {
+            auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::SkeletalModelShaderProgram>() };
+
+            const auto view{ m_scene->GetApplicationContext()->registry.view<component::SkeletalModelComponent, component::TransformComponent>() };
+            auto& skeletalModelComponent{ view.get<component::SkeletalModelComponent>(t_entity) };
+
+            shaderProgram.Bind();
+
+            if (skeletalModelComponent.showTriangles)
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            }
+
+            for (auto& mesh : skeletalModelComponent.model->GetMeshes())
+            {
+                mesh->InitDraw();
+                shaderProgram.UpdateUniforms(*m_scene, t_entity, *mesh);
+                mesh->DrawPrimitives();
+                mesh->EndDraw();
+            }
+
+            if (skeletalModelComponent.showTriangles)
+            {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            }
+
+            resource::ShaderProgram::Unbind();
         }
 
         void Render() override
@@ -33,36 +80,10 @@ namespace sg::ogl::ecs::system
             PrepareRendering();
 
             auto view{ m_scene->GetApplicationContext()->registry.view<component::SkeletalModelComponent, component::TransformComponent>() };
-            auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::SkeletalModelShaderProgram>() };
 
             for (auto entity : view)
             {
-                auto& skeletalModelComponent{ view.get<component::SkeletalModelComponent>(entity) };
-
-                //auto& transformComponent{ m_scene->GetApplicationContext()->registry.get<component::TransformComponent>(entity) };
-                //transformComponent.position.y += 0.005f;
-
-                shaderProgram.Bind();
-
-                if (skeletalModelComponent.showTriangles)
-                {
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                }
-
-                for (auto& mesh : skeletalModelComponent.model->GetMeshes())
-                {
-                    mesh->InitDraw();
-                    shaderProgram.UpdateUniforms(*m_scene, entity, *mesh);
-                    mesh->DrawPrimitives();
-                    mesh->EndDraw();
-                }
-
-                if (skeletalModelComponent.showTriangles)
-                {
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                }
-
-                resource::ShaderProgram::Unbind();
+                RenderEntity(entity);
             }
 
             FinishRendering();

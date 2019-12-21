@@ -8,7 +8,6 @@
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include "EntityFactory.h"
-#include "Application.h"
 #include "Log.h"
 #include "Core.h"
 #include "buffer/Vbo.h"
@@ -147,7 +146,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     );
 }
 
-void sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
+entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
     const std::string& t_fullModelFilePath,
     const glm::vec3& t_position,
     const glm::vec3& t_rotation,
@@ -184,6 +183,8 @@ void sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
     {
         m_application->registry.assign<component::MoveableComponent>(entity);
     }
+
+    return entity;
 }
 
 void sg::ogl::ecs::factory::EntityFactory::CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const

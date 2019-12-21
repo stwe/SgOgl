@@ -1,3 +1,14 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: TextureManager.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
+#include <gli/gli.hpp>
+#include <filesystem>
 #include "TextureManager.h"
 #include "OpenGl.h"
 #include "Log.h"
@@ -30,7 +41,17 @@ uint32_t sg::ogl::resource::TextureManager::GetTextureIdFromPath(const std::stri
     if (m_textures.count(t_path) == 0)
     {
         textureId = GenerateNewTextureHandle();
-        LoadTextureFromFile(t_path, textureId);
+
+        const std::filesystem::path filePath = t_path;
+        if (filePath.extension() == ".dds")
+        {
+            LoadTextureFromDdsFile(t_path, textureId);
+        }
+        else
+        {
+            LoadTextureFromFile(t_path, textureId);
+        }
+
         SG_OGL_CORE_LOG_DEBUG("[TextureManager::GetTextureIdFromPath()] A new texture file {} was successfully loaded and used for the new created texture handle. Id: {}", t_path, textureId);
         m_textures.emplace(t_path, textureId);
     }
@@ -40,6 +61,7 @@ uint32_t sg::ogl::resource::TextureManager::GetTextureIdFromPath(const std::stri
     }
 
     SG_OGL_CORE_ASSERT(textureId, "[TextureManager::GetTextureIdFromPath()] Invalid texture Id.")
+
     return textureId;
 }
 
@@ -243,6 +265,29 @@ void sg::ogl::resource::TextureManager::LoadTextureFromFile(const std::string& t
     else
     {
         throw SG_OGL_EXCEPTION("[TextureManager::LoadTextureFromFile()] Texture failed to load at path: " + t_path);
+    }
+}
+
+void sg::ogl::resource::TextureManager::LoadTextureFromDdsFile(const std::string& t_path, const uint32_t t_textureId) const
+{
+    auto texture{ gli::load(t_path) };
+    if (texture.empty())
+    {
+        throw SG_OGL_EXCEPTION("[TextureManager::LoadTextureFromDdsFile()] Texture failed to load at path: " + t_path);
+    }
+
+    const gli::gl gl{ gli::gl::PROFILE_GL33 };
+    auto const format{ gl.translate(texture.format(), texture.swizzles()) };
+
+    Bind(t_textureId);
+
+    glTexStorage2D(GL_TEXTURE_2D, static_cast<GLint>(texture.levels()), format.Internal, texture.extent().x, texture.extent().y);
+
+    for (std::size_t level{ 0 }; level < texture.levels(); ++level)
+    {
+        glCompressedTexSubImage2D(
+            GL_TEXTURE_2D, static_cast<GLint>(level), 0, 0, texture.extent(level).x, texture.extent(level).y,
+            format.Internal, static_cast<GLsizei>(texture.size(level)), texture.data(0, 0, level));
     }
 }
 

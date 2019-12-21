@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: TextureManager.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 #include <map>
@@ -47,21 +56,21 @@ namespace sg::ogl::resource
          * @param t_path The file path of the texture.
          * @return The texture handle.
          */
-        uint32_t GetTextureIdFromPath(const std::string& t_path);
+        [[nodiscard]] uint32_t GetTextureIdFromPath(const std::string& t_path);
 
         /**
          * @brief Get the texture handle for the given name.
          * @param t_name The name of the texture.
          * @return The texture handle.
          */
-        uint32_t GetTextureId(const std::string& t_name);
+        [[nodiscard]] uint32_t GetTextureId(const std::string& t_name);
 
         /**
          * @brief Get the cubemap handle for the given file names.
          * @param t_pathNames The file names of the cubemap.
          * @return The cubemap handle.
          */
-        uint32_t GetCubemapId(const std::vector<std::string>& t_pathNames);
+        [[nodiscard]] uint32_t GetCubemapId(const std::vector<std::string>& t_pathNames);
 
         //-------------------------------------------------
         // Filter
@@ -129,7 +138,7 @@ namespace sg::ogl::resource
         // Get metadata
         //-------------------------------------------------
 
-        const Meta& GetMetadata(const std::string& t_path) const;
+        [[nodiscard]] const Meta& GetMetadata(const std::string& t_path) const;
 
     protected:
 
@@ -149,6 +158,7 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         void LoadTextureFromFile(const std::string& t_path, uint32_t t_textureId);
+        void LoadTextureFromDdsFile(const std::string& t_path, uint32_t t_textureId) const;
 
         static void LoadTextureFromFile(const std::vector<std::string>& t_pathNames, uint32_t t_textureId);
 
