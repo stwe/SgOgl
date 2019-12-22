@@ -24,7 +24,8 @@
 #include "SgOglLib/buffer/WaterFbos.h"
 
 // camera
-#include "SgOglLib/camera/LookAtCamera.h"
+#include "SgOglLib/camera/FirstPersonCamera.h"
+#include "SgOglLib/camera/ThirdPersonCamera.h"
 
 // ecs
 #include "SgOglLib/ecs/component/CubemapComponent.h"

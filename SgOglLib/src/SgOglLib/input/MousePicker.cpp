@@ -13,7 +13,7 @@
 #include "Log.h"
 #include "Application.h"
 #include "Window.h"
-#include "camera/LookAtCamera.h"
+#include "camera/Camera.h"
 #include "input/MouseInput.h"
 #include "scene/Scene.h"
 #include "terrain/Terrain.h"

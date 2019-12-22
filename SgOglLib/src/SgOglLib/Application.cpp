@@ -310,11 +310,18 @@ void sg::ogl::Application::Input(event::CircularEventQueue& t_circularEventQueue
         },
         [this](event::SwitchCategory& t_event)
         {
-                m_mouseInput->SetInWindow(t_event.value == 1);
+            m_mouseInput->SetInWindow(t_event.value == 1);
         },
         [this](event::UseDeviceCategory& t_event)
         {
-                m_mouseInput->SetCurrentPosition(glm::ivec2(static_cast<int>(t_event.xPos), static_cast<int>(t_event.yPos)));
+            // todo
+            if (t_event.eventType == event::EventType::SCROLLED)
+            {
+                m_mouseInput->SetScrolled(true);
+                m_mouseInput->SetScrollOffset(glm::vec2(t_event.xPos, t_event.yPos));
+            }
+
+            m_mouseInput->SetCurrentPosition(glm::ivec2(static_cast<int>(t_event.xPos), static_cast<int>(t_event.yPos)));
         },
         [this](event::MouseCategory& t_event)
         {
@@ -343,7 +350,7 @@ void sg::ogl::Application::Input(event::CircularEventQueue& t_circularEventQueue
                 }
             }
         },
-        [this](event::KeyboardCategory& t_event)
+        [](event::KeyboardCategory& t_event)
         {
             // Exit
             if (t_event.eventType == event::EventType::KEY_PRESSED && t_event.key == GLFW_KEY_ESCAPE)

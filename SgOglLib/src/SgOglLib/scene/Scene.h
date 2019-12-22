@@ -26,7 +26,7 @@ namespace sg::ogl::light
 
 namespace sg::ogl::camera
 {
-    class LookAtCamera;
+    class Camera;
 }
 
 namespace sg::ogl::scene
@@ -34,7 +34,7 @@ namespace sg::ogl::scene
     class Scene
     {
     public:
-        using CameraSharedPtr = std::shared_ptr<camera::LookAtCamera>;
+        using CameraSharedPtr = std::shared_ptr<camera::Camera>;
 
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
         using PointLightSharedPtr = std::shared_ptr<light::PointLight>;
@@ -60,8 +60,8 @@ namespace sg::ogl::scene
 
         Application* GetApplicationContext() const;
 
-        camera::LookAtCamera& GetCurrentCamera() noexcept;
-        const camera::LookAtCamera& GetCurrentCamera() const noexcept;
+        camera::Camera& GetCurrentCamera() noexcept;
+        const camera::Camera& GetCurrentCamera() const noexcept;
 
         light::DirectionalLight& GetDirectionalLight() noexcept;
         const light::DirectionalLight& GetDirectionalLight() const noexcept;

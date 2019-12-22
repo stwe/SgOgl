@@ -16,7 +16,7 @@
 #include "Log.h"
 #include "Window.h"
 #include "OpenGl.h"
-#include "camera/LookAtCamera.h"
+#include "camera/Camera.h"
 #include "scene/Scene.h"
 #include "resource/TextureManager.h"
 #include "resource/ShaderManager.h"

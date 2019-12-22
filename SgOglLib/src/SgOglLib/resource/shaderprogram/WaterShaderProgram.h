@@ -13,7 +13,7 @@
 #include "Application.h"
 #include "Window.h"
 #include "buffer/WaterFbos.h"
-#include "camera/LookAtCamera.h"
+#include "camera/Camera.h"
 #include "light/DirectionalLight.h"
 #include "scene/Scene.h"
 #include "resource/ShaderProgram.h"

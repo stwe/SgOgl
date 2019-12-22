@@ -9,7 +9,7 @@
 
 #include "SgOgl.h"
 #include "SgOglEntryPoint.h"
-#include "SponzaPlaygroundState.h"
+//#include "SponzaPlaygroundState.h"
 #include "TestState.h"
 
 class Sandbox final : public sg::ogl::Application

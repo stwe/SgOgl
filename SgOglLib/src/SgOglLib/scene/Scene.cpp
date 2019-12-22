@@ -12,7 +12,7 @@
 #include "Log.h"
 #include "light/DirectionalLight.h"
 #include "light/PointLight.h"
-#include "camera/LookAtCamera.h"
+#include "camera/Camera.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -24,10 +24,6 @@ sg::ogl::scene::Scene::Scene(Application* t_application)
     SG_OGL_CORE_ASSERT(m_application, "[Scene::Scene()] Null pointer.")
 
     SG_OGL_CORE_LOG_DEBUG("[Scene::Scene()] Create Scene.");
-
-    // create a camera with default values
-    m_currentCamera = std::make_shared<camera::LookAtCamera>();
-    SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::Scene()] Null pointer.")
 }
 
 sg::ogl::scene::Scene::~Scene() noexcept
@@ -44,12 +40,12 @@ sg::ogl::Application* sg::ogl::scene::Scene::GetApplicationContext() const
     return m_application;
 }
 
-sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCurrentCamera() noexcept
+sg::ogl::camera::Camera& sg::ogl::scene::Scene::GetCurrentCamera() noexcept
 {
     return *m_currentCamera;
 }
 
-const sg::ogl::camera::LookAtCamera& sg::ogl::scene::Scene::GetCurrentCamera() const noexcept
+const sg::ogl::camera::Camera& sg::ogl::scene::Scene::GetCurrentCamera() const noexcept
 {
     return *m_currentCamera;
 }
@@ -105,10 +101,7 @@ void sg::ogl::scene::Scene::SetAmbientIntensity(const glm::vec3& t_ambientIntens
 
 void sg::ogl::scene::Scene::SetCurrentCamera(const CameraSharedPtr& t_camera)
 {
-    // the Ctor. creates a default camera, so m_currentCamera should never be null
-    SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::SetCurrentCamera()] Null pointer.")
     m_currentCamera.reset();
-
     m_currentCamera = t_camera;
 }
 

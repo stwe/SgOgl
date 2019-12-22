@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: MouseInput.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include "MouseInput.h"
 
 //-------------------------------------------------
@@ -22,6 +31,16 @@ bool sg::ogl::input::MouseInput::IsLeftButtonPressed() const
 bool sg::ogl::input::MouseInput::IsRightButtonPressed() const
 {
     return m_rightButtonPressed;
+}
+
+bool sg::ogl::input::MouseInput::IsScrolled() const
+{
+    return m_scrolled;
+}
+
+glm::vec2& sg::ogl::input::MouseInput::GetScrollOffset()
+{
+    return m_scrollOffset;
 }
 
 //-------------------------------------------------
@@ -58,6 +77,16 @@ void sg::ogl::input::MouseInput::SetRightButtonPressed(const bool t_rightButtonP
     m_rightButtonPressed = t_rightButtonPressed;
 }
 
+void sg::ogl::input::MouseInput::SetScrolled(const bool t_scrolled)
+{
+    m_scrolled = t_scrolled;
+}
+
+void sg::ogl::input::MouseInput::SetScrollOffset(const glm::vec2& t_scrollOffset)
+{
+    m_scrollOffset = t_scrollOffset;
+}
+
 //-------------------------------------------------
 // Update
 //-------------------------------------------------
@@ -67,10 +96,12 @@ void sg::ogl::input::MouseInput::Update()
     m_displVec.x = 0.0f;
     m_displVec.y = 0.0f;
 
+    // todo
+
     if (m_previousPosition.x > 0 && m_previousPosition.y > 0 && m_inWindow)
     {
         const auto deltax{ static_cast<float>(m_currentPosition.x - m_previousPosition.x) };
-        const auto deltay{ static_cast<float>(m_currentPosition.y - m_previousPosition.y) };
+        const auto deltay{ static_cast<float>(m_previousPosition.y - m_currentPosition.y) };
 
         const auto rotateX = deltax != 0;
         const auto rotateY = deltay != 0;
@@ -78,13 +109,11 @@ void sg::ogl::input::MouseInput::Update()
         if (rotateX)
         {
             m_displVec.y = deltax;
-            //std::cout << "deltaY: " << m_displVec.y << std::endl;
         }
 
         if (rotateY)
         {
             m_displVec.x = deltay;
-            //std::cout << "deltaX: " << m_displVec.x << std::endl;
         }
     }
 

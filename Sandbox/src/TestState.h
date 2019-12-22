@@ -14,14 +14,16 @@
 class TestState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 4.0f };
-
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
-    using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
+
+    using ThirdPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::ThirdPersonCamera>;
+    using FirstPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::FirstPersonCamera>;
+
     using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
     using PointLightSharedPtr = std::shared_ptr<sg::ogl::light::PointLight>;
 
     using SkeletalModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkeletalModelRenderSystem>;
+    using ModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ModelRenderSystem>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -42,11 +44,7 @@ public:
 
     ~TestState() noexcept override
     {
-        SG_OGL_LOG_DEBUG("[TestState::~TestState()] Destruct TestState.");
-
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
-        ImGui::DestroyContext();
+        CleanUpImGui();
     }
 
     //-------------------------------------------------
@@ -61,12 +59,15 @@ protected:
 
 private:
     SceneUniquePtr m_scene;
-    CameraSharedPtr m_camera;
+
+    FirstPersonCameraSharedPtr m_firstPersonCamera;
+    ThirdPersonCameraSharedPtr m_thirdPersonCamera;
 
     DirectionalLightSharedPtr m_sun;
     PointLightSharedPtr m_pointLight;
 
     SkeletalModelRenderSystemUniquePtr m_skeletalModelRenderSystem;
+    ModelRenderSystemUniquePtr m_modelRenderSystem;
 
     entt::entity m_castleGuardIdle;
     entt::entity m_player;
@@ -74,9 +75,15 @@ private:
     uint32_t m_currentAnimation{ 0 };
     float m_ticksPerSecond{ 1200.0f };
 
+    glm::vec3 m_playerPos{ glm::vec3(10.0f, 10.0f, -2.0f) };
+    glm::vec3 m_playerRot{ glm::vec3(0.0f) };
+
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------
 
     void Init();
+    void InitImGui() const;
+    void RenderImGui();
+    static void CleanUpImGui();
 };

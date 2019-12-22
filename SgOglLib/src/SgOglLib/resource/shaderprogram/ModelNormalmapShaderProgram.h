@@ -13,7 +13,7 @@
 #include "Application.h"
 #include "Window.h"
 #include "scene/Scene.h"
-#include "camera/LookAtCamera.h"
+#include "camera/Camera.h"
 #include "light/DirectionalLight.h"
 #include "light/PointLight.h"
 #include "resource/Mesh.h"

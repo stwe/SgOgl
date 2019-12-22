@@ -17,7 +17,7 @@ public:
     static constexpr auto CAMERA_VELOCITY{ 200.0f };
 
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
-    using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::LookAtCamera>;
+    using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::Camera>;
     using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
     using PointLightSharedPtr = std::shared_ptr<sg::ogl::light::PointLight>;
     using ParticleEmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;

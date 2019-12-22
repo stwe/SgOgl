@@ -12,7 +12,7 @@
 #include "OpenGl.h"
 #include "Application.h"
 #include "Window.h"
-#include "camera/LookAtCamera.h"
+#include "camera/Camera.h"
 #include "scene/Scene.h"
 #include "terrain/Terrain.h"
 #include "resource/ShaderProgram.h"

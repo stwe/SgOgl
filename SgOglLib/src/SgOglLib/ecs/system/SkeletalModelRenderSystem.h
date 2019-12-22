@@ -28,9 +28,16 @@ namespace sg::ogl::ecs::system
         {
             const auto view{ m_scene->GetApplicationContext()->registry.view<component::SkeletalModelComponent, component::TransformComponent>() };
             auto& skeletalModelComponent{ view.get<component::SkeletalModelComponent>(t_entity) };
+            auto& transformComponent{ view.get<component::TransformComponent>(t_entity) };
 
             skeletalModelComponent.model->SetCurrentAnimation(t_currentAnimation);
             skeletalModelComponent.model->SetDefaultTicksPerSecond(t_ticksPerSecond);
+
+            // todo temp code
+            if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_V))
+            {
+                transformComponent.position.z += 0.125f;
+            }
         }
 
         void Update(const double t_dt) override
