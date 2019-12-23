@@ -7,8 +7,6 @@
 // 
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
-#include <random>
-#include <glm/gtc/type_ptr.hpp>
 #include "SponzaPlaygroundState.h"
 
 //-------------------------------------------------
@@ -17,10 +15,7 @@
 
 bool SponzaPlaygroundState::Input()
 {
-    if (GetApplicationContext()->GetMouseInput().IsRightButtonPressed())
-    {
-        m_scene->GetCurrentCamera().ProcessMouse(GetApplicationContext()->GetMouseInput().GetDisplVec());
-    }
+    m_scene->GetCurrentCamera().Input();
 
     return true;
 }
@@ -29,41 +24,7 @@ bool SponzaPlaygroundState::Update(const double t_dt)
 {
     m_particleRenderSystem->Update(t_dt);
 
-    if (GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_W))
-    {
-        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::FORWARD, t_dt * CAMERA_VELOCITY);
-    }
-
-    if (GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_S))
-    {
-        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::BACKWARD, t_dt * CAMERA_VELOCITY);
-    }
-
-    if (GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_A))
-    {
-        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::LEFT, t_dt * CAMERA_VELOCITY);
-    }
-
-    if (GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_D))
-    {
-        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::RIGHT, t_dt * CAMERA_VELOCITY);
-    }
-
-    if (GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_O))
-    {
-        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::UP, t_dt * CAMERA_VELOCITY);
-    }
-
-    if (GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_U))
-    {
-        m_scene->GetCurrentCamera().ProcessKeyboard(sg::ogl::camera::DOWN, t_dt * CAMERA_VELOCITY);
-    }
-
-    if (GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_P))
-    {
-        SG_OGL_LOG_INFO("Camera x: {}  y: {}  z: {}", m_scene->GetCurrentCamera().GetPosition().x, m_scene->GetCurrentCamera().GetPosition().y, m_scene->GetCurrentCamera().GetPosition().z);
-        SG_OGL_LOG_INFO("Camera yaw: {}  pitch: {}", m_scene->GetCurrentCamera().GetYaw(), m_scene->GetCurrentCamera().GetPitch());
-    }
+    m_scene->GetCurrentCamera().Update(t_dt);
 
     // move the lamp model
     auto view = m_scene->GetApplicationContext()->registry.view<
@@ -93,7 +54,7 @@ void SponzaPlaygroundState::Render()
     ImGui::NewFrame();
 
     m_modelRenderSystem->Render();
-    m_skeletalModelRenderSystem->Render();
+    //m_skeletalModelRenderSystem->Render();
     //m_skydomeRenderSystem->Render();
     m_particleRenderSystem->Render(),
     m_skyboxRenderSystem->Render();
@@ -120,7 +81,8 @@ void SponzaPlaygroundState::Init()
     // setup ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    auto& io{ ImGui::GetIO() };
+    (void)io;
 
     // setup ImGui style
     ImGui::StyleColorsDark();
@@ -132,13 +94,20 @@ void SponzaPlaygroundState::Init()
     // set clear color
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
-    // create camera and set a camera position
-    m_camera = std::make_shared<sg::ogl::camera::LookAtCamera>(glm::vec3(1197.0f, 171.0f, -23.0f), -179.0f, 1.0f);
-    m_camera->SetMouseSensitivity(0.3f);
+    // create first person camera
+    m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
+        GetApplicationContext(),
+        glm::vec3(1197.0f, 171.0f, -23.0f),
+        -179.0f,
+        1.0f
+    );
+
+    m_firstPersonCamera->SetMouseSensitivity(0.3f);
+    m_firstPersonCamera->SetCameraSpeed(200.0f);
 
     // create scene and set the camera as current
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
-    m_scene->SetCurrentCamera(m_camera);
+    m_scene->SetCurrentCamera(m_firstPersonCamera);
 
     // set ambient
     m_scene->SetAmbientIntensity(glm::vec3(0.2f));
@@ -189,6 +158,7 @@ void SponzaPlaygroundState::Init()
         true
     );
 
+    /*
     GetApplicationContext()->GetEntityFactory().CreateSkeletalModelEntity(
         "res/model/CastleGuard01/Idle.dae",
         glm::vec3(40.0f, 0.0f, 0.0f),
@@ -199,6 +169,7 @@ void SponzaPlaygroundState::Init()
         false,
         false
     );
+    */
 
     /*
     const std::vector<std::string> cubemapFileNames{
@@ -240,13 +211,15 @@ void SponzaPlaygroundState::Init()
     // create fire entity (instancing - particle system)
     m_particleEmitter = std::make_shared<sg::ogl::particle::ParticleEmitter>(
         m_scene.get(),
-        glm::vec3(490.0f, 125.0f, -220.0f),     // root position
+        glm::vec3(490.0f, 125.0f, -220.0f),      // root position
         800,                                             // max particles
         2,                                               // new particles
         "res/texture/particle/explo.png",
         4                                                // number of rows
     );
+
     m_particleEmitter->SetGravityEffect(0.3f);
     m_particleEmitter->SetBuildConfig(buildConfig);
+
     GetApplicationContext()->GetEntityFactory().CreateParticleEntity(m_particleEmitter);
 }

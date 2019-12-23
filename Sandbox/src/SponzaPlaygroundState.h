@@ -14,12 +14,13 @@
 class SponzaPlaygroundState : public sg::ogl::state::State
 {
 public:
-    static constexpr auto CAMERA_VELOCITY{ 200.0f };
-
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
-    using CameraSharedPtr = std::shared_ptr<sg::ogl::camera::Camera>;
+
+    using FirstPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::FirstPersonCamera>;
+
     using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
     using PointLightSharedPtr = std::shared_ptr<sg::ogl::light::PointLight>;
+
     using ParticleEmitterSharedPtr = std::shared_ptr<sg::ogl::particle::ParticleEmitter>;
 
     using ModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ModelRenderSystem>;
@@ -66,7 +67,7 @@ protected:
 
 private:
     SceneUniquePtr m_scene;
-    CameraSharedPtr m_camera;
+    FirstPersonCameraSharedPtr m_firstPersonCamera;
     DirectionalLightSharedPtr m_sun;
     PointLightSharedPtr m_pointLight;
     ParticleEmitterSharedPtr m_particleEmitter;
