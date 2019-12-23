@@ -165,8 +165,8 @@ void sg::ogl::camera::FirstPersonCamera::ProcessMouse()
 {
     if (m_application->GetMouseInput().IsRightButtonPressed())
     {
-        m_yaw += m_application->GetMouseInput().GetDisplVec().y * m_mouseSensitivity;
-        m_pitch += m_application->GetMouseInput().GetDisplVec().x * m_mouseSensitivity;
+        m_yaw += m_application->GetMouseInput().GetDisplVec().x * m_mouseSensitivity;
+        m_pitch += m_application->GetMouseInput().GetDisplVec().y * m_mouseSensitivity;
 
         m_yaw = std::clamp(m_yaw, -360.0f, 360.0f);
 

@@ -96,25 +96,10 @@ void sg::ogl::input::MouseInput::Update()
     m_displVec.x = 0.0f;
     m_displVec.y = 0.0f;
 
-    // todo
-
     if (m_previousPosition.x > 0 && m_previousPosition.y > 0 && m_inWindow)
     {
-        const auto deltax{ static_cast<float>(m_currentPosition.x - m_previousPosition.x) };
-        const auto deltay{ static_cast<float>(m_previousPosition.y - m_currentPosition.y) };
-
-        const auto rotateX = deltax != 0;
-        const auto rotateY = deltay != 0;
-
-        if (rotateX)
-        {
-            m_displVec.y = deltax;
-        }
-
-        if (rotateY)
-        {
-            m_displVec.x = deltay;
-        }
+        m_displVec.x = static_cast<float>(m_currentPosition.x - m_previousPosition.x);
+        m_displVec.y = static_cast<float>(m_previousPosition.y - m_currentPosition.y);
     }
 
     m_previousPosition.x = m_currentPosition.x;

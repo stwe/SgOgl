@@ -77,9 +77,6 @@ void sg::ogl::camera::ThirdPersonCamera::CalculateZoom()
         m_distanceFromPlayer -= zoomLevel;
         m_distanceFromPlayer = std::clamp(m_distanceFromPlayer, MIN_DISTANCE, MAX_DISTANCE);
 
-        // todo
-        m_application->GetMouseInput().GetScrollOffset().x = 0.0f;
-        m_application->GetMouseInput().GetScrollOffset().y = 0.0f;
         m_application->GetMouseInput().SetScrolled(false);
     }
 }
@@ -88,7 +85,7 @@ void sg::ogl::camera::ThirdPersonCamera::CalculatePitch()
 {
     if (m_application->GetMouseInput().IsRightButtonPressed())
     {
-        const auto pitchChange{ m_application->GetMouseInput().GetDisplVec().x * SPEED };
+        const auto pitchChange{ m_application->GetMouseInput().GetDisplVec().y * SPEED };
         m_pitch -= pitchChange;
     }
 
@@ -99,7 +96,7 @@ void sg::ogl::camera::ThirdPersonCamera::CalculateAngleAroundPlayer()
 {
     if (m_application->GetMouseInput().IsLeftButtonPressed())
     {
-        const auto angleChange{ m_application->GetMouseInput().GetDisplVec().y * SPEED };
+        const auto angleChange{ m_application->GetMouseInput().GetDisplVec().x * SPEED };
         m_angleAroundPlayer -= angleChange;
     }
 }
