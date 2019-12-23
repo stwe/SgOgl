@@ -11,18 +11,7 @@
 #include "Log.h"
 #include "Core.h"
 #include "buffer/Vbo.h"
-#include "ecs/component/ModelComponent.h"
-#include "ecs/component/SkeletalModelComponent.h"
-#include "ecs/component/TransformComponent.h"
-#include "ecs/component/MeshComponent.h"
-#include "ecs/component/CubemapComponent.h"
-#include "ecs/component/SkydomeComponent.h"
-#include "ecs/component/TerrainComponent.h"
-#include "ecs/component/GuiComponent.h"
-#include "ecs/component/InstancesComponent.h"
-#include "ecs/component/WaterComponent.h"
-#include "ecs/component/ParticleEmitterComponent.h"
-#include "ecs/component/MoveableComponent.h"
+#include "ecs/component/Components.h"
 #include "resource/Model.h"
 #include "resource/SkeletalModel.h"
 #include "resource/ModelManager.h"
@@ -183,6 +172,9 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
     {
         m_application->registry.assign<component::MoveableComponent>(entity);
     }
+
+    // add player component
+    m_application->registry.assign<component::PlayerComponent>(entity);
 
     return entity;
 }

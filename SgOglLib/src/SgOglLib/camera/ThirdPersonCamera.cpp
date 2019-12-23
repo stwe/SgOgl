@@ -47,7 +47,6 @@ void sg::ogl::camera::ThirdPersonCamera::Update(const double t_dt)
     CalculateCameraPosition(CalculateHorizontalDistance(), CalculateVerticalDistance());
 
     m_yaw = 180.0f - (m_playerRotation.y + m_angleAroundPlayer);
-    m_yaw = fmodf(m_yaw, 360.0f);
 }
 
 //-------------------------------------------------
