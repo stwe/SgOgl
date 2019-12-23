@@ -31,6 +31,7 @@ namespace sg::ogl::ecs::system
             auto& skeletalModelComponent{ m_view.get<component::SkeletalModelComponent>(t_entity) };
             auto& transformComponent{ m_view.get<component::TransformComponent>(t_entity) };
             auto& playerComponent{ m_view.get<component::PlayerComponent>(t_entity) };
+            auto& cameraComponent{ m_view.get<component::ThirdPersonCameraComponent>(t_entity) };
 
             skeletalModelComponent.model->SetCurrentAnimation(t_currentAnimation);
             skeletalModelComponent.model->SetDefaultTicksPerSecond(t_ticksPerSecond);
@@ -96,6 +97,10 @@ namespace sg::ogl::ecs::system
                 playerComponent.isInAir = false;
                 transformComponent.position.y = terrainHeight;
             }
+
+            // the camera follows the player
+            cameraComponent.thirdPersonCamera->SetPlayerPosition(transformComponent.position);
+            cameraComponent.thirdPersonCamera->SetPlayerRotation(transformComponent.rotation);
         }
 
         void Update(const double t_dt) override
@@ -161,11 +166,13 @@ namespace sg::ogl::ecs::system
             entt::exclude_t<>,
             component::SkeletalModelComponent,
             component::TransformComponent,
-            component::PlayerComponent> m_view{
+            component::PlayerComponent,
+            component::ThirdPersonCameraComponent> m_view{
                 m_scene->GetApplicationContext()->registry.view<
                 component::SkeletalModelComponent,
                 component::TransformComponent,
-                component::PlayerComponent>()
+                component::PlayerComponent,
+                component::ThirdPersonCameraComponent>()
             };
     };
 }

@@ -16,6 +16,11 @@
 #include <memory>
 #include "Application.h"
 
+namespace sg::ogl::camera
+{
+    class ThirdPersonCamera;
+}
+
 namespace sg::ogl::terrain
 {
     class Terrain;
@@ -79,6 +84,7 @@ namespace sg::ogl::ecs::factory
         ) const;
 
         entt::entity CreateSkeletalModelEntity(
+            std::shared_ptr<camera::ThirdPersonCamera>& t_thirdPersonCamera,
             const std::string& t_fullModelFilePath,
             const glm::vec3& t_position,
             const glm::vec3& t_rotation,

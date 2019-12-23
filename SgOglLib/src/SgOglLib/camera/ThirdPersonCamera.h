@@ -37,6 +37,13 @@ namespace sg::ogl::camera
         ~ThirdPersonCamera() noexcept;
 
         //-------------------------------------------------
+        // Setter
+        //-------------------------------------------------
+
+        void SetPlayerPosition(const glm::vec3& t_playerPosition);
+        void SetPlayerRotation(const glm::vec3& t_playerRotation);
+
+        //-------------------------------------------------
         // Override
         //-------------------------------------------------
 

@@ -34,6 +34,20 @@ sg::ogl::camera::ThirdPersonCamera::~ThirdPersonCamera() noexcept
 }
 
 //-------------------------------------------------
+// Setter
+//-------------------------------------------------
+
+void sg::ogl::camera::ThirdPersonCamera::SetPlayerPosition(const glm::vec3& t_playerPosition)
+{
+    m_playerPosition = t_playerPosition;
+}
+
+void sg::ogl::camera::ThirdPersonCamera::SetPlayerRotation(const glm::vec3& t_playerRotation)
+{
+    m_playerRotation = t_playerRotation;
+}
+
+//-------------------------------------------------
 // Override
 //-------------------------------------------------
 

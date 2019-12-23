@@ -136,6 +136,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
 }
 
 entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
+    std::shared_ptr<camera::ThirdPersonCamera>& t_thirdPersonCamera,
     const std::string& t_fullModelFilePath,
     const glm::vec3& t_position,
     const glm::vec3& t_rotation,
@@ -175,6 +176,9 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
 
     // add player component
     m_application->registry.assign<component::PlayerComponent>(entity);
+
+    // add camera component
+    m_application->registry.assign<component::ThirdPersonCameraComponent>(entity, t_thirdPersonCamera);
 
     return entity;
 }

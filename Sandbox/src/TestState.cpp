@@ -23,7 +23,6 @@ bool TestState::Input()
 bool TestState::Update(const double t_dt)
 {
     m_scene->GetCurrentCamera().Update(t_dt);
-
     m_skeletalModelRenderSystem->UpdateEntity(t_dt, m_player, m_currentAnimation, m_ticksPerSecond);
 
     return true;
@@ -48,7 +47,7 @@ void TestState::Init()
     // set clear color
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
-    ////////////////// Create Cameras //////////////////
+#pragma region Cameras
 
     // create first person camera
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
@@ -65,14 +64,18 @@ void TestState::Init()
         m_playerRot
     );
 
-    ////////////////// Create Scene //////////////////
+#pragma endregion Cameras
+
+#pragma region Scene
 
     // create scene and set a camera
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_thirdPersonCamera);
     //m_scene->SetCurrentCamera(m_firstPersonCamera);
 
-    ////////////////// Create Lights //////////////////
+#pragma endregion Scene
+
+#pragma region Lights
 
     // set ambient
     m_scene->SetAmbientIntensity(glm::vec3(0.2f));
@@ -92,7 +95,9 @@ void TestState::Init()
     m_pointLight->quadratic = 0.0002f;
     m_scene->SetPointLight(m_pointLight);
 
-    ////////////////// Create Entities //////////////////
+#pragma endregion Lights
+
+#pragma region Entities
 
     m_skeletalModelRenderSystem = std::make_unique<sg::ogl::ecs::system::SkeletalModelRenderSystem>(m_scene.get());
     m_modelRenderSystem = std::make_unique<sg::ogl::ecs::system::ModelRenderSystem>(m_scene.get());
@@ -105,6 +110,7 @@ void TestState::Init()
     );
 
     m_player = GetApplicationContext()->GetEntityFactory().CreateSkeletalModelEntity(
+        m_thirdPersonCamera,
         "res/model/Player/drone.X",
         m_playerPos,
         m_playerRot,
@@ -116,6 +122,7 @@ void TestState::Init()
     );
 
     m_castleGuardIdle = GetApplicationContext()->GetEntityFactory().CreateSkeletalModelEntity(
+        m_thirdPersonCamera,
         "res/model/CastleGuard01/Idle.dae",
         glm::vec3(-80.0f, 0.0f, -50.0f),
         glm::vec3(0.0f),
@@ -125,6 +132,8 @@ void TestState::Init()
         true,
         false
     );
+
+#pragma endregion Entities
 }
 
 void TestState::InitImGui() const

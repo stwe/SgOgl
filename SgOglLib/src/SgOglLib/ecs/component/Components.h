@@ -22,5 +22,6 @@
 #include "SkeletalModelComponent.h"
 #include "SkydomeComponent.h"
 #include "TerrainComponent.h"
+#include "ThirdPersonCameraComponent.h"
 #include "TransformComponent.h"
 #include "WaterComponent.h"
