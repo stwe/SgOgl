@@ -11,6 +11,7 @@
 #include "Log.h"
 #include "Core.h"
 #include "buffer/Vbo.h"
+#include "camera/ThirdPersonCamera.h"
 #include "ecs/component/Components.h"
 #include "resource/Model.h"
 #include "resource/SkeletalModel.h"
@@ -136,7 +137,6 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
 }
 
 entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
-    std::shared_ptr<camera::ThirdPersonCamera>& t_thirdPersonCamera,
     const std::string& t_fullModelFilePath,
     const glm::vec3& t_position,
     const glm::vec3& t_rotation,
@@ -150,7 +150,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
     // create an entity
     const auto entity{ m_application->registry.create() };
 
-    // add model component
+    // add skeletal model component
     const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_FlipUVs };
     m_application->registry.assign<component::SkeletalModelComponent>(
         entity,
@@ -174,11 +174,44 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
         m_application->registry.assign<component::MoveableComponent>(entity);
     }
 
+    return entity;
+}
+
+entt::entity sg::ogl::ecs::factory::EntityFactory::CreateTppCharacterEntity(
+    const ThirdPersonCameraSharedPtr& t_thirdPersonCamera,
+    const std::string& t_fullModelFilePath,
+    const glm::vec3& t_playerPosition,
+    const glm::vec3& t_playerRotation,
+    const glm::vec3& t_playerScale
+) const
+{
+    // create an entity
+    const auto entity{ m_application->registry.create() };
+
+    // add third person camera component
+    t_thirdPersonCamera->SetPlayerPosition(t_playerPosition);
+    m_application->registry.assign<component::ThirdPersonCameraComponent>(entity, t_thirdPersonCamera);
+
+    // add skeletal model component
+    const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_FlipUVs };
+    m_application->registry.assign<component::SkeletalModelComponent>(
+        entity,
+        m_application->GetModelManager().GetSkeletalModelByPath(t_fullModelFilePath, pFlags)
+    );
+
+    // add transform component
+    m_application->registry.assign<component::TransformComponent>(
+        entity,
+        glm::vec3(t_playerPosition),
+        glm::vec3(t_playerRotation),
+        glm::vec3(t_playerScale)
+    );
+
+    // add health component
+    m_application->registry.assign<component::HealthComponent>(entity);
+
     // add player component
     m_application->registry.assign<component::PlayerComponent>(entity);
-
-    // add camera component
-    m_application->registry.assign<component::ThirdPersonCameraComponent>(entity, t_thirdPersonCamera);
 
     return entity;
 }
@@ -224,7 +257,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateSkydomeEntity(const std::string
     m_application->registry.assign<component::SkydomeComponent>(entity);
 }
 
-void sg::ogl::ecs::factory::EntityFactory::CreateTerrainEntity(const std::shared_ptr<terrain::Terrain>& t_terrain) const
+void sg::ogl::ecs::factory::EntityFactory::CreateTerrainEntity(const TerrainSharedPtr& t_terrain) const
 {
     // create an entity
     const auto entity{ m_application->registry.create() };
@@ -271,7 +304,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateGuiEntity(
     m_application->registry.assign<component::GuiComponent>(entity, t_textureId);
 }
 
-void sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const std::shared_ptr<water::Water>& t_water) const
+void sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const WaterSharedPtr& t_water) const
 {
     // create an entity
     const auto entity{ m_application->registry.create() };
@@ -297,7 +330,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const std::shared_p
     );
 }
 
-void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(std::shared_ptr<particle::ParticleEmitter>& t_particleEmitter) const
+void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(ParticleEmitterSharedPtr& t_particleEmitter) const
 {
     // create an empty Vbo for instanced data
     const auto vbo{ buffer::Vbo::GenerateVbo() };

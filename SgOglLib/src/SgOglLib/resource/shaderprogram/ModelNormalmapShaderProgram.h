@@ -20,7 +20,7 @@
 #include "resource/Material.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
-#include "ecs/component/TransformComponent.h"
+#include "ecs/component/Components.h"
 
 namespace sg::ogl::resource::shaderprogram
 {

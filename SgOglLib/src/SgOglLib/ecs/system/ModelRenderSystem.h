@@ -14,8 +14,7 @@
 #include "resource/shaderprogram/ModelNormalmapShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "resource/Model.h"
-#include "ecs/component/ModelComponent.h"
-#include "ecs/component/SkydomeComponent.h"
+#include "ecs/component/Components.h"
 
 namespace sg::ogl::ecs::system
 {

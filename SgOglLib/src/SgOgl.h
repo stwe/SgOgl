@@ -34,6 +34,7 @@
 #include "SgOglLib/ecs/system/InstancingRenderSystem.h"
 #include "SgOglLib/ecs/system/ModelRenderSystem.h"
 #include "SgOglLib/ecs/system/ParticleRenderSystem.h"
+#include "SgOglLib/ecs/system/PlayerRenderSystem.h"
 #include "SgOglLib/ecs/system/RenderSystem.h"
 #include "SgOglLib/ecs/system/SkeletalModelRenderSystem.h"
 #include "SgOglLib/ecs/system/SkyboxRenderSystem.h"
@@ -52,9 +53,6 @@
 // light
 #include "SgOglLib/light/DirectionalLight.h"
 #include "SgOglLib/light/PointLight.h"
-
-// math
-#include "SgOglLib/math/Transform.h"
 
 // particle
 #include "SgOglLib/particle/Particle.h"

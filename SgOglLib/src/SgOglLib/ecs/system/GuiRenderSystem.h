@@ -13,7 +13,7 @@
 #include "resource/shaderprogram/GuiShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "resource/Mesh.h"
-#include "ecs/component/MeshComponent.h"
+#include "ecs/component/Components.h"
 
 namespace sg::ogl::ecs::system
 {

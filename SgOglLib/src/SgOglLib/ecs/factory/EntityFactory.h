@@ -46,6 +46,11 @@ namespace sg::ogl::ecs::factory
     class EntityFactory
     {
     public:
+        using ThirdPersonCameraSharedPtr = std::shared_ptr<camera::ThirdPersonCamera>;
+        using TerrainSharedPtr = std::shared_ptr<terrain::Terrain>;
+        using WaterSharedPtr = std::shared_ptr<water::Water>;
+        using ParticleEmitterSharedPtr = std::shared_ptr<particle::ParticleEmitter>;
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
@@ -84,7 +89,6 @@ namespace sg::ogl::ecs::factory
         ) const;
 
         entt::entity CreateSkeletalModelEntity(
-            std::shared_ptr<camera::ThirdPersonCamera>& t_thirdPersonCamera,
             const std::string& t_fullModelFilePath,
             const glm::vec3& t_position,
             const glm::vec3& t_rotation,
@@ -95,9 +99,26 @@ namespace sg::ogl::ecs::factory
             bool t_moveable = false
         ) const;
 
+        /**
+         * @brief Creates a character from a SkeletalModel file in the third person perspective.
+         * @param t_thirdPersonCamera The camera that follows the character.
+         * @param t_fullModelFilePath The file path to the skeletal model.
+         * @param t_playerPosition The current position of the character.
+         * @param t_playerRotation The current rotation of the character.
+         * @param t_playerScale The scale of the character.
+         * @return The created Entity.
+         */
+        entt::entity CreateTppCharacterEntity(
+            const ThirdPersonCameraSharedPtr& t_thirdPersonCamera,
+            const std::string& t_fullModelFilePath,
+            const glm::vec3& t_playerPosition,
+            const glm::vec3& t_playerRotation,
+            const glm::vec3& t_playerScale
+        ) const;
+
         void CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const;
         void CreateSkydomeEntity(const std::string& t_fullModelFilePath) const;
-        void CreateTerrainEntity(const std::shared_ptr<terrain::Terrain>& t_terrain) const;
+        void CreateTerrainEntity(const TerrainSharedPtr& t_terrain) const;
 
         void CreateGuiEntity(
             float t_x,
@@ -107,8 +128,8 @@ namespace sg::ogl::ecs::factory
             uint32_t t_textureId
         ) const;
 
-        void CreateWaterEntity(const std::shared_ptr<water::Water>& t_water) const;
-        void CreateParticleEntity(std::shared_ptr<particle::ParticleEmitter>& t_particleEmitter) const;
+        void CreateWaterEntity(const WaterSharedPtr& t_water) const;
+        void CreateParticleEntity(ParticleEmitterSharedPtr& t_particleEmitter) const;
 
     protected:
 

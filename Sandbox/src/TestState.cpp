@@ -23,14 +23,19 @@ bool TestState::Input()
 bool TestState::Update(const double t_dt)
 {
     m_scene->GetCurrentCamera().Update(t_dt);
-    m_skeletalModelRenderSystem->UpdateEntity(t_dt, m_player, m_currentAnimation, m_ticksPerSecond);
+
+    m_playerRenderSystem->UpdateEntity(t_dt, m_player, m_currentAnimation, m_ticksPerSecond);
+
+    const auto notInUse{ 0.0f };
+    m_skeletalModelRenderSystem->UpdateEntity(t_dt, m_castleGuardIdle, notInUse, notInUse);
 
     return true;
 }
 
 void TestState::Render()
 {
-    m_skeletalModelRenderSystem->RenderEntity(m_player);
+    m_playerRenderSystem->RenderEntity(m_player);
+    m_skeletalModelRenderSystem->RenderEntity(m_castleGuardIdle);
     m_modelRenderSystem->Render();
 
     RenderImGui();
@@ -44,34 +49,21 @@ void TestState::Init()
 {
     InitImGui();
 
-    // set clear color
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
 #pragma region Cameras
 
-    // create first person camera
-    m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
-        GetApplicationContext(),
-        glm::vec3(0.0f, 14.0f, 13.0f),
-        -57.0f,
-        -11.0f
-    );
-
-    // create third person camera
     m_thirdPersonCamera = std::make_shared<sg::ogl::camera::ThirdPersonCamera>(
         GetApplicationContext(),
-        m_playerPos,
-        m_playerRot
+        m_playerPosition
     );
 
 #pragma endregion Cameras
 
 #pragma region Scene
 
-    // create scene and set a camera
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_thirdPersonCamera);
-    //m_scene->SetCurrentCamera(m_firstPersonCamera);
 
 #pragma endregion Scene
 
@@ -89,44 +81,51 @@ void TestState::Init()
 
     // create and add a point light to the scene
     m_pointLight = std::make_shared<sg::ogl::light::PointLight>();
-    m_pointLight->position = glm::vec3(91.0f, 165.0f, -42.0f);
-    m_pointLight->diffuseIntensity = glm::vec3(1.0f, 0.57f, 10.16f);
-    m_pointLight->linear = 0.007f;
-    m_pointLight->quadratic = 0.0002f;
+    m_pointLight->position = glm::vec3(0.0f, 8.0f, 0.0f);
+    m_pointLight->diffuseIntensity = glm::vec3(1.0f, 0.77f, 0.56f);
+    m_pointLight->linear = 0.045f;
+    m_pointLight->quadratic = 0.0075f;
     m_scene->SetPointLight(m_pointLight);
 
 #pragma endregion Lights
 
-#pragma region Entities
+#pragma region RenderSystems
 
+    m_playerRenderSystem = std::make_unique<sg::ogl::ecs::system::PlayerRenderSystem>(m_scene.get());
     m_skeletalModelRenderSystem = std::make_unique<sg::ogl::ecs::system::SkeletalModelRenderSystem>(m_scene.get());
     m_modelRenderSystem = std::make_unique<sg::ogl::ecs::system::ModelRenderSystem>(m_scene.get());
 
-    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
-        "res/model/Plane/plane.obj",
-        glm::vec3(10.0f, 10.0f, -2.0f),
-        glm::vec3(0.0f),
-        glm::vec3(30.0f)
-    );
+#pragma endregion RenderSystems
 
-    m_player = GetApplicationContext()->GetEntityFactory().CreateSkeletalModelEntity(
-        m_thirdPersonCamera,
-        "res/model/Player/drone.X",
-        m_playerPos,
-        m_playerRot,
-        glm::vec3(0.5f),
+#pragma region Entities
+
+    // a flat surface as "terrain" for our character
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        "res/model/Plane/plane1.obj",
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(32.0f, 1.0f, 32.0f),
         false,
         false,
-        false,
+        true, // the model has a normalmap
         false
     );
 
-    m_castleGuardIdle = GetApplicationContext()->GetEntityFactory().CreateSkeletalModelEntity(
+    // the animated character in the third person perspective - our player or game hero
+    m_player = GetApplicationContext()->GetEntityFactory().CreateTppCharacterEntity(
         m_thirdPersonCamera,
-        "res/model/CastleGuard01/Idle.dae",
-        glm::vec3(-80.0f, 0.0f, -50.0f),
+        "res/model/Player/drone.X",
+        m_playerPosition,
         glm::vec3(0.0f),
-        glm::vec3(0.5f),
+        glm::vec3(1.0f)
+    );
+
+    // an other skeletal model
+    m_castleGuardIdle = GetApplicationContext()->GetEntityFactory().CreateSkeletalModelEntity(
+        "res/model/CastleGuard01/Idle.dae",
+        glm::vec3(15.0f, 0.0f, 5.0f),
+        glm::vec3(0.0f),
+        glm::vec3(0.0625f * 0.5f),
         false,
         false,
         true,

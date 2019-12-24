@@ -14,8 +14,7 @@
 #include "resource/ShaderManager.h"
 #include "resource/Model.h"
 #include "resource/Mesh.h"
-#include "ecs/component/ModelComponent.h"
-#include "ecs/component/SkydomeComponent.h"
+#include "ecs/component/Components.h"
 
 namespace sg::ogl::ecs::system
 {

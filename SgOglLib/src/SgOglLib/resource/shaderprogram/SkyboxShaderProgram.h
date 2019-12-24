@@ -16,7 +16,7 @@
 #include "camera/Camera.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
-#include "ecs/component/CubemapComponent.h"
+#include "ecs/component/Components.h"
 
 namespace sg::ogl::resource::shaderprogram
 {

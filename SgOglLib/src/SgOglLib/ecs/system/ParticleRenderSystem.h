@@ -10,8 +10,7 @@
 #pragma once
 
 #include "RenderSystem.h"
-#include "ecs/component/ParticleEmitterComponent.h"
-#include "ecs/component/MeshComponent.h"
+#include "ecs/component/Components.h"
 #include "resource/shaderprogram/ParticleShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "resource/Mesh.h"

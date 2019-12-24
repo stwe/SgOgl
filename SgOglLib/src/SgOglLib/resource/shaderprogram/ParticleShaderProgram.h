@@ -16,7 +16,7 @@
 #include "particle/ParticleEmitter.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
-#include "ecs/component/ParticleEmitterComponent.h"
+#include "ecs/component/Components.h"
 
 namespace sg::ogl::resource::shaderprogram
 {

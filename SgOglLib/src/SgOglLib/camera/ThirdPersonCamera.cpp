@@ -18,10 +18,9 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::camera::ThirdPersonCamera::ThirdPersonCamera(Application* t_application, glm::vec3& t_playerPosition, glm::vec3& t_playerRotation)
+sg::ogl::camera::ThirdPersonCamera::ThirdPersonCamera(Application* t_application, glm::vec3& t_playerPosition)
     : Camera(t_application)
     , m_playerPosition{ t_playerPosition }
-    , m_playerRotation{ t_playerRotation }
 {
     SG_OGL_CORE_ASSERT(m_application, "[ThirdPersonCamera::ThirdPersonCamera()] Null pointer.")
 
@@ -42,11 +41,6 @@ void sg::ogl::camera::ThirdPersonCamera::SetPlayerPosition(const glm::vec3& t_pl
     m_playerPosition = t_playerPosition;
 }
 
-void sg::ogl::camera::ThirdPersonCamera::SetPlayerRotation(const glm::vec3& t_playerRotation)
-{
-    m_playerRotation = t_playerRotation;
-}
-
 //-------------------------------------------------
 // Override
 //-------------------------------------------------
@@ -60,7 +54,7 @@ void sg::ogl::camera::ThirdPersonCamera::Update(const double t_dt)
     ProcessMouse();
     CalculateCameraPosition(CalculateHorizontalDistance(), CalculateVerticalDistance());
 
-    m_yaw = 180.0f - (m_playerRotation.y + m_angleAroundPlayer);
+    m_yaw = 180.0f - (m_rotation.y + m_angleAroundPlayer);
 }
 
 //-------------------------------------------------
@@ -127,7 +121,7 @@ float sg::ogl::camera::ThirdPersonCamera::CalculateVerticalDistance() const
 
 void sg::ogl::camera::ThirdPersonCamera::CalculateCameraPosition(const float t_hDist, const float t_vDist)
 {
-    const auto theta{ m_playerRotation.y + m_angleAroundPlayer };
+    const auto theta{ m_rotation.y + m_angleAroundPlayer };
 
     const auto offsetX{ t_hDist * glm::sin(glm::radians(theta)) };
     const auto offsetZ{ t_hDist * glm::cos(glm::radians(theta)) };

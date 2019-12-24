@@ -11,9 +11,7 @@
 
 #include "RenderSystem.h"
 #include "OpenGl.h"
-#include "ecs/component/MeshComponent.h"
-#include "ecs/component/WaterComponent.h"
-#include "ecs/component/TransformComponent.h"
+#include "ecs/component/Components.h"
 #include "resource/Mesh.h"
 #include "resource/shaderprogram/WaterShaderProgram.h"
 #include "resource/ShaderManager.h"

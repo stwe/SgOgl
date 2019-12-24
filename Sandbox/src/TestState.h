@@ -17,11 +17,11 @@ public:
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
 
     using ThirdPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::ThirdPersonCamera>;
-    using FirstPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::FirstPersonCamera>;
 
     using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
     using PointLightSharedPtr = std::shared_ptr<sg::ogl::light::PointLight>;
 
+    using PlayerRenderSystemUnique = std::unique_ptr<sg::ogl::ecs::system::PlayerRenderSystem>;
     using SkeletalModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkeletalModelRenderSystem>;
     using ModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ModelRenderSystem>;
 
@@ -60,23 +60,22 @@ protected:
 private:
     SceneUniquePtr m_scene;
 
-    FirstPersonCameraSharedPtr m_firstPersonCamera;
     ThirdPersonCameraSharedPtr m_thirdPersonCamera;
 
     DirectionalLightSharedPtr m_sun;
     PointLightSharedPtr m_pointLight;
 
+    PlayerRenderSystemUnique m_playerRenderSystem;
     SkeletalModelRenderSystemUniquePtr m_skeletalModelRenderSystem;
     ModelRenderSystemUniquePtr m_modelRenderSystem;
 
-    entt::entity m_castleGuardIdle;
     entt::entity m_player;
+    entt::entity m_castleGuardIdle;
 
     uint32_t m_currentAnimation{ 0 };
     float m_ticksPerSecond{ 1200.0f };
 
-    glm::vec3 m_playerPos{ glm::vec3(10.0f, 10.0f, -2.0f) };
-    glm::vec3 m_playerRot{ glm::vec3(0.0f) };
+    glm::vec3 m_playerPosition{ glm::vec3(0.0f, 0.0f, 0.0f) };
 
     //-------------------------------------------------
     // Helper

@@ -10,8 +10,7 @@
 #pragma once
 
 #include "RenderSystem.h"
-#include "ecs/component/InstancesComponent.h"
-#include "ecs/component/ModelComponent.h"
+#include "ecs/component/Components.h"
 #include "resource/shaderprogram/InstancingShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "resource/Model.h"

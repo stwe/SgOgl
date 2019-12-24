@@ -13,7 +13,7 @@
 #include "resource/shaderprogram/SkeletalModelShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "resource/SkeletalModel.h"
-#include "ecs/component/SkeletalModelComponent.h"
+#include "ecs/component/Components.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -26,81 +26,12 @@ namespace sg::ogl::ecs::system
 
         void UpdateEntity(const double t_dt, const entt::entity t_entity, const uint32_t t_currentAnimation, const float t_ticksPerSecond)
         {
-            const auto dt{ static_cast<float>(t_dt) };
-
+            /*
             auto& skeletalModelComponent{ m_view.get<component::SkeletalModelComponent>(t_entity) };
-            auto& transformComponent{ m_view.get<component::TransformComponent>(t_entity) };
-            auto& playerComponent{ m_view.get<component::PlayerComponent>(t_entity) };
-            auto& cameraComponent{ m_view.get<component::ThirdPersonCameraComponent>(t_entity) };
 
             skeletalModelComponent.model->SetCurrentAnimation(t_currentAnimation);
             skeletalModelComponent.model->SetDefaultTicksPerSecond(t_ticksPerSecond);
-
-            ///////////////////////////////
-
-            // For A Third Person Camera //
-
-            ///////////////////////////////
-
-            if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_W))
-            {
-                playerComponent.currentSpeed = component::PlayerComponent::RUN_SPEED;
-            }
-            else if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_S))
-            {
-                playerComponent.currentSpeed = -component::PlayerComponent::RUN_SPEED;
-            }
-            else
-            {
-                playerComponent.currentSpeed = 0.0f;
-            }
-
-            if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_D))
-            {
-                playerComponent.currentTurnSpeed = -component::PlayerComponent::TURN_SPEED;
-            }
-            else if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_A))
-            {
-                playerComponent.currentTurnSpeed = component::PlayerComponent::TURN_SPEED;
-            }
-            else
-            {
-                playerComponent.currentTurnSpeed = 0.0f;
-            }
-
-            if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_SPACE))
-            {
-                if (!playerComponent.isInAir)
-                {
-                    playerComponent.upSpeed = component::PlayerComponent::JUMP_POWER;
-                    playerComponent.isInAir = true;
-                }
-            }
-
-            // rotation
-            transformComponent.rotation.y += playerComponent.currentTurnSpeed * dt;
-
-            // position
-            const auto distance = playerComponent.currentSpeed * dt;
-            const auto dx{ static_cast<float>(distance * glm::sin(glm::radians(transformComponent.rotation.y))) };
-            const auto dz{ static_cast<float>(distance * glm::cos(glm::radians(transformComponent.rotation.y))) };
-            transformComponent.position.x += dx;
-            transformComponent.position.z += dz;
-
-            // up
-            playerComponent.upSpeed += component::PlayerComponent::GRAVITY * dt;
-            transformComponent.position.y += playerComponent.upSpeed * dt;
-            const auto terrainHeight{ 10.0f };
-            if (transformComponent.position.y < terrainHeight)
-            {
-                playerComponent.upSpeed = 0.0f;
-                playerComponent.isInAir = false;
-                transformComponent.position.y = terrainHeight;
-            }
-
-            // the camera follows the player
-            cameraComponent.thirdPersonCamera->SetPlayerPosition(transformComponent.position);
-            cameraComponent.thirdPersonCamera->SetPlayerRotation(transformComponent.rotation);
+            */
         }
 
         void Update(const double t_dt) override
@@ -163,16 +94,12 @@ namespace sg::ogl::ecs::system
     private:
         const entt::basic_view<
             entt::entity,
-            entt::exclude_t<>,
+            entt::exclude_t<component::PlayerComponent>,
             component::SkeletalModelComponent,
-            component::TransformComponent,
-            component::PlayerComponent,
-            component::ThirdPersonCameraComponent> m_view{
+            component::TransformComponent> m_view{
                 m_scene->GetApplicationContext()->registry.view<
                 component::SkeletalModelComponent,
-                component::TransformComponent,
-                component::PlayerComponent,
-                component::ThirdPersonCameraComponent>()
+                component::TransformComponent>(entt::exclude<component::PlayerComponent>)
             };
     };
 }

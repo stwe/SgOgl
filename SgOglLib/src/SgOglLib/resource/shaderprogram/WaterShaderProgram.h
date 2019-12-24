@@ -19,8 +19,7 @@
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
 #include "water/Water.h"
-#include "ecs/component/WaterComponent.h"
-#include "ecs/component/TransformComponent.h"
+#include "ecs/component/Components.h"
 
 namespace sg::ogl::resource::shaderprogram
 {
