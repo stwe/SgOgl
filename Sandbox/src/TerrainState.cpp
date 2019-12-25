@@ -37,9 +37,11 @@ bool TerrainState::Input()
 
 bool TerrainState::Update(const double t_dt)
 {
-    m_scene->GetCurrentCamera().Update(t_dt);
-
-    m_playerRenderSystem->UpdateEntity(t_dt, m_player, m_currentAnimation, m_ticksPerSecond);
+    if (!ImGui::GetIO().WantCaptureMouse)
+    {
+        m_scene->GetCurrentCamera().Update(t_dt);
+        m_playerRenderSystem->UpdateEntity(t_dt, m_player, m_currentAnimation, m_ticksPerSecond);
+    }
 
     return true;
 }
@@ -136,7 +138,7 @@ void TerrainState::InitImGui() const
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     auto& io{ ImGui::GetIO() };
-    (void)io;
+    io.IniFilename = "res/config/Imgui.ini";
 
     ImGui::StyleColorsDark();
 
