@@ -41,9 +41,19 @@ void sg::ogl::camera::ThirdPersonCamera::SetPlayerPosition(const glm::vec3& t_pl
     m_playerPosition = t_playerPosition;
 }
 
+void sg::ogl::camera::ThirdPersonCamera::SetPlayerRotationY(const float t_yRotation)
+{
+    m_playerRotY = t_yRotation;
+}
+
 //-------------------------------------------------
 // Override
 //-------------------------------------------------
+
+glm::mat4 sg::ogl::camera::ThirdPersonCamera::GetViewMatrix() const
+{
+    return lookAt(m_position, m_playerPosition, m_worldUp);
+}
 
 void sg::ogl::camera::ThirdPersonCamera::Input()
 {
@@ -53,8 +63,6 @@ void sg::ogl::camera::ThirdPersonCamera::Update(const double t_dt)
 {
     ProcessMouse();
     CalculateCameraPosition(CalculateHorizontalDistance(), CalculateVerticalDistance());
-
-    m_yaw = 180.0f - (m_rotation.y + m_angleAroundPlayer);
 }
 
 //-------------------------------------------------
@@ -121,7 +129,7 @@ float sg::ogl::camera::ThirdPersonCamera::CalculateVerticalDistance() const
 
 void sg::ogl::camera::ThirdPersonCamera::CalculateCameraPosition(const float t_hDist, const float t_vDist)
 {
-    const auto theta{ m_rotation.y + m_angleAroundPlayer };
+    const auto theta{ m_playerRotY + m_angleAroundPlayer };
 
     const auto offsetX{ t_hDist * glm::sin(glm::radians(theta)) };
     const auto offsetZ{ t_hDist * glm::cos(glm::radians(theta)) };

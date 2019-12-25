@@ -44,6 +44,8 @@ namespace sg::ogl::camera
         // Override
         //-------------------------------------------------
 
+        [[nodiscard]] glm::mat4 GetViewMatrix() const override;
+
         void Input() override;
         void Update(double t_dt) override;
 

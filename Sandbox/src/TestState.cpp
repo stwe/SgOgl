@@ -26,8 +26,8 @@ bool TestState::Update(const double t_dt)
 
     m_playerRenderSystem->UpdateEntity(t_dt, m_player, m_currentAnimation, m_ticksPerSecond);
 
-    const auto notInUse{ 0.0f };
-    m_skeletalModelRenderSystem->UpdateEntity(t_dt, m_castleGuardIdle, notInUse, notInUse);
+    const auto notInUse{ 0u };
+    m_skeletalModelRenderSystem->UpdateEntity(t_dt, m_castleGuardIdle, notInUse, static_cast<float>(notInUse));
 
     return true;
 }

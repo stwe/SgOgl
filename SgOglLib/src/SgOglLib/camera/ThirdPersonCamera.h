@@ -41,10 +41,13 @@ namespace sg::ogl::camera
         //-------------------------------------------------
 
         void SetPlayerPosition(const glm::vec3& t_playerPosition);
+        void SetPlayerRotationY(float t_yRotation);
 
         //-------------------------------------------------
         // Override
         //-------------------------------------------------
+
+        [[nodiscard]] glm::mat4 GetViewMatrix() const override;
 
         void Input() override;
         void Update(double t_dt) override;
@@ -54,7 +57,7 @@ namespace sg::ogl::camera
     private:
         glm::vec3 m_playerPosition{ glm::vec3(0.0f) };
 
-        glm::vec3 m_rotation{ glm::vec3(0.0f) }; // todo
+        float m_playerRotY{ 0.0f };
 
         float m_distanceFromPlayer{ DEFAULT_DISTANCE };
         float m_angleAroundPlayer{ 0.0f };

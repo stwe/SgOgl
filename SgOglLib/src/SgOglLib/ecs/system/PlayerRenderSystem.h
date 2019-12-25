@@ -35,7 +35,7 @@ namespace sg::ogl::ecs::system
             auto& thirdPersonCameraComponent{ m_view.get<component::ThirdPersonCameraComponent>(t_entity) };
             auto& skeletalModelComponent{ m_view.get<component::SkeletalModelComponent>(t_entity) };
             auto& transformComponent{ m_view.get<component::TransformComponent>(t_entity) };
-            auto& healthComponent{ m_view.get<component::HealthComponent>(t_entity) };
+            //auto& healthComponent{ m_view.get<component::HealthComponent>(t_entity) };
             auto& playerComponent{ m_view.get<component::PlayerComponent>(t_entity) };
 
             // set current animation
@@ -100,6 +100,7 @@ namespace sg::ogl::ecs::system
 
             // the camera follows the player
             thirdPersonCameraComponent.thirdPersonCamera->SetPlayerPosition(transformComponent.position);
+            thirdPersonCameraComponent.thirdPersonCamera->SetPlayerRotationY(transformComponent.rotation.y);
         }
 
         void Update(const double t_dt) override

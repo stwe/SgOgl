@@ -52,8 +52,6 @@ namespace sg::ogl::camera
         // Getter
         //-------------------------------------------------
 
-        [[nodiscard]] glm::mat4 GetViewMatrix() const;
-
         [[nodiscard]] const glm::vec3& GetPosition() const noexcept;
         [[nodiscard]] glm::vec3& GetPosition() noexcept;
         [[nodiscard]] float GetYaw() const;
@@ -72,6 +70,8 @@ namespace sg::ogl::camera
         //-------------------------------------------------
         // Virtual
         //-------------------------------------------------
+
+        [[nodiscard]] virtual glm::mat4 GetViewMatrix() const = 0;
 
         virtual void Input() = 0;
         virtual void Update(double t_dt) = 0;

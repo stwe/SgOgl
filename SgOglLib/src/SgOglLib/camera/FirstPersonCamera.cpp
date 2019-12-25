@@ -65,6 +65,11 @@ void sg::ogl::camera::FirstPersonCamera::InvertPitch(const double t_dt)
 // Override
 //-------------------------------------------------
 
+glm::mat4 sg::ogl::camera::FirstPersonCamera::GetViewMatrix() const
+{
+    return lookAt(m_position, m_position + m_front, m_up);
+}
+
 void sg::ogl::camera::FirstPersonCamera::Input()
 {
     // handle mouse input

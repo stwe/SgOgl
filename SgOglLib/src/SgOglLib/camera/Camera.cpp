@@ -36,11 +36,6 @@ sg::ogl::camera::Camera::Camera(Application* t_application, const glm::vec3& t_p
 // Getter
 //-------------------------------------------------
 
-glm::mat4 sg::ogl::camera::Camera::GetViewMatrix() const
-{
-    return lookAt(m_position, m_position + m_front, m_up);
-}
-
 const glm::vec3& sg::ogl::camera::Camera::GetPosition() const noexcept
 {
     return m_position;
