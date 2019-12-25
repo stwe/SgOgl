@@ -11,6 +11,7 @@
 #include "SgOglEntryPoint.h"
 #include "SponzaPlaygroundState.h"
 #include "TestState.h"
+#include "TerrainState.h"
 
 class Sandbox final : public sg::ogl::Application
 {
@@ -47,8 +48,11 @@ protected:
         //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: SponzaPlaygroundState as Game.");
         //GetStateStack().RegisterState<SponzaPlaygroundState>(sg::ogl::state::GAME);
 
-        SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: TestState as Game.");
-        GetStateStack().RegisterState<TestState>(sg::ogl::state::GAME);
+        //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: TestState as Game.");
+        //GetStateStack().RegisterState<TestState>(sg::ogl::state::GAME);
+
+        SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: TerrainState as Game.");
+        GetStateStack().RegisterState<TerrainState>(sg::ogl::state::GAME);
     }
 
     void Init() override

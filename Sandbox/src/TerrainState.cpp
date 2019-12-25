@@ -1,75 +1,79 @@
 // This file is part of the SgOgl package.
 // 
-// Filename: TestState.cpp
+// Filename: TerrainState.cpp
 // Author:   stwe
 // 
 // License:  MIT
 // 
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
-#include "TestState.h"
+#include "TerrainState.h"
+
+//-------------------------------------------------
+// Ctors. / Dtor.
+//-------------------------------------------------
+
+TerrainState::TerrainState(sg::ogl::state::StateStack* t_stateStack)
+    : State{ t_stateStack, "TerrainState" }
+{
+    Init();
+}
+
+TerrainState::~TerrainState() noexcept
+{
+    CleanUpImGui();
+}
 
 //-------------------------------------------------
 // Logic
 //-------------------------------------------------
 
-bool TestState::Input()
+bool TerrainState::Input()
 {
     m_scene->GetCurrentCamera().Input();
 
     return true;
 }
 
-bool TestState::Update(const double t_dt)
+bool TerrainState::Update(const double t_dt)
 {
     m_scene->GetCurrentCamera().Update(t_dt);
 
     m_playerRenderSystem->UpdateEntity(t_dt, m_player, m_currentAnimation, m_ticksPerSecond);
 
-    const auto notInUse{ 0u };
-    m_skeletalModelRenderSystem->UpdateEntity(t_dt, m_castleGuardIdle, notInUse, static_cast<float>(notInUse));
-
     return true;
 }
 
-void TestState::Render()
+void TerrainState::Render()
 {
+    m_terrainRenderSystem->Render();
     m_playerRenderSystem->RenderEntity(m_player);
-    m_skeletalModelRenderSystem->RenderEntity(m_castleGuardIdle);
-    m_modelRenderSystem->Render();
+    m_skyboxRenderSystem->Render();
 
     RenderImGui();
 }
 
 //-------------------------------------------------
-// Helper
+// Init
 //-------------------------------------------------
 
-void TestState::Init()
+void TerrainState::Init()
 {
     InitImGui();
 
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
-#pragma region Cameras
-
+    // create third person camera
     m_thirdPersonCamera = std::make_shared<sg::ogl::camera::ThirdPersonCamera>(
         GetApplicationContext(),
         m_playerPosition
     );
 
-#pragma endregion Cameras
-
-#pragma region Scene
-
+    // create scene
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
+
+    // scene init
     m_scene->SetCurrentCamera(m_thirdPersonCamera);
-
-#pragma endregion Scene
-
-#pragma region Lights
-
-    // set ambient
     m_scene->SetAmbientIntensity(glm::vec3(0.2f));
 
     // create and add the sun to the scene
@@ -87,29 +91,30 @@ void TestState::Init()
     m_pointLight->quadratic = 0.0075f;
     m_scene->SetPointLight(m_pointLight);
 
-#pragma endregion Lights
-
-#pragma region RenderSystems
-
+    // create render systems
+    m_skyboxRenderSystem = std::make_unique<sg::ogl::ecs::system::SkyboxRenderSystem>(m_scene.get());
     m_playerRenderSystem = std::make_unique<sg::ogl::ecs::system::PlayerRenderSystem>(m_scene.get());
     m_skeletalModelRenderSystem = std::make_unique<sg::ogl::ecs::system::SkeletalModelRenderSystem>(m_scene.get());
     m_modelRenderSystem = std::make_unique<sg::ogl::ecs::system::ModelRenderSystem>(m_scene.get());
+    m_terrainRenderSystem = std::make_unique<sg::ogl::ecs::system::TerrainRenderSystem>(m_scene.get());
 
-#pragma endregion RenderSystems
+    // create skybox entity
+    const std::vector<std::string> cubemapFileNames{
+        "res/texture/sky/sRight.png",
+        "res/texture/sky/sLeft.png",
+        "res/texture/sky/sUp.png",
+        "res/texture/sky/sDown.png",
+        "res/texture/sky/sBack.png",
+        "res/texture/sky/sFront.png"
+    };
 
-#pragma region Entities
+    GetApplicationContext()->GetEntityFactory().CreateSkyboxEntity(cubemapFileNames);
 
-    // a flat surface as "terrain" for our character
-    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
-        "res/model/Plane/plane1.obj",
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(32.0f, 1.0f, 32.0f),
-        false,
-        false,
-        true, // the model has a normalmap
-        false
-    );
+    // create terrain
+    m_terrain = std::make_shared<sg::ogl::terrain::Terrain>(GetApplicationContext(), "res/config/Terrain.xml");
+    m_terrain->GenerateTerrain<sg::ogl::resource::shaderprogram::ComputeNormalmap, sg::ogl::resource::shaderprogram::ComputeSplatmap>();
+
+    GetApplicationContext()->GetEntityFactory().CreateTerrainEntity(m_terrain);
 
     // the animated character in the third person perspective - our player or game hero
     m_player = GetApplicationContext()->GetEntityFactory().CreateTppCharacterEntity(
@@ -118,25 +123,15 @@ void TestState::Init()
         m_playerPosition,
         glm::vec3(0.0f),
         glm::vec3(1.0f),
-        nullptr
+        m_terrain
     );
-
-    // an other skeletal model
-    m_castleGuardIdle = GetApplicationContext()->GetEntityFactory().CreateSkeletalModelEntity(
-        "res/model/CastleGuard01/Idle.dae",
-        glm::vec3(15.0f, 0.0f, 5.0f),
-        glm::vec3(0.0f),
-        glm::vec3(0.0625f * 0.5f),
-        false,
-        false,
-        true,
-        false
-    );
-
-#pragma endregion Entities
 }
 
-void TestState::InitImGui() const
+//-------------------------------------------------
+// ImGui
+//-------------------------------------------------
+
+void TerrainState::InitImGui() const
 {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -149,7 +144,7 @@ void TestState::InitImGui() const
     ImGui_ImplOpenGL3_Init("#version 130");
 }
 
-void TestState::RenderImGui()
+void TerrainState::RenderImGui()
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -190,7 +185,7 @@ void TestState::RenderImGui()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void TestState::CleanUpImGui()
+void TerrainState::CleanUpImGui()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

@@ -109,7 +109,7 @@ void sg::ogl::camera::FirstPersonCamera::Update(const double t_dt)
         ProcessKeyboard(CameraMovement::DOWN, t_dt * m_cameraVelocity);
     }
 
-    if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_P))
+    if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_I))
     {
         SG_OGL_CORE_LOG_INFO("[FirstPersonCamera::Update()] Camera x: {}  y: {}  z: {}", GetPosition().x, GetPosition().y, GetPosition().z);
         SG_OGL_CORE_LOG_INFO("[FirstPersonCamera::Update()] Camera yaw: {}  pitch: {}", GetYaw(), GetPitch());

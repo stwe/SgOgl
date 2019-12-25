@@ -82,6 +82,8 @@ namespace sg::ogl::ecs::component
         static constexpr auto GRAVITY{ -50.0f };
         static constexpr auto JUMP_POWER{ 18.0f };
 
+        std::shared_ptr<terrain::Terrain> terrain;
+
         float currentSpeed{ 0.0f };
         float currentTurnSpeed{ 0.0f };
         float upSpeed{ 0.0f };

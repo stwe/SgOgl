@@ -37,7 +37,7 @@ namespace sg::ogl::ecs::system
 
             for (auto entity : view)
             {
-                auto& terrainComponent = view.get<sg::ogl::ecs::component::TerrainComponent>(entity);
+                auto& terrainComponent = view.get<component::TerrainComponent>(entity);
 
                 terrainComponent.terrain->GetMesh().InitDraw();
                 shaderProgram.UpdateUniforms(*m_scene, entity, terrainComponent.terrain->GetMesh());

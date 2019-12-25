@@ -106,6 +106,7 @@ namespace sg::ogl::ecs::factory
          * @param t_playerPosition The current position of the character.
          * @param t_playerRotation The current rotation of the character.
          * @param t_playerScale The scale of the character.
+         * @param t_terrain A pointer to a terrain to get the current height position of the player.
          * @return The created Entity.
          */
         entt::entity CreateTppCharacterEntity(
@@ -113,7 +114,8 @@ namespace sg::ogl::ecs::factory
             const std::string& t_fullModelFilePath,
             const glm::vec3& t_playerPosition,
             const glm::vec3& t_playerRotation,
-            const glm::vec3& t_playerScale
+            const glm::vec3& t_playerScale,
+            const TerrainSharedPtr& t_terrain
         ) const;
 
         void CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const;

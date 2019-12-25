@@ -10,6 +10,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "ThirdPersonCamera.h"
 #include "Application.h"
+#include "Window.h"
+#include "OpenGl.h"
 #include "Core.h"
 #include "Log.h"
 #include "input/MouseInput.h"
@@ -63,6 +65,12 @@ void sg::ogl::camera::ThirdPersonCamera::Update(const double t_dt)
 {
     ProcessMouse();
     CalculateCameraPosition(CalculateHorizontalDistance(), CalculateVerticalDistance());
+
+    if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_I))
+    {
+        SG_OGL_CORE_LOG_INFO("[ThirdPersonCamera::Update()] Camera x: {}  y: {}  z: {}", GetPosition().x, GetPosition().y, GetPosition().z);
+        SG_OGL_CORE_LOG_INFO("[ThirdPersonCamera::Update()] Camera yaw: {}  pitch: {}", GetYaw(), GetPitch());
+    }
 }
 
 //-------------------------------------------------

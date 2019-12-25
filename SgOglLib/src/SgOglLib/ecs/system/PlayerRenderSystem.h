@@ -15,13 +15,14 @@
 #include "resource/ShaderManager.h"
 #include "resource/SkeletalModel.h"
 #include "ecs/component/Components.h"
+#include "terrain/Terrain.h"
 
 namespace sg::ogl::ecs::system
 {
     class PlayerRenderSystem : public RenderSystem<resource::shaderprogram::SkeletalModelShaderProgram>
     {
     public:
-        static constexpr auto TERRAIN_HEIGHT{ 0.0f };
+        static constexpr auto DEFAULT_TERRAIN_HEIGHT{ 0.0f };
 
         explicit PlayerRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
@@ -91,11 +92,26 @@ namespace sg::ogl::ecs::system
             // update player y-position
             playerComponent.upSpeed += component::PlayerComponent::GRAVITY * dt;
             transformComponent.position.y += playerComponent.upSpeed * dt;
-            if (transformComponent.position.y < TERRAIN_HEIGHT)
+
+            // keep the player on the terrain
+            if (playerComponent.terrain == nullptr)
             {
-                playerComponent.upSpeed = 0.0f;
-                playerComponent.isInAir = false;
-                transformComponent.position.y = TERRAIN_HEIGHT;
+                if (transformComponent.position.y < DEFAULT_TERRAIN_HEIGHT)
+                {
+                    playerComponent.upSpeed = 0.0f;
+                    playerComponent.isInAir = false;
+                    transformComponent.position.y = DEFAULT_TERRAIN_HEIGHT;
+                }
+            }
+            else
+            {
+                const auto height{ playerComponent.terrain->GetHeightAtWorldPosition(transformComponent.position.x, transformComponent.position.z) };
+                if (transformComponent.position.y < height)
+                {
+                    playerComponent.upSpeed = 0.0f;
+                    playerComponent.isInAir = false;
+                    transformComponent.position.y = height;
+                }
             }
 
             // the camera follows the player

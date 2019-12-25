@@ -182,7 +182,8 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateTppCharacterEntity(
     const std::string& t_fullModelFilePath,
     const glm::vec3& t_playerPosition,
     const glm::vec3& t_playerRotation,
-    const glm::vec3& t_playerScale
+    const glm::vec3& t_playerScale,
+    const TerrainSharedPtr& t_terrain
 ) const
 {
     // create an entity
@@ -210,8 +211,13 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateTppCharacterEntity(
     // add health component
     m_application->registry.assign<component::HealthComponent>(entity);
 
+    if (!t_terrain)
+    {
+        SG_OGL_CORE_LOG_WARN("[EntityFactory::CreateTppCharacterEntity()] No terrain object exists.");
+    }
+
     // add player component
-    m_application->registry.assign<component::PlayerComponent>(entity);
+    m_application->registry.assign<component::PlayerComponent>(entity, t_terrain);
 
     return entity;
 }

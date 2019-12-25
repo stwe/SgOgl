@@ -1,6 +1,6 @@
 // This file is part of the SgOgl package.
 // 
-// Filename: TestState.h
+// Filename: TerrainState.h
 // Author:   stwe
 // 
 // License:  MIT
@@ -11,7 +11,7 @@
 
 #include "SgOgl.h"
 
-class TestState : public sg::ogl::state::State
+class TerrainState : public sg::ogl::state::State
 {
 public:
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
@@ -21,31 +21,28 @@ public:
     using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
     using PointLightSharedPtr = std::shared_ptr<sg::ogl::light::PointLight>;
 
+    using TerrainSharedPtr = std::shared_ptr<sg::ogl::terrain::Terrain>;
+
+    using SkyboxRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkyboxRenderSystem>;
     using PlayerRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::PlayerRenderSystem>;
     using SkeletalModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkeletalModelRenderSystem>;
     using ModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ModelRenderSystem>;
+    using TerrainRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::TerrainRenderSystem>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
     //-------------------------------------------------
 
-    TestState() = delete;
+    TerrainState() = delete;
 
-    explicit TestState(sg::ogl::state::StateStack* t_stateStack)
-        : State{ t_stateStack, "TestState" }
-    {
-        Init();
-    }
+    explicit TerrainState(sg::ogl::state::StateStack* t_stateStack);
 
-    TestState(const TestState& t_other) = delete;
-    TestState(TestState&& t_other) noexcept = delete;
-    TestState& operator=(const TestState& t_other) = delete;
-    TestState& operator=(TestState&& t_other) noexcept = delete;
+    TerrainState(const TerrainState& t_other) = delete;
+    TerrainState(TerrainState&& t_other) noexcept = delete;
+    TerrainState& operator=(const TerrainState& t_other) = delete;
+    TerrainState& operator=(TerrainState&& t_other) noexcept = delete;
 
-    ~TestState() noexcept override
-    {
-        CleanUpImGui();
-    }
+    ~TerrainState() noexcept override;
 
     //-------------------------------------------------
     // Logic
@@ -65,23 +62,31 @@ private:
     DirectionalLightSharedPtr m_sun;
     PointLightSharedPtr m_pointLight;
 
+    TerrainSharedPtr m_terrain;
+
+    SkyboxRenderSystemUniquePtr m_skyboxRenderSystem;
     PlayerRenderSystemUniquePtr m_playerRenderSystem;
     SkeletalModelRenderSystemUniquePtr m_skeletalModelRenderSystem;
     ModelRenderSystemUniquePtr m_modelRenderSystem;
+    TerrainRenderSystemUniquePtr m_terrainRenderSystem;
 
     entt::entity m_player;
-    entt::entity m_castleGuardIdle;
 
     uint32_t m_currentAnimation{ 0 };
     float m_ticksPerSecond{ 1200.0f };
 
-    glm::vec3 m_playerPosition{ glm::vec3(0.0f, 0.0f, 0.0f) };
+    glm::vec3 m_playerPosition{ glm::vec3(-385.0f, 179.0f, -247.0f) };
 
     //-------------------------------------------------
-    // Helper
+    // Init
     //-------------------------------------------------
 
     void Init();
+
+    //-------------------------------------------------
+    // ImGui
+    //-------------------------------------------------
+
     void InitImGui() const;
     void RenderImGui();
     static void CleanUpImGui();
