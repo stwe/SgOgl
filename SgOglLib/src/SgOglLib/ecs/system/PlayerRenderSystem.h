@@ -191,6 +191,6 @@ namespace sg::ogl::ecs::system
                 component::TransformComponent,
                 component::HealthComponent,
                 component::PlayerComponent>()
-        };
+            };
     };
 }

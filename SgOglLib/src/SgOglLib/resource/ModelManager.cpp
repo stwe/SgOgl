@@ -160,6 +160,7 @@ void sg::ogl::resource::ModelManager::AddStaticMeshes()
     AddSkyboxStaticMesh();
     AddGuiStaticMesh();
     AddWaterStaticMesh();
+    AddQuadStaticMesh();
 }
 
 //-------------------------------------------------
@@ -242,6 +243,36 @@ void sg::ogl::resource::ModelManager::AddWaterStaticMesh()
 
     // store Mesh
     m_staticMeshes.emplace(WATER_MESH, meshSharedPtr);
+}
+
+void sg::ogl::resource::ModelManager::AddQuadStaticMesh()
+{
+    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddQuadStaticMesh()] Add Quad mesh.");
+
+    // create Mesh
+    auto meshSharedPtr{ std::make_shared<Mesh>() };
+
+    // create BufferLayout
+    const buffer::BufferLayout bufferLayout{
+        { buffer::VertexAttributeType::POSITION, "aPosition" },
+        { buffer::VertexAttributeType::UV, "aUv" },
+    };
+
+    // to render with GL_TRIANGLE_STRIP
+    std::vector<float> vertices{
+        // position         // uv
+        -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+         1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+    };
+
+    // add Vbo
+    const auto drawCount{ 4 };
+    meshSharedPtr->GetVao().AddVertexDataVbo(vertices.data(), drawCount, bufferLayout);
+
+    // store Mesh
+    m_staticMeshes.emplace(QUAD_MESH, meshSharedPtr);
 }
 
 std::vector<glm::vec3> sg::ogl::resource::ModelManager::CreateSkyboxVertices(const float t_size)

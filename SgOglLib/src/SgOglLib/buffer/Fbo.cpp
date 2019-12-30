@@ -120,12 +120,12 @@ void sg::ogl::buffer::Fbo::CleanUp() const
     if (m_fboId)
     {
         glDeleteFramebuffers(1, &m_fboId);
-        SG_OGL_CORE_LOG_DEBUG("[Fbo::DeleteFbo()] Fbo was deleted. Id: {}", m_fboId);
+        SG_OGL_CORE_LOG_DEBUG("[Fbo::CleanUp()] Fbo was deleted. Id: {}", m_fboId);
     }
 
     if (m_depthTexture)
     {
         glDeleteTextures(1, &m_depthTexture);
-        SG_OGL_CORE_LOG_DEBUG("[Fbo::DeleteFbo()] Texture was deleted. Id: {}", m_depthTexture);
+        SG_OGL_CORE_LOG_DEBUG("[Fbo::CleanUp()] Texture was deleted. Id: {}", m_depthTexture);
     }
 }

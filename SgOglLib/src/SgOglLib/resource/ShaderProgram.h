@@ -19,6 +19,11 @@ namespace entt
     enum class entity : unsigned;
 }
 
+namespace sg::ogl::buffer
+{
+    class GBufferFbo;
+}
+
 namespace sg::ogl::scene
 {
     class Scene;
@@ -139,7 +144,14 @@ namespace sg::ogl::resource
         [[nodiscard]] virtual std::string GetFolderName() const = 0;
         [[nodiscard]] virtual bool IsBuiltIn() const;
         [[nodiscard]] virtual Options GetOptions() const;
+
         virtual void UpdateUniforms(const scene::Scene& t_scene, entt::entity t_entity, const Mesh& t_currentMesh) {}
+
+        virtual void UpdateUniforms(
+            const scene::Scene& t_scene,
+            const Mesh& t_mesh,
+            const buffer::GBufferFbo& t_gbufferFbo) {}
+
         virtual void UpdateUniforms(const terrain::Terrain& t_terrain) {}
 
     protected:

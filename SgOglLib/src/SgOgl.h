@@ -19,6 +19,7 @@
 // buffer
 #include "SgOglLib/buffer/BufferLayout.h"
 #include "SgOglLib/buffer/Fbo.h"
+#include "SgOglLib/buffer/GBufferFbo.h"
 #include "SgOglLib/buffer/Vao.h"
 #include "SgOglLib/buffer/Vbo.h"
 #include "SgOglLib/buffer/WaterFbos.h"
@@ -30,6 +31,7 @@
 // ecs
 #include "SgOglLib/ecs/component/Components.h"
 #include "SgOglLib/ecs/factory/EntityFactory.h"
+#include "SgOglLib/ecs/system/DeferredRenderSystem.h"
 #include "SgOglLib/ecs/system/GuiRenderSystem.h"
 #include "SgOglLib/ecs/system/InstancingRenderSystem.h"
 #include "SgOglLib/ecs/system/ModelRenderSystem.h"
@@ -70,8 +72,10 @@
 #include "SgOglLib/resource/shaderprogram/ComputeNormalmap.h"
 #include "SgOglLib/resource/shaderprogram/ComputeSplatmap.h"
 #include "SgOglLib/resource/shaderprogram/DomeShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/GBufferPassShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/GuiShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/InstancingShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/LightingPassShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/ModelNormalmapShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/ModelShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/ParticleShaderProgram.h"

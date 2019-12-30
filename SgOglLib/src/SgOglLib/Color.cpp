@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Color.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include "Color.h"
 
 sg::ogl::Color::Color(const uint8_t t_red, const uint8_t t_green, const uint8_t t_blue, const uint8_t t_alpha)
