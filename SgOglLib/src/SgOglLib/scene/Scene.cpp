@@ -60,24 +60,14 @@ const sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetDirectionalLig
     return *m_directionalLight;
 }
 
-sg::ogl::light::PointLight& sg::ogl::scene::Scene::GetPointLight() noexcept
+const sg::ogl::scene::Scene::PointLightContainer& sg::ogl::scene::Scene::GetPointLights() const noexcept
 {
-    return *m_pointLight;
-}
-
-const sg::ogl::light::PointLight& sg::ogl::scene::Scene::GetPointLight() const noexcept
-{
-    return *m_pointLight;
+    return m_pointLights;
 }
 
 bool sg::ogl::scene::Scene::IsDirectionalLight() const
 {
     return m_directionalLight != nullptr;
-}
-
-bool sg::ogl::scene::Scene::IsPointLight() const
-{
-    return m_pointLight != nullptr;
 }
 
 glm::vec4 sg::ogl::scene::Scene::GetCurrentClipPlane() const
@@ -115,14 +105,10 @@ void sg::ogl::scene::Scene::SetDirectionalLight(const DirectionalLightSharedPtr&
     m_directionalLight = t_directionalLight;
 }
 
-void sg::ogl::scene::Scene::SetPointLight(const PointLightSharedPtr& t_pointLight)
+void sg::ogl::scene::Scene::AddPointLight(const PointLightSharedPtr& t_pointLight)
 {
-    if (m_pointLight)
-    {
-        m_pointLight.reset();
-    }
-
-    m_pointLight = t_pointLight;
+    SG_OGL_CORE_ASSERT(t_pointLight, "[Scene::AddPointLight()] Null pointer.")
+    m_pointLights.push_back(t_pointLight);
 }
 
 void sg::ogl::scene::Scene::SetCurrentClipPlane(const glm::vec4& t_currentClipPlane)

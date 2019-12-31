@@ -50,7 +50,7 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("directionalLight", t_scene.GetDirectionalLight());
 
             // set point light from the scene
-            SetUniform("pointLight", t_scene.GetPointLight());
+            SetUniform("pointLight", *t_scene.GetPointLights()[0]);
 
             // set camera position
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
@@ -74,12 +74,12 @@ namespace sg::ogl::resource::shaderprogram
             TextureManager::BindForReading(terrainComponent.terrain->GetSplatmapTextureId(), GL_TEXTURE0 + counter);
         }
 
-        std::string GetFolderName() const override
+        [[nodiscard]] std::string GetFolderName() const override
         {
             return "terrain";
         }
 
-        bool IsBuiltIn() const override
+        [[nodiscard]] bool IsBuiltIn() const override
         {
             return true;
         }

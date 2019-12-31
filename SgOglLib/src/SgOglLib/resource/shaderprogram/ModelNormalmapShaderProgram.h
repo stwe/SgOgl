@@ -39,12 +39,12 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("plane", t_scene.GetCurrentClipPlane());
 
             SetUniform("directionalLightDirection", t_scene.GetDirectionalLight().direction);
-            SetUniform("pointLightPosition", t_scene.GetPointLight().position);
+            SetUniform("pointLightPosition", t_scene.GetPointLights()[0]->position);
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
             SetUniform("directionalLight", t_scene.GetDirectionalLight());
-            SetUniform("pointLight", t_scene.GetPointLight());
+            SetUniform("pointLight", *t_scene.GetPointLights()[0]);
 
             SetUniform("diffuseColor", t_currentMesh.GetDefaultMaterial()->kd);
             SetUniform("hasDiffuseMap", t_currentMesh.GetDefaultMaterial()->HasDiffuseMap());
@@ -69,12 +69,12 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("shininess", t_currentMesh.GetDefaultMaterial()->ns);
         }
 
-        std::string GetFolderName() const override
+        [[nodiscard]] std::string GetFolderName() const override
         {
             return "model_normalmap";
         }
 
-        bool IsBuiltIn() const override
+        [[nodiscard]] bool IsBuiltIn() const override
         {
             return true;
         }

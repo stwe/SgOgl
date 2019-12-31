@@ -45,9 +45,9 @@ void DeferredRenderingState::Init()
 
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
         GetApplicationContext(),
-        glm::vec3(-2.0f, 7.0f, -26.0f),
-        87.0f,
-        -10.0f
+        glm::vec3(71.0f, 157.0f, -68.0f),
+        -205.0f,
+        -68.0f
     );
 
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
@@ -59,12 +59,37 @@ void DeferredRenderingState::Init()
     m_sun->specularIntensity = glm::vec3(0.2f, 0.2f, 0.2f);
     m_scene->SetDirectionalLight(m_sun);
 
-    m_pointLight = std::make_shared<sg::ogl::light::PointLight>();
-    m_pointLight->position = glm::vec3(0.0f, 8.0f, 0.0f);
-    m_pointLight->diffuseIntensity = glm::vec3(1.0f, 0.77f, 0.56f);
-    m_pointLight->linear = 0.045f;
-    m_pointLight->quadratic = 0.0075f;
-    m_scene->SetPointLight(m_pointLight);
+    // red
+    m_pointLight0 = std::make_shared<sg::ogl::light::PointLight>();
+    m_pointLight0->position = glm::vec3(0.0f, 2.0f, 0.0f);
+    m_pointLight0->diffuseIntensity = glm::vec3(10.0f, 0.0f, 0.0f);
+    m_pointLight0->linear = 0.045f;
+    m_pointLight0->quadratic = 0.0075f;
+    m_scene->AddPointLight(m_pointLight0);
+
+    // green
+    m_pointLight1 = std::make_shared<sg::ogl::light::PointLight>();
+    m_pointLight1->position = glm::vec3(-50.0f, 2.0f, -50.0f);
+    m_pointLight1->diffuseIntensity = glm::vec3(0.0f, 10.0f, 0.0f);
+    m_pointLight1->linear = 0.045f;
+    m_pointLight1->quadratic = 0.0075f;
+    m_scene->AddPointLight(m_pointLight1);
+
+    // blue
+    m_pointLight2 = std::make_shared<sg::ogl::light::PointLight>();
+    m_pointLight2->position = glm::vec3(50.0f, 2.0f, -50.0f);
+    m_pointLight2->diffuseIntensity = glm::vec3(0.0f, 0.0f, 10.0f);
+    m_pointLight2->linear = 0.045f;
+    m_pointLight2->quadratic = 0.0075f;
+    m_scene->AddPointLight(m_pointLight2);
+
+    // white
+    m_pointLight3 = std::make_shared<sg::ogl::light::PointLight>();
+    m_pointLight3->position = glm::vec3(0.0f, 2.0f, -50.0f);
+    m_pointLight3->diffuseIntensity = glm::vec3(1.0f, 1.0f, 1.0f);
+    m_pointLight3->linear = 0.045f;
+    m_pointLight3->quadratic = 0.0075f;
+    m_scene->AddPointLight(m_pointLight3);
 
     m_modelRenderSystem = std::make_unique<sg::ogl::ecs::system::ModelRenderSystem>(m_scene.get());
     m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
@@ -74,7 +99,7 @@ void DeferredRenderingState::Init()
         "res/model/Plane/plane1.obj",
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f),
-        glm::vec3(8.0f, 1.0f, 8.0f),
+        glm::vec3(100.0f, 1.0f, 100.0f),
         false,
         false,
         false,

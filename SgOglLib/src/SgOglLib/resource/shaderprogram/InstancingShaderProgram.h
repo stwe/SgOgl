@@ -34,7 +34,7 @@ namespace sg::ogl::resource::shaderprogram
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
             SetUniform("directionalLight", t_scene.GetDirectionalLight());
-            SetUniform("pointLight", t_scene.GetPointLight());
+            SetUniform("pointLight", *t_scene.GetPointLights()[0]);
 
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
@@ -58,12 +58,12 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("fakeNormals", modelComponent.fakeNormals);
         }
 
-        std::string GetFolderName() const override
+        [[nodiscard]] std::string GetFolderName() const override
         {
             return "instancing";
         }
 
-        bool IsBuiltIn() const override
+        [[nodiscard]] bool IsBuiltIn() const override
         {
             return true;
         }

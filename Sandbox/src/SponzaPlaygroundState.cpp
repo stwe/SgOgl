@@ -125,7 +125,7 @@ void SponzaPlaygroundState::Init()
     m_pointLight->diffuseIntensity = glm::vec3(1.0f, 0.57f, 10.16f);
     m_pointLight->linear = 0.007f;
     m_pointLight->quadratic = 0.0002f;
-    m_scene->SetPointLight(m_pointLight);
+    m_scene->AddPointLight(m_pointLight);
 
     // create render systems
     m_modelRenderSystem = std::make_unique<sg::ogl::ecs::system::ModelRenderSystem>(m_scene.get());

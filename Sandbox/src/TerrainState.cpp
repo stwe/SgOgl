@@ -91,7 +91,7 @@ void TerrainState::Init()
     m_pointLight->diffuseIntensity = glm::vec3(1.0f, 0.77f, 0.56f);
     m_pointLight->linear = 0.045f;
     m_pointLight->quadratic = 0.0075f;
-    m_scene->SetPointLight(m_pointLight);
+    m_scene->AddPointLight(m_pointLight);
 
     // create render systems
     m_skyboxRenderSystem = std::make_unique<sg::ogl::ecs::system::SkyboxRenderSystem>(m_scene.get());

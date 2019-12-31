@@ -26,7 +26,8 @@ namespace sg::ogl::resource::shaderprogram
         {
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
             SetUniform("directionalLight", t_scene.GetDirectionalLight());
-            SetUniform("pointLight", t_scene.GetPointLight());
+
+            SetUniform("pointLights", t_scene.GetPointLights());
 
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
@@ -38,12 +39,12 @@ namespace sg::ogl::resource::shaderprogram
             TextureManager::BindForReading(t_gbufferFbo.GetAlbedoSpecTextureId(), GL_TEXTURE2);
         }
 
-        std::string GetFolderName() const override
+        [[nodiscard]] std::string GetFolderName() const override
         {
             return "lighting_pass";
         }
 
-        bool IsBuiltIn() const override
+        [[nodiscard]] bool IsBuiltIn() const override
         {
             return true;
         }

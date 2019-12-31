@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 #include <glm/glm.hpp>
 
 namespace entt
@@ -128,12 +129,20 @@ namespace sg::ogl::resource
         void SetUniform(const std::string& t_uniformName, const light::PointLight& t_pointLight);
         void SetUniform(const std::string& t_uniformName, const Material& t_material);
 
-        template <typename T>
-        void SetUniform(const std::string& t_uniformName, const std::vector<T>& t_values)
+        void SetUniform(const std::string& t_uniformName, const std::vector<std::shared_ptr<light::PointLight>>& t_pointLights)
         {
-            for (auto i{ 0u }; i < t_values.size(); ++i)
+            for (auto i{ 0u }; i < t_pointLights.size(); ++i)
             {
-                SetUniform(t_uniformName + "[" + std::to_string(i) + "]", t_values[i]);
+                SetUniform(t_uniformName + "[" + std::to_string(i) + "]", *t_pointLights[i]);
+            }
+        }
+
+        template <typename T>
+        void SetUniform(const std::string& t_uniformName, const std::vector<T>& t_container)
+        {
+            for (auto i{ 0u }; i < t_container.size(); ++i)
+            {
+                SetUniform(t_uniformName + "[" + std::to_string(i) + "]", t_container[i]);
             }
         }
 

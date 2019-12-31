@@ -60,7 +60,12 @@ private:
     SceneUniquePtr m_scene;
 
     DirectionalLightSharedPtr m_sun;
-    PointLightSharedPtr m_pointLight;
+
+    PointLightSharedPtr m_pointLight0;
+    PointLightSharedPtr m_pointLight1;
+    PointLightSharedPtr m_pointLight2;
+    PointLightSharedPtr m_pointLight3;
+
     FirstPersonCameraSharedPtr m_firstPersonCamera;
 
     ModelRenderSystemUniquePtr m_modelRenderSystem;
