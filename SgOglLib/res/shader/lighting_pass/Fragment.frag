@@ -30,11 +30,17 @@ struct PointLight
     float quadratic;
 };
 
+// const
+
+const float shininess = 1.0;
+
 // Uniforms
+
+uniform int numLights;
 
 uniform vec3 ambientIntensity;
 uniform DirectionalLight directionalLight;
-uniform PointLight pointLights[4];
+uniform PointLight pointLights[32]; // max 32 point lights
 
 uniform vec3 cameraPosition;
 
@@ -48,7 +54,6 @@ vec3 fragPos;
 vec3 normal;
 vec3 diffuse;
 float specular;
-const float shininess = 1.0;
 
 // Function
 
@@ -116,7 +121,7 @@ void main()
 
     vec3 result = CalcDirectionalLight(normal, viewDir);
 
-    for(int i = 0; i < 4; ++i)
+    for(int i = 0; i < numLights; ++i)
     {
         result += CalcPointLight(pointLights[i], normal, fragPos, viewDir);
     }
