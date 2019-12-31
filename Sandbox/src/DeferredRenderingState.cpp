@@ -7,6 +7,7 @@
 // 
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
+#include <random>
 #include "DeferredRenderingState.h"
 
 //-------------------------------------------------
@@ -30,8 +31,6 @@ bool DeferredRenderingState::Update(const double t_dt)
 void DeferredRenderingState::Render()
 {
     m_deferredRenderSystem->Render();
-
-    //m_modelRenderSystem->Render();
     //m_guiRenderSystem->Render();
 }
 
@@ -53,45 +52,9 @@ void DeferredRenderingState::Init()
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_firstPersonCamera);
 
-    m_sun = std::make_shared<sg::ogl::light::DirectionalLight>();
-    m_sun->direction = glm::vec3(0.9f, -0.1f, 0.0f);
-    m_sun->diffuseIntensity = glm::vec3(0.3f, 0.2f, 0.1f);
-    m_sun->specularIntensity = glm::vec3(0.2f, 0.2f, 0.2f);
-    m_scene->SetDirectionalLight(m_sun);
+    CreateDirectionalLight();
+    CreatePointLights(12);
 
-    // red
-    m_pointLight0 = std::make_shared<sg::ogl::light::PointLight>();
-    m_pointLight0->position = glm::vec3(0.0f, 2.0f, 0.0f);
-    m_pointLight0->diffuseIntensity = glm::vec3(10.0f, 0.0f, 0.0f);
-    m_pointLight0->linear = 0.045f;
-    m_pointLight0->quadratic = 0.0075f;
-    m_scene->AddPointLight(m_pointLight0);
-
-    // green
-    m_pointLight1 = std::make_shared<sg::ogl::light::PointLight>();
-    m_pointLight1->position = glm::vec3(-50.0f, 2.0f, -50.0f);
-    m_pointLight1->diffuseIntensity = glm::vec3(0.0f, 10.0f, 0.0f);
-    m_pointLight1->linear = 0.045f;
-    m_pointLight1->quadratic = 0.0075f;
-    m_scene->AddPointLight(m_pointLight1);
-
-    // blue
-    m_pointLight2 = std::make_shared<sg::ogl::light::PointLight>();
-    m_pointLight2->position = glm::vec3(50.0f, 2.0f, -50.0f);
-    m_pointLight2->diffuseIntensity = glm::vec3(0.0f, 0.0f, 10.0f);
-    m_pointLight2->linear = 0.045f;
-    m_pointLight2->quadratic = 0.0075f;
-    m_scene->AddPointLight(m_pointLight2);
-
-    // white
-    m_pointLight3 = std::make_shared<sg::ogl::light::PointLight>();
-    m_pointLight3->position = glm::vec3(0.0f, 2.0f, -50.0f);
-    m_pointLight3->diffuseIntensity = glm::vec3(1.0f, 1.0f, 1.0f);
-    m_pointLight3->linear = 0.045f;
-    m_pointLight3->quadratic = 0.0075f;
-    m_scene->AddPointLight(m_pointLight3);
-
-    m_modelRenderSystem = std::make_unique<sg::ogl::ecs::system::ModelRenderSystem>(m_scene.get());
     m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
     m_deferredRenderSystem = std::make_unique<sg::ogl::ecs::system::DeferredRenderSystem>(m_scene.get());
 
@@ -102,11 +65,39 @@ void DeferredRenderingState::Init()
         glm::vec3(100.0f, 1.0f, 100.0f),
         false,
         false,
-        false,
+        true, // todo: normal mapping
         false
     );
 
     GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.5f, 0.5f, 0.25f, 0.25f, m_deferredRenderSystem->GetFbo().GetPositionTextureId());
     GetApplicationContext()->GetEntityFactory().CreateGuiEntity(0.5f, 0.5f, 0.25f, 0.25f, m_deferredRenderSystem->GetFbo().GetAlbedoSpecTextureId());
     GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.5f, -0.5f, 0.25f, 0.25f, m_deferredRenderSystem->GetFbo().GetNormalTextureId());
+}
+
+void DeferredRenderingState::CreateDirectionalLight()
+{
+    m_sun = std::make_shared<sg::ogl::light::DirectionalLight>();
+    m_sun->direction = glm::vec3(0.9f, -0.1f, 0.0f);
+    m_sun->diffuseIntensity = glm::vec3(0.3f, 0.2f, 0.1f);
+    m_sun->specularIntensity = glm::vec3(0.2f, 0.2f, 0.2f);
+    m_scene->SetDirectionalLight(m_sun);
+}
+
+void DeferredRenderingState::CreatePointLights(const int t_numPointLights) const
+{
+    std::random_device seeder;
+    std::mt19937 engine(seeder());
+
+    const std::uniform_real_distribution<float> pos(-50.0f, 50.0f);
+    const std::uniform_real_distribution<float> col(0.0f, 3.0f);
+
+    for (auto i{ 0 }; i < t_numPointLights; ++i)
+    {
+        auto pointLight{ std::make_unique<sg::ogl::light::PointLight>() };
+        pointLight->position = glm::vec3(pos(engine), 4.0f, pos(engine));
+        pointLight->diffuseIntensity = glm::vec3(col(engine), col(engine), col(engine));
+        pointLight->linear = 0.045f;
+        pointLight->quadratic = 0.0075f;
+        m_scene->AddPointLight(std::move(pointLight));
+    }
 }

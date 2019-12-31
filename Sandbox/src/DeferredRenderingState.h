@@ -17,10 +17,8 @@ public:
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
 
     using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
-    using PointLightSharedPtr = std::shared_ptr<sg::ogl::light::PointLight>;
     using FirstPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::FirstPersonCamera>;
 
-    using ModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ModelRenderSystem>;
     using GuiRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::GuiRenderSystem>;
     using DeferredRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::DeferredRenderSystem>;
 
@@ -61,14 +59,8 @@ private:
 
     DirectionalLightSharedPtr m_sun;
 
-    PointLightSharedPtr m_pointLight0;
-    PointLightSharedPtr m_pointLight1;
-    PointLightSharedPtr m_pointLight2;
-    PointLightSharedPtr m_pointLight3;
-
     FirstPersonCameraSharedPtr m_firstPersonCamera;
 
-    ModelRenderSystemUniquePtr m_modelRenderSystem;
     GuiRenderSystemUniquePtr m_guiRenderSystem;
     DeferredRenderSystemUniquePtr m_deferredRenderSystem;
 
@@ -77,4 +69,6 @@ private:
     //-------------------------------------------------
 
     void Init();
+    void CreateDirectionalLight();
+    void CreatePointLights(int t_numPointLights = 4) const;
 };
