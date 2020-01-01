@@ -36,7 +36,6 @@ namespace sg::ogl::camera
         // Setter
         //-------------------------------------------------
 
-        void SetCameraSpeed(double t_speed);
         void SetMouseSensitivity(float t_sensitivity);
         void InvertPitch(double t_dt);
 
@@ -52,7 +51,6 @@ namespace sg::ogl::camera
     protected:
 
     private:
-        double m_movementSpeed{ 1.0 };
         float m_mouseSensitivity{ 0.1f };
 
         //-------------------------------------------------

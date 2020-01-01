@@ -13,6 +13,7 @@ layout (location = 2) out vec4 gAlbedoSpec;
 in vec3 vPosition;
 in vec3 vNormal;
 in vec2 vUv;
+in vec3 vTangent;
 
 // Uniforms
 
@@ -24,28 +25,47 @@ uniform vec3 specularColor;
 uniform float hasSpecularMap;
 uniform sampler2D specularMap;
 
-// Global
-
-vec4 diffuseCol;
-vec4 specularCol;
+uniform float hasNormalMap;
+uniform sampler2D normalMap;
 
 // Function
 
-void SetupColors()
+vec3 GetDiffuse()
 {
-    // get diffuse color
-    diffuseCol = vec4(diffuseColor, 1.0);
+    vec4 diffuse = vec4(diffuseColor, 1.0);
     if (hasDiffuseMap > 0.5)
     {
-        diffuseCol = texture(diffuseMap, vUv);
+        diffuse = texture(diffuseMap, vUv);
     }
 
-    // get specular color
-    specularCol = vec4(specularColor, 1.0);
+    return diffuse.rgb;
+}
+
+float GetSpecularIntensity()
+{
+    vec4 specular = vec4(specularColor, 1.0);
     if (hasSpecularMap > 0.5)
     {
-        specularCol = texture(specularMap, vUv);
+        specular = texture(specularMap, vUv);
     }
+
+    return specular.r;
+}
+
+vec3 GetNormal()
+{
+    if (hasNormalMap > 0.5)
+    {
+        vec3 N = normalize(vNormal);
+        vec3 T = normalize(vTangent);
+        vec3 B = cross(N, T);
+        mat3 TBN = mat3(T, B, N);
+
+        vec3 normal = texture(normalMap, vUv).xyz * 2.0 - vec3(1.0);
+        return TBN * normalize(normal);
+    }
+
+    return normalize(vNormal);
 }
 
 // Main
@@ -53,10 +73,7 @@ void SetupColors()
 void main()
 {
     gPosition = vPosition;
-    gNormal = normalize(vNormal);
-
-    SetupColors();
-
-    gAlbedoSpec.rgb = diffuseCol.rgb;
-    gAlbedoSpec.a = specularCol.r;
+    gNormal = GetNormal();
+    gAlbedoSpec.rgb = GetDiffuse();
+    gAlbedoSpec.a = GetSpecularIntensity();
 }

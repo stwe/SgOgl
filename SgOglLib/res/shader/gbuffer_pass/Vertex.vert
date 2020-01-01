@@ -15,6 +15,7 @@ layout (location = 4) in vec3 aBiTangent;
 out vec3 vPosition;
 out vec3 vNormal;
 out vec2 vUv;
+out vec3 vTangent;
 
 // Uniforms
 
@@ -34,4 +35,5 @@ void main()
     vPosition = vec3(worldPosition);
     vNormal = mat3(transpose(inverse(modelMatrix))) * aNormal;
     vUv = aUv;
+    vTangent = aTangent;
 }

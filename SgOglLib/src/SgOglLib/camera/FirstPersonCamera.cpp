@@ -44,11 +44,6 @@ sg::ogl::camera::FirstPersonCamera::~FirstPersonCamera() noexcept
 // Setter
 //-------------------------------------------------
 
-void sg::ogl::camera::FirstPersonCamera::SetCameraSpeed(const double t_speed)
-{
-    m_movementSpeed = t_speed;
-}
-
 void sg::ogl::camera::FirstPersonCamera::SetMouseSensitivity(const float t_sensitivity)
 {
     m_mouseSensitivity = t_sensitivity;
@@ -81,32 +76,32 @@ void sg::ogl::camera::FirstPersonCamera::Update(const double t_dt)
     // handle keyboard input
     if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_W))
     {
-        ProcessKeyboard(CameraMovement::FORWARD, t_dt * m_cameraVelocity);
+        ProcessKeyboard(CameraMovement::FORWARD, t_dt);
     }
 
     if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_S))
     {
-        ProcessKeyboard(CameraMovement::BACKWARD, t_dt * m_cameraVelocity);
+        ProcessKeyboard(CameraMovement::BACKWARD, t_dt);
     }
 
     if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_A))
     {
-        ProcessKeyboard(CameraMovement::LEFT, t_dt * m_cameraVelocity);
+        ProcessKeyboard(CameraMovement::LEFT, t_dt);
     }
 
     if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_D))
     {
-        ProcessKeyboard(CameraMovement::RIGHT, t_dt * m_cameraVelocity);
+        ProcessKeyboard(CameraMovement::RIGHT, t_dt);
     }
 
     if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_O))
     {
-        ProcessKeyboard(CameraMovement::UP, t_dt * m_cameraVelocity);
+        ProcessKeyboard(CameraMovement::UP, t_dt);
     }
 
     if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_U))
     {
-        ProcessKeyboard(CameraMovement::DOWN, t_dt * m_cameraVelocity);
+        ProcessKeyboard(CameraMovement::DOWN, t_dt);
     }
 
     if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_I))
@@ -133,7 +128,7 @@ void sg::ogl::camera::FirstPersonCamera::Update(const double t_dt)
 
 void sg::ogl::camera::FirstPersonCamera::ProcessKeyboard(const CameraMovement t_direction, const double t_dt)
 {
-    const auto velocity{ static_cast<float>(m_movementSpeed * t_dt) };
+    const auto velocity{ static_cast<float>(m_cameraVelocity * t_dt) };
 
     if (t_direction == CameraMovement::FORWARD)
     {

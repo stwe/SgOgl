@@ -51,14 +51,21 @@ namespace sg::ogl::resource::shaderprogram
                 SetUniform("specularMap", 1);
                 TextureManager::BindForReading(t_currentMesh.GetDefaultMaterial()->mapKs, GL_TEXTURE1);
             }
+
+            SetUniform("hasNormalMap", t_currentMesh.GetDefaultMaterial()->HasNormalMap());
+            if (t_currentMesh.GetDefaultMaterial()->HasNormalMap())
+            {
+                SetUniform("normalMap", 2);
+                TextureManager::BindForReading(t_currentMesh.GetDefaultMaterial()->mapKn, GL_TEXTURE2);
+            }
         }
 
-        std::string GetFolderName() const override
+        [[nodiscard]] std::string GetFolderName() const override
         {
             return "gbuffer_pass";
         }
 
-        bool IsBuiltIn() const override
+        [[nodiscard]] bool IsBuiltIn() const override
         {
             return true;
         }

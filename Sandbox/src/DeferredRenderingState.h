@@ -16,7 +16,6 @@ class DeferredRenderingState : public sg::ogl::state::State
 public:
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
 
-    using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::DirectionalLight>;
     using FirstPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::FirstPersonCamera>;
 
     using GuiRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::GuiRenderSystem>;
@@ -57,18 +56,18 @@ protected:
 private:
     SceneUniquePtr m_scene;
 
-    DirectionalLightSharedPtr m_sun;
-
     FirstPersonCameraSharedPtr m_firstPersonCamera;
 
     GuiRenderSystemUniquePtr m_guiRenderSystem;
     DeferredRenderSystemUniquePtr m_deferredRenderSystem;
+
+    float m_temp{ 0.0f };
 
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------
 
     void Init();
-    void CreateDirectionalLight();
-    void CreatePointLights(int t_numPointLights = 4) const;
+    void AddDirectionalLight() const;
+    void AddPointLights(int t_numPointLights = 4) const;
 };

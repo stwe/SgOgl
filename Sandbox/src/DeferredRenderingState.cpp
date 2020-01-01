@@ -23,7 +23,15 @@ bool DeferredRenderingState::Input()
 
 bool DeferredRenderingState::Update(const double t_dt)
 {
+    m_temp += static_cast<float>(t_dt);
+
     m_scene->GetCurrentCamera().Update(t_dt);
+
+    auto& pointLights{ m_scene->GetPointLights() };
+    for (auto& pointLight : pointLights)
+    {
+        pointLight->position.x += sinf(m_temp);
+    }
 
     return true;
 }
@@ -48,12 +56,13 @@ void DeferredRenderingState::Init()
         -205.0f,
         -68.0f
     );
+    m_firstPersonCamera->SetCameraVelocity(24.0f);
 
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_firstPersonCamera);
 
-    CreateDirectionalLight();
-    CreatePointLights(12);
+    AddDirectionalLight();
+    AddPointLights(12);
 
     m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
     m_deferredRenderSystem = std::make_unique<sg::ogl::ecs::system::DeferredRenderSystem>(m_scene.get());
@@ -65,7 +74,7 @@ void DeferredRenderingState::Init()
         glm::vec3(100.0f, 1.0f, 100.0f),
         false,
         false,
-        true, // todo: normal mapping
+        false,
         false
     );
 
@@ -74,16 +83,16 @@ void DeferredRenderingState::Init()
     GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.5f, -0.5f, 0.25f, 0.25f, m_deferredRenderSystem->GetFbo().GetNormalTextureId());
 }
 
-void DeferredRenderingState::CreateDirectionalLight()
+void DeferredRenderingState::AddDirectionalLight() const
 {
-    m_sun = std::make_shared<sg::ogl::light::DirectionalLight>();
-    m_sun->direction = glm::vec3(0.9f, -0.1f, 0.0f);
-    m_sun->diffuseIntensity = glm::vec3(0.3f, 0.2f, 0.1f);
-    m_sun->specularIntensity = glm::vec3(0.2f, 0.2f, 0.2f);
-    m_scene->SetDirectionalLight(m_sun);
+    auto sun{ std::make_unique<sg::ogl::light::DirectionalLight>() };
+    sun->direction = glm::vec3(0.9f, -0.1f, 0.0f);
+    sun->diffuseIntensity = glm::vec3(0.3f, 0.2f, 0.1f);
+    sun->specularIntensity = glm::vec3(0.2f, 0.2f, 0.2f);
+    m_scene->SetDirectionalLight(std::move(sun));
 }
 
-void DeferredRenderingState::CreatePointLights(const int t_numPointLights) const
+void DeferredRenderingState::AddPointLights(const int t_numPointLights) const
 {
     std::random_device seeder;
     std::mt19937 engine(seeder());

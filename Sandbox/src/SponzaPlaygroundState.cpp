@@ -103,7 +103,7 @@ void SponzaPlaygroundState::Init()
     );
 
     m_firstPersonCamera->SetMouseSensitivity(0.3f);
-    m_firstPersonCamera->SetCameraSpeed(200.0f);
+    m_firstPersonCamera->SetCameraVelocity(200.0f);
 
     // create scene and set the camera as current
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
