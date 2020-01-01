@@ -63,6 +63,11 @@ void GetBufferData()
     normal = texture(gNormal, vUv).rgb;
     diffuse = texture(gAlbedoSpec, vUv).rgb;
     specular = texture(gAlbedoSpec, vUv).a;
+
+    if (normal == vec3(0.0, 0.0, 0.0))
+    {
+        discard;
+    }
 }
 
 vec3 CalcDirectionalLight(vec3 normal, vec3 viewDir)

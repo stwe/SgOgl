@@ -107,7 +107,7 @@ void sg::ogl::OpenGl::EnableDepthAndStencilTesting()
     glEnable(GL_STENCIL_TEST);
     glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 
-    SG_OGL_CORE_LOG_DEBUG("[OpenGl::EnableDepthAndStencilTesting()] Depth and Stencil testing enabled.");
+    SG_OGL_CORE_LOG_WARN("[OpenGl::EnableDepthAndStencilTesting()] Depth and Stencil testing enabled.");
 }
 
 void sg::ogl::OpenGl::EnableWritingIntoDepthBuffer()

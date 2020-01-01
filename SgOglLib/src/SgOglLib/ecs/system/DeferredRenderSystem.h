@@ -35,9 +35,6 @@ namespace sg::ogl::ecs::system
         {
             m_gbuffer = std::make_unique<buffer::GBufferFbo>(m_scene->GetApplicationContext());
             m_quadMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::QUAD_MESH);
-
-            m_width = m_scene->GetApplicationContext()->GetProjectionOptions().width;
-            m_height = m_scene->GetApplicationContext()->GetProjectionOptions().height;
         }
 
         //-------------------------------------------------
@@ -59,11 +56,7 @@ namespace sg::ogl::ecs::system
             GeometryPass();
             LightingPass();
 
-            // todo
-            glBindFramebuffer(GL_READ_FRAMEBUFFER, m_gbuffer->GetFboId());
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-            glBlitFramebuffer(0, 0, m_width, m_height, 0, 0, m_width, m_height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            //m_gbuffer->CopyDepthBufferToDefaultFramebuffer();
 
             FinishRendering();
         }
@@ -73,9 +66,6 @@ namespace sg::ogl::ecs::system
     private:
         GBufferFboUniquePtr m_gbuffer;
         MeshSharedPtr m_quadMesh;
-
-        int32_t m_width{ 0 };
-        int32_t m_height{ 0 };
 
         //-------------------------------------------------
         // Passes
@@ -146,7 +136,7 @@ namespace sg::ogl::ecs::system
 
         void PrepareRendering() override
         {
-            OpenGl::EnableAlphaBlending();
+            OpenGl::DisableBlending();   // disable GL_BLEND
             OpenGl::EnableFaceCulling();
         }
 

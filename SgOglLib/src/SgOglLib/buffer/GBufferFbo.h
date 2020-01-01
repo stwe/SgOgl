@@ -52,6 +52,7 @@ namespace sg::ogl::buffer
 
         void BindFbo() const;
         static void UnbindFbo();
+        void CopyDepthBufferToDefaultFramebuffer() const;
 
     protected:
 
