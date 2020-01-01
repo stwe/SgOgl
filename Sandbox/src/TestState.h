@@ -23,7 +23,7 @@ public:
 
     using PlayerRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::PlayerRenderSystem>;
     using SkeletalModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkeletalModelRenderSystem>;
-    using ModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ModelRenderSystem>;
+    using ModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ForwardRenderSystem>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.

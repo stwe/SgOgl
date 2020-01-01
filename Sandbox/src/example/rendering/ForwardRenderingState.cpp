@@ -1,27 +1,27 @@
 // This file is part of the SgOgl package.
 // 
-// Filename: DeferredRenderingState.cpp
+// Filename: ForwardRenderingState.cpp
 // Author:   stwe
 // 
 // License:  MIT
 // 
-// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include <random>
-#include "DeferredRenderingState.h"
+#include "ForwardRenderingState.h"
 
 //-------------------------------------------------
 // Logic
 //-------------------------------------------------
 
-bool DeferredRenderingState::Input()
+bool ForwardRenderingState::Input()
 {
     m_scene->GetCurrentCamera().Input();
 
     return true;
 }
 
-bool DeferredRenderingState::Update(const double t_dt)
+bool ForwardRenderingState::Update(const double t_dt)
 {
     m_temp += static_cast<float>(t_dt);
 
@@ -36,17 +36,16 @@ bool DeferredRenderingState::Update(const double t_dt)
     return true;
 }
 
-void DeferredRenderingState::Render()
+void ForwardRenderingState::Render()
 {
-    m_deferredRenderSystem->Render();
-    //m_guiRenderSystem->Render();
+    m_forwardRenderSystem->Render();
 }
 
 //-------------------------------------------------
 // Helper
 //-------------------------------------------------
 
-void DeferredRenderingState::Init()
+void ForwardRenderingState::Init()
 {
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::Black());
 
@@ -62,10 +61,9 @@ void DeferredRenderingState::Init()
     m_scene->SetCurrentCamera(m_firstPersonCamera);
 
     AddDirectionalLight();
-    AddPointLights(12);
+    AddPointLights(4);
 
-    m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
-    m_deferredRenderSystem = std::make_unique<sg::ogl::ecs::system::DeferredRenderSystem>(m_scene.get());
+    m_forwardRenderSystem = std::make_unique<sg::ogl::ecs::system::ForwardRenderSystem>(m_scene.get());
 
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
         "res/model/Plane/plane1.obj",
@@ -77,13 +75,9 @@ void DeferredRenderingState::Init()
         false,
         false
     );
-
-    GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.5f, 0.5f, 0.25f, 0.25f, m_deferredRenderSystem->GetFbo().GetPositionTextureId());
-    GetApplicationContext()->GetEntityFactory().CreateGuiEntity(0.5f, 0.5f, 0.25f, 0.25f, m_deferredRenderSystem->GetFbo().GetAlbedoSpecTextureId());
-    GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.5f, -0.5f, 0.25f, 0.25f, m_deferredRenderSystem->GetFbo().GetNormalTextureId());
 }
 
-void DeferredRenderingState::AddDirectionalLight() const
+void ForwardRenderingState::AddDirectionalLight() const
 {
     auto sun{ std::make_unique<sg::ogl::light::DirectionalLight>() };
     sun->direction = glm::vec3(0.9f, -0.1f, 0.0f);
@@ -92,7 +86,7 @@ void DeferredRenderingState::AddDirectionalLight() const
     m_scene->SetDirectionalLight(std::move(sun));
 }
 
-void DeferredRenderingState::AddPointLights(const int t_numPointLights) const
+void ForwardRenderingState::AddPointLights(const int t_numPointLights) const
 {
     std::random_device seeder;
     std::mt19937 engine(seeder());

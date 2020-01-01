@@ -97,7 +97,7 @@ void TerrainState::Init()
     m_skyboxRenderSystem = std::make_unique<sg::ogl::ecs::system::SkyboxRenderSystem>(m_scene.get());
     m_playerRenderSystem = std::make_unique<sg::ogl::ecs::system::PlayerRenderSystem>(m_scene.get());
     m_skeletalModelRenderSystem = std::make_unique<sg::ogl::ecs::system::SkeletalModelRenderSystem>(m_scene.get());
-    m_modelRenderSystem = std::make_unique<sg::ogl::ecs::system::ModelRenderSystem>(m_scene.get());
+    m_modelRenderSystem = std::make_unique<sg::ogl::ecs::system::ForwardRenderSystem>(m_scene.get());
     m_terrainRenderSystem = std::make_unique<sg::ogl::ecs::system::TerrainRenderSystem>(m_scene.get());
 
     // create skybox entity

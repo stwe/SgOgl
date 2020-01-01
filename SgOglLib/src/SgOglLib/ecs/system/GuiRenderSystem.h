@@ -20,7 +20,7 @@ namespace sg::ogl::ecs::system
     class GuiRenderSystem : public RenderSystem<resource::shaderprogram::GuiShaderProgram>
     {
     public:
-        explicit GuiRenderSystem(sg::ogl::scene::Scene* t_scene)
+        explicit GuiRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
         {}
 

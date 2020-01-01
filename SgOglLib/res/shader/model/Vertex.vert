@@ -15,12 +15,26 @@ layout (location = 4) in vec3 aBiTangent;
 out vec3 vPosition;
 out vec3 vNormal;
 out vec2 vUv;
+out mat3 vTbnMatrix;
 
 // Uniforms
 
 uniform mat4 modelMatrix;
 uniform mat4 mvpMatrix;
 uniform vec4 plane;
+
+// Function
+
+mat3 GetTbnMatrix()
+{
+    mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
+    vec3 T = normalize(normalMatrix * aTangent);
+    vec3 N = normalize(normalMatrix * aNormal);
+    T = normalize(T - dot(T, N) * N);
+    vec3 B = cross(N, T);
+    
+    return transpose(mat3(T, B, N));
+}
 
 // Main
 
@@ -34,4 +48,5 @@ void main()
     vPosition = vec3(worldPosition);
     vNormal = mat3(transpose(inverse(modelMatrix))) * aNormal;
     vUv = aUv;
+    vTbnMatrix = GetTbnMatrix();
 }

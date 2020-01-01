@@ -36,9 +36,11 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("plane", t_scene.GetCurrentClipPlane());
             SetUniform("mvpMatrix", mvp);
 
+            SetUniform("numLights", static_cast<int32_t>(t_scene.GetPointLights().size()));
+
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
             SetUniform("directionalLight", t_scene.GetDirectionalLight());
-            SetUniform("pointLight", *t_scene.GetPointLights()[0]);
+            SetUniform("pointLights", t_scene.GetPointLights());
 
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
@@ -56,6 +58,13 @@ namespace sg::ogl::resource::shaderprogram
             {
                 SetUniform("specularMap", 1);
                 TextureManager::BindForReading(t_currentMesh.GetDefaultMaterial()->mapKs, GL_TEXTURE1);
+            }
+
+            SetUniform("hasNormalMap", t_currentMesh.GetDefaultMaterial()->HasNormalMap());
+            if (t_currentMesh.GetDefaultMaterial()->HasNormalMap())
+            {
+                SetUniform("normalMap", 2);
+                TextureManager::BindForReading(t_currentMesh.GetDefaultMaterial()->mapKn, GL_TEXTURE2);
             }
 
             SetUniform("shininess", t_currentMesh.GetDefaultMaterial()->ns);

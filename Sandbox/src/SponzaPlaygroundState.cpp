@@ -128,7 +128,7 @@ void SponzaPlaygroundState::Init()
     m_scene->AddPointLight(m_pointLight);
 
     // create render systems
-    m_modelRenderSystem = std::make_unique<sg::ogl::ecs::system::ModelRenderSystem>(m_scene.get());
+    m_modelRenderSystem = std::make_unique<sg::ogl::ecs::system::ForwardRenderSystem>(m_scene.get());
     m_skeletalModelRenderSystem = std::make_unique<sg::ogl::ecs::system::SkeletalModelRenderSystem>(m_scene.get());
     m_skydomeRenderSystem = std::make_unique<sg::ogl::ecs::system::SkydomeRenderSystem>(m_scene.get());
     m_skyboxRenderSystem = std::make_unique<sg::ogl::ecs::system::SkyboxRenderSystem>(m_scene.get());

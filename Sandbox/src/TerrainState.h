@@ -26,7 +26,7 @@ public:
     using SkyboxRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkyboxRenderSystem>;
     using PlayerRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::PlayerRenderSystem>;
     using SkeletalModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkeletalModelRenderSystem>;
-    using ModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ModelRenderSystem>;
+    using ModelRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ForwardRenderSystem>;
     using TerrainRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::TerrainRenderSystem>;
 
     //-------------------------------------------------
