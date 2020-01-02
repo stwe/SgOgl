@@ -143,7 +143,6 @@ void SponzaPlaygroundState::Init()
         glm::vec3(1.0f),
         false,
         false,
-        true,
         false
     );
 
@@ -152,7 +151,6 @@ void SponzaPlaygroundState::Init()
         glm::vec3(91.0f, 0.0f, -42.0f),
         glm::vec3(0.0f),
         glm::vec3(16.0f),
-        false,
         false,
         false,
         true

@@ -72,7 +72,6 @@ void ForwardRenderingState::Init()
         glm::vec3(100.0f, 1.0f, 100.0f),
         false,
         false,
-        false,
         false
     );
 }

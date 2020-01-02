@@ -48,7 +48,6 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const glm::vec3& t_scale,
     const bool t_showTriangles,
     const bool t_fakeNormals,
-    const bool t_useExistingNormalmaps,
     const bool t_moveable
 ) const
 {
@@ -61,8 +60,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
         entity,
         m_application->GetModelManager().GetModelByPath(t_fullModelFilePath, pFlags),
         t_showTriangles,
-        t_fakeNormals,
-        t_useExistingNormalmaps
+        t_fakeNormals
     );
 
     // add transform component

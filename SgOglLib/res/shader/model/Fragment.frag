@@ -58,73 +58,127 @@ uniform float shininess;
 
 // Global
 
-vec4 diffuseCol;
-vec4 specularCol;
+vec4 diffuse;
+vec4 specular;
 
 // Function
 
-void SetupColors()
+vec4 GetDiffuseColor()
 {
-    // get diffuse color
-    diffuseCol = vec4(diffuseColor, 1.0);
+    vec4 diffuse = vec4(diffuseColor, 1.0);
     if (hasDiffuseMap > 0.5)
     {
-        diffuseCol = texture(diffuseMap, vUv);
+        diffuse = texture(diffuseMap, vUv);
     }
 
-    // get specular color
-    specularCol = vec4(specularColor, 1.0);
+    return diffuse;
+}
+
+vec4 GetSpecularColor()
+{
+    vec4 specular = vec4(specularColor, 1.0);
     if (hasSpecularMap > 0.5)
     {
-        specularCol = texture(specularMap, vUv);
+        specular = texture(specularMap, vUv);
     }
+
+    return specular;
+}
+
+vec3 GetNormal()
+{
+    // tangent space
+    if (hasNormalMap > 0.5)
+    {
+        // obtain normal from normal map in range [0, 1]
+        vec3 normal = texture(normalMap, vUv).rgb;
+
+        // transform normal vector to range [-1, 1]
+        normal = normalize(normal * 2.0 - 1.0);
+
+        return normal;
+    }
+
+    // world space
+    return normalize(vNormal);
+}
+
+vec3 GetViewDir()
+{
+    // tangent space
+    if (hasNormalMap > 0.5)
+    {
+        vec3 tangentFragmentPosition = vTbnMatrix * vPosition;
+        vec3 tangentCameraPosition = vTbnMatrix * cameraPosition;
+
+        return normalize(tangentCameraPosition - tangentFragmentPosition);
+    }
+
+    // world space
+    return normalize(cameraPosition - vPosition);
+}
+
+vec3 GetFragPos()
+{
+    // tangent space
+    if (hasNormalMap > 0.5)
+    {
+        return vTbnMatrix * vPosition;
+    }
+
+    // world space
+    return vPosition;
 }
 
 vec3 CalcDirectionalLight(vec3 normal, vec3 viewDir)
 {
+    // light direction in world space or tangent space
     vec3 lightDir = normalize(-directionalLight.direction);
     if (hasNormalMap > 0.5)
     {
-        vec3 tangentDirectionalLightDirection = vTbnMatrix * directionalLight.direction;
-        lightDir = normalize(-tangentDirectionalLightDirection);
+        vec3 tangentDirectionalLightDir = vTbnMatrix * directionalLight.direction;
+        lightDir = normalize(-tangentDirectionalLightDir);
     }
 
     // diffuse
     float diffuseFactor = max(dot(normal, lightDir), 0.0);
-    vec3 diffuse = directionalLight.diffuseIntensity * diffuseFactor * diffuseCol.rgb;
+    vec3 diff = directionalLight.diffuseIntensity * diffuseFactor * diffuse.rgb;
 
     // specular
     vec3 reflectDir = reflect(-lightDir, normal);
     float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-    vec3 specular = directionalLight.specularIntensity * specularFactor * specularCol.rgb;
+    vec3 spec = directionalLight.specularIntensity * specularFactor * specular.rgb;
 
     // result
-    return diffuse + specular;
+    return diff + spec;
 }
 
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
-    vec3 lightDir = normalize(light.position - fragPos);
+    // light position in world space or tangent space
+    vec3 lightPos = light.position;
     if (hasNormalMap > 0.5)
     {
-        vec3 tangentPointLightPosition = vTbnMatrix * light.position;
-        lightDir = normalize(tangentPointLightPosition - fragPos);
+        lightPos = vTbnMatrix * light.position;
     }
 
+    // light direction
+    vec3 lightDir = normalize(lightPos - fragPos);
+
     // ambient
-    vec3 ambient = light.ambientIntensity * diffuseCol.rgb;
+    vec3 ambient = light.ambientIntensity * diffuse.rgb;
 
     // diffuse
     float diffuseFactor = max(dot(normal, lightDir), 0.0);
-    vec3 diffuse = light.diffuseIntensity * diffuseFactor * diffuseCol.rgb;
+    vec3 diffuse = light.diffuseIntensity * diffuseFactor * diffuse.rgb;
 
     // specular
     vec3 reflectDir = reflect(-lightDir, normal);
     float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-    vec3 specular = light.specularIntensity * specularFactor * specularCol.rgb;
+    vec3 specular = light.specularIntensity * specularFactor * specular.rgb;
 
     // attenuation
-    float distance = length(light.position - fragPos);
+    float distance = length(lightPos - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
     ambient *= attenuation;
@@ -135,57 +189,41 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     return ambient + diffuse + specular;
 }
 
-vec3 GetNormal()
-{
-    if (hasNormalMap > 0.5)
-    {
-        // obtain normal from normal map in range [0,1]
-        vec3 normal = texture(normalMap, vUv).rgb;
-
-        // transform normal vector to range [-1,1]
-        normal = normalize(normal * 2.0 - 1.0);  // this normal is in tangent space
-
-        return normal;
-    }
-
-    return normalize(vNormal);
-}
-
-vec3 GetViewDir()
-{
-    if (hasNormalMap > 0.5)
-    {
-        vec3 tangentFragmentPosition = vTbnMatrix * vPosition;
-        vec3 tangentCameraPosition = vTbnMatrix * cameraPosition;
-
-        return normalize(tangentCameraPosition - tangentFragmentPosition);
-    }
-
-    return normalize(cameraPosition - vPosition);
-}
-
 // Main
 
 void main()
 {
-    SetupColors();
+    // get colors
+    diffuse = GetDiffuseColor();
+    specular = GetSpecularColor();
 
-    if (diffuseCol.a < 0.5)
+    // discard if transparent
+    if (diffuse.a < 0.5)
     {
         discard;
     }
 
+    // get normal in tangent or world space
     vec3 normal = GetNormal();
+
+    // get view direction in tangent or world space
     vec3 viewDir = GetViewDir();
 
-    vec3 ambient = ambientIntensity * diffuseCol.rgb;
+    // calc ambient
+    vec3 ambient = ambientIntensity * diffuse.rgb;
 
+    // calc directional light
     vec3 result = CalcDirectionalLight(normal, viewDir);
 
+    // get fragment position in tangent or world space
+    vec3 fragPos = GetFragPos();
+
+    // calc point lights
     for(int i = 0; i < numLights; ++i)
     {
-        result += CalcPointLight(pointLights[i], normal, vPosition, viewDir);
+        result += CalcPointLight(pointLights[i], normal, fragPos, viewDir);
     }
 
+    // result
     fragColor = vec4(ambient + result, 1.0);
 }

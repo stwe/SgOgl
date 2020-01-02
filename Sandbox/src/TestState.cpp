@@ -107,7 +107,6 @@ void TestState::Init()
         glm::vec3(32.0f, 1.0f, 32.0f),
         false,
         false,
-        true, // the model has a normalmap
         false
     );
 

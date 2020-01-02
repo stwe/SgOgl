@@ -56,11 +56,11 @@ protected:
         //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: TerrainState as Game.");
         //GetStateStack().RegisterState<TerrainState>(sg::ogl::state::GAME);
 
-        //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: DeferredRenderingState as Game.");
-        //GetStateStack().RegisterState<DeferredRenderingState>(sg::ogl::state::GAME);
+        SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: DeferredRenderingState as Game.");
+        GetStateStack().RegisterState<DeferredRenderingState>(sg::ogl::state::GAME);
 
-        SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: ForwardRenderingState as Game.");
-        GetStateStack().RegisterState<ForwardRenderingState>(sg::ogl::state::GAME);
+        //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: ForwardRenderingState as Game.");
+        //GetStateStack().RegisterState<ForwardRenderingState>(sg::ogl::state::GAME);
     }
 
     void Init() override

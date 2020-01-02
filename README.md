@@ -13,8 +13,8 @@
 
 1. [What is does](#1-what-is-does)
 1. [Installing](#2-installing)
-1. [Features](3#-features)
-1. [Dependencies](4#-dependencies)
+1. [Features](#3-features)
+1. [Dependencies](#4-dependencies)
 1. [Getting started](#5-getting-started)
 1. [Code snippets](#6-code-snippets)
 
@@ -240,6 +240,19 @@ The config file can look like this.
 ```
 
 ## 6. Code snippets
+
+
+![Forward](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/forward.png)
+
+
+[Forward rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/rendering/ForwardRenderingState.cpp)
+
+
+![Deferred](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/deferred.png)
+
+
+[Deferred rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/rendering/DeferredRenderingState.cpp)
+
 
 [Sponza playground](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/SponzaPlaygroundState.cpp)
 

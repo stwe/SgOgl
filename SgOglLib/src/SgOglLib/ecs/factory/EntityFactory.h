@@ -77,7 +77,6 @@ namespace sg::ogl::ecs::factory
             const glm::vec3& t_scale,
             bool t_showTriangles = false,
             bool t_fakeNormals = false,
-            bool t_useExistingNormalmaps = false,
             bool t_moveable = false
         ) const;
 
