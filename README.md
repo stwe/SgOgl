@@ -242,17 +242,23 @@ The config file can look like this.
 ## 6. Code snippets
 
 
+### Forward rendering
+
 ![Forward](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/forward.png)
 
 
 [Forward rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/rendering/ForwardRenderingState.cpp)
 
 
+### Deferred rendering
+
 ![Deferred](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/deferred.png)
 
 
 [Deferred rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/rendering/DeferredRenderingState.cpp)
 
+
+### Other examples
 
 [Sponza playground](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/SponzaPlaygroundState.cpp)
 
