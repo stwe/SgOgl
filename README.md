@@ -244,7 +244,7 @@ The config file can look like this.
 
 ### Forward rendering
 
-![Forward](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/forward.png) <!-- .element height="50%" width="50%" -->
+![Forward](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/forward.png){:height="50%" width="50%"}
 
 
 [Forward rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/rendering/ForwardRenderingState.cpp)
@@ -252,7 +252,7 @@ The config file can look like this.
 
 ### Deferred rendering
 
-![Deferred](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/deferred.png) <!-- .element height="50%" width="50%" -->
+![Deferred](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/deferred.png){:height="50%" width="50%"}
 
 
 [Deferred rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/rendering/DeferredRenderingState.cpp)
