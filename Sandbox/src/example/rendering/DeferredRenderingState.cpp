@@ -27,7 +27,7 @@ bool DeferredRenderingState::Update(const double t_dt)
 
     m_scene->GetCurrentCamera().Update(t_dt);
 
-    auto& pointLights{ m_scene->GetPointLights() };
+    auto& pointLights{ m_scene->GetScenePointLights() };
     for (auto& pointLight : pointLights)
     {
         pointLight->position.x += sinf(m_temp);
@@ -72,8 +72,6 @@ void DeferredRenderingState::Init()
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f),
         glm::vec3(100.0f, 1.0f, 100.0f),
-        false,
-        false,
         false
     );
 
@@ -106,6 +104,6 @@ void DeferredRenderingState::AddPointLights(const int t_numPointLights) const
         pointLight->diffuseIntensity = glm::vec3(col(engine), col(engine), col(engine));
         pointLight->linear = 0.045f;
         pointLight->quadratic = 0.0075f;
-        m_scene->AddPointLight(std::move(pointLight));
+        m_scene->AddScenePointLight(std::move(pointLight));
     }
 }

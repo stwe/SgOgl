@@ -34,7 +34,7 @@ namespace sg::ogl::resource::shaderprogram
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
             SetUniform("directionalLight", t_scene.GetDirectionalLight());
-            SetUniform("pointLight", *t_scene.GetPointLights()[0]);
+            SetUniform("pointLight", *t_scene.GetScenePointLights()[0]);
 
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 

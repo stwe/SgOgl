@@ -24,7 +24,25 @@ namespace sg::ogl::ecs::system
             : RenderSystem(t_scene)
         {}
 
-        void Update(double t_dt) override {}
+        void Update(double t_dt) override
+        {
+            // Some entities have a PointLightComponent.
+            // The PointLight may need to be added to the scene if it does not already exist there.
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::ModelComponent,
+                component::TransformComponent,
+                component::PointLightComponent>()
+            };
+
+            for (auto entity : view)
+            {
+                // The PointLight is only added to the scene if it does not already exist.
+                auto& pointLightComponent{ view.get<component::PointLightComponent>(entity) };
+                m_scene->AddEntityPointLight(pointLightComponent.name, pointLightComponent.pointLight);
+
+                // todo: remove
+            }
+        }
 
         void Render() override
         {
@@ -46,7 +64,7 @@ namespace sg::ogl::ecs::system
 
                 if (modelComponent.showTriangles)
                 {
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                    OpenGl::EnableWireframeMode();
                 }
 
                 for (auto& mesh : modelComponent.model->GetMeshes())
@@ -59,7 +77,7 @@ namespace sg::ogl::ecs::system
 
                 if (modelComponent.showTriangles)
                 {
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                    OpenGl::DisableWireframeMode();
                 }
             }
 

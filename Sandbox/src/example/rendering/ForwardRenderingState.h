@@ -63,5 +63,5 @@ private:
 
     void Init();
     void AddDirectionalLight() const;
-    void AddPointLights(int t_numPointLights = 4) const;
+    void AddScenePointLights(int t_numPointLights = 4) const;
 };

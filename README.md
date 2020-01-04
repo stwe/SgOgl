@@ -242,19 +242,17 @@ The config file can look like this.
 ## 6. Code snippets
 
 
-### Forward rendering
+### Forward rendering with some Point Lights
 
-<img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/forward.png" alt="Forward" width="64" height="64" />
-
-![Forward](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/forward.png)
+<img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/forward.png" alt="Forward" width="128" height="128" />
 
 
 [Forward rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/rendering/ForwardRenderingState.cpp)
 
 
-### Deferred rendering
+### Deferred rendering with some Point Lights
 
-![Deferred](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/deferred.png)
+<img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/deferred.png" alt="Deferred" width="128" height="128" />
 
 
 [Deferred rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/rendering/DeferredRenderingState.cpp)

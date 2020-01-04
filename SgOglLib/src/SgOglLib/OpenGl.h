@@ -71,6 +71,9 @@ namespace sg::ogl
         static void EnableClipping();
         static void DisableClipping();
 
+        static void EnableWireframeMode();
+        static void DisableWireframeMode();
+
         static void SetDepthFunc(uint32_t t_func);
 
     protected:

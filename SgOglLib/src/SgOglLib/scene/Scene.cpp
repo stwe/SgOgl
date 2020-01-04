@@ -60,9 +60,14 @@ const sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetDirectionalLig
     return *m_directionalLight;
 }
 
-const sg::ogl::scene::Scene::PointLightContainer& sg::ogl::scene::Scene::GetPointLights() const noexcept
+const sg::ogl::scene::Scene::ScenePointLightContainer& sg::ogl::scene::Scene::GetScenePointLights() const noexcept
 {
-    return m_pointLights;
+    return m_scenePointLights;
+}
+
+const sg::ogl::scene::Scene::EntityPointLightContainer& sg::ogl::scene::Scene::GetEntityPointLights() const noexcept
+{
+    return m_entityPointLights;
 }
 
 bool sg::ogl::scene::Scene::IsDirectionalLight() const
@@ -105,10 +110,22 @@ void sg::ogl::scene::Scene::SetDirectionalLight(const DirectionalLightSharedPtr&
     m_directionalLight = t_directionalLight;
 }
 
-void sg::ogl::scene::Scene::AddPointLight(const PointLightSharedPtr& t_pointLight)
+void sg::ogl::scene::Scene::AddScenePointLight(const PointLightSharedPtr& t_pointLight)
 {
-    SG_OGL_CORE_ASSERT(t_pointLight, "[Scene::AddPointLight()] Null pointer.")
-    m_pointLights.push_back(t_pointLight);
+    SG_OGL_CORE_ASSERT(t_pointLight, "[Scene::AddScenePointLight()] Null pointer.")
+    m_scenePointLights.push_back(t_pointLight);
+}
+
+void sg::ogl::scene::Scene::AddEntityPointLight(const std::string& t_name, const PointLightSharedPtr& t_pointLight)
+{
+    SG_OGL_CORE_ASSERT(!t_name.empty(), "[Scene::AddEntityPointLight()] Invalid name.")
+    SG_OGL_CORE_ASSERT(t_pointLight, "[Scene::AddEntityPointLight()] Null pointer.")
+
+    if (m_entityPointLights.count(t_name) == 0)
+    {
+        m_entityPointLights.emplace(t_name, t_pointLight);
+        SG_OGL_CORE_LOG_DEBUG("[Scene::AddEntityPointLight()] Entity Point Light {} added to the scene.", t_name);
+    }
 }
 
 void sg::ogl::scene::Scene::SetCurrentClipPlane(const glm::vec4& t_currentClipPlane)

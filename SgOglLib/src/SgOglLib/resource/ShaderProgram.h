@@ -128,14 +128,8 @@ namespace sg::ogl::resource
         void SetUniform(const std::string& t_uniformName, const light::DirectionalLight& t_directionalLight);
         void SetUniform(const std::string& t_uniformName, const light::PointLight& t_pointLight);
         void SetUniform(const std::string& t_uniformName, const Material& t_material);
-
-        void SetUniform(const std::string& t_uniformName, const std::vector<std::shared_ptr<light::PointLight>>& t_pointLights)
-        {
-            for (auto i{ 0u }; i < t_pointLights.size(); ++i)
-            {
-                SetUniform(t_uniformName + "[" + std::to_string(i) + "]", *t_pointLights[i]);
-            }
-        }
+        void SetUniform(const std::string& t_uniformName, const std::vector<std::shared_ptr<light::PointLight>>& t_pointLights);
+        void SetUniform(const std::string& t_uniformName, const std::map<std::string, std::shared_ptr<light::PointLight>>& t_pointLights);
 
         template <typename T>
         void SetUniform(const std::string& t_uniformName, const std::vector<T>& t_container)

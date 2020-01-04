@@ -21,6 +21,11 @@ namespace sg::ogl::camera
     class ThirdPersonCamera;
 }
 
+namespace sg::ogl::light
+{
+    struct PointLight;
+}
+
 namespace sg::ogl::terrain
 {
     class Terrain;
@@ -46,6 +51,7 @@ namespace sg::ogl::ecs::factory
     class EntityFactory
     {
     public:
+        using PointLightSharedPtr = std::shared_ptr<light::PointLight>;
         using ThirdPersonCameraSharedPtr = std::shared_ptr<camera::ThirdPersonCamera>;
         using TerrainSharedPtr = std::shared_ptr<terrain::Terrain>;
         using WaterSharedPtr = std::shared_ptr<water::Water>;
@@ -70,14 +76,42 @@ namespace sg::ogl::ecs::factory
         // Factories
         //-------------------------------------------------
 
-        void CreateModelEntity(
+        /**
+         * @brief Creates an Entity from a model file.
+         * @param t_fullModelFilePath The file path to the model.
+         * @param t_position The position of the model.
+         * @param t_rotation The rotation of the model.
+         * @param t_scale The scale of the model.
+         * @param t_showTriangles Render primitives as wireframes.
+         * @return The created Entity.
+         */
+        entt::entity CreateModelEntity(
             const std::string& t_fullModelFilePath,
             const glm::vec3& t_position,
             const glm::vec3& t_rotation,
             const glm::vec3& t_scale,
-            bool t_showTriangles = false,
-            bool t_fakeNormals = false,
-            bool t_moveable = false
+            bool t_showTriangles = false
+        ) const;
+
+        /**
+         * @brief Creates an Entity from a model file and add a PointLightComponent.
+         * @param t_pointLight Point light which is added as component.
+         * @param t_name The name of the Point Light.
+         * @param t_fullModelFilePath The file path to the model.
+         * @param t_position The position of the model.
+         * @param t_rotation The rotation of the model.
+         * @param t_scale The scale of the model.
+         * @param t_showTriangles Render primitives as wireframes.
+         * @return The created Entity.
+         */
+        entt::entity CreatePointLightEntity(
+            const PointLightSharedPtr& t_pointLight,
+            const std::string& t_name,
+            const std::string& t_fullModelFilePath,
+            const glm::vec3& t_position,
+            const glm::vec3& t_rotation,
+            const glm::vec3& t_scale,
+            bool t_showTriangles = false
         ) const;
 
         void CreateModelEntity(

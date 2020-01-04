@@ -9,8 +9,10 @@
 
 #pragma once
 
+#include <string>
 #include <memory>
 #include <vector>
+#include <map>
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 
@@ -40,7 +42,8 @@ namespace sg::ogl::scene
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
 
         using PointLightSharedPtr = std::shared_ptr<light::PointLight>;
-        using PointLightContainer = std::vector<PointLightSharedPtr>;
+        using ScenePointLightContainer = std::vector<PointLightSharedPtr>;
+        using EntityPointLightContainer = std::map<std::string, PointLightSharedPtr>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -69,7 +72,8 @@ namespace sg::ogl::scene
         [[nodiscard]] light::DirectionalLight& GetDirectionalLight() noexcept;
         [[nodiscard]] const light::DirectionalLight& GetDirectionalLight() const noexcept;
 
-        [[nodiscard]] const PointLightContainer& GetPointLights() const noexcept;
+        [[nodiscard]] const ScenePointLightContainer& GetScenePointLights() const noexcept;
+        [[nodiscard]] const EntityPointLightContainer& GetEntityPointLights() const noexcept;
 
         [[nodiscard]] bool IsDirectionalLight() const;
 
@@ -84,7 +88,8 @@ namespace sg::ogl::scene
         void SetAmbientIntensity(const glm::vec3& t_ambientIntensity);
         void SetCurrentCamera(const CameraSharedPtr& t_camera);
         void SetDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
-        void AddPointLight(const PointLightSharedPtr& t_pointLight);
+        void AddScenePointLight(const PointLightSharedPtr& t_pointLight);
+        void AddEntityPointLight(const std::string& t_name, const PointLightSharedPtr& t_pointLight);
         void SetCurrentClipPlane(const glm::vec4& t_currentClipPlane);
 
     protected:
@@ -95,7 +100,8 @@ namespace sg::ogl::scene
         CameraSharedPtr m_currentCamera;
 
         DirectionalLightSharedPtr m_directionalLight;
-        PointLightContainer m_pointLights;
+        ScenePointLightContainer m_scenePointLights;
+        EntityPointLightContainer m_entityPointLights;
 
         glm::vec4 m_currentClipPlane{ glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f) };
 

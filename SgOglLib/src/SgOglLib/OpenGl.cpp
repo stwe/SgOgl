@@ -155,6 +155,16 @@ void sg::ogl::OpenGl::DisableClipping()
     glDisable(GL_CLIP_DISTANCE0);
 }
 
+void sg::ogl::OpenGl::EnableWireframeMode()
+{
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+void sg::ogl::OpenGl::DisableWireframeMode()
+{
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
 void sg::ogl::OpenGl::SetDepthFunc(const uint32_t t_func)
 {
     glDepthFunc(t_func);

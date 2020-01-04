@@ -26,8 +26,9 @@ bool ForwardRenderingState::Update(const double t_dt)
     m_temp += static_cast<float>(t_dt);
 
     m_scene->GetCurrentCamera().Update(t_dt);
+    m_forwardRenderSystem->Update(t_dt);
 
-    auto& pointLights{ m_scene->GetPointLights() };
+    auto& pointLights{ m_scene->GetScenePointLights() };
     for (auto& pointLight : pointLights)
     {
         pointLight->position.x += sinf(m_temp);
@@ -51,9 +52,9 @@ void ForwardRenderingState::Init()
 
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
         GetApplicationContext(),
-        glm::vec3(71.0f, 157.0f, -68.0f),
-        -205.0f,
-        -68.0f
+        glm::vec3(116.0f, 38.0f, -57.0f),
+        -200.0f,
+        -12.0f
     );
     m_firstPersonCamera->SetCameraVelocity(24.0f);
 
@@ -61,7 +62,7 @@ void ForwardRenderingState::Init()
     m_scene->SetCurrentCamera(m_firstPersonCamera);
 
     AddDirectionalLight();
-    AddPointLights(4);
+    AddScenePointLights(4);
 
     m_forwardRenderSystem = std::make_unique<sg::ogl::ecs::system::ForwardRenderSystem>(m_scene.get());
 
@@ -70,8 +71,38 @@ void ForwardRenderingState::Init()
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f),
         glm::vec3(100.0f, 1.0f, 100.0f),
-        false,
-        false,
+        false
+    );
+
+    auto pointLightUniquePtr0{ std::make_unique<sg::ogl::light::PointLight>() };
+    pointLightUniquePtr0->position = glm::vec3(0.0f, 5.0f, 0.0f);
+    pointLightUniquePtr0->diffuseIntensity = glm::vec3(10.0f, 0.0f, 0.0f);
+    pointLightUniquePtr0->linear = 0.045f;
+    pointLightUniquePtr0->quadratic = 0.0075f;
+
+    GetApplicationContext()->GetEntityFactory().CreatePointLightEntity(
+        std::move(pointLightUniquePtr0),
+        "PointLight0",
+        "res/model/Lamp/Lamp.obj",
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(-90.0f, 0.0f, 0.0f),
+        glm::vec3(0.25f),
+        false
+    );
+
+    auto pointLightUniquePtr1{ std::make_unique<sg::ogl::light::PointLight>() };
+    pointLightUniquePtr1->position = glm::vec3(-55.0f, 5.0f, 0.0f);
+    pointLightUniquePtr1->diffuseIntensity = glm::vec3(0.0f, 0.0f, 10.0f);
+    pointLightUniquePtr1->linear = 0.045f;
+    pointLightUniquePtr1->quadratic = 0.0075f;
+
+    GetApplicationContext()->GetEntityFactory().CreatePointLightEntity(
+        std::move(pointLightUniquePtr1),
+        "PointLight1",
+        "res/model/Lamp/Lamp.obj",
+        glm::vec3(-55.0f, 0.0f, 0.0f),
+        glm::vec3(-90.0f, 0.0f, 0.0f),
+        glm::vec3(0.25f),
         false
     );
 }
@@ -85,7 +116,7 @@ void ForwardRenderingState::AddDirectionalLight() const
     m_scene->SetDirectionalLight(std::move(sun));
 }
 
-void ForwardRenderingState::AddPointLights(const int t_numPointLights) const
+void ForwardRenderingState::AddScenePointLights(const int t_numPointLights) const
 {
     std::random_device seeder;
     std::mt19937 engine(seeder());
@@ -100,6 +131,6 @@ void ForwardRenderingState::AddPointLights(const int t_numPointLights) const
         pointLight->diffuseIntensity = glm::vec3(col(engine), col(engine), col(engine));
         pointLight->linear = 0.045f;
         pointLight->quadratic = 0.0075f;
-        m_scene->AddPointLight(std::move(pointLight));
+        m_scene->AddScenePointLight(std::move(pointLight));
     }
 }

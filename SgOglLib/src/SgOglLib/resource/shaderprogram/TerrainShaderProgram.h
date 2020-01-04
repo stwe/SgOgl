@@ -50,7 +50,7 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("directionalLight", t_scene.GetDirectionalLight());
 
             // set point light from the scene
-            SetUniform("pointLight", *t_scene.GetPointLights()[0]);
+            SetUniform("pointLight", *t_scene.GetScenePointLights()[0]);
 
             // set camera position
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());

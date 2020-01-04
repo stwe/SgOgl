@@ -27,7 +27,7 @@ namespace sg::ogl::resource::shaderprogram
     public:
         void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
         {
-            auto& transformComponent = t_scene.GetApplicationContext()->registry.get<ecs::component::TransformComponent>(t_entity);
+            auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::TransformComponent>(t_entity) };
 
             const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
             const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };
@@ -36,11 +36,13 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("plane", t_scene.GetCurrentClipPlane());
             SetUniform("mvpMatrix", mvp);
 
-            SetUniform("numLights", static_cast<int32_t>(t_scene.GetPointLights().size()));
+            SetUniform("numScenePointLights", static_cast<int32_t>(t_scene.GetScenePointLights().size()));
+            SetUniform("numEntityPointLights", static_cast<int32_t>(t_scene.GetEntityPointLights().size()));
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
             SetUniform("directionalLight", t_scene.GetDirectionalLight());
-            SetUniform("pointLights", t_scene.GetPointLights());
+            SetUniform("scenePointLights", t_scene.GetScenePointLights());
+            SetUniform("entityPointLights", t_scene.GetEntityPointLights());
 
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 

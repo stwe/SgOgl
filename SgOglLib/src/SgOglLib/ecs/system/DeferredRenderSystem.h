@@ -93,7 +93,7 @@ namespace sg::ogl::ecs::system
 
                 if (modelComponent.showTriangles)
                 {
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                    OpenGl::EnableWireframeMode();
                 }
 
                 for (auto& mesh : modelComponent.model->GetMeshes())
@@ -106,7 +106,7 @@ namespace sg::ogl::ecs::system
 
                 if (modelComponent.showTriangles)
                 {
-                    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                    OpenGl::DisableWireframeMode();
                 }
             }
 

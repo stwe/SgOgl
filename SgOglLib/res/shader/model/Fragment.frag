@@ -35,11 +35,13 @@ struct PointLight
 
 // Uniforms
 
-uniform int numLights;
+uniform int numScenePointLights;
+uniform int numEntityPointLights;
 
 uniform vec3 ambientIntensity;
 uniform DirectionalLight directionalLight;
-uniform PointLight pointLights[12]; // max 12 point lights
+uniform PointLight scenePointLights[12]; // max 12 point lights
+uniform PointLight entityPointLights[12]; // max 12 point lights
 
 uniform vec3 cameraPosition;
 
@@ -218,10 +220,16 @@ void main()
     // get fragment position in tangent or world space
     vec3 fragPos = GetFragPos();
 
-    // calc point lights
-    for(int i = 0; i < numLights; ++i)
+    // calc scene point lights
+    for(int i = 0; i < numScenePointLights; ++i)
     {
-        result += CalcPointLight(pointLights[i], normal, fragPos, viewDir);
+        result += CalcPointLight(scenePointLights[i], normal, fragPos, viewDir);
+    }
+
+    // calc entity point lights
+    for(int i = 0; i < numEntityPointLights; ++i)
+    {
+        result += CalcPointLight(entityPointLights[i], normal, fragPos, viewDir);
     }
 
     // result

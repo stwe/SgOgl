@@ -85,7 +85,7 @@ void TestState::Init()
     m_pointLight->diffuseIntensity = glm::vec3(1.0f, 0.77f, 0.56f);
     m_pointLight->linear = 0.045f;
     m_pointLight->quadratic = 0.0075f;
-    m_scene->AddPointLight(m_pointLight);
+    m_scene->AddScenePointLight(m_pointLight);
 
 #pragma endregion Lights
 
@@ -105,8 +105,6 @@ void TestState::Init()
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f),
         glm::vec3(32.0f, 1.0f, 32.0f),
-        false,
-        false,
         false
     );
 
