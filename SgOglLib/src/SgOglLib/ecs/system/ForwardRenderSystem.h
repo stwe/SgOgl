@@ -10,6 +10,8 @@
 #pragma once
 
 #include "RenderSystem.h"
+#include "light/DirectionalLight.h"
+#include "light/Sun.h"
 #include "resource/shaderprogram/ModelShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "resource/Model.h"
@@ -26,22 +28,8 @@ namespace sg::ogl::ecs::system
 
         void Update(double t_dt) override
         {
-            // Some entities have a PointLightComponent.
-            // The PointLight may need to be added to the scene if it does not already exist there.
-            auto view{ m_scene->GetApplicationContext()->registry.view<
-                component::ModelComponent,
-                component::TransformComponent,
-                component::PointLightComponent>()
-            };
-
-            for (auto entity : view)
-            {
-                // The PointLight is only added to the scene if it does not already exist.
-                auto& pointLightComponent{ view.get<component::PointLightComponent>(entity) };
-                m_scene->AddEntityPointLight(pointLightComponent.name, pointLightComponent.pointLight);
-
-                // todo: remove
-            }
+            AddEntityPointLights();
+            AddSun();
         }
 
         void Render() override
@@ -100,6 +88,40 @@ namespace sg::ogl::ecs::system
         }
 
     private:
+        /**
+         * @brief A Point Light is added to the Scene if it does not already exist there.
+         */
+        void AddEntityPointLights() const
+        {
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::ModelComponent,
+                component::TransformComponent,
+                component::PointLightComponent>()
+            };
 
+            for (auto entity : view)
+            {
+                auto& pointLightComponent{ view.get<component::PointLightComponent>(entity) };
+                m_scene->AddEntityPointLight(pointLightComponent.name, pointLightComponent.pointLight);
+
+                // todo: remove
+            }
+        }
+
+        /**
+         * @brief Set current Directional Light.
+         */
+        void AddSun() const
+        {
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::SunComponent>()
+            };
+
+            for (auto entity : view)
+            {
+                auto& sunComponent{ view.get<component::SunComponent>(entity) };
+                m_scene->SetDirectionalLight(sunComponent.sun);
+            }
+        }
     };
 }

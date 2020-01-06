@@ -39,8 +39,11 @@ uniform int numScenePointLights;
 uniform int numEntityPointLights;
 
 uniform vec3 ambientIntensity;
+
+uniform float hasDirectionalLight;
 uniform DirectionalLight directionalLight;
-uniform PointLight scenePointLights[12]; // max 12 point lights
+
+uniform PointLight scenePointLights[12];  // max 12 point lights
 uniform PointLight entityPointLights[12]; // max 12 point lights
 
 uniform vec3 cameraPosition;
@@ -134,6 +137,9 @@ vec3 GetFragPos()
 
 vec3 CalcDirectionalLight(vec3 normal, vec3 viewDir)
 {
+    // negate the global light direction vector to switch its direction
+    // it's now a direction vector pointing towards the light source
+
     // light direction in world space or tangent space
     vec3 lightDir = normalize(-directionalLight.direction);
     if (hasNormalMap > 0.5)
@@ -214,8 +220,14 @@ void main()
     // calc ambient
     vec3 ambient = ambientIntensity * diffuse.rgb;
 
+    // init result
+    vec3 result = vec3(0.0, 0.0, 0.0);
+
     // calc directional light
-    vec3 result = CalcDirectionalLight(normal, viewDir);
+    if (hasDirectionalLight > 0.5)
+    {
+        result = CalcDirectionalLight(normal, viewDir);
+    }
 
     // get fragment position in tangent or world space
     vec3 fragPos = GetFragPos();

@@ -161,6 +161,7 @@ void sg::ogl::resource::ModelManager::AddStaticMeshes()
     AddGuiStaticMesh();
     AddWaterStaticMesh();
     AddQuadStaticMesh();
+    AddSunQuadStaticMesh();
 }
 
 //-------------------------------------------------
@@ -273,6 +274,33 @@ void sg::ogl::resource::ModelManager::AddQuadStaticMesh()
 
     // store Mesh
     m_staticMeshes.emplace(QUAD_MESH, meshSharedPtr);
+}
+
+void sg::ogl::resource::ModelManager::AddSunQuadStaticMesh()
+{
+    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddSunQuadStaticMesh()] Add Sun quad mesh.");
+
+    // create Mesh
+    auto meshSharedPtr{ std::make_shared<Mesh>() };
+
+    // create BufferLayout
+    const buffer::BufferLayout bufferLayout{
+        { buffer::VertexAttributeType::POSITION_2D, "aPosition" },
+    };
+
+    // to render with GL_TRIANGLE_STRIP
+    std::vector<float> vertices{
+        -0.5f,  0.5f,
+        -0.5f, -0.5f,
+         0.5f,  0.5f,
+         0.5f, -0.5f
+    };
+
+    // add Vbo
+    meshSharedPtr->GetVao().AddVertexDataVbo(vertices.data(), static_cast<int32_t>(vertices.size()) / 2, bufferLayout);
+
+    // store Mesh
+    m_staticMeshes.emplace(SUN_QUAD_MESH, meshSharedPtr);
 }
 
 std::vector<glm::vec3> sg::ogl::resource::ModelManager::CreateSkyboxVertices(const float t_size)

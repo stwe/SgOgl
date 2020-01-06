@@ -15,7 +15,28 @@ namespace sg::ogl::light
 {
     struct DirectionalLight
     {
+        //-------------------------------------------------
+        // Ctors. / Dtor.
+        //-------------------------------------------------
+
+        DirectionalLight() = default;
+
+        DirectionalLight(const DirectionalLight& t_other) = default;
+        DirectionalLight(DirectionalLight&& t_other) noexcept = default;
+        DirectionalLight& operator=(const DirectionalLight& t_other) = default;
+        DirectionalLight& operator=(DirectionalLight&& t_other) noexcept = default;
+
+        virtual ~DirectionalLight() noexcept = default;
+
+        //-------------------------------------------------
+        // Member
+        //-------------------------------------------------
+
+        /**
+         * @brief Direction as a direction from the light source.
+         */
         glm::vec3 direction{ glm::vec3(0.0f, -1.0f, 0.0f) };
+
         glm::vec3 diffuseIntensity{ glm::vec3(1.0f, 1.0f, 1.0f) };
         glm::vec3 specularIntensity{ glm::vec3(1.0f, 1.0f, 1.0f) };
     };

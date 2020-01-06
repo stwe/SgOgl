@@ -12,6 +12,7 @@
 #include "OpenGl.h"
 #include "Application.h"
 #include "Window.h"
+#include "light/DirectionalLight.h"
 #include "scene/Scene.h"
 #include "camera/Camera.h"
 #include "resource/Mesh.h"
@@ -40,7 +41,13 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("numEntityPointLights", static_cast<int32_t>(t_scene.GetEntityPointLights().size()));
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
-            SetUniform("directionalLight", t_scene.GetDirectionalLight());
+
+            SetUniform("hasDirectionalLight", t_scene.HasDirectionalLight());
+            if (t_scene.HasDirectionalLight())
+            {
+                SetUniform("directionalLight", t_scene.GetDirectionalLight());
+            }
+
             SetUniform("scenePointLights", t_scene.GetScenePointLights());
             SetUniform("entityPointLights", t_scene.GetEntityPointLights());
 

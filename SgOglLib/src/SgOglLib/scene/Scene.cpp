@@ -70,7 +70,7 @@ const sg::ogl::scene::Scene::EntityPointLightContainer& sg::ogl::scene::Scene::G
     return m_entityPointLights;
 }
 
-bool sg::ogl::scene::Scene::IsDirectionalLight() const
+bool sg::ogl::scene::Scene::HasDirectionalLight() const
 {
     return m_directionalLight != nullptr;
 }

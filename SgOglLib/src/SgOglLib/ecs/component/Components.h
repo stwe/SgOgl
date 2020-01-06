@@ -21,7 +21,7 @@ namespace sg::ogl::camera
 namespace sg::ogl::light
 {
     struct PointLight;
-    struct DirectionalLight;
+    struct Sun;
 }
 
 namespace sg::ogl::resource
@@ -68,9 +68,9 @@ namespace sg::ogl::ecs::component
         std::shared_ptr<light::PointLight> pointLight;
     };
 
-    struct DirectionalLightComponent
+    struct SunComponent
     {
-        std::shared_ptr<light::DirectionalLight> directionalLight;
+        std::shared_ptr<light::Sun> sun;
     };
 
     //-------------------------------------------------

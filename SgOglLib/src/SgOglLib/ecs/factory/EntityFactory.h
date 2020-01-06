@@ -24,6 +24,7 @@ namespace sg::ogl::camera
 namespace sg::ogl::light
 {
     struct PointLight;
+    struct Sun;
 }
 
 namespace sg::ogl::terrain
@@ -52,6 +53,7 @@ namespace sg::ogl::ecs::factory
     {
     public:
         using PointLightSharedPtr = std::shared_ptr<light::PointLight>;
+        using SunSharedPtr = std::shared_ptr<light::Sun>;
         using ThirdPersonCameraSharedPtr = std::shared_ptr<camera::ThirdPersonCamera>;
         using TerrainSharedPtr = std::shared_ptr<terrain::Terrain>;
         using WaterSharedPtr = std::shared_ptr<water::Water>;
@@ -113,6 +115,18 @@ namespace sg::ogl::ecs::factory
             const glm::vec3& t_scale,
             bool t_showTriangles = false
         ) const;
+
+        /**
+         * @brief Creates an Entity and add a SunComponent.
+         * @param t_sun Directional light (Sun) which is added as component.
+         * @return The created Entity.
+         */
+        entt::entity CreateSunEntity(
+            const SunSharedPtr& t_sun
+        ) const;
+
+
+
 
         void CreateModelEntity(
             uint32_t t_instances,

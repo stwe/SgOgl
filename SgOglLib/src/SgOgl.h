@@ -41,6 +41,7 @@
 #include "SgOglLib/ecs/system/SkeletalModelRenderSystem.h"
 #include "SgOglLib/ecs/system/SkyboxRenderSystem.h"
 #include "SgOglLib/ecs/system/SkydomeRenderSystem.h"
+#include "SgOglLib/ecs/system/SunRenderSystem.h"
 #include "SgOglLib/ecs/system/TerrainRenderSystem.h"
 #include "SgOglLib/ecs/system/WaterRenderSystem.h"
 
@@ -55,6 +56,7 @@
 // light
 #include "SgOglLib/light/DirectionalLight.h"
 #include "SgOglLib/light/PointLight.h"
+#include "SgOglLib/light/Sun.h"
 
 // particle
 #include "SgOglLib/particle/Particle.h"
@@ -80,6 +82,7 @@
 #include "SgOglLib/resource/shaderprogram/ParticleShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/SkeletalModelShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/SkyboxShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/SunShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/TerrainShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/WaterShaderProgram.h"
 

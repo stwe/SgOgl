@@ -75,7 +75,7 @@ namespace sg::ogl::scene
         [[nodiscard]] const ScenePointLightContainer& GetScenePointLights() const noexcept;
         [[nodiscard]] const EntityPointLightContainer& GetEntityPointLights() const noexcept;
 
-        [[nodiscard]] bool IsDirectionalLight() const;
+        [[nodiscard]] bool HasDirectionalLight() const;
 
         [[nodiscard]] glm::vec4 GetCurrentClipPlane() const;
 
@@ -86,10 +86,14 @@ namespace sg::ogl::scene
         //-------------------------------------------------
 
         void SetAmbientIntensity(const glm::vec3& t_ambientIntensity);
+
         void SetCurrentCamera(const CameraSharedPtr& t_camera);
+
         void SetDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
+
         void AddScenePointLight(const PointLightSharedPtr& t_pointLight);
         void AddEntityPointLight(const std::string& t_name, const PointLightSharedPtr& t_pointLight);
+
         void SetCurrentClipPlane(const glm::vec4& t_currentClipPlane);
 
     protected:
@@ -100,6 +104,7 @@ namespace sg::ogl::scene
         CameraSharedPtr m_currentCamera;
 
         DirectionalLightSharedPtr m_directionalLight;
+
         ScenePointLightContainer m_scenePointLights;
         EntityPointLightContainer m_entityPointLights;
 
