@@ -242,7 +242,7 @@ The config file can look like this.
 ## 6. Code snippets
 
 
-### Forward rendering with some Point Lights
+### Forward rendering with some Point Lights and the Sun as directional light source
 
 <img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/forward.png" alt="Forward" width="128" height="128" />
 
@@ -276,6 +276,15 @@ The config file can look like this.
         m_playerPosition
     );
 
+    // create a first person camera
+    m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
+        GetApplicationContext(),
+        glm::vec3(308.0f, 176.0f, 268.0f),
+        -131.0f,
+        -6.0f
+    );
+    m_firstPersonCamera->SetCameraVelocity(24.0f);
+
     // create skybox entity
     const std::vector<std::string> cubemapFileNames{
         "res/texture/sky/sRight.png",
@@ -292,10 +301,7 @@ The config file can look like this.
         "res/model/Plane/plane1.obj",
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f),
-        glm::vec3(32.0f, 1.0f, 32.0f),
-        false,
-        false,
-        true, // the model has a normalmap
+        glm::vec3(100.0f, 1.0f, 100.0f),
         false
     );
 
