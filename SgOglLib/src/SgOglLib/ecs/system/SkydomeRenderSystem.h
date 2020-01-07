@@ -31,18 +31,18 @@ namespace sg::ogl::ecs::system
         {
             PrepareRendering();
 
-            auto view = m_scene->GetApplicationContext()->registry.view<
+            auto view{ m_scene->GetApplicationContext()->registry.view<
                 component::ModelComponent,
                 component::TransformComponent,
-                component::SkydomeComponent>();
+                component::SkydomeComponent>()
+            };
 
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::DomeShaderProgram>() };
-
             shaderProgram.Bind();
 
             for (auto entity : view)
             {
-                auto& modelComponent = view.get<sg::ogl::ecs::component::ModelComponent>(entity);
+                auto& modelComponent = view.get<component::ModelComponent>(entity);
 
                 modelComponent.model->GetMeshes()[0]->InitDraw();
                 shaderProgram.UpdateUniforms(*m_scene, entity, *modelComponent.model->GetMeshes()[0]);

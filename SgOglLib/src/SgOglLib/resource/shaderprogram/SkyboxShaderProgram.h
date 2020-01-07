@@ -37,18 +37,18 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("cubeSampler", 0);
 
             // get cubemap component
-            auto& cubemapComponent = t_scene.GetApplicationContext()->registry.get<ecs::component::CubemapComponent>(t_entity);
+            auto& cubemapComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::CubemapComponent>(t_entity) };
 
             // bind cubemap
             TextureManager::BindForReading(cubemapComponent.cubemapId, GL_TEXTURE0, GL_TEXTURE_CUBE_MAP);
         }
 
-        std::string GetFolderName() const override
+        [[nodiscard]] std::string GetFolderName() const override
         {
             return "skybox";
         }
 
-        bool IsBuiltIn() const override
+        [[nodiscard]] bool IsBuiltIn() const override
         {
             return true;
         }

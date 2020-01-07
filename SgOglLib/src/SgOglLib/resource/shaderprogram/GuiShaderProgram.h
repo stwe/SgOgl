@@ -23,20 +23,20 @@ namespace sg::ogl::resource::shaderprogram
     public:
         void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
         {
-            auto& transformComponent = t_scene.GetApplicationContext()->registry.get<ecs::component::TransformComponent>(t_entity);
+            auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::TransformComponent>(t_entity) };
             SetUniform("transformationMatrix", static_cast<glm::mat4>(transformComponent));
 
-            auto& guiComponent = t_scene.GetApplicationContext()->registry.get<ecs::component::GuiComponent>(t_entity);
+            auto& guiComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::GuiComponent>(t_entity) };
             SetUniform("guiTexture", 0);
             TextureManager::BindForReading(guiComponent.textureId, GL_TEXTURE0);
         }
 
-        std::string GetFolderName() const override
+        [[nodiscard]] std::string GetFolderName() const override
         {
             return "gui";
         }
 
-        bool IsBuiltIn() const override
+        [[nodiscard]] bool IsBuiltIn() const override
         {
             return true;
         }

@@ -121,11 +121,41 @@ namespace sg::ogl::ecs::factory
          * @param t_sun Directional light (Sun) which is added as component.
          * @return The created Entity.
          */
-        entt::entity CreateSunEntity(
-            const SunSharedPtr& t_sun
+        entt::entity CreateSunEntity(const SunSharedPtr& t_sun) const;
+
+        /**
+         * @brief Creates a Gui Entity.
+         * @param t_posX The x position of the Gui.
+         * @param t_posY The y position of the Gui.
+         * @param t_scaleX The x scale value.
+         * @param t_scaleY The y scale value.
+         * @param t_textureId The id of the texture to be displayed.
+         * @return The created Entity.
+         */
+        entt::entity CreateGuiEntity(
+            float t_posX,
+            float t_posY,
+            float t_scaleX,
+            float t_scaleY,
+            uint32_t t_textureId
         ) const;
 
+        /**
+         * @brief Creates a Skybox Entity.
+         * @param t_cubemapFileNames Full file paths to the Skybox texture files.
+         * @return The created Entity.
+         */
+        entt::entity CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const;
 
+        /**
+         * @brief Creates a Skydome Entity.
+         * @param t_fullModelFilePath Full file path to the Skydome model file.
+         * @return The created Entity.
+         */
+        entt::entity CreateSkydomeEntity(const std::string& t_fullModelFilePath) const;
+
+
+        ///////////////////////////////////////////////////////////////////////
 
 
         void CreateModelEntity(
@@ -165,18 +195,7 @@ namespace sg::ogl::ecs::factory
             const TerrainSharedPtr& t_terrain
         ) const;
 
-        void CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const;
-        void CreateSkydomeEntity(const std::string& t_fullModelFilePath) const;
         void CreateTerrainEntity(const TerrainSharedPtr& t_terrain) const;
-
-        void CreateGuiEntity(
-            float t_x,
-            float t_y,
-            float t_scaleX,
-            float t_scaleY,
-            uint32_t t_textureId
-        ) const;
-
         void CreateWaterEntity(const WaterSharedPtr& t_water) const;
         void CreateParticleEntity(ParticleEmitterSharedPtr& t_particleEmitter) const;
 

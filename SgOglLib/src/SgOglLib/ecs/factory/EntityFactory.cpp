@@ -115,6 +115,73 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSunEntity(const SunShar
     return entity;
 }
 
+entt::entity sg::ogl::ecs::factory::EntityFactory::CreateGuiEntity(
+    const float t_posX,
+    const float t_posY,
+    const float t_scaleX,
+    const float t_scaleY,
+    const uint32_t t_textureId
+) const
+{
+    // create an entity
+    const auto entity{ m_application->registry.create() };
+
+    // add transform component
+    m_application->registry.assign<component::TransformComponent>(
+        entity,
+        glm::vec3(t_posX, t_posY, 0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(t_scaleX, t_scaleY, 1.0f)
+    );
+
+    // add gui component
+    m_application->registry.assign<component::GuiComponent>(entity, t_textureId);
+
+    return entity;
+}
+
+entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const
+{
+    // create an entity
+    const auto entity{ m_application->registry.create() };
+
+    // add cubemap component
+    m_application->registry.assign<component::CubemapComponent>(
+        entity,
+        m_application->GetTextureManager().GetCubemapId(t_cubemapFileNames)
+    );
+
+    return entity;
+}
+
+entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkydomeEntity(const std::string& t_fullModelFilePath) const
+{
+    // create an entity
+    const auto entity{ m_application->registry.create() };
+
+    // add model component
+    m_application->registry.assign<component::ModelComponent>(
+        entity,
+        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath)
+    );
+
+    // add transform component
+    m_application->registry.assign<component::TransformComponent>(
+        entity,
+        glm::vec3(0.0f),
+        glm::vec3(0.0f),
+        glm::vec3(m_application->GetProjectionOptions().farPlane * 0.5f)
+    );
+
+    // add skydome component
+    m_application->registry.assign<component::SkydomeComponent>(entity);
+
+    return entity;
+}
+
+////////////////////////////////////////////////////////
+
+
 void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const uint32_t t_instances,
     const std::string& t_fullModelFilePath,
@@ -257,47 +324,6 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateTppCharacterEntity(
     return entity;
 }
 
-void sg::ogl::ecs::factory::EntityFactory::CreateSkyboxEntity(const std::vector<std::string>& t_cubemapFileNames) const
-{
-    // create an entity
-    const auto entity{ m_application->registry.create() };
-
-    // add mesh component
-    m_application->registry.assign<component::MeshComponent>(
-        entity,
-        m_application->GetModelManager().GetStaticMeshByName(resource::ModelManager::SKYBOX_MESH)
-    );
-
-    // add cubemap component
-    m_application->registry.assign<component::CubemapComponent>(
-        entity,
-        m_application->GetTextureManager().GetCubemapId(t_cubemapFileNames)
-    );
-}
-
-void sg::ogl::ecs::factory::EntityFactory::CreateSkydomeEntity(const std::string& t_fullModelFilePath) const
-{
-    // create an entity
-    const auto entity{ m_application->registry.create() };
-
-    // add model component
-    m_application->registry.assign<component::ModelComponent>(
-        entity,
-        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath)
-    );
-
-    // add transform component
-    m_application->registry.assign<component::TransformComponent>(
-        entity,
-        glm::vec3(0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(m_application->GetProjectionOptions().farPlane * 0.5f)
-    );
-
-    // add skydome component/tag
-    m_application->registry.assign<component::SkydomeComponent>(entity);
-}
-
 void sg::ogl::ecs::factory::EntityFactory::CreateTerrainEntity(const TerrainSharedPtr& t_terrain) const
 {
     // create an entity
@@ -314,35 +340,6 @@ void sg::ogl::ecs::factory::EntityFactory::CreateTerrainEntity(const TerrainShar
         entity,
         glm::vec3(t_terrain->GetTerrainOptions().xPos, 0.0f, t_terrain->GetTerrainOptions().zPos)
     );
-}
-
-void sg::ogl::ecs::factory::EntityFactory::CreateGuiEntity(
-    const float t_x,
-    const float t_y,
-    const float t_scaleX,
-    const float t_scaleY,
-    const uint32_t t_textureId
-) const
-{
-    // create an entity
-    const auto entity{ m_application->registry.create() };
-
-    // add transform component
-    m_application->registry.assign<component::TransformComponent>(
-        entity,
-        glm::vec3(t_x, t_y, 0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(t_scaleX, t_scaleY, 1.0f)
-    );
-
-    // add mesh component
-    m_application->registry.assign<component::MeshComponent>(
-        entity,
-        m_application->GetModelManager().GetStaticMeshByName(resource::ModelManager::GUI_MESH)
-    );
-
-    // add gui component
-    m_application->registry.assign<component::GuiComponent>(entity, t_textureId);
 }
 
 void sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const WaterSharedPtr& t_water) const

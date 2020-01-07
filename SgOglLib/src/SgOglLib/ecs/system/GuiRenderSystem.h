@@ -20,9 +20,13 @@ namespace sg::ogl::ecs::system
     class GuiRenderSystem : public RenderSystem<resource::shaderprogram::GuiShaderProgram>
     {
     public:
+        using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
+
         explicit GuiRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
-        {}
+        {
+            m_guiMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::GUI_MESH);
+        }
 
         void Update(double t_dt) override {}
 
@@ -30,23 +34,20 @@ namespace sg::ogl::ecs::system
         {
             PrepareRendering();
 
-            auto view = m_scene->GetApplicationContext()->registry.view<
+            auto view{ m_scene->GetApplicationContext()->registry.view<
                 component::TransformComponent,
-                component::MeshComponent,
-                component::GuiComponent>();
+                component::GuiComponent>()
+            };
 
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::GuiShaderProgram>() };
-
             shaderProgram.Bind();
 
             for (auto entity : view)
             {
-                auto& meshComponent = view.get<component::MeshComponent>(entity);
-
-                meshComponent.mesh->InitDraw();
-                shaderProgram.UpdateUniforms(*m_scene, entity, *meshComponent.mesh);
-                meshComponent.mesh->DrawPrimitives(GL_TRIANGLE_STRIP);
-                meshComponent.mesh->EndDraw();
+                m_guiMesh->InitDraw();
+                shaderProgram.UpdateUniforms(*m_scene, entity, *m_guiMesh);
+                m_guiMesh->DrawPrimitives(GL_TRIANGLE_STRIP);
+                m_guiMesh->EndDraw();
             }
 
             resource::ShaderProgram::Unbind();
@@ -68,6 +69,6 @@ namespace sg::ogl::ecs::system
         }
 
     private:
-
+        MeshSharedPtr m_guiMesh;
     };
 }

@@ -113,9 +113,7 @@ namespace sg::ogl::ecs::system
          */
         void AddSun() const
         {
-            auto view{ m_scene->GetApplicationContext()->registry.view<
-                component::SunComponent>()
-            };
+            auto view{ m_scene->GetApplicationContext()->registry.view<component::SunComponent>() };
 
             for (auto entity : view)
             {
