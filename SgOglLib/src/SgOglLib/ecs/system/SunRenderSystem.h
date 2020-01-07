@@ -22,7 +22,9 @@ namespace sg::ogl::ecs::system
     public:
         explicit SunRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
-        {}
+        {
+            // todo create Mesh - remove MeshComponent
+        }
 
         void Update(double t_dt) override {}
 

@@ -19,7 +19,9 @@ public:
     using FirstPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::FirstPersonCamera>;
 
     using GuiRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::GuiRenderSystem>;
+    using SkyboxRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkyboxRenderSystem>;
     using DeferredRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::DeferredRenderSystem>;
+    using SunRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SunRenderSystem>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -41,6 +43,7 @@ public:
     ~DeferredRenderingState() noexcept override
     {
         SG_OGL_LOG_DEBUG("[DeferredRenderingState::~DeferredRenderingState()] Destruct DeferredRenderingState.");
+        CleanUpImGui();
     }
 
     //-------------------------------------------------
@@ -59,7 +62,9 @@ private:
     FirstPersonCameraSharedPtr m_firstPersonCamera;
 
     GuiRenderSystemUniquePtr m_guiRenderSystem;
+    SkyboxRenderSystemUniquePtr m_skyboxRenderSystem;
     DeferredRenderSystemUniquePtr m_deferredRenderSystem;
+    SunRenderSystemUniquePtr m_sunRenderSystem;
 
     float m_temp{ 0.0f };
 
@@ -68,6 +73,29 @@ private:
     //-------------------------------------------------
 
     void Init();
-    void AddDirectionalLight() const;
-    void AddPointLights(int t_numPointLights = 4) const;
+
+    /**
+     * @brief Adds Point Lights to the Scene that are not an entity.
+     * @param t_numPointLights Number of Point Lights.
+     */
+    void AddScenePointLights(int t_numPointLights = 4) const;
+
+    /**
+     * @brief Creates two entities from a 3D model and a Point Light.
+     */
+    void AddEntityPointLights() const;
+
+    /**
+     * @brief Creates the Sun from a texture and a Directional Light.
+     * @param t_sunTexturePath The texture of the Sun.
+     */
+    void AddEntityDirectionalLight(const std::string& t_sunTexturePath) const;
+
+    //-------------------------------------------------
+    // ImGui
+    //-------------------------------------------------
+
+    void InitImGui() const;
+    void RenderImGui() const;
+    static void CleanUpImGui();
 };

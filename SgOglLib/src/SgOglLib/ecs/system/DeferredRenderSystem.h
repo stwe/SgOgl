@@ -11,6 +11,8 @@
 
 #include "RenderSystem.h"
 #include "buffer/GBufferFbo.h"
+#include "light/DirectionalLight.h"
+#include "light/Sun.h"
 #include "resource/shaderprogram/GBufferPassShaderProgram.h"
 #include "resource/shaderprogram/LightingPassShaderProgram.h"
 #include "resource/ShaderManager.h"
@@ -20,7 +22,9 @@
 
 namespace sg::ogl::ecs::system
 {
-    class DeferredRenderSystem : public RenderSystem<resource::shaderprogram::GBufferPassShaderProgram, resource::shaderprogram::LightingPassShaderProgram>
+    class DeferredRenderSystem : public RenderSystem<
+        resource::shaderprogram::GBufferPassShaderProgram,
+        resource::shaderprogram::LightingPassShaderProgram>
     {
     public:
         using GBufferFboUniquePtr = std::unique_ptr<buffer::GBufferFbo>;
@@ -47,7 +51,11 @@ namespace sg::ogl::ecs::system
         // Override
         //-------------------------------------------------
 
-        void Update(double t_dt) override {}
+        void Update(double t_dt) override
+        {
+            AddEntityPointLights();
+            AddSun();
+        }
 
         void Render() override
         {
@@ -62,6 +70,17 @@ namespace sg::ogl::ecs::system
         }
 
     protected:
+        void PrepareRendering() override
+        {
+            OpenGl::DisableBlending();   // disable GL_BLEND
+            OpenGl::EnableFaceCulling();
+        }
+
+        void FinishRendering() override
+        {
+            OpenGl::DisableBlending();
+            OpenGl::DisableFaceCulling();
+        }
 
     private:
         GBufferFboUniquePtr m_gbuffer;
@@ -131,19 +150,43 @@ namespace sg::ogl::ecs::system
         }
 
         //-------------------------------------------------
-        // Override
+        // Lighting
         //-------------------------------------------------
 
-        void PrepareRendering() override
+        /**
+         * @brief A Point Light is added to the Scene if it does not already exist there.
+         */
+        void AddEntityPointLights() const
         {
-            OpenGl::DisableBlending();   // disable GL_BLEND
-            OpenGl::EnableFaceCulling();
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::ModelComponent,
+                component::TransformComponent,
+                component::PointLightComponent>()
+            };
+
+            for (auto entity : view)
+            {
+                auto& pointLightComponent{ view.get<component::PointLightComponent>(entity) };
+                m_scene->AddEntityPointLight(pointLightComponent.name, pointLightComponent.pointLight);
+
+                // todo: remove
+            }
         }
 
-        void FinishRendering() override
+        /**
+         * @brief Set current Directional Light.
+         */
+        void AddSun() const
         {
-            OpenGl::DisableBlending();
-            OpenGl::DisableFaceCulling();
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::SunComponent>()
+            };
+
+            for (auto entity : view)
+            {
+                auto& sunComponent{ view.get<component::SunComponent>(entity) };
+                m_scene->SetDirectionalLight(sunComponent.sun); // overwrites any other current light
+            }
         }
     };
 }

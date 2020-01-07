@@ -94,6 +94,6 @@ private:
     //-------------------------------------------------
 
     void InitImGui() const;
-    void RenderImGui();
+    void RenderImGui() const;
     static void CleanUpImGui();
 };

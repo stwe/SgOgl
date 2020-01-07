@@ -177,7 +177,7 @@ void ForwardRenderingState::InitImGui() const
     ImGui_ImplOpenGL3_Init("#version 130");
 }
 
-void ForwardRenderingState::RenderImGui()
+void ForwardRenderingState::RenderImGui() const
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();

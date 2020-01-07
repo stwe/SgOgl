@@ -30,6 +30,7 @@ Install Visual Studio 2019 and use Premake5 and the premake5.lua file to create 
 
 ## 3. Features
 
+- Deferred rendering / Forward rendering
 - Terrain rendering
 - Water rendering
 - Gui rendering
@@ -42,7 +43,7 @@ Install Visual Studio 2019 and use Premake5 and the premake5.lua file to create 
 - Different camera types (Third person, First person)
 - Different light types (Ambient, Point, Directional)
 - Normal mapping
-- Entity component system
+- Entity component system from [EnTT](https://github.com/skypjack/entt)
 
 ## 4. Dependencies
 
@@ -250,7 +251,7 @@ The config file can look like this.
 [Forward rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/rendering/ForwardRenderingState.cpp)
 
 
-### Deferred rendering with some Point Lights
+### Deferred rendering with some Point Lights and the Sun as directional light source
 
 <img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/deferred.png" alt="Deferred" width="128" height="128" />
 

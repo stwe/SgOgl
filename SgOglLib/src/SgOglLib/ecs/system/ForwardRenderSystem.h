@@ -120,7 +120,7 @@ namespace sg::ogl::ecs::system
             for (auto entity : view)
             {
                 auto& sunComponent{ view.get<component::SunComponent>(entity) };
-                m_scene->SetDirectionalLight(sunComponent.sun);
+                m_scene->SetDirectionalLight(sunComponent.sun); // overwrites any other current light
             }
         }
     };

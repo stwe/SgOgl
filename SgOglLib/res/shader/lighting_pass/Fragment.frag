@@ -30,17 +30,22 @@ struct PointLight
     float quadratic;
 };
 
-// const
+// Const
 
-const float shininess = 1.0;
+const float shininess = 24.0;
 
 // Uniforms
 
-uniform int numLights;
+uniform int numScenePointLights;
+uniform int numEntityPointLights;
 
 uniform vec3 ambientIntensity;
+
+uniform float hasDirectionalLight;
 uniform DirectionalLight directionalLight;
-uniform PointLight pointLights[32]; // max 32 point lights
+
+uniform PointLight scenePointLights[12];  // max 12 point lights
+uniform PointLight entityPointLights[12]; // max 12 point lights
 
 uniform vec3 cameraPosition;
 
@@ -124,11 +129,25 @@ void main()
     vec3 ambient = ambientIntensity * diffuse;
     vec3 viewDir = normalize(cameraPosition - fragPos);
 
-    vec3 result = CalcDirectionalLight(normal, viewDir);
+    // init result
+    vec3 result = vec3(0.0, 0.0, 0.0);
 
-    for(int i = 0; i < numLights; ++i)
+    // calc directional light
+    if (hasDirectionalLight > 0.5)
     {
-        result += CalcPointLight(pointLights[i], normal, fragPos, viewDir);
+        result = CalcDirectionalLight(normal, viewDir);
+    }
+
+    // calc scene point lights
+    for(int i = 0; i < numScenePointLights; ++i)
+    {
+        result += CalcPointLight(scenePointLights[i], normal, fragPos, viewDir);
+    }
+
+    // calc entity point lights
+    for(int i = 0; i < numEntityPointLights; ++i)
+    {
+        result += CalcPointLight(entityPointLights[i], normal, fragPos, viewDir);
     }
 
     fragColor = vec4(ambient + result, 1.0);

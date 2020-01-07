@@ -24,12 +24,19 @@ namespace sg::ogl::resource::shaderprogram
     public:
         void UpdateUniforms(const scene::Scene& t_scene, const Mesh& t_mesh, const buffer::GBufferFbo& t_gbufferFbo) override
         {
-            SetUniform("numLights", static_cast<int32_t>(t_scene.GetScenePointLights().size()));
+            SetUniform("numScenePointLights", static_cast<int32_t>(t_scene.GetScenePointLights().size()));
+            SetUniform("numEntityPointLights", static_cast<int32_t>(t_scene.GetEntityPointLights().size()));
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
-            SetUniform("directionalLight", t_scene.GetDirectionalLight());
 
-            SetUniform("pointLights", t_scene.GetScenePointLights());
+            SetUniform("hasDirectionalLight", t_scene.HasDirectionalLight());
+            if (t_scene.HasDirectionalLight())
+            {
+                SetUniform("directionalLight", t_scene.GetDirectionalLight());
+            }
+
+            SetUniform("scenePointLights", t_scene.GetScenePointLights());
+            SetUniform("entityPointLights", t_scene.GetEntityPointLights());
 
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
