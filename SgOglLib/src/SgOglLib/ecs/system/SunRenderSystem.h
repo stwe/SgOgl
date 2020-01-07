@@ -20,10 +20,12 @@ namespace sg::ogl::ecs::system
     class SunRenderSystem : public RenderSystem<resource::shaderprogram::SunShaderProgram>
     {
     public:
+        using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
+
         explicit SunRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
         {
-            // todo create Mesh - remove MeshComponent
+            m_sunQuadMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::SUN_QUAD_MESH);
         }
 
         void Update(double t_dt) override {}
@@ -32,19 +34,17 @@ namespace sg::ogl::ecs::system
         {
             PrepareRendering();
 
-            auto view{ m_scene->GetApplicationContext()->registry.view<component::MeshComponent, component::SunComponent>() };
+            auto view{ m_scene->GetApplicationContext()->registry.view<component::SunComponent>() };
 
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::SunShaderProgram>() };
             shaderProgram.Bind();
 
             for (auto entity : view)
             {
-                auto& meshComponent{ view.get<component::MeshComponent>(entity) };
-
-                meshComponent.mesh->InitDraw();
-                shaderProgram.UpdateUniforms(*m_scene, entity, *meshComponent.mesh);
-                meshComponent.mesh->DrawPrimitives(GL_TRIANGLE_STRIP);
-                meshComponent.mesh->EndDraw();
+                m_sunQuadMesh->InitDraw();
+                shaderProgram.UpdateUniforms(*m_scene, entity, *m_sunQuadMesh);
+                m_sunQuadMesh->DrawPrimitives(GL_TRIANGLE_STRIP);
+                m_sunQuadMesh->EndDraw();
             }
 
             resource::ShaderProgram::Unbind();
@@ -64,6 +64,6 @@ namespace sg::ogl::ecs::system
         }
 
     private:
-
+        MeshSharedPtr m_sunQuadMesh;
     };
 }

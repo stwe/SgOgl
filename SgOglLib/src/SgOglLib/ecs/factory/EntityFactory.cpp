@@ -106,12 +106,6 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSunEntity(const SunShar
     // create an entity
     const auto entity{ m_application->registry.create() };
 
-    // add mesh component
-    m_application->registry.assign<component::MeshComponent>(
-        entity,
-        m_application->GetModelManager().GetStaticMeshByName(resource::ModelManager::SUN_QUAD_MESH)
-    );
-
     // add sun component
     m_application->registry.assign<component::SunComponent>(
         entity,
