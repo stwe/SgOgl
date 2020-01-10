@@ -84,3 +84,8 @@ void sg::ogl::camera::Camera::SetCameraVelocity(const float t_velocity)
 {
     m_cameraVelocity = t_velocity;
 }
+
+void sg::ogl::camera::Camera::InvertPitch()
+{
+    m_pitch = -m_pitch;
+}

@@ -22,11 +22,19 @@ namespace sg::ogl::ecs::system
     public:
         using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
 
+        //-------------------------------------------------
+        // Ctors. / Dtor.
+        //-------------------------------------------------
+
         explicit SunRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
         {
             m_sunQuadMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::SUN_QUAD_MESH);
         }
+
+        //-------------------------------------------------
+        // Override
+        //-------------------------------------------------
 
         void Update(double t_dt) override {}
 

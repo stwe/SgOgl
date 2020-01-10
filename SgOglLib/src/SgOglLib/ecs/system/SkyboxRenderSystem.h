@@ -22,11 +22,19 @@ namespace sg::ogl::ecs::system
     public:
         using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
 
+        //-------------------------------------------------
+        // Ctors. / Dtor.
+        //-------------------------------------------------
+
         explicit SkyboxRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
         {
             m_skyboxMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::SKYBOX_MESH);
         }
+
+        //-------------------------------------------------
+        // Override
+        //-------------------------------------------------
 
         void Update(double t_dt) override {}
 

@@ -49,13 +49,6 @@ void sg::ogl::camera::FirstPersonCamera::SetMouseSensitivity(const float t_sensi
     m_mouseSensitivity = t_sensitivity;
 }
 
-void sg::ogl::camera::FirstPersonCamera::InvertPitch(const double t_dt)
-{
-    m_pitch = -m_pitch;
-
-    Update(t_dt);
-}
-
 //-------------------------------------------------
 // Override
 //-------------------------------------------------

@@ -64,17 +64,17 @@ namespace sg::ogl::water
         // Getter
         //-------------------------------------------------
 
-        float GetXPosition() const;
-        float GetZPosition() const;
-        float GetHeight() const;
-        glm::vec3 GetTileSize() const;
+        [[nodiscard]] float& GetXPosition();
+        [[nodiscard]] float& GetZPosition();
+        [[nodiscard]] float& GetHeight();
+        [[nodiscard]] glm::vec3& GetTileSize();
 
-        float GetWaveSpeed() const;
+        [[nodiscard]] float GetWaveSpeed() const;
 
-        uint32_t GetDudvTextureId() const;
-        uint32_t GetNormalTextureId() const;
+        [[nodiscard]] uint32_t GetDudvTextureId() const;
+        [[nodiscard]] uint32_t GetNormalTextureId() const;
 
-        const buffer::WaterFbos& GetWaterFbos() const;
+        [[nodiscard]] const buffer::WaterFbos& GetWaterFbos() const;
 
         //-------------------------------------------------
         // Setter

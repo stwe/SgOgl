@@ -21,9 +21,17 @@ namespace sg::ogl::ecs::system
     class SkydomeRenderSystem : public RenderSystem<resource::shaderprogram::DomeShaderProgram>
     {
     public:
+        //-------------------------------------------------
+        // Ctors. / Dtor.
+        //-------------------------------------------------
+
         explicit SkydomeRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
         {}
+
+        //-------------------------------------------------
+        // Override
+        //-------------------------------------------------
 
         void Update(double t_dt) override {}
 

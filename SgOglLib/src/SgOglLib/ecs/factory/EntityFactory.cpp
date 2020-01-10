@@ -179,6 +179,28 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkydomeEntity(const std
     return entity;
 }
 
+entt::entity sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const WaterSharedPtr& t_water) const
+{
+    // create an entity
+    const auto entity{ m_application->registry.create() };
+
+    // add water component
+    m_application->registry.assign<component::WaterComponent>(
+        entity,
+        t_water
+    );
+
+    // add transform component
+    m_application->registry.assign<component::TransformComponent>(
+        entity,
+        glm::vec3(t_water->GetXPosition(), t_water->GetHeight(), t_water->GetZPosition()),
+        glm::vec3(0.0f),
+        t_water->GetTileSize()
+    );
+
+    return entity;
+}
+
 ////////////////////////////////////////////////////////
 
 
@@ -339,32 +361,6 @@ void sg::ogl::ecs::factory::EntityFactory::CreateTerrainEntity(const TerrainShar
     m_application->registry.assign<component::TransformComponent>(
         entity,
         glm::vec3(t_terrain->GetTerrainOptions().xPos, 0.0f, t_terrain->GetTerrainOptions().zPos)
-    );
-}
-
-void sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const WaterSharedPtr& t_water) const
-{
-    // create an entity
-    const auto entity{ m_application->registry.create() };
-
-    // add mesh component
-    m_application->registry.assign<component::MeshComponent>(
-        entity,
-        m_application->GetModelManager().GetStaticMeshByName(resource::ModelManager::WATER_MESH)
-    );
-
-    // add water component
-    m_application->registry.assign<component::WaterComponent>(
-        entity,
-        t_water
-    );
-
-    // add transform component
-    m_application->registry.assign<component::TransformComponent>(
-        entity,
-        glm::vec3(t_water->GetXPosition(), t_water->GetHeight(), t_water->GetZPosition()),
-        glm::vec3(0.0f),
-        t_water->GetTileSize()
     );
 }
 

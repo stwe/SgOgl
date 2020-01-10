@@ -67,6 +67,8 @@ namespace sg::ogl::camera
         void SetPitch(float t_pitch);
         void SetCameraVelocity(float t_velocity);
 
+        void InvertPitch();
+
         //-------------------------------------------------
         // Virtual
         //-------------------------------------------------

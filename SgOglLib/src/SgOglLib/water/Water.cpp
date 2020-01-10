@@ -52,22 +52,22 @@ sg::ogl::water::Water::~Water() noexcept
 // Getter
 //-------------------------------------------------
 
-float sg::ogl::water::Water::GetXPosition() const
+float& sg::ogl::water::Water::GetXPosition()
 {
     return m_xPos;
 }
 
-float sg::ogl::water::Water::GetZPosition() const
+float& sg::ogl::water::Water::GetZPosition()
 {
     return m_zPos;
 }
 
-float sg::ogl::water::Water::GetHeight() const
+float& sg::ogl::water::Water::GetHeight()
 {
     return m_height;
 }
 
-glm::vec3 sg::ogl::water::Water::GetTileSize() const
+glm::vec3& sg::ogl::water::Water::GetTileSize()
 {
     return m_tileSize;
 }

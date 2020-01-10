@@ -22,9 +22,17 @@ namespace sg::ogl::ecs::system
     class ForwardRenderSystem : public RenderSystem<resource::shaderprogram::ModelShaderProgram>
     {
     public:
+        //-------------------------------------------------
+        // Ctors. / Dtor.
+        //-------------------------------------------------
+
         explicit ForwardRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
         {}
+
+        //-------------------------------------------------
+        // Override
+        //-------------------------------------------------
 
         void Update(double t_dt) override
         {
@@ -88,6 +96,10 @@ namespace sg::ogl::ecs::system
         }
 
     private:
+        //-------------------------------------------------
+        // Lighting
+        //-------------------------------------------------
+
         /**
          * @brief A Point Light is added to the Scene if it does not already exist there.
          */

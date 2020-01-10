@@ -1,6 +1,6 @@
 // This file is part of the SgOgl package.
 // 
-// Filename: ForwardRenderingState.h
+// Filename: WaterState.h
 // Author:   stwe
 // 
 // License:  MIT
@@ -11,37 +11,38 @@
 
 #include "SgOgl.h"
 
-class ForwardRenderingState : public sg::ogl::state::State
+class WaterState : public sg::ogl::state::State
 {
 public:
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
-
     using FirstPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::FirstPersonCamera>;
-
     using SkyboxRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkyboxRenderSystem>;
     using ForwardRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ForwardRenderSystem>;
+    using WaterRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::WaterRenderSystem>;
     using SunRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SunRenderSystem>;
+
+    using WaterSharedPtr = std::shared_ptr<sg::ogl::water::Water>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
     //-------------------------------------------------
 
-    ForwardRenderingState() = delete;
+    WaterState() = delete;
 
-    explicit ForwardRenderingState(sg::ogl::state::StateStack* t_stateStack)
-        : State{ t_stateStack, "ForwardRenderingState" }
+    explicit WaterState(sg::ogl::state::StateStack* t_stateStack)
+        : State{ t_stateStack, "WaterState" }
     {
         Init();
     }
 
-    ForwardRenderingState(const ForwardRenderingState& t_other) = delete;
-    ForwardRenderingState(ForwardRenderingState&& t_other) noexcept = delete;
-    ForwardRenderingState& operator=(const ForwardRenderingState& t_other) = delete;
-    ForwardRenderingState& operator=(ForwardRenderingState&& t_other) noexcept = delete;
+    WaterState(const WaterState& t_other) = delete;
+    WaterState(WaterState&& t_other) noexcept = delete;
+    WaterState& operator=(const WaterState& t_other) = delete;
+    WaterState& operator=(WaterState&& t_other) noexcept = delete;
 
-    ~ForwardRenderingState() noexcept override
+    ~WaterState() noexcept override
     {
-        SG_OGL_LOG_DEBUG("[ForwardRenderingState::~ForwardRenderingState()] Destruct ForwardRenderingState.");
+        SG_OGL_LOG_DEBUG("[WaterState::~WaterState()] Destruct WaterState.");
         CleanUpImGui();
     }
 
@@ -62,32 +63,16 @@ private:
 
     SkyboxRenderSystemUniquePtr m_skyboxRenderSystem;
     ForwardRenderSystemUniquePtr m_forwardRenderSystem;
+    WaterRenderSystemUniquePtr m_waterRenderSystem;
     SunRenderSystemUniquePtr m_sunRenderSystem;
 
-    float m_temp{ 0.0f };
+    WaterSharedPtr m_water;
 
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------
 
     void Init();
-
-    /**
-     * @brief Adds Point Lights to the Scene that are not an entity.
-     * @param t_numPointLights Number of Point Lights.
-     */
-    void AddScenePointLights(int t_numPointLights = 4) const;
-
-    /**
-     * @brief Creates two entities from a 3D model including a Point Light.
-     */
-    void AddEntityPointLights() const;
-
-    /**
-     * @brief Creates the Sun from a texture and a Directional Light.
-     * @param t_sunTexturePath The texture of the Sun.
-     */
-    void AddEntityDirectionalLight(const std::string& t_sunTexturePath) const;
 
     //-------------------------------------------------
     // ImGui

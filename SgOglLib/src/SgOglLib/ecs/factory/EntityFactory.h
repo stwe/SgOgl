@@ -117,7 +117,7 @@ namespace sg::ogl::ecs::factory
         ) const;
 
         /**
-         * @brief Creates an Entity and add a SunComponent.
+         * @brief Creates a Sun Entity.
          * @param t_sun Directional light (Sun) which is added as component.
          * @return The created Entity.
          */
@@ -153,6 +153,13 @@ namespace sg::ogl::ecs::factory
          * @return The created Entity.
          */
         entt::entity CreateSkydomeEntity(const std::string& t_fullModelFilePath) const;
+
+        /**
+         * @brief Creates a Water Entity.
+         * @param t_water A Water instance which is added as component.
+         * @return The created Entity.
+         */
+        entt::entity CreateWaterEntity(const WaterSharedPtr& t_water) const;
 
 
         ///////////////////////////////////////////////////////////////////////
@@ -196,7 +203,7 @@ namespace sg::ogl::ecs::factory
         ) const;
 
         void CreateTerrainEntity(const TerrainSharedPtr& t_terrain) const;
-        void CreateWaterEntity(const WaterSharedPtr& t_water) const;
+
         void CreateParticleEntity(ParticleEmitterSharedPtr& t_particleEmitter) const;
 
     protected:

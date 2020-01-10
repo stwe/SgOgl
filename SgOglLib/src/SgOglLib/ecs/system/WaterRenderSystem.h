@@ -21,68 +21,62 @@ namespace sg::ogl::ecs::system
     class WaterRenderSystem : public RenderSystem<resource::shaderprogram::WaterShaderProgram>
     {
     public:
+        using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
 
         explicit WaterRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
-        {}
-
-        WaterRenderSystem(const WaterRenderSystem& t_other) = delete;
-        WaterRenderSystem(WaterRenderSystem&& t_other) noexcept = delete;
-        WaterRenderSystem& operator=(const WaterRenderSystem& t_other) = delete;
-        WaterRenderSystem& operator=(WaterRenderSystem&& t_other) noexcept = delete;
-
-        virtual ~WaterRenderSystem() noexcept = default;
+        {
+            m_waterMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::WATER_MESH);
+        }
 
         //-------------------------------------------------
-        // Logic
+        // Override
         //-------------------------------------------------
 
         void Update(const double t_dt) override
         {
-            auto view = m_scene->GetApplicationContext()->registry.view<
-                component::MeshComponent,
-                component::WaterComponent,
-                component::TransformComponent>();
-
-            for (auto entity : view)
+            for (auto entity : m_view)
             {
-                auto& waterComponent = view.get<component::WaterComponent>(entity);
+                auto& waterComponent{ m_view.get<component::WaterComponent>(entity) };
+                auto& transformComponent{ m_view.get<component::TransformComponent>(entity) };
 
                 waterComponent.water->moveFactor += waterComponent.water->GetWaveSpeed() * static_cast<float>(t_dt);
                 waterComponent.water->moveFactor = fmod(waterComponent.water->moveFactor, 1.0f);
+
+                transformComponent.position.x = waterComponent.water->GetXPosition();
+                transformComponent.position.y = waterComponent.water->GetHeight();
+                transformComponent.position.z = waterComponent.water->GetZPosition();
+                transformComponent.scale = waterComponent.water->GetTileSize();
             }
         }
 
-        template <typename ...Args>
-        void RenderReflectionTexture(Args&&... t_args)
+        template <typename ...RenderSystem>
+        void RenderReflectionTexture(RenderSystem&&... t_renderSystem)
         {
-            auto view = m_scene->GetApplicationContext()->registry.view<
-                component::MeshComponent,
-                component::WaterComponent,
-                component::TransformComponent>();
-
             OpenGl::EnableClipping();
 
-            for (auto entity : view)
+            for (auto entity : m_view)
             {
-                auto& waterComponent = view.get<component::WaterComponent>(entity);
-
+                auto& waterComponent{ m_view.get<component::WaterComponent>(entity) };
                 waterComponent.water->GetWaterFbos().BindReflectionFboAsRenderTarget();
 
                 const auto distance{ 2.0f * (m_scene->GetCurrentCamera().GetPosition().y - waterComponent.water->GetHeight()) };
                 m_scene->GetCurrentCamera().GetPosition().y -= distance;
                 m_scene->GetCurrentCamera().InvertPitch();
+                m_scene->GetCurrentCamera().Update(0.016);
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 m_scene->SetCurrentClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -waterComponent.water->GetHeight()));
 
-                (t_args->Render(), ...);
+                (t_renderSystem->Render(), ...);
 
                 m_scene->GetCurrentCamera().GetPosition().y += distance;
                 m_scene->GetCurrentCamera().InvertPitch();
+                m_scene->GetCurrentCamera().Update(0.016);
 
                 waterComponent.water->GetWaterFbos().UnbindRenderTarget();
             }
@@ -91,26 +85,20 @@ namespace sg::ogl::ecs::system
             m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f));
         }
 
-        template <typename ...Args>
-        void RenderRefractionTexture(Args&&... t_args)
+        template <typename ...RenderSystem>
+        void RenderRefractionTexture(RenderSystem&&... t_renderSystem)
         {
-            auto view = m_scene->GetApplicationContext()->registry.view<
-                component::MeshComponent,
-                component::WaterComponent,
-                component::TransformComponent>();
-
             OpenGl::EnableClipping();
 
-            for (auto entity : view)
+            for (auto entity : m_view)
             {
-                auto& waterComponent = view.get<component::WaterComponent>(entity);
-
+                auto& waterComponent{ m_view.get<component::WaterComponent>(entity) };
                 waterComponent.water->GetWaterFbos().BindRefractionFboAsRenderTarget();
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, waterComponent.water->GetHeight()));
 
-                (t_args->Render(), ...);
+                (t_renderSystem->Render(), ...);
 
                 waterComponent.water->GetWaterFbos().UnbindRenderTarget();
             }
@@ -123,23 +111,15 @@ namespace sg::ogl::ecs::system
         {
             PrepareRendering();
 
-            auto view = m_scene->GetApplicationContext()->registry.view<
-                component::MeshComponent,
-                component::WaterComponent,
-                component::TransformComponent>();
-
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::WaterShaderProgram>() };
-
             shaderProgram.Bind();
 
-            for (auto entity : view)
+            for (auto entity : m_view)
             {
-                auto& meshComponent = view.get<component::MeshComponent>(entity);
-
-                meshComponent.mesh->InitDraw();
-                shaderProgram.UpdateUniforms(*m_scene, entity, *meshComponent.mesh);
-                meshComponent.mesh->DrawPrimitives();
-                meshComponent.mesh->EndDraw();
+                m_waterMesh->InitDraw();
+                shaderProgram.UpdateUniforms(*m_scene, entity, *m_waterMesh);
+                m_waterMesh->DrawPrimitives();
+                m_waterMesh->EndDraw();
             }
 
             resource::ShaderProgram::Unbind();
@@ -150,6 +130,18 @@ namespace sg::ogl::ecs::system
     protected:
 
     private:
+        const entt::basic_view<
+            entt::entity,
+            entt::exclude_t<>,
+            component::WaterComponent,
+            component::TransformComponent> m_view{
+                m_scene->GetApplicationContext()->registry.view<
+                component::WaterComponent,
+                component::TransformComponent>()
+            };
+
+        MeshSharedPtr m_waterMesh;
+
         void PrepareRendering() override
         {
             OpenGl::EnableFaceCulling();

@@ -139,9 +139,7 @@ vec3 CalcDirectionalLight(vec3 normal, vec3 viewDir)
 {
     // negate the global light direction vector to switch its direction
     // it's now a direction vector pointing towards the light source
-
-    // light direction in world space or tangent space
-    vec3 lightDir = normalize(-directionalLight.direction);
+    vec3 lightDir = normalize(-directionalLight.direction); // in world or tangent space
     if (hasNormalMap > 0.5)
     {
         vec3 tangentDirectionalLightDir = vTbnMatrix * directionalLight.direction;

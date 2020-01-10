@@ -38,16 +38,19 @@ namespace sg::ogl::resource::shaderprogram
             // set model matrix
             SetUniform("modelMatrix", static_cast<glm::mat4>(transformComponent));
 
-            // set vp matrix
+            // set view-projection matrix
             const auto vp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() };
             SetUniform("vpMatrix", vp);
 
+            // set directional light
+            SetUniform("hasDirectionalLight", t_scene.HasDirectionalLight());
+            if (t_scene.HasDirectionalLight())
+            {
+                SetUniform("directionalLight", t_scene.GetDirectionalLight());
+            }
+
             // set camera position
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
-
-            // set near and far
-            SetUniform("near", t_scene.GetApplicationContext()->GetProjectionOptions().nearPlane);
-            SetUniform("far", t_scene.GetApplicationContext()->GetProjectionOptions().farPlane);
 
             // set textures
             SetUniform("reflectionMap", 0);
@@ -56,12 +59,12 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("normalMap", 3);
             SetUniform("depthMap", 4);
 
-            // set directional light from the scene
-            SetUniform("lightPosition", t_scene.GetDirectionalLight().direction);
-            SetUniform("lightColor", t_scene.GetDirectionalLight().diffuseIntensity);
-
             // set move factor
             SetUniform("moveFactor", waterComponent.water->moveFactor);
+
+            // set near and far
+            SetUniform("near", t_scene.GetApplicationContext()->GetProjectionOptions().nearPlane);
+            SetUniform("far", t_scene.GetApplicationContext()->GetProjectionOptions().farPlane);
 
             // bind textures
             TextureManager::BindForReading(waterComponent.water->GetWaterFbos().GetReflectionColorTextureId(), GL_TEXTURE0);
@@ -71,12 +74,12 @@ namespace sg::ogl::resource::shaderprogram
             TextureManager::BindForReading(waterComponent.water->GetWaterFbos().GetRefractionDepthTextureId(), GL_TEXTURE4);
         }
 
-        std::string GetFolderName() const override
+        [[nodiscard]] std::string GetFolderName() const override
         {
             return "water";
         }
 
-        bool IsBuiltIn() const override
+        [[nodiscard]] bool IsBuiltIn() const override
         {
             return true;
         }

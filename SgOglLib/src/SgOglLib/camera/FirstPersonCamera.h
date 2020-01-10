@@ -37,7 +37,6 @@ namespace sg::ogl::camera
         //-------------------------------------------------
 
         void SetMouseSensitivity(float t_sensitivity);
-        void InvertPitch(double t_dt);
 
         //-------------------------------------------------
         // Override
