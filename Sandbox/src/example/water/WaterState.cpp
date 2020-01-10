@@ -143,6 +143,13 @@ void WaterState::RenderImGui() const
 
     ImGui::Separator();
 
+    ImGui::SliderFloat("Wave strength", &m_water->GetWaveStrength(), 0.0f, 0.1f);
+    ImGui::SliderFloat("Shine damper", &m_water->GetShineDamper(), 0.0f, 100.0f);
+    ImGui::SliderFloat("Reflectivity", &m_water->GetReflectivity(), 0.0f, 1.0f);
+    ImGui::SliderFloat3("Water color", reinterpret_cast<float*>(&m_water->GetWaterColor()), 0.0f, 1.0f);
+
+    ImGui::Separator();
+
     if (m_scene->HasDirectionalLight())
     {
         ImGui::SliderFloat3("Sun direction", reinterpret_cast<float*>(&m_scene->GetDirectionalLight().direction), -1.0f, 1.0f);

@@ -66,6 +66,12 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("near", t_scene.GetApplicationContext()->GetProjectionOptions().nearPlane);
             SetUniform("far", t_scene.GetApplicationContext()->GetProjectionOptions().farPlane);
 
+            // some other vars
+            SetUniform("waveStrength", waterComponent.water->GetWaveStrength());
+            SetUniform("shineDamper", waterComponent.water->GetShineDamper());
+            SetUniform("reflectivity", waterComponent.water->GetReflectivity());
+            SetUniform("waterColor", waterComponent.water->GetWaterColor());
+
             // bind textures
             TextureManager::BindForReading(waterComponent.water->GetWaterFbos().GetReflectionColorTextureId(), GL_TEXTURE0);
             TextureManager::BindForReading(waterComponent.water->GetWaterFbos().GetRefractionColorTextureId(), GL_TEXTURE1);

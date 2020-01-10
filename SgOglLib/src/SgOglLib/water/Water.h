@@ -71,6 +71,11 @@ namespace sg::ogl::water
 
         [[nodiscard]] float GetWaveSpeed() const;
 
+        [[nodiscard]] float& GetWaveStrength();
+        [[nodiscard]] float& GetShineDamper();
+        [[nodiscard]] float& GetReflectivity();
+        [[nodiscard]] glm::vec3& GetWaterColor();
+
         [[nodiscard]] uint32_t GetDudvTextureId() const;
         [[nodiscard]] uint32_t GetNormalTextureId() const;
 
@@ -93,6 +98,11 @@ namespace sg::ogl::water
         glm::vec3 m_tileSize{ 64.0f };
 
         float m_waveSpeed{ 0.04f };
+
+        float m_waveStrength{ 0.01f };
+        float m_shineDamper{ 30.0f };
+        float m_reflectivity{ 0.9f };
+        glm::vec3 m_waterColor{ glm::vec3(0.0, 0.3, 0.5) };
 
         uint32_t m_dudvTextureId{ 0 };
         uint32_t m_normalTextureId{ 0 };

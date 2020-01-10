@@ -77,6 +77,26 @@ float sg::ogl::water::Water::GetWaveSpeed() const
     return m_waveSpeed;
 }
 
+float& sg::ogl::water::Water::GetWaveStrength()
+{
+    return m_waveStrength;
+}
+
+float& sg::ogl::water::Water::GetShineDamper()
+{
+    return m_shineDamper;
+}
+
+float& sg::ogl::water::Water::GetReflectivity()
+{
+    return m_reflectivity;
+}
+
+glm::vec3& sg::ogl::water::Water::GetWaterColor()
+{
+    return m_waterColor;
+}
+
 uint32_t sg::ogl::water::Water::GetDudvTextureId() const
 {
     return m_dudvTextureId;

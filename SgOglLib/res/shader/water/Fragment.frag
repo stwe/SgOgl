@@ -34,13 +34,12 @@ uniform sampler2D depthMap;
 uniform float moveFactor;
 uniform float near;
 uniform float far;
+uniform float waveStrength;
+uniform float shineDamper;
+uniform float reflectivity;
+uniform vec3 waterColor;
 
 // Main
-
-const float waveStrength = 0.01;
-const float shineDamper = 30.0;
-const float reflectivity = 0.9;
-const vec3 waterColor = vec3(0.0, 0.3, 0.5);
 
 void main()
 {
