@@ -30,6 +30,7 @@ namespace sg::ogl::light
 namespace sg::ogl::terrain
 {
     class Terrain;
+    class TerrainQuadtree;
 }
 
 namespace sg::ogl::water
@@ -160,6 +161,11 @@ namespace sg::ogl::ecs::factory
          * @return The created Entity.
          */
         entt::entity CreateWaterEntity(const WaterSharedPtr& t_water) const;
+
+
+        // todo
+
+        void CreateTerrainQuadtreeEntity(const std::shared_ptr<terrain::TerrainQuadtree>& t_terrainQuadtree) const;
 
 
         ///////////////////////////////////////////////////////////////////////

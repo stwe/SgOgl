@@ -9,11 +9,9 @@
 
 #include "SgOgl.h"
 #include "SgOglEntryPoint.h"
-#include "SponzaPlaygroundState.h"
-#include "TestState.h"
-#include "TerrainState.h"
 #include "example/rendering/DeferredRenderingState.h"
 #include "example/rendering/ForwardRenderingState.h"
+#include "example/terrain/TerrainState.h"
 #include "example/water/WaterState.h"
 
 class Sandbox final : public sg::ogl::Application
@@ -48,23 +46,17 @@ protected:
 
     void RegisterStates() override
     {
-        //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: SponzaPlaygroundState as Game.");
-        //GetStateStack().RegisterState<SponzaPlaygroundState>(sg::ogl::state::GAME);
-
-        //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: TestState as Game.");
-        //GetStateStack().RegisterState<TestState>(sg::ogl::state::GAME);
-
-        //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: TerrainState as Game.");
-        //GetStateStack().RegisterState<TerrainState>(sg::ogl::state::GAME);
-
         //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: DeferredRenderingState as Game.");
         //GetStateStack().RegisterState<DeferredRenderingState>(sg::ogl::state::GAME);
 
         //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: ForwardRenderingState as Game.");
         //GetStateStack().RegisterState<ForwardRenderingState>(sg::ogl::state::GAME);
 
-        SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: WaterState as Game.");
-        GetStateStack().RegisterState<WaterState>(sg::ogl::state::GAME);
+        SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: TerrainState as Game.");
+        GetStateStack().RegisterState<TerrainState>(sg::ogl::state::GAME);
+
+        //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: WaterState as Game.");
+        //GetStateStack().RegisterState<WaterState>(sg::ogl::state::GAME);
     }
 
     void Init() override

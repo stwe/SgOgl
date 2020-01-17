@@ -162,6 +162,7 @@ void sg::ogl::resource::ModelManager::AddStaticMeshes()
     AddWaterStaticMesh();
     AddQuadStaticMesh();
     AddSunQuadStaticMesh();
+    AddTerrainPatchStaticMesh();
 }
 
 //-------------------------------------------------
@@ -301,6 +302,53 @@ void sg::ogl::resource::ModelManager::AddSunQuadStaticMesh()
 
     // store Mesh
     m_staticMeshes.emplace(SUN_QUAD_MESH, meshSharedPtr);
+}
+
+void sg::ogl::resource::ModelManager::AddTerrainPatchStaticMesh()
+{
+    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddTerrainPatchStaticMesh()] Add Terrain Patch mesh.");
+
+    // create Mesh
+    auto meshSharedPtr{ std::make_shared<Mesh>() };
+
+    // create BufferLayout
+    const buffer::BufferLayout bufferLayout{
+        { buffer::VertexAttributeType::POSITION_2D, "aPosition" },
+    };
+
+    // set vertices
+    std::vector<float> vertices{
+        0.0f,   0.0f,
+        0.333f, 0.0f,
+        0.666f, 0.0f,
+        1.0f,   0.0f,
+
+        0.0f,   0.333f,
+        0.333f, 0.333f,
+        0.666f, 0.333f,
+        1.0f,   0.333f,
+
+        0.0f,   0.666f,
+        0.333f, 0.666f,
+        0.666f, 0.666f,
+        1.0f,   0.666f,
+
+        0.0f,   1.0f,
+        0.333f, 1.0f,
+        0.666f, 1.0f,
+        1.0f,   1.0f,
+    };
+
+    // add Vbo
+    const auto drawCount{ 16 };
+    meshSharedPtr->GetVao().AddVertexDataVbo(vertices.data(), drawCount, bufferLayout);
+
+    meshSharedPtr->GetVao().BindVao();
+    glPatchParameteri(GL_PATCH_VERTICES, drawCount);
+    meshSharedPtr->GetVao().UnbindVao();
+
+    // store Mesh
+    m_staticMeshes.emplace(TERRAIN_PATCH_MESH, meshSharedPtr);
 }
 
 std::vector<glm::vec3> sg::ogl::resource::ModelManager::CreateSkyboxVertices(const float t_size)

@@ -58,6 +58,7 @@ namespace sg::ogl::resource
         inline static const StaticMeshKey WATER_MESH{ "water" };
         inline static const StaticMeshKey QUAD_MESH{ "quad" };
         inline static const StaticMeshKey SUN_QUAD_MESH{ "sun_quad" };
+        inline static const StaticMeshKey TERRAIN_PATCH_MESH{ "terrain_patch" };
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -118,6 +119,7 @@ namespace sg::ogl::resource
         void AddWaterStaticMesh();
         void AddQuadStaticMesh();
         void AddSunQuadStaticMesh();
+        void AddTerrainPatchStaticMesh();
 
         static std::vector<glm::vec3> CreateSkyboxVertices(float t_size = 500.0f);
     };

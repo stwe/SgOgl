@@ -40,6 +40,7 @@ namespace sg::ogl::particle
 namespace sg::ogl::terrain
 {
     class Terrain;
+    class TerrainQuadtree;
 }
 
 namespace sg::ogl::water
@@ -182,6 +183,11 @@ namespace sg::ogl::ecs::component
     struct TerrainComponent
     {
         std::shared_ptr<terrain::Terrain> terrain;
+    };
+
+    struct TerrainQuadtreeComponent
+    {
+        std::shared_ptr<terrain::TerrainQuadtree> terrainQuadtree;
     };
 
     struct WaterComponent

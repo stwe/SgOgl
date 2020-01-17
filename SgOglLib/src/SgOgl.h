@@ -42,6 +42,7 @@
 #include "SgOglLib/ecs/system/SkyboxRenderSystem.h"
 #include "SgOglLib/ecs/system/SkydomeRenderSystem.h"
 #include "SgOglLib/ecs/system/SunRenderSystem.h"
+#include "SgOglLib/ecs/system/TerrainQuadtreeRenderSystem.h"
 #include "SgOglLib/ecs/system/TerrainRenderSystem.h"
 #include "SgOglLib/ecs/system/WaterRenderSystem.h"
 
@@ -83,6 +84,7 @@
 #include "SgOglLib/resource/shaderprogram/SkeletalModelShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/SkyboxShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/SunShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/TerrainQuadtreeShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/TerrainShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/WaterShaderProgram.h"
 
@@ -94,6 +96,7 @@
 #include "SgOglLib/state/StateStack.h"
 
 // terrain
+#include "SgOglLib/terrain/TerrainQuadtree.h"
 #include "SgOglLib/terrain/Terrain.h"
 
 // water

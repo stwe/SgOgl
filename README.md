@@ -259,7 +259,7 @@ The config file can look like this.
 [Deferred rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/rendering/DeferredRenderingState.cpp)
 
 
-### Water rendering with the Sun as directional light source
+### Forward Water rendering with the Sun as directional light source
 
 <img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/water.png" alt="Water" width="128" height="128" />
 
