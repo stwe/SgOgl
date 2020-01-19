@@ -15,7 +15,11 @@ class TerrainState : public sg::ogl::state::State
 {
 public:
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
+
     using FirstPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::FirstPersonCamera>;
+
+    using TerrainQuadtreeSharedPtr = std::shared_ptr<sg::ogl::terrain::TerrainQuadtree>;
+
     using TerrainQuadtreeRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::TerrainQuadtreeRenderSystem>;
     using GuiRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::GuiRenderSystem>;
 
@@ -56,10 +60,10 @@ private:
 
     FirstPersonCameraSharedPtr m_firstPersonCamera;
 
+    TerrainQuadtreeSharedPtr m_terrainQuadtree;
+
     TerrainQuadtreeRenderSystemUniquePtr m_terrainQuadtreeRenderSystem;
     GuiRenderSystemUniquePtr m_guiRenderSystem;
-
-    std::shared_ptr<sg::ogl::terrain::TerrainQuadtree> m_terrainQuadtree;
 
     //-------------------------------------------------
     // Helper

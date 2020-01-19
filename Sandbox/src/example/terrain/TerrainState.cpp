@@ -17,6 +17,8 @@ bool TerrainState::Input()
 {
     m_scene->GetCurrentCamera().Input();
 
+    m_terrainQuadtree->UpdateQuadtree();
+
     return true;
 }
 
@@ -41,23 +43,22 @@ void TerrainState::Init()
 {
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::Black());
 
-    m_terrainQuadtree = std::make_shared<sg::ogl::terrain::TerrainQuadtree>();
-
-    GetApplicationContext()->GetEntityFactory().CreateTerrainQuadtreeEntity(m_terrainQuadtree);
-
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
         GetApplicationContext(),
-        glm::vec3(0.0f, 5.0f, 0.0f),
-        44.0f,
-        -18.0f
+        glm::vec3(0.5f, 750.0f, 0.5f),
+        90.0f,
+        -90.0f
     );
-    m_firstPersonCamera->SetCameraVelocity(4.0f);
+    m_firstPersonCamera->SetCameraVelocity(64.0f);
 
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_firstPersonCamera);
 
-    m_terrainQuadtreeRenderSystem = std::make_unique<sg::ogl::ecs::system::TerrainQuadtreeRenderSystem>(m_scene.get());
-    //m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
+    m_terrainQuadtree = std::make_shared<sg::ogl::terrain::TerrainQuadtree>(m_scene.get());
+    GetApplicationContext()->GetEntityFactory().CreateTerrainQuadtreeEntity(m_terrainQuadtree);
 
+    m_terrainQuadtreeRenderSystem = std::make_unique<sg::ogl::ecs::system::TerrainQuadtreeRenderSystem>(m_scene.get());
+
+    //m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
     //GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.65f, 0.65f, 0.25f, 0.25f, textureId);
 }

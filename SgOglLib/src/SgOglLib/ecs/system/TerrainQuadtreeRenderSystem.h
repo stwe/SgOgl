@@ -13,6 +13,7 @@
 #include "resource/shaderprogram/TerrainQuadtreeShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "resource/Mesh.h"
+#include "terrain/TerrainQuadtree.h"
 #include "ecs/component/Components.h"
 
 namespace sg::ogl::ecs::system
@@ -51,10 +52,8 @@ namespace sg::ogl::ecs::system
 
             for (auto entity : view)
             {
-                m_patchMesh->InitDraw();
-                shaderProgram.UpdateUniforms(*m_scene, entity, *m_patchMesh);
-                m_patchMesh->DrawPrimitives(GL_PATCHES);
-                m_patchMesh->EndDraw();
+                auto& terrainQuadtreeComponent{ m_scene->GetApplicationContext()->registry.get<component::TerrainQuadtreeComponent>(entity) };
+                terrainQuadtreeComponent.terrainQuadtree->Render(shaderProgram, m_patchMesh);
             }
 
             resource::ShaderProgram::Unbind();
@@ -67,14 +66,14 @@ namespace sg::ogl::ecs::system
         {
             //OpenGl::EnableWireframeMode();
             //OpenGl::EnableAlphaBlending();
-            //OpenGl::EnableFaceCulling();
+            OpenGl::EnableFaceCulling();
         }
 
         void FinishRendering() override
         {
             //OpenGl::DisableWireframeMode();
             //OpenGl::DisableBlending();
-            //OpenGl::DisableFaceCulling();
+            OpenGl::DisableFaceCulling();
         }
 
     private:
