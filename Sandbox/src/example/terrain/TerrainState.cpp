@@ -45,9 +45,9 @@ void TerrainState::Init()
 
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
         GetApplicationContext(),
-        glm::vec3(0.5f, 750.0f, 0.5f),
-        90.0f,
-        -90.0f
+        glm::vec3(6.0f, 45.0f, 30.0f),
+        -86.0f,
+        -18.0f
     );
     m_firstPersonCamera->SetCameraVelocity(64.0f);
 

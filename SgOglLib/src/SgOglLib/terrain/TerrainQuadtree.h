@@ -33,7 +33,7 @@ namespace sg::ogl::terrain
             {
                 for (auto j{ 0 }; j < ROOT_NODES; ++j)
                 {
-                    AddChild(new Node(
+                    AddChild(std::make_unique<Node>(
                         t_scene,
                         "root_node",
                         START_LOD,
@@ -43,8 +43,6 @@ namespace sg::ogl::terrain
                     );
                 }
             }
-
-            //Debug(this);
         }
 
         TerrainQuadtree(const TerrainQuadtree& t_other) = delete;
@@ -54,9 +52,13 @@ namespace sg::ogl::terrain
 
         virtual ~TerrainQuadtree() noexcept = default;
 
+        //-------------------------------------------------
+        // Update
+        //-------------------------------------------------
+
         void UpdateQuadtree()
         {
-            for (auto* child : children)
+            for (const auto& child : children)
             {
                 child->Update();
             }

@@ -11,7 +11,6 @@
 
 #include <vector>
 #include <memory>
-#include <iostream>
 #include <string>
 #include "Transform.h"
 
@@ -31,6 +30,9 @@ namespace sg::ogl::terrain
     class Node
     {
     public:
+        using NodeUniquePtr = std::unique_ptr<Node>;
+        using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
+
         //-------------------------------------------------
         // Public member
         //-------------------------------------------------
@@ -38,7 +40,7 @@ namespace sg::ogl::terrain
         std::string name;
 
         Node* parent{ nullptr };
-        std::vector<Node*> children;
+        std::vector<NodeUniquePtr> children;
         Transform localTransform;
         Transform worldTransform;
 
@@ -48,8 +50,8 @@ namespace sg::ogl::terrain
         glm::vec3 center{ glm::vec3(0.0f) };
         glm::vec2 index{ glm::vec2(0.0f) };
         float gap{ 1.0f };
-        //               Lod        0     1     2     3    4    5    6  7
-        std::vector<int> lodRanges{ 2000, 1500, 1000, 800, 400, 200, 0, 0 };
+        //               Lod        0     1    2    3    4    5   6  7
+        std::vector<int> lodRanges{ 1740, 870, 300, 200, 100, 50, 0, 0 };
 
         glm::vec3 color{ glm::vec3(0.0f, 1.0f, 0.0f) };
 
@@ -67,30 +69,10 @@ namespace sg::ogl::terrain
         virtual ~Node() noexcept = default;
 
         //-------------------------------------------------
-        // Debug
-        //-------------------------------------------------
-
-        static void Debug(Node* t_node)
-        {
-            std::cout << "\n";
-            std::cout << "isLeaf: " << t_node->isLeaf << "\n";
-            std::cout << "Numer of children: " << t_node->children.size() << "\n";
-            std::cout << "location x: " << t_node->location.x << " location y:" << t_node->location.y << "\n";
-            std::cout << "center x: " << t_node->center.x << " center y:" << t_node->center.y << " center z:" << t_node->center.z << "\n";
-            std::cout << "index x: " << t_node->index.x << " index y:" << t_node->index.y << "\n";
-            std::cout << "gap: " << t_node->gap << "\n";
-
-            for (auto* child : t_node->children)
-            {
-                Debug(child);
-            }
-        }
-
-        //-------------------------------------------------
         // Render
         //-------------------------------------------------
 
-        void Render(resource::ShaderProgram& t_shaderProgram, const std::shared_ptr<resource::Mesh>& t_patchMesh);
+        void Render(resource::ShaderProgram& t_shaderProgram, const MeshSharedPtr& t_patchMesh);
 
         //-------------------------------------------------
         // Update
@@ -102,7 +84,7 @@ namespace sg::ogl::terrain
         // Add / Remove
         //-------------------------------------------------
 
-        void AddChild(Node* t_child);
+        void AddChild(NodeUniquePtr t_child);
         void Add4Children(int t_lod);
 
         void RemoveChildren();

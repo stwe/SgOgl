@@ -48,7 +48,7 @@ sg::ogl::terrain::Node::Node(scene::Scene* t_scene, const std::string& t_name, c
 // Render
 //-------------------------------------------------
 
-void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, const std::shared_ptr<resource::Mesh>& t_patchMesh)
+void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, const MeshSharedPtr& t_patchMesh)
 {
     if (isLeaf)
     {
@@ -64,7 +64,7 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         t_patchMesh->EndDraw();
     }
 
-    for (auto* child : children)
+    for (const auto& child : children)
     {
         child->Render(t_shaderProgram, t_patchMesh);
     }
@@ -98,7 +98,7 @@ void sg::ogl::terrain::Node::Update()
         RemoveChildren();
     }
 
-    for (auto* child : children)
+    for (const auto& child : children)
     {
         child->Update();
     }
@@ -108,7 +108,7 @@ void sg::ogl::terrain::Node::Update()
 // Add / Remove
 //-------------------------------------------------
 
-void sg::ogl::terrain::Node::AddChild(Node* t_child)
+void sg::ogl::terrain::Node::AddChild(NodeUniquePtr t_child)
 {
     isLeaf = false;
 
@@ -126,7 +126,7 @@ void sg::ogl::terrain::Node::AddChild(Node* t_child)
     }
 
     t_child->parent = this;
-    children.push_back(t_child);
+    children.push_back(std::move(t_child));
 }
 
 void sg::ogl::terrain::Node::Add4Children(const int t_lod)
@@ -145,8 +145,7 @@ void sg::ogl::terrain::Node::Add4Children(const int t_lod)
             {
                 const auto loc{ location + glm::vec2(i * gap / 2.0f, j * gap / 2.0f) };
                 const auto debugName{ std::string("child_" + std::to_string(counter++)) + std::string("_" + std::to_string(t_lod)) };
-                auto* node{ new Node(m_scene, debugName, t_lod, loc, glm::vec2(i, j)) };
-                AddChild(node);
+                AddChild(std::make_unique<Node>(m_scene, debugName, t_lod, loc, glm::vec2(i, j)));
             }
         }
     }
@@ -158,7 +157,7 @@ void sg::ogl::terrain::Node::RemoveChildren()
 
     if (!children.empty())
     {
-        children.clear(); // todo
+        children.clear();
     }
 }
 
