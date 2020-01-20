@@ -56,9 +56,11 @@ namespace sg::ogl::terrain
         // Update
         //-------------------------------------------------
 
+        // todo: should only be accessible from the renderer
+
         void UpdateQuadtree()
         {
-            for (const auto& child : children)
+            for (const auto& child : m_children)
             {
                 child->Update();
             }

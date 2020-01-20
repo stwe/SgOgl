@@ -37,7 +37,18 @@ namespace sg::ogl::ecs::system
         // Override
         //-------------------------------------------------
 
-        void Update(double t_dt) override {}
+        void Update(double t_dt) override
+        {
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::TerrainQuadtreeComponent>()
+            };
+
+            for (auto entity : view)
+            {
+                auto& terrainQuadtreeComponent{ m_scene->GetApplicationContext()->registry.get<component::TerrainQuadtreeComponent>(entity) };
+                terrainQuadtreeComponent.terrainQuadtree->UpdateQuadtree();
+            }
+        }
 
         void Render() override
         {
@@ -64,15 +75,11 @@ namespace sg::ogl::ecs::system
     protected:
         void PrepareRendering() override
         {
-            //OpenGl::EnableWireframeMode();
-            //OpenGl::EnableAlphaBlending();
             OpenGl::EnableFaceCulling();
         }
 
         void FinishRendering() override
         {
-            //OpenGl::DisableWireframeMode();
-            //OpenGl::DisableBlending();
             OpenGl::DisableFaceCulling();
         }
 

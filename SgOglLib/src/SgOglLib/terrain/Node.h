@@ -34,28 +34,6 @@ namespace sg::ogl::terrain
         using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
 
         //-------------------------------------------------
-        // Public member
-        //-------------------------------------------------
-
-        std::string name;
-
-        Node* parent{ nullptr };
-        std::vector<NodeUniquePtr> children;
-        Transform localTransform;
-        Transform worldTransform;
-
-        bool isLeaf{ true };
-        int lod{ 0 };
-        glm::vec2 location{ glm::vec2(0.0f) };
-        glm::vec3 center{ glm::vec3(0.0f) };
-        glm::vec2 index{ glm::vec2(0.0f) };
-        float gap{ 1.0f };
-        //               Lod        0     1    2    3    4    5   6  7
-        std::vector<int> lodRanges{ 1740, 870, 300, 200, 100, 50, 0, 0 };
-
-        glm::vec3 color{ glm::vec3(0.0f, 1.0f, 0.0f) };
-
-        //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
 
@@ -69,30 +47,54 @@ namespace sg::ogl::terrain
         virtual ~Node() noexcept = default;
 
         //-------------------------------------------------
-        // Render
+        // Logic
         //-------------------------------------------------
+
+        // todo: should only be accessible from the renderer
 
         void Render(resource::ShaderProgram& t_shaderProgram, const MeshSharedPtr& t_patchMesh);
-
-        //-------------------------------------------------
-        // Update
-        //-------------------------------------------------
-
         void Update();
 
         //-------------------------------------------------
         // Add / Remove
         //-------------------------------------------------
 
-        void AddChild(NodeUniquePtr t_child);
-        void Add4Children(int t_lod);
+        // todo: should only be accessible from the Quadtree class
 
-        void RemoveChildren();
+        void AddChild(NodeUniquePtr t_child);
 
     protected:
+        std::vector<NodeUniquePtr> m_children;
 
     private:
         scene::Scene* m_scene{ nullptr };
+
+        Node* m_parent{ nullptr };
+
+        std::string m_name;
+
+        int m_lod{ 0 };
+        std::vector<int> m_lodRanges{ 1740, 870, 300, 200, 100, 50, 0, 0 };
+
+        glm::vec2 m_location{ glm::vec2(0.0f) };
+        glm::vec2 m_index{ glm::vec2(0.0f) };
+        glm::vec3 m_center{ glm::vec3(0.0f) };
+
+        bool m_isLeaf{ true };
+
+        float m_gap{ 1.0f };
+
+        Transform m_localTransform;
+        Transform m_worldTransform;
+
+        glm::vec3 m_color{ glm::vec3(0.0f, 1.0f, 0.0f) };
+
+        //-------------------------------------------------
+        // Add / Remove
+        //-------------------------------------------------
+
+        void Add4Children(int t_lod);
+        void RemoveChildren();
 
         //-------------------------------------------------
         // Helper

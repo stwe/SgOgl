@@ -17,14 +17,14 @@ bool TerrainState::Input()
 {
     m_scene->GetCurrentCamera().Input();
 
-    m_terrainQuadtree->UpdateQuadtree();
-
     return true;
 }
 
 bool TerrainState::Update(const double t_dt)
 {
     m_scene->GetCurrentCamera().Update(t_dt);
+
+    m_terrainQuadtreeRenderSystem->Update(t_dt);
 
     return true;
 }
