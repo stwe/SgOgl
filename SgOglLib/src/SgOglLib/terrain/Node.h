@@ -74,7 +74,7 @@ namespace sg::ogl::terrain
         std::string m_name;
 
         int m_lod{ 0 };
-        std::vector<int> m_lodRanges{ 1740, 870, 300, 200, 100, 50, 0, 0 };
+        std::vector<int> m_lodRanges{ 500, 350, 150, 50, 0, 0, 0, 0 };
 
         glm::vec2 m_location{ glm::vec2(0.0f) };
         glm::vec2 m_index{ glm::vec2(0.0f) };

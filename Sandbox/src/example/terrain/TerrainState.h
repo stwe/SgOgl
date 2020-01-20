@@ -43,6 +43,7 @@ public:
     ~TerrainState() noexcept override
     {
         SG_OGL_LOG_DEBUG("[TerrainState::~TerrainState()] Destruct TerrainState.");
+        CleanUpImGui();
     }
 
     //-------------------------------------------------
@@ -70,4 +71,12 @@ private:
     //-------------------------------------------------
 
     void Init();
+
+    //-------------------------------------------------
+    // ImGui
+    //-------------------------------------------------
+
+    void InitImGui() const;
+    void RenderImGui() const;
+    static void CleanUpImGui();
 };

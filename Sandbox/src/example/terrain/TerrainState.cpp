@@ -33,6 +33,8 @@ void TerrainState::Render()
 {
     m_terrainQuadtreeRenderSystem->Render();
     //m_guiRenderSystem->Render();
+
+    RenderImGui();
 }
 
 //-------------------------------------------------
@@ -41,6 +43,8 @@ void TerrainState::Render()
 
 void TerrainState::Init()
 {
+    InitImGui();
+
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::Black());
 
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
@@ -61,4 +65,44 @@ void TerrainState::Init()
 
     //m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
     //GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.65f, 0.65f, 0.25f, 0.25f, textureId);
+}
+
+//-------------------------------------------------
+// ImGui
+//-------------------------------------------------
+
+void TerrainState::InitImGui() const
+{
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    auto& io{ ImGui::GetIO() };
+    io.IniFilename = "res/config/Imgui.ini";
+
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOpenGL(GetApplicationContext()->GetWindow().GetWindowHandle(), true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+}
+
+void TerrainState::RenderImGui() const
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::Begin("Debug");
+
+    ImGui::SliderFloat3("Camera", reinterpret_cast<float*>(&m_scene->GetCurrentCamera().GetPosition()), 0.0f, 600.0f);
+
+    ImGui::End();
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void TerrainState::CleanUpImGui()
+{
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 }
