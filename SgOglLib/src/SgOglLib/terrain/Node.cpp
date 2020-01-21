@@ -49,6 +49,8 @@ sg::ogl::terrain::Node::Node(
     m_worldTransform.position.y = 0.0f;
 
     ComputeCenterPosition();
+
+    GenerateLodMorphingArea(); // todo
 }
 
 //-------------------------------------------------
@@ -65,6 +67,14 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         t_shaderProgram.SetUniform("worldMatrix", static_cast<glm::mat4>(m_worldTransform));
         t_shaderProgram.SetUniform("viewProjectionMatrix", projectionMatrix * m_scene->GetCurrentCamera().GetViewMatrix());
         t_shaderProgram.SetUniform("color", m_color);
+
+        t_shaderProgram.SetUniform("cameraPosition", m_scene->GetCurrentCamera().GetPosition());
+        t_shaderProgram.SetUniform("scaleY", TerrainQuadtree::SCALE_Y);
+        t_shaderProgram.SetUniform("lod", m_lod);
+        t_shaderProgram.SetUniform("index", m_index);
+        t_shaderProgram.SetUniform("gap", m_gap);
+        t_shaderProgram.SetUniform("location", m_location);
+        t_shaderProgram.SetUniform("lodMorphArea", m_lodMorphingArea);
 
         t_patchMesh->InitDraw();
         t_patchMesh->DrawPrimitives(GL_PATCHES);
@@ -178,4 +188,21 @@ void sg::ogl::terrain::Node::ComputeCenterPosition()
     const auto height{ 0.0f };
 
     m_center = glm::vec3(loc.x, height, loc.y);
+}
+
+void sg::ogl::terrain::Node::GenerateLodMorphingArea()
+{
+    for (auto i{ 0 }; i < 8; ++i)
+    {
+        if (m_lodRanges[i] == 0)
+        {
+            m_lodMorphingArea.push_back(0);
+        }
+        else
+        {
+            m_lodMorphingArea.push_back(
+                m_lodRanges[i] - ((TerrainQuadtree::SCALE_XZ / TerrainQuadtree::ROOT_NODES) / pow(2, i + 1))
+            );
+        }
+    }
 }

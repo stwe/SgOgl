@@ -75,6 +75,7 @@ namespace sg::ogl::terrain
 
         int m_lod{ 0 };
         std::vector<int> m_lodRanges{ 500, 350, 150, 50, 0, 0, 0, 0 };
+        std::vector<int> m_lodMorphingArea;
 
         glm::vec2 m_location{ glm::vec2(0.0f) };
         glm::vec2 m_index{ glm::vec2(0.0f) };
@@ -101,5 +102,6 @@ namespace sg::ogl::terrain
         //-------------------------------------------------
 
         void ComputeCenterPosition();
+        void GenerateLodMorphingArea();
     };
 }
