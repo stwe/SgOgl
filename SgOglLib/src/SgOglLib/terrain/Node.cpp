@@ -37,7 +37,7 @@ sg::ogl::terrain::Node::Node(
     , m_index{ t_index }
 {
     m_isLeaf = true;
-    m_gap = 1.0f / (static_cast<float>(t_terrainConfig->rootNodes) * powf(2.0f, static_cast<float>(m_lod)));
+    m_gap = 1.0f / (static_cast<float>(t_terrainConfig->rootNodes) * POW2_F[m_lod]);
 
     m_localTransform.scale = glm::vec3(m_gap, 0.0f, m_gap);
     m_localTransform.position = glm::vec3(m_location.x, 0.0f, m_location.y);
@@ -48,8 +48,6 @@ sg::ogl::terrain::Node::Node(
     m_worldTransform.position.y = 0.0f;
 
     ComputeCenterPosition();
-
-    GenerateLodMorphingArea(); // todo
 }
 
 //-------------------------------------------------
@@ -73,7 +71,7 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         t_shaderProgram.SetUniform("index", m_index);
         t_shaderProgram.SetUniform("gap", m_gap);
         t_shaderProgram.SetUniform("location", m_location);
-        t_shaderProgram.SetUniform("lodMorphArea", m_lodMorphingArea);
+        t_shaderProgram.SetUniform("lodMorphArea", m_terrainConfig->lodMorphingArea);
 
         t_patchMesh->InitDraw();
         t_patchMesh->DrawPrimitives(GL_PATCHES);
@@ -98,9 +96,9 @@ void sg::ogl::terrain::Node::Update()
     }
 
     const auto distance{ glm::distance(m_scene->GetCurrentCamera().GetPosition(), m_center) };
-    const auto range{ m_lodRanges[m_lod] };
+    const auto range{ m_terrainConfig->lodRanges[m_lod] };
 
-    if (distance < range && m_lod < static_cast<int>(m_lodRanges.size()) - 1)
+    if (distance < range && m_lod < static_cast<int>(m_terrainConfig->lodRanges.size()) - 1)
     {
         Add4Children(m_lod + 1);
     }
@@ -185,21 +183,4 @@ void sg::ogl::terrain::Node::ComputeCenterPosition()
     const auto height{ 0.0f };
 
     m_center = glm::vec3(loc.x, height, loc.y);
-}
-
-void sg::ogl::terrain::Node::GenerateLodMorphingArea()
-{
-    for (auto i{ 0 }; i < 8; ++i)
-    {
-        if (m_lodRanges[i] == 0)
-        {
-            m_lodMorphingArea.push_back(0);
-        }
-        else
-        {
-            m_lodMorphingArea.push_back(
-                m_lodRanges[i] - ((m_terrainConfig->scaleXz / m_terrainConfig->rootNodes) / pow(2, i + 1))
-            );
-        }
-    }
 }
