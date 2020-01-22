@@ -11,7 +11,6 @@
 
 #include <vector>
 #include <memory>
-#include <string>
 #include "Transform.h"
 
 namespace sg::ogl::resource
@@ -27,17 +26,26 @@ namespace sg::ogl::scene
 
 namespace sg::ogl::terrain
 {
+    struct TerrainConfig;
+
     class Node
     {
     public:
         using NodeUniquePtr = std::unique_ptr<Node>;
         using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
+        using TerrainConfigSharedPtr = std::shared_ptr<TerrainConfig>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
 
-        Node(scene::Scene* t_scene, const std::string& t_name, int t_lod, const glm::vec2& t_location, const glm::vec2& t_index);
+        Node(
+            scene::Scene* t_scene,
+            const TerrainConfigSharedPtr& t_terrainConfig,
+            int t_lod,
+            const glm::vec2& t_location,
+            const glm::vec2& t_index
+        );
 
         Node(const Node& t_other) = delete;
         Node(Node&& t_other) noexcept = delete;
@@ -50,8 +58,6 @@ namespace sg::ogl::terrain
         // Logic
         //-------------------------------------------------
 
-        // todo: should only be accessible from the renderer
-
         void Render(resource::ShaderProgram& t_shaderProgram, const MeshSharedPtr& t_patchMesh);
         void Update();
 
@@ -59,19 +65,17 @@ namespace sg::ogl::terrain
         // Add / Remove
         //-------------------------------------------------
 
-        // todo: should only be accessible from the Quadtree class
-
         void AddChild(NodeUniquePtr t_child);
 
     protected:
         std::vector<NodeUniquePtr> m_children;
 
+        TerrainConfigSharedPtr m_terrainConfig;
+
     private:
         scene::Scene* m_scene{ nullptr };
 
         Node* m_parent{ nullptr };
-
-        std::string m_name;
 
         int m_lod{ 0 };
         std::vector<int> m_lodRanges{ 500, 350, 150, 50, 0, 0, 0, 0 };

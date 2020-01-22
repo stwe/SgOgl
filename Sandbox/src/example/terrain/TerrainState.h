@@ -18,6 +18,7 @@ public:
 
     using FirstPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::FirstPersonCamera>;
 
+    using TerrainConfigSharedPtr = std::shared_ptr<sg::ogl::terrain::TerrainConfig>;
     using TerrainQuadtreeSharedPtr = std::shared_ptr<sg::ogl::terrain::TerrainQuadtree>;
 
     using TerrainQuadtreeRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::TerrainQuadtreeRenderSystem>;
@@ -61,6 +62,7 @@ private:
 
     FirstPersonCameraSharedPtr m_firstPersonCamera;
 
+    TerrainConfigSharedPtr m_terrainConfig;
     TerrainQuadtreeSharedPtr m_terrainQuadtree;
 
     TerrainQuadtreeRenderSystemUniquePtr m_terrainQuadtreeRenderSystem;

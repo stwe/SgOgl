@@ -96,6 +96,7 @@
 #include "SgOglLib/state/StateStack.h"
 
 // terrain
+#include "SgOglLib/terrain/TerrainConfig.h"
 #include "SgOglLib/terrain/TerrainQuadtree.h"
 #include "SgOglLib/terrain/Terrain.h"
 

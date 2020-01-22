@@ -12,12 +12,12 @@
 #include "OpenGl.h"
 #include "Application.h"
 #include "Window.h"
+#include "TerrainConfig.h"
 #include "camera/Camera.h"
 #include "resource/Mesh.h"
 #include "resource/ModelManager.h"
 #include "resource/ShaderProgram.h"
 #include "scene/Scene.h"
-#include "TerrainQuadtree.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -25,27 +25,26 @@
 
 sg::ogl::terrain::Node::Node(
     scene::Scene* t_scene,
-    const std::string& t_name,
+    const TerrainConfigSharedPtr& t_terrainConfig,
     const int t_lod,
     const glm::vec2& t_location,
     const glm::vec2& t_index
 )
-    : m_scene{ t_scene }
-    , m_name{ t_name }
+    : m_terrainConfig{ t_terrainConfig }
+    , m_scene{ t_scene }
     , m_lod{ t_lod }
     , m_location{ t_location }
     , m_index{ t_index }
-
 {
     m_isLeaf = true;
-    m_gap = 1.0f / (static_cast<float>(TerrainQuadtree::ROOT_NODES) * powf(2.0f, static_cast<float>(m_lod)));
+    m_gap = 1.0f / (static_cast<float>(t_terrainConfig->rootNodes) * powf(2.0f, static_cast<float>(m_lod)));
 
     m_localTransform.scale = glm::vec3(m_gap, 0.0f, m_gap);
     m_localTransform.position = glm::vec3(m_location.x, 0.0f, m_location.y);
 
-    m_worldTransform.scale = glm::vec3(TerrainQuadtree::SCALE_XZ, TerrainQuadtree::SCALE_Y, TerrainQuadtree::SCALE_XZ);
-    m_worldTransform.position.x = -TerrainQuadtree::SCALE_XZ * 0.5f;
-    m_worldTransform.position.z = -TerrainQuadtree::SCALE_XZ * 0.5f;
+    m_worldTransform.scale = glm::vec3(t_terrainConfig->scaleXz, t_terrainConfig->scaleY, t_terrainConfig->scaleXz);
+    m_worldTransform.position.x = -t_terrainConfig->scaleXz * 0.5f;
+    m_worldTransform.position.z = -t_terrainConfig->scaleXz * 0.5f;
     m_worldTransform.position.y = 0.0f;
 
     ComputeCenterPosition();
@@ -69,7 +68,7 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         t_shaderProgram.SetUniform("color", m_color);
 
         t_shaderProgram.SetUniform("cameraPosition", m_scene->GetCurrentCamera().GetPosition());
-        t_shaderProgram.SetUniform("scaleY", TerrainQuadtree::SCALE_Y);
+        t_shaderProgram.SetUniform("scaleY", m_terrainConfig->scaleY);
         t_shaderProgram.SetUniform("lod", m_lod);
         t_shaderProgram.SetUniform("index", m_index);
         t_shaderProgram.SetUniform("gap", m_gap);
@@ -89,9 +88,9 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
 
 void sg::ogl::terrain::Node::Update()
 {
-    if (m_scene->GetCurrentCamera().GetPosition().y > TerrainQuadtree::SCALE_Y)
+    if (m_scene->GetCurrentCamera().GetPosition().y > m_terrainConfig->scaleY)
     {
-        m_center.y = TerrainQuadtree::SCALE_Y;
+        m_center.y = m_terrainConfig->scaleY;
     }
     else
     {
@@ -150,14 +149,12 @@ void sg::ogl::terrain::Node::Add4Children(const int t_lod)
 
     if (m_children.empty())
     {
-        auto counter{ 0 };
         for (auto i{ 0 }; i < 2; ++i)
         {
             for (auto j{ 0 }; j < 2; ++j)
             {
                 const auto loc{ m_location + glm::vec2(i * m_gap / 2.0f, j * m_gap / 2.0f) };
-                const auto debugName{ std::string("child_" + std::to_string(counter++)) + std::string("_" + std::to_string(t_lod)) };
-                AddChild(std::make_unique<Node>(m_scene, debugName, t_lod, loc, glm::vec2(i, j)));
+                AddChild(std::make_unique<Node>(m_scene, m_terrainConfig, t_lod, loc, glm::vec2(i, j)));
             }
         }
     }
@@ -180,8 +177,8 @@ void sg::ogl::terrain::Node::RemoveChildren()
 void sg::ogl::terrain::Node::ComputeCenterPosition()
 {
     auto loc{ m_location + m_gap * 0.5f };
-    loc *= TerrainQuadtree::SCALE_XZ;
-    loc -= TerrainQuadtree::SCALE_XZ * 0.5f;
+    loc *= m_terrainConfig->scaleXz;
+    loc -= m_terrainConfig->scaleXz * 0.5f;
 
     //const auto height{ GetTerrainHeight(loc.x, loc.y) };
 
@@ -201,7 +198,7 @@ void sg::ogl::terrain::Node::GenerateLodMorphingArea()
         else
         {
             m_lodMorphingArea.push_back(
-                m_lodRanges[i] - ((TerrainQuadtree::SCALE_XZ / TerrainQuadtree::ROOT_NODES) / pow(2, i + 1))
+                m_lodRanges[i] - ((m_terrainConfig->scaleXz / m_terrainConfig->rootNodes) / pow(2, i + 1))
             );
         }
     }
