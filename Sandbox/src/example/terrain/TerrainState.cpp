@@ -60,6 +60,7 @@ void TerrainState::Init()
 
     m_terrainConfig = std::make_shared<sg::ogl::terrain::TerrainConfig>();
     m_terrainConfig->morphingEnabled = false;
+    m_terrainConfig->tessellationEnabled = false;
     m_terrainConfig->Init();
 
     m_terrainQuadtree = std::make_shared<sg::ogl::terrain::TerrainQuadtree>(m_scene.get(), m_terrainConfig);
@@ -107,6 +108,7 @@ void TerrainState::RenderImGui() const
     ImGui::Separator();
 
     ImGui::Checkbox("Morphing", &m_terrainConfig->morphingEnabled);
+    ImGui::Checkbox("Tessellation", &m_terrainConfig->tessellationEnabled);
 
     ImGui::End();
 

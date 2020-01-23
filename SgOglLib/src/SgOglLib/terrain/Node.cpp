@@ -72,6 +72,12 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         t_shaderProgram.SetUniform("gap", m_gap);
         t_shaderProgram.SetUniform("location", m_location);
         t_shaderProgram.SetUniform("lodMorphArea", m_terrainConfig->lodMorphingArea);
+
+        t_shaderProgram.SetUniform("tessellationFactor", m_terrainConfig->tessellationFactor);
+        t_shaderProgram.SetUniform("tessellationSlope", m_terrainConfig->tessellationSlope);
+        t_shaderProgram.SetUniform("tessellationShift", m_terrainConfig->tessellationShift);
+
+        t_shaderProgram.SetUniform("tessellationEnabled", m_terrainConfig->tessellationEnabled);
         t_shaderProgram.SetUniform("morphingEnabled", m_terrainConfig->morphingEnabled);
 
         t_patchMesh->InitDraw();
