@@ -72,6 +72,7 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         t_shaderProgram.SetUniform("gap", m_gap);
         t_shaderProgram.SetUniform("location", m_location);
         t_shaderProgram.SetUniform("lodMorphArea", m_terrainConfig->lodMorphingArea);
+        t_shaderProgram.SetUniform("morphingEnabled", m_terrainConfig->morphingEnabled);
 
         t_patchMesh->InitDraw();
         t_patchMesh->DrawPrimitives(GL_PATCHES);

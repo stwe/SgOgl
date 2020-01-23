@@ -69,6 +69,19 @@ namespace sg::ogl::terrain
             }
         }
 
+        //-------------------------------------------------
+        // Debug
+        //-------------------------------------------------
+
+        void Count(int& t_value)
+        {
+            for (const auto& child : m_children)
+            {
+                child->NodesCount(t_value);
+                t_value++;
+            }
+        }
+
     protected:
 
     private:

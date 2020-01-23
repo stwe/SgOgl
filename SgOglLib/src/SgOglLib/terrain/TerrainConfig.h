@@ -26,11 +26,13 @@ namespace sg::ogl::terrain
 
     struct TerrainConfig
     {
-        float scaleXz{ 400.0f };   // 400
+        float scaleXz{ 1024.0f };  // 400
         float scaleY{ 1.0f };      // 1
         int rootNodes{ 2 };        // 2
 
-        std::vector<int> lodRanges{ 500, 350, 150, 50, 0, 0, 0, 0 }; // lodRanges{ 500, 350, 150, 50, 0, 0, 0, 0 }
+        bool morphingEnabled{ true };
+
+        std::vector<int> lodRanges{ 1500, 1100, 800, 500, 100, 0, 0, 0 }; // lodRanges{ 500, 350, 150, 50, 0, 0, 0, 0 }
         std::vector<int> lodMorphingArea;
 
         void Init()

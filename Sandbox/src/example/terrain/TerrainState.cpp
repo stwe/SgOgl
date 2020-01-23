@@ -49,9 +49,9 @@ void TerrainState::Init()
 
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
         GetApplicationContext(),
-        glm::vec3(6.0f, 45.0f, 30.0f),
-        -86.0f,
-        -18.0f
+        glm::vec3(6.0f, 1000.0f, 30.0f),
+        -90.0f,
+        -90.0f
     );
     m_firstPersonCamera->SetCameraVelocity(64.0f);
 
@@ -59,6 +59,7 @@ void TerrainState::Init()
     m_scene->SetCurrentCamera(m_firstPersonCamera);
 
     m_terrainConfig = std::make_shared<sg::ogl::terrain::TerrainConfig>();
+    m_terrainConfig->morphingEnabled = false;
     m_terrainConfig->Init();
 
     m_terrainQuadtree = std::make_shared<sg::ogl::terrain::TerrainQuadtree>(m_scene.get(), m_terrainConfig);
@@ -96,6 +97,16 @@ void TerrainState::RenderImGui() const
     ImGui::Begin("Debug");
 
     ImGui::SliderFloat3("Camera", reinterpret_cast<float*>(&m_scene->GetCurrentCamera().GetPosition()), 0.0f, 600.0f);
+
+    ImGui::Separator();
+
+    auto count{ 0 };
+    m_terrainQuadtree->Count(count);
+    ImGui::Text("Nodes count = %d", count);
+
+    ImGui::Separator();
+
+    ImGui::Checkbox("Morphing", &m_terrainConfig->morphingEnabled);
 
     ImGui::End();
 

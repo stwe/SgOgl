@@ -20,6 +20,7 @@ uniform vec2 index;
 uniform float gap;
 uniform vec2 location;
 uniform int lodMorphArea[8];
+uniform float morphingEnabled;
 
 // Function
 
@@ -171,9 +172,12 @@ void main()
 {
     vec2 localPosition = (localMatrix * vec4(aPosition.x, 0.0, aPosition.y, 1.0)).xz;
 
-    if (lod > 0)
+    if (morphingEnabled > 0.5)
     {
-        localPosition += Morph(localPosition, lodMorphArea[lod - 1]);
+        if (lod > 0)
+        {
+            localPosition += Morph(localPosition, lodMorphArea[lod - 1]);
+        }
     }
 
     gl_Position = worldMatrix * vec4(localPosition.x, 0.0, localPosition.y, 1.0);

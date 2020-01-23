@@ -62,6 +62,19 @@ namespace sg::ogl::terrain
         void Update();
 
         //-------------------------------------------------
+        // Debug
+        //-------------------------------------------------
+
+        void NodesCount(int& t_value)
+        {
+            for (const auto& child : m_children)
+            {
+                t_value++;
+                child->NodesCount(t_value);
+            }
+        }
+
+        //-------------------------------------------------
         // Add / Remove
         //-------------------------------------------------
 
