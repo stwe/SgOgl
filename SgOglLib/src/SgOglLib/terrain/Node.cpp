@@ -60,7 +60,6 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
     if (m_isLeaf)
     {
         const auto projectionMatrix{ m_scene->GetApplicationContext()->GetWindow().GetProjectionMatrix() };
-        const auto heightmapTextureId{ m_scene->GetApplicationContext()->GetTextureManager().GetTextureIdFromPath(m_terrainConfig->heightmapFilePath) };
 
         t_shaderProgram.SetUniform("localMatrix", static_cast<glm::mat4>(m_localTransform));
         t_shaderProgram.SetUniform("worldMatrix", static_cast<glm::mat4>(m_worldTransform));
@@ -73,7 +72,7 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         t_shaderProgram.SetUniform("index", m_index);
         t_shaderProgram.SetUniform("gap", m_gap);
         t_shaderProgram.SetUniform("location", m_location);
-        t_shaderProgram.SetUniform("lodMorphArea", m_terrainConfig->lodMorphingArea);
+        t_shaderProgram.SetUniform("lodMorphArea", m_terrainConfig->GetLodMorphingArea());
 
         t_shaderProgram.SetUniform("tessellationFactor", m_terrainConfig->tessellationFactor);
         t_shaderProgram.SetUniform("tessellationSlope", m_terrainConfig->tessellationSlope);
@@ -83,7 +82,11 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         t_shaderProgram.SetUniform("morphingEnabled", m_terrainConfig->morphingEnabled);
 
         t_shaderProgram.SetUniform("heightmap", 0);
-        resource::TextureManager::BindForReading(heightmapTextureId, GL_TEXTURE0);
+        resource::TextureManager::BindForReading(m_terrainConfig->GetHeightmapTextureId(), GL_TEXTURE0);
+        resource::TextureManager::UseBilinearFilter();
+
+        t_shaderProgram.SetUniform("normalmap", 1);
+        resource::TextureManager::BindForReading(m_terrainConfig->GetNormalmapTextureId(), GL_TEXTURE1);
         resource::TextureManager::UseBilinearFilter();
 
         t_patchMesh->InitDraw();

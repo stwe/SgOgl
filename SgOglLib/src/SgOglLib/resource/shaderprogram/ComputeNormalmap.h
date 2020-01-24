@@ -11,6 +11,7 @@
 
 #include "OpenGl.h"
 #include "terrain/Terrain.h"
+#include "terrain/TerrainConfig.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
 
@@ -19,20 +20,30 @@ namespace sg::ogl::resource::shaderprogram
     class ComputeNormalmap : public ShaderProgram
     {
     public:
-        void UpdateUniforms(const terrain::Terrain& t_terrain) override
+        [[deprecated]] void UpdateUniforms(const terrain::Terrain& t_terrain) override
         {
-            TextureManager::BindForReading(t_terrain.GetHeightmapTextureId(), GL_TEXTURE0);
             SetUniform("heightmap", 0);
+            TextureManager::BindForReading(t_terrain.GetHeightmapTextureId(), GL_TEXTURE0);
+
             SetUniform("heightmapWidth", t_terrain.GetHeightmapWidth());
             SetUniform("normalStrength", t_terrain.GetTerrainOptions().normalStrength);
         }
 
-        std::string GetFolderName() const override
+        void UpdateUniforms(const terrain::TerrainConfig& t_terrainConfig) override
+        {
+            SetUniform("heightmap", 0);
+            TextureManager::BindForReading(t_terrainConfig.GetHeightmapTextureId(), GL_TEXTURE0);
+
+            SetUniform("heightmapWidth", t_terrainConfig.GetHeightmapWidth());
+            SetUniform("normalStrength", t_terrainConfig.normalStrength);
+        }
+
+        [[nodiscard]] std::string GetFolderName() const override
         {
             return "normalmap";
         }
 
-        bool IsBuiltIn() const override
+        [[nodiscard]] bool IsBuiltIn() const override
         {
             return true;
         }

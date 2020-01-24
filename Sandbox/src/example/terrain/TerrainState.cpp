@@ -32,7 +32,7 @@ bool TerrainState::Update(const double t_dt)
 void TerrainState::Render()
 {
     m_terrainQuadtreeRenderSystem->Render();
-    //m_guiRenderSystem->Render();
+    m_guiRenderSystem->Render();
 
     RenderImGui();
 }
@@ -58,21 +58,22 @@ void TerrainState::Init()
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_firstPersonCamera);
 
-    m_terrainConfig = std::make_shared<sg::ogl::terrain::TerrainConfig>();
+    m_terrainConfig = std::make_shared<sg::ogl::terrain::TerrainConfig>(GetApplicationContext());
     m_terrainConfig->scaleXz = 1024.0f;
     m_terrainConfig->scaleY = 200.0f;
     m_terrainConfig->rootNodes = 2;
-    m_terrainConfig->heightmapFilePath = "res/heightmap/heightmap_1024x1024x8.bmp";
+    m_terrainConfig->normalStrength = 10.0f;
     m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
-    m_terrainConfig->Init();
+    m_terrainConfig->InitMaps("res/heightmap/heightmap_1024x1024x8.bmp", "normalmap", "normalmapTexture");
+    m_terrainConfig->InitMorphing();
 
     m_terrainQuadtree = std::make_shared<sg::ogl::terrain::TerrainQuadtree>(m_scene.get(), m_terrainConfig);
     GetApplicationContext()->GetEntityFactory().CreateTerrainQuadtreeEntity(m_terrainQuadtree);
 
     m_terrainQuadtreeRenderSystem = std::make_unique<sg::ogl::ecs::system::TerrainQuadtreeRenderSystem>(m_scene.get());
 
-    //m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
-    //GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.65f, 0.65f, 0.25f, 0.25f, textureId);
+    m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
+    GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.5f, 0.5f, 0.25f, 0.25f, m_terrainConfig->GetNormalmapTextureId());
 }
 
 //-------------------------------------------------
@@ -117,7 +118,7 @@ void TerrainState::RenderImGui() const
 
     ImGui::SliderFloat("Scale Y", &m_terrainConfig->scaleY, 1.0f, 600.0f);
 
-    ImGui::SliderInt("Tessellation Factor", &m_terrainConfig->tessellationFactor, 100.0f, 1200.0f);
+    ImGui::SliderInt("Tessellation Factor", &m_terrainConfig->tessellationFactor, 100, 1200);
     ImGui::SliderFloat("Tessellation Slope", &m_terrainConfig->tessellationSlope, 1.0f, 4.0f);
     ImGui::SliderFloat("Tessellation Shift", &m_terrainConfig->tessellationShift, 0.1f, 1.0f);
 

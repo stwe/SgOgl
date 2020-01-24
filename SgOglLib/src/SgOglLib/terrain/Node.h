@@ -26,7 +26,7 @@ namespace sg::ogl::scene
 
 namespace sg::ogl::terrain
 {
-    struct TerrainConfig;
+    class TerrainConfig;
 
     class Node
     {

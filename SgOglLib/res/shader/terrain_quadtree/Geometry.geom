@@ -2,13 +2,16 @@
 
 // terrain_quadtree/Geometry.geom
 
+layout(triangles) in;
+layout(triangle_strip, max_vertices = 3) out;
+
 // In
 
-layout(triangles) in;
+in vec2 mapCoord_GS[];
 
 // Out
 
-layout(line_strip, max_vertices = 4) out;
+out vec2 mapCoord_FS;
 
 // Uniforms
 
@@ -22,12 +25,9 @@ void main()
     {
         vec4 position = gl_in[i].gl_Position;
         gl_Position = viewProjectionMatrix * position;
+        mapCoord_FS = mapCoord_GS[i];
         EmitVertex();
     }
-
-    vec4 position = gl_in[0].gl_Position;
-    gl_Position = viewProjectionMatrix * position;
-    EmitVertex();
 
     EndPrimitive();
 }

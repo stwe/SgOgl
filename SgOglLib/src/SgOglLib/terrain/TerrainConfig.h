@@ -9,28 +9,35 @@
 
 #pragma once
 
-#include "Core.h"
-#include "Log.h"
+#include <vector>
+#include <array>
+#include <string>
+
+namespace sg::ogl
+{
+    class Application;
+}
+
+constexpr std::array POW2{
+    1, 2, 4, 8, 16,
+    32, 64, 128, 256, 512
+};
+
+constexpr std::array POW2_F{
+    1.0f, 2.0f, 4.0f, 8.0f, 16.0f,
+    32.0f, 64.0f, 128.0f, 256.0f, 512.0f
+};
 
 namespace sg::ogl::terrain
 {
-    constexpr std::array POW2{
-        1, 2, 4, 8, 16,
-        32, 64, 128, 256, 512
-    };
-
-    constexpr std::array POW2_F{
-        1.0f, 2.0f, 4.0f, 8.0f, 16.0f,
-        32.0f, 64.0f, 128.0f, 256.0f, 512.0f
-    };
-
-    struct TerrainConfig
+    class TerrainConfig
     {
+    public:
         float scaleXz{ 1.0f };
         float scaleY{ 1.0f };
         int rootNodes{ 2 };
 
-        std::string heightmapFilePath;
+        float normalStrength{ 4.0f };
 
         int tessellationFactor{ 600 };
         float tessellationSlope{ 1.8f };
@@ -40,26 +47,53 @@ namespace sg::ogl::terrain
         bool tessellationEnabled{ true };
 
         std::vector<int> lodRanges;
-        std::vector<int> lodMorphingArea;
 
-        void Init()
-        {
-            SG_OGL_CORE_ASSERT(!lodRanges.empty(), "[TerrainConfig::Init()] There are no values for the Lod Ranges.")
-            SG_OGL_CORE_ASSERT(lodRanges.size() <= 10, "[TerrainConfig::Init()] There are to many values for the Lod Ranges.")
+        //-------------------------------------------------
+        // Ctors. / Dtor.
+        //-------------------------------------------------
 
-            for (auto i{ 0u }; i < lodRanges.size(); ++i)
-            {
-                if (lodRanges[i] == 0)
-                {
-                    lodMorphingArea.push_back(0);
-                }
-                else
-                {
-                    lodMorphingArea.push_back(
-                        lodRanges[i] - (static_cast<int>(scaleXz) / rootNodes) / POW2[i + 1]
-                    );
-                }
-            }
-        }
+        TerrainConfig() = delete;
+
+        explicit TerrainConfig(Application* t_application);
+
+        TerrainConfig(const TerrainConfig& t_other) = delete;
+        TerrainConfig(TerrainConfig&& t_other) noexcept = delete;
+        TerrainConfig& operator=(const TerrainConfig& t_other) = delete;
+        TerrainConfig& operator=(TerrainConfig&& t_other) noexcept = delete;
+
+        ~TerrainConfig() noexcept;
+
+        //-------------------------------------------------
+        // Getter
+        //-------------------------------------------------
+
+        [[nodiscard]] uint32_t GetHeightmapTextureId() const;
+        [[nodiscard]] uint32_t GetNormalmapTextureId() const;
+        [[nodiscard]] int GetHeightmapWidth() const;
+        [[nodiscard]] const std::vector<int>& GetLodMorphingArea() const;
+
+        //-------------------------------------------------
+        // Init
+        //-------------------------------------------------
+
+        void InitMaps(
+            const std::string& t_heightmapFilePath,
+            const std::string& t_normalmapShaderName,
+            const std::string& t_normalmapTextureName
+        );
+
+        void InitMorphing();
+
+    protected:
+
+    private:
+        Application* m_application{ nullptr };
+
+        uint32_t m_heightmapTextureId{ 0 };
+        uint32_t m_normalmapTextureId{ 0 };
+
+        int m_heightmapWidth{ 0 };
+
+        std::vector<int> m_lodMorphingArea;
     };
 }

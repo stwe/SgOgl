@@ -57,6 +57,10 @@ namespace sg::ogl::ecs::system
         virtual void FinishRendering() {}
 
     private:
+        //-------------------------------------------------
+        // Helper
+        //-------------------------------------------------
+
         void LoadShader() const
         {
             (m_scene->GetApplicationContext()->GetShaderManager().AddShaderProgram<TShaderProgram>(), ...);

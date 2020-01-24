@@ -39,6 +39,7 @@ namespace sg::ogl::light
 namespace sg::ogl::terrain
 {
     class Terrain;
+    class TerrainConfig;
 }
 
 namespace sg::ogl::resource
@@ -155,7 +156,8 @@ namespace sg::ogl::resource
             const Mesh& t_mesh,
             const buffer::GBufferFbo& t_gbufferFbo) {}
 
-        virtual void UpdateUniforms(const terrain::Terrain& t_terrain) {}
+        [[deprecated]] virtual void UpdateUniforms(const terrain::Terrain& t_terrain) {}
+        virtual void UpdateUniforms(const terrain::TerrainConfig& t_terrainConfig) {}
 
     protected:
 
