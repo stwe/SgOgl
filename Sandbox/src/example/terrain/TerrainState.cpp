@@ -49,9 +49,9 @@ void TerrainState::Init()
 
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
         GetApplicationContext(),
-        glm::vec3(6.0f, 1000.0f, 30.0f),
-        -90.0f,
-        -90.0f
+        glm::vec3(0.0f, 400.0f, 0.0f),
+        90.0f,
+        -16.0f
     );
     m_firstPersonCamera->SetCameraVelocity(64.0f);
 
@@ -59,8 +59,11 @@ void TerrainState::Init()
     m_scene->SetCurrentCamera(m_firstPersonCamera);
 
     m_terrainConfig = std::make_shared<sg::ogl::terrain::TerrainConfig>();
-    m_terrainConfig->morphingEnabled = false;
-    m_terrainConfig->tessellationEnabled = false;
+    m_terrainConfig->scaleXz = 1024.0f;
+    m_terrainConfig->scaleY = 200.0f;
+    m_terrainConfig->rootNodes = 2;
+    m_terrainConfig->heightmapFilePath = "res/heightmap/heightmap_1024x1024x8.bmp";
+    m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
     m_terrainConfig->Init();
 
     m_terrainQuadtree = std::make_shared<sg::ogl::terrain::TerrainQuadtree>(m_scene.get(), m_terrainConfig);
@@ -97,7 +100,7 @@ void TerrainState::RenderImGui() const
 
     ImGui::Begin("Debug");
 
-    ImGui::SliderFloat3("Camera", reinterpret_cast<float*>(&m_scene->GetCurrentCamera().GetPosition()), 0.0f, 600.0f);
+    ImGui::SliderFloat3("Camera", reinterpret_cast<float*>(&m_scene->GetCurrentCamera().GetPosition()), 0.0f, 2400.0f);
 
     ImGui::Separator();
 
@@ -109,6 +112,14 @@ void TerrainState::RenderImGui() const
 
     ImGui::Checkbox("Morphing", &m_terrainConfig->morphingEnabled);
     ImGui::Checkbox("Tessellation", &m_terrainConfig->tessellationEnabled);
+
+    ImGui::Separator();
+
+    ImGui::SliderFloat("Scale Y", &m_terrainConfig->scaleY, 1.0f, 600.0f);
+
+    ImGui::SliderInt("Tessellation Factor", &m_terrainConfig->tessellationFactor, 100.0f, 1200.0f);
+    ImGui::SliderFloat("Tessellation Slope", &m_terrainConfig->tessellationSlope, 1.0f, 4.0f);
+    ImGui::SliderFloat("Tessellation Shift", &m_terrainConfig->tessellationShift, 0.1f, 1.0f);
 
     ImGui::End();
 

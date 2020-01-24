@@ -2,9 +2,15 @@
 
 // terrain_quadtree/TessControl.tesc
 
+layout(vertices = 16) out;
+
+// In
+
+in vec2 mapCoord_TC[];
+
 // Out
 
-layout(vertices = 16) out;
+out vec2 mapCoord_TE[];
 
 // Uniforms
 
@@ -70,6 +76,8 @@ void main()
             gl_TessLevelInner[1] = 1;
         }
     }
+
+    mapCoord_TE[gl_InvocationID] = mapCoord_TC[gl_InvocationID];
 
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
 }

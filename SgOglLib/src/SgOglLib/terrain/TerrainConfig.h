@@ -26,18 +26,20 @@ namespace sg::ogl::terrain
 
     struct TerrainConfig
     {
-        float scaleXz{ 1024.0f };  // 400
-        float scaleY{ 1.0f };      // 1
-        int rootNodes{ 2 };        // 2
+        float scaleXz{ 1.0f };
+        float scaleY{ 1.0f };
+        int rootNodes{ 2 };
 
-        int tessellationFactor{ 600 };    // 600
-        float tessellationSlope{ 1.8f };  // 1.8
-        float tessellationShift{ 0.1f };  // 0.1
+        std::string heightmapFilePath;
+
+        int tessellationFactor{ 600 };
+        float tessellationSlope{ 1.8f };
+        float tessellationShift{ 0.1f };
 
         bool morphingEnabled{ true };
         bool tessellationEnabled{ true };
 
-        std::vector<int> lodRanges{ 1500, 1100, 800, 500, 100, 0, 0, 0 }; // lodRanges{ 500, 350, 150, 50, 0, 0, 0, 0 }
+        std::vector<int> lodRanges;
         std::vector<int> lodMorphingArea;
 
         void Init()

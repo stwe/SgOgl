@@ -83,11 +83,11 @@ namespace sg::ogl::terrain
     protected:
         std::vector<NodeUniquePtr> m_children;
 
+        scene::Scene* m_scene{ nullptr };
+
         TerrainConfigSharedPtr m_terrainConfig;
 
     private:
-        scene::Scene* m_scene{ nullptr };
-
         Node* m_parent{ nullptr };
 
         int m_lod{ 0 };

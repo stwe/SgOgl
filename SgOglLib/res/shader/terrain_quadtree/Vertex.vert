@@ -8,6 +8,8 @@ layout (location = 0) in vec2 aPosition;
 
 // Out
 
+out vec2 mapCoord_TC;
+
 // Uniforms
 
 uniform mat4 localMatrix;
@@ -21,6 +23,8 @@ uniform float gap;
 uniform vec2 location;
 uniform int lodMorphArea[8];
 uniform float morphingEnabled;
+
+uniform sampler2D heightmap;
 
 // Function
 
@@ -180,5 +184,9 @@ void main()
         }
     }
 
-    gl_Position = worldMatrix * vec4(localPosition.x, 0.0, localPosition.y, 1.0);
+    float height = texture(heightmap, localPosition).r;
+
+    mapCoord_TC = localPosition;
+
+    gl_Position = worldMatrix * vec4(localPosition.x, height, localPosition.y, 1.0);
 }

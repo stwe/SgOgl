@@ -17,6 +17,7 @@
 #include "resource/Mesh.h"
 #include "resource/ModelManager.h"
 #include "resource/ShaderProgram.h"
+#include "resource/TextureManager.h"
 #include "scene/Scene.h"
 
 //-------------------------------------------------
@@ -30,8 +31,8 @@ sg::ogl::terrain::Node::Node(
     const glm::vec2& t_location,
     const glm::vec2& t_index
 )
-    : m_terrainConfig{ t_terrainConfig }
-    , m_scene{ t_scene }
+    : m_scene{ t_scene }
+    , m_terrainConfig{ t_terrainConfig }
     , m_lod{ t_lod }
     , m_location{ t_location }
     , m_index{ t_index }
@@ -59,6 +60,7 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
     if (m_isLeaf)
     {
         const auto projectionMatrix{ m_scene->GetApplicationContext()->GetWindow().GetProjectionMatrix() };
+        const auto heightmapTextureId{ m_scene->GetApplicationContext()->GetTextureManager().GetTextureIdFromPath(m_terrainConfig->heightmapFilePath) };
 
         t_shaderProgram.SetUniform("localMatrix", static_cast<glm::mat4>(m_localTransform));
         t_shaderProgram.SetUniform("worldMatrix", static_cast<glm::mat4>(m_worldTransform));
@@ -79,6 +81,10 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
 
         t_shaderProgram.SetUniform("tessellationEnabled", m_terrainConfig->tessellationEnabled);
         t_shaderProgram.SetUniform("morphingEnabled", m_terrainConfig->morphingEnabled);
+
+        t_shaderProgram.SetUniform("heightmap", 0);
+        resource::TextureManager::BindForReading(heightmapTextureId, GL_TEXTURE0);
+        resource::TextureManager::UseBilinearFilter();
 
         t_patchMesh->InitDraw();
         t_patchMesh->DrawPrimitives(GL_PATCHES);
