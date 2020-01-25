@@ -32,7 +32,7 @@ bool TerrainState::Update(const double t_dt)
 void TerrainState::Render()
 {
     m_terrainQuadtreeRenderSystem->Render();
-    m_guiRenderSystem->Render();
+    //m_guiRenderSystem->Render();
 
     RenderImGui();
 }
@@ -64,16 +64,26 @@ void TerrainState::Init()
     m_terrainConfig->rootNodes = 2;
     m_terrainConfig->normalStrength = 10.0f;
     m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
-    m_terrainConfig->InitMaps("res/heightmap/heightmap_1024x1024x8.bmp", "normalmap", "normalmapTexture");
+    m_terrainConfig->InitMaps(
+        "res/heightmap/heightmap_1024x1024x8.bmp",
+        "normalmap",
+        "normalmapTexture"
+    );
     m_terrainConfig->InitMorphing();
+    m_terrainConfig->InitTextures(
+        "res/terrain/terrain2/sand.jpg",
+        "res/terrain/terrain2/grass.jpg",
+        "res/terrain/terrain2/rock2.jpg",
+        "res/terrain/terrain2/snow.jpg"
+    );
 
     m_terrainQuadtree = std::make_shared<sg::ogl::terrain::TerrainQuadtree>(m_scene.get(), m_terrainConfig);
     GetApplicationContext()->GetEntityFactory().CreateTerrainQuadtreeEntity(m_terrainQuadtree);
 
     m_terrainQuadtreeRenderSystem = std::make_unique<sg::ogl::ecs::system::TerrainQuadtreeRenderSystem>(m_scene.get());
 
-    m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
-    GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.5f, 0.5f, 0.25f, 0.25f, m_terrainConfig->GetNormalmapTextureId());
+    //m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
+    //GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.5f, 0.5f, 0.25f, 0.25f, m_terrainConfig->GetNormalmapTextureId());
 }
 
 //-------------------------------------------------

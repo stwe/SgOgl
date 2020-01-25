@@ -11,6 +11,7 @@ in vec2 mapCoord_TE[];
 // Out
 
 out vec2 mapCoord_GS;
+out float height_GS;
 
 // Uniforms
 
@@ -40,7 +41,9 @@ void main()
     height *= scaleY;
 
     worldPosition.y = height;
+
     mapCoord_GS = mapCoord;
+    height_GS = worldPosition.y;
 
     gl_Position = worldPosition;
 }

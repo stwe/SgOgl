@@ -45,6 +45,26 @@ uint32_t sg::ogl::terrain::TerrainConfig::GetNormalmapTextureId() const
     return m_normalmapTextureId;
 }
 
+uint32_t sg::ogl::terrain::TerrainConfig::GetSandTextureId() const
+{
+    return m_sandTextureId;
+}
+
+uint32_t sg::ogl::terrain::TerrainConfig::GetGrassTextureId() const
+{
+    return m_grassTextureId;
+}
+
+uint32_t sg::ogl::terrain::TerrainConfig::GetRockTextureId() const
+{
+    return m_rockTextureId;
+}
+
+uint32_t sg::ogl::terrain::TerrainConfig::GetSnowTextureId() const
+{
+    return m_snowTextureId;
+}
+
 int sg::ogl::terrain::TerrainConfig::GetHeightmapWidth() const
 {
     return m_heightmapWidth;
@@ -90,6 +110,19 @@ void sg::ogl::terrain::TerrainConfig::InitMaps(
     glDispatchCompute(m_heightmapWidth / 16, m_heightmapWidth / 16, 1);
 
     resource::ShaderProgram::Unbind();
+}
+
+void sg::ogl::terrain::TerrainConfig::InitTextures(
+    const std::string& t_sandFilePath,
+    const std::string& t_grassFilePath,
+    const std::string& t_rockFilePath,
+    const std::string& t_snowFilePath
+)
+{
+    m_sandTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_sandFilePath);
+    m_grassTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_grassFilePath);
+    m_rockTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_rockFilePath);
+    m_snowTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_snowFilePath);
 }
 
 void sg::ogl::terrain::TerrainConfig::InitMorphing()

@@ -69,6 +69,12 @@ namespace sg::ogl::terrain
 
         [[nodiscard]] uint32_t GetHeightmapTextureId() const;
         [[nodiscard]] uint32_t GetNormalmapTextureId() const;
+
+        [[nodiscard]] uint32_t GetSandTextureId() const;
+        [[nodiscard]] uint32_t GetGrassTextureId() const;
+        [[nodiscard]] uint32_t GetRockTextureId() const;
+        [[nodiscard]] uint32_t GetSnowTextureId() const;
+
         [[nodiscard]] int GetHeightmapWidth() const;
         [[nodiscard]] const std::vector<int>& GetLodMorphingArea() const;
 
@@ -82,6 +88,13 @@ namespace sg::ogl::terrain
             const std::string& t_normalmapTextureName
         );
 
+        void InitTextures(
+            const std::string& t_sandFilePath,
+            const std::string& t_grassFilePath,
+            const std::string& t_rockFilePath,
+            const std::string& t_snowFilePath
+        );
+
         void InitMorphing();
 
     protected:
@@ -91,6 +104,11 @@ namespace sg::ogl::terrain
 
         uint32_t m_heightmapTextureId{ 0 };
         uint32_t m_normalmapTextureId{ 0 };
+
+        uint32_t m_sandTextureId{ 0 };
+        uint32_t m_grassTextureId{ 0 };
+        uint32_t m_rockTextureId{ 0 };
+        uint32_t m_snowTextureId{ 0 };
 
         int m_heightmapWidth{ 0 };
 
