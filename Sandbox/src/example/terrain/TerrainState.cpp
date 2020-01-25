@@ -66,7 +66,6 @@ void TerrainState::Init()
     m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
     m_terrainConfig->InitMaps(
         "res/heightmap/heightmap_1024x1024x8.bmp",
-        "normalmap",
         "normalmapTexture"
     );
     m_terrainConfig->InitMorphing();

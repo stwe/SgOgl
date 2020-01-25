@@ -81,7 +81,6 @@ const std::vector<int>& sg::ogl::terrain::TerrainConfig::GetLodMorphingArea() co
 
 void sg::ogl::terrain::TerrainConfig::InitMaps(
     const std::string& t_heightmapFilePath,
-    const std::string& t_normalmapShaderName,
     const std::string& t_normalmapTextureName
 )
 {
@@ -100,9 +99,8 @@ void sg::ogl::terrain::TerrainConfig::InitMaps(
     const auto numMipmaps{ log(m_heightmapWidth) / log(2) };
     glTexStorage2D(GL_TEXTURE_2D, static_cast<int32_t>(numMipmaps), GL_RGBA32F, m_heightmapWidth, m_heightmapWidth);
 
-    // todo: use the shader type
-    m_application->GetShaderManager().AddComputeShaderProgram<resource::shaderprogram::ComputeNormalmap>(t_normalmapShaderName);
-    auto& normalmapShaderProgram{ m_application->GetShaderManager().GetComputeShaderProgram(t_normalmapShaderName) };
+    m_application->GetShaderManager().AddComputeShaderProgram<resource::shaderprogram::ComputeNormalmap>();
+    auto& normalmapShaderProgram{ m_application->GetShaderManager().GetComputeShaderProgram<resource::shaderprogram::ComputeNormalmap>() };
     normalmapShaderProgram.Bind();
     normalmapShaderProgram.UpdateUniforms(*this);
 

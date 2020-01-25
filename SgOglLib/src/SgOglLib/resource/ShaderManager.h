@@ -26,7 +26,7 @@ namespace sg::ogl::resource
     public:
         using ShaderProgramUniquePtr = std::unique_ptr<ShaderProgram>;
         using ShaderProgramContainer = std::map<std::type_index, ShaderProgramUniquePtr>;
-        using ComputeShaderProgramContainer = std::map<std::string, ShaderProgramUniquePtr>;
+        using ComputeShaderProgramContainer = std::map<std::type_index, ShaderProgramUniquePtr>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -116,36 +116,38 @@ namespace sg::ogl::resource
         }
 
         template <typename T>
-        void AddComputeShaderProgram(const std::string& t_fileName)
+        void AddComputeShaderProgram()
         {
-            if (m_computeShaderPrograms.count(t_fileName) != 0)
+            // just add the compute shader program to the manager if it does not already exist
+            if (m_computeShaderPrograms.count(typeid(T)) == 0)
             {
-                throw SG_OGL_EXCEPTION("[ShaderManager::AddComputeShaderProgram()] Compute shader program " + t_fileName + " already exist.");
+                auto shaderProgram{ std::make_unique<T>() };
+                SG_OGL_CORE_ASSERT(shaderProgram, "[ShaderManager::AddComputeShaderProgram()] Null pointer.")
+
+                // get file name
+                auto fileName{ shaderProgram->GetFolderName() + ".comp" };
+
+                // create full path
+                std::string shader;
+                if (shaderProgram->IsBuiltIn())
+                {
+                    shader = m_libResFolder + "/shader/compute/" + fileName;
+                }
+                else
+                {
+                    shader = "res/shader/compute/" + fileName;
+                }
+
+                SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] Start adding compute shader to program: {}.", fileName);
+
+                shaderProgram->AddComputeShader(ShaderUtil::ReadShaderFile(shader));
+                shaderProgram->LinkAndValidateProgram();
+                shaderProgram->AddAllFoundUniforms();
+;
+                m_computeShaderPrograms.emplace(typeid(T), std::move(shaderProgram));
+
+                SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] A compute shader was added successfully to program {}.", fileName);
             }
-
-            auto shaderProgram{ std::make_unique<T>() };
-            SG_OGL_CORE_ASSERT(shaderProgram, "[ShaderManager::AddComputeShaderProgram()] Null pointer.")
-
-            SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] Start adding compute shader to program: {}.", t_fileName);
-
-            // create path
-            std::string shaderPath;
-            if (shaderProgram->IsBuiltIn())
-            {
-                shaderPath = m_libResFolder + "/shader/compute";
-            }
-            else
-            {
-                shaderPath = "res/shader/compute";
-            }
-
-            shaderProgram->AddComputeShader(ShaderUtil::ReadShaderFile(shaderPath + "/" + t_fileName + ".comp"));
-            shaderProgram->LinkAndValidateProgram();
-            shaderProgram->AddAllFoundUniforms();
-
-            m_computeShaderPrograms.emplace(t_fileName, std::move(shaderProgram));
-
-            SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] A compute shader was added successfully to program {}.", t_fileName);
         }
 
         //-------------------------------------------------
@@ -153,7 +155,7 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         template <typename T>
-        ShaderProgram& GetShaderProgram()
+        [[nodiscard]] ShaderProgram& GetShaderProgram()
         {
             if (m_shaderPrograms.count(typeid(T)) == 0)
             {
@@ -164,7 +166,7 @@ namespace sg::ogl::resource
         }
 
         template <typename T>
-        const ShaderProgram& GetShaderProgram() const
+        [[nodiscard]] const ShaderProgram& GetShaderProgram() const
         {
             if (m_shaderPrograms.count(typeid(T)) == 0)
             {
@@ -174,13 +176,33 @@ namespace sg::ogl::resource
             return *m_shaderPrograms.at(typeid(T));
         }
 
-        ShaderProgram& GetComputeShaderProgram(const std::string& t_name);
-        const ShaderProgram& GetComputeShaderProgram(const std::string& t_name) const;
+        template <typename T>
+        [[nodiscard]] ShaderProgram& GetComputeShaderProgram()
+        {
+            if (m_computeShaderPrograms.count(typeid(T)) == 0)
+            {
+                throw SG_OGL_EXCEPTION("[ShaderManager::GetComputeShaderProgram()] Compute shader program not exist.");
+            }
+
+            return *m_computeShaderPrograms.at(typeid(T));
+        }
+
+        template <typename T>
+        [[nodiscard]] const ShaderProgram& GetComputeShaderProgram() const
+        {
+            if (m_computeShaderPrograms.count(typeid(T)) == 0)
+            {
+                throw SG_OGL_EXCEPTION("[ShaderManager::GetComputeShaderProgram()] Compute shader program not exist.");
+            }
+
+            return *m_computeShaderPrograms.at(typeid(T));
+        }
 
     protected:
 
     private:
         std::string m_libResFolder;
+
         ShaderProgramContainer m_shaderPrograms;
         ComputeShaderProgramContainer m_computeShaderPrograms;
     };

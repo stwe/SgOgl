@@ -84,7 +84,6 @@ namespace sg::ogl::terrain
 
         void InitMaps(
             const std::string& t_heightmapFilePath,
-            const std::string& t_normalmapShaderName,
             const std::string& t_normalmapTextureName
         );
 

@@ -23,27 +23,3 @@ sg::ogl::resource::ShaderManager::~ShaderManager() noexcept
 {
     SG_OGL_CORE_LOG_DEBUG("[ShaderManager::~ShaderManager()] Destruct ShaderManager.");
 }
-
-//-------------------------------------------------
-// Getter
-//-------------------------------------------------
-
-sg::ogl::resource::ShaderProgram& sg::ogl::resource::ShaderManager::GetComputeShaderProgram(const std::string& t_name)
-{
-    if (m_computeShaderPrograms.count(t_name) == 0)
-    {
-        throw SG_OGL_EXCEPTION("[ShaderManager::GetComputeShaderProgram()] Compute shader program " + t_name + " not exist.");
-    }
-
-    return *m_computeShaderPrograms.at(t_name);
-}
-
-const sg::ogl::resource::ShaderProgram& sg::ogl::resource::ShaderManager::GetComputeShaderProgram(const std::string& t_name) const
-{
-    if (m_computeShaderPrograms.count(t_name) == 0)
-    {
-        throw SG_OGL_EXCEPTION("[ShaderManager::GetComputeShaderProgram()] Compute shader program " + t_name + " not exist.");
-    }
-
-    return *m_computeShaderPrograms.at(t_name);
-}
