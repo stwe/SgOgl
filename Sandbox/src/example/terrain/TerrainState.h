@@ -22,6 +22,7 @@ public:
     using TerrainQuadtreeSharedPtr = std::shared_ptr<sg::ogl::terrain::TerrainQuadtree>;
 
     using TerrainQuadtreeRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::TerrainQuadtreeRenderSystem>;
+    using SkyboxRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkyboxRenderSystem>;
     using GuiRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::GuiRenderSystem>;
 
     //-------------------------------------------------
@@ -66,6 +67,7 @@ private:
     TerrainQuadtreeSharedPtr m_terrainQuadtree;
 
     TerrainQuadtreeRenderSystemUniquePtr m_terrainQuadtreeRenderSystem;
+    SkyboxRenderSystemUniquePtr m_skyboxRenderSystem;
     GuiRenderSystemUniquePtr m_guiRenderSystem;
 
     //-------------------------------------------------

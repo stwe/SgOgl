@@ -69,6 +69,7 @@ namespace sg::ogl::terrain
 
         [[nodiscard]] uint32_t GetHeightmapTextureId() const;
         [[nodiscard]] uint32_t GetNormalmapTextureId() const;
+        [[nodiscard]] uint32_t GetSplatmapTextureId() const;
 
         [[nodiscard]] uint32_t GetSandTextureId() const;
         [[nodiscard]] uint32_t GetGrassTextureId() const;
@@ -84,7 +85,8 @@ namespace sg::ogl::terrain
 
         void InitMaps(
             const std::string& t_heightmapFilePath,
-            const std::string& t_normalmapTextureName
+            const std::string& t_normalmapTextureName,
+            const std::string& t_splatmapTextureName
         );
 
         void InitTextures(
@@ -103,6 +105,7 @@ namespace sg::ogl::terrain
 
         uint32_t m_heightmapTextureId{ 0 };
         uint32_t m_normalmapTextureId{ 0 };
+        uint32_t m_splatmapTextureId{ 0 };
 
         uint32_t m_sandTextureId{ 0 };
         uint32_t m_grassTextureId{ 0 };

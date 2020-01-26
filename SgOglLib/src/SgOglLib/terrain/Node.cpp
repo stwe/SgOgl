@@ -89,18 +89,21 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         resource::TextureManager::BindForReading(m_terrainConfig->GetNormalmapTextureId(), GL_TEXTURE1);
         resource::TextureManager::UseBilinearFilter();
 
-        t_shaderProgram.SetUniform("sand", 2);
-        resource::TextureManager::BindForReading(m_terrainConfig->GetSandTextureId(), GL_TEXTURE2);
+        t_shaderProgram.SetUniform("splatmap", 2);
+        resource::TextureManager::BindForReading(m_terrainConfig->GetSplatmapTextureId(), GL_TEXTURE2);
+        resource::TextureManager::UseBilinearFilter();
 
-        t_shaderProgram.SetUniform("grass", 3);
-        resource::TextureManager::BindForReading(m_terrainConfig->GetGrassTextureId(), GL_TEXTURE3);
+        t_shaderProgram.SetUniform("sand", 3);
+        resource::TextureManager::BindForReading(m_terrainConfig->GetSandTextureId(), GL_TEXTURE3);
 
-        t_shaderProgram.SetUniform("rock", 4);
-        resource::TextureManager::BindForReading(m_terrainConfig->GetRockTextureId(), GL_TEXTURE4);
+        t_shaderProgram.SetUniform("grass", 4);
+        resource::TextureManager::BindForReading(m_terrainConfig->GetGrassTextureId(), GL_TEXTURE4);
 
-        t_shaderProgram.SetUniform("snow", 5);
-        resource::TextureManager::BindForReading(m_terrainConfig->GetSnowTextureId(), GL_TEXTURE5);
+        t_shaderProgram.SetUniform("rock", 5);
+        resource::TextureManager::BindForReading(m_terrainConfig->GetRockTextureId(), GL_TEXTURE5);
 
+        t_shaderProgram.SetUniform("snow", 6);
+        resource::TextureManager::BindForReading(m_terrainConfig->GetSnowTextureId(), GL_TEXTURE6);
 
         t_patchMesh->InitDraw();
         t_patchMesh->DrawPrimitives(GL_PATCHES);

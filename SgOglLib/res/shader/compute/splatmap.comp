@@ -14,24 +14,28 @@ void main()
     ivec2 xy = ivec2(gl_GlobalInvocationID.xy);
     vec2 texCoord = gl_GlobalInvocationID.xy / float(heightmapWidth);
 
-    vec3 normal = normalize(texture(normalmap, texCoord).rgb);
+    vec3 normalizedNormal = normalize(texture(normalmap, texCoord).rgb);
 
-    float slopeFactor = normal.z;
+    vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
 
-    vec4 blendValues = vec4(0.0, 0.0, 0.0, 0.0);
+    float slope = normalizedNormal.z;
 
-    if (slopeFactor > 0.5)
+    if (slope > 0.82)
     {
-        blendValues.x = 1.0;
+        color.x = 1.0; // r
     }
-    else if (slopeFactor > 0.35)
+    else if (slope > 0.72)
     {
-        blendValues.y = 1.0;
+        color.y = 1.0; // g
+    }
+    else if (slope > 0.62)
+    {
+        color.z = 1.0; // b
     }
     else
     {
-        blendValues.z = 1.0;
+        color.w = 1.0; // a
     }
 
-    imageStore(splatmap, xy, blendValues);
+    imageStore(splatmap, xy, color);
 }

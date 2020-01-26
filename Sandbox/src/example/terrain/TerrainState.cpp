@@ -32,6 +32,7 @@ bool TerrainState::Update(const double t_dt)
 void TerrainState::Render()
 {
     m_terrainQuadtreeRenderSystem->Render();
+    m_skyboxRenderSystem->Render();
     //m_guiRenderSystem->Render();
 
     RenderImGui();
@@ -49,9 +50,9 @@ void TerrainState::Init()
 
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
         GetApplicationContext(),
-        glm::vec3(0.0f, 400.0f, 0.0f),
-        90.0f,
-        -16.0f
+        glm::vec3(-143.0f, 85.0f, 128.0f),
+        297.0f,
+        -12.0f
     );
     m_firstPersonCamera->SetCameraVelocity(64.0f);
 
@@ -62,11 +63,12 @@ void TerrainState::Init()
     m_terrainConfig->scaleXz = 1024.0f;
     m_terrainConfig->scaleY = 200.0f;
     m_terrainConfig->rootNodes = 2;
-    m_terrainConfig->normalStrength = 10.0f;
+    m_terrainConfig->normalStrength = 60.0f;
     m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
     m_terrainConfig->InitMaps(
         "res/heightmap/heightmap_1024x1024x8.bmp",
-        "normalmapTexture"
+        "normalmapTexture",
+        "splatmapTexture"
     );
     m_terrainConfig->InitMorphing();
     m_terrainConfig->InitTextures(
@@ -80,9 +82,20 @@ void TerrainState::Init()
     GetApplicationContext()->GetEntityFactory().CreateTerrainQuadtreeEntity(m_terrainQuadtree);
 
     m_terrainQuadtreeRenderSystem = std::make_unique<sg::ogl::ecs::system::TerrainQuadtreeRenderSystem>(m_scene.get());
-
+    m_skyboxRenderSystem = std::make_unique<sg::ogl::ecs::system::SkyboxRenderSystem>(m_scene.get());
     //m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
-    //GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.5f, 0.5f, 0.25f, 0.25f, m_terrainConfig->GetNormalmapTextureId());
+
+    const std::vector<std::string> cubemapFileNames{
+        "res/skybox/sky0/left.jpg",
+        "res/skybox/sky0/right.jpg",
+        "res/skybox/sky0/top.jpg",
+        "res/skybox/sky0/bottom.jpg",
+        "res/skybox/sky0/front.jpg",
+        "res/skybox/sky0/back.jpg"
+    };
+    GetApplicationContext()->GetEntityFactory().CreateSkyboxEntity(cubemapFileNames);
+
+    //GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.5f, 0.5f, 0.25f, 0.25f, m_terrainConfig->GetSplatmapTextureId());
 }
 
 //-------------------------------------------------

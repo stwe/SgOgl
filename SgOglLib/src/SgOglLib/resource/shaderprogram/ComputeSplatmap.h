@@ -11,6 +11,7 @@
 
 #include "OpenGl.h"
 #include "terrain/Terrain.h"
+#include "terrain/TerrainConfig.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
 
@@ -19,19 +20,29 @@ namespace sg::ogl::resource::shaderprogram
     class ComputeSplatmap : public ShaderProgram
     {
     public:
-        void UpdateUniforms(const terrain::Terrain& t_terrain) override
+        [[deprecated]] void UpdateUniforms(const terrain::Terrain& t_terrain) override
         {
-            TextureManager::BindForReading(t_terrain.GetNormalmapTextureId(), GL_TEXTURE0);
             SetUniform("normalmap", 0);
+            TextureManager::BindForReading(t_terrain.GetNormalmapTextureId(), GL_TEXTURE0);
+
             SetUniform("heightmapWidth", t_terrain.GetHeightmapWidth());
         }
 
-        std::string GetFolderName() const override
+        void UpdateUniforms(const terrain::TerrainConfig& t_terrainConfig) override
+        {
+            SetUniform("normalmap", 0);
+            TextureManager::BindForReading(t_terrainConfig.GetNormalmapTextureId(), GL_TEXTURE0);
+            TextureManager::UseBilinearFilter();
+
+            SetUniform("heightmapWidth", t_terrainConfig.GetHeightmapWidth());
+        }
+
+        [[nodiscard]] std::string GetFolderName() const override
         {
             return "splatmap";
         }
 
-        bool IsBuiltIn() const override
+        [[nodiscard]] bool IsBuiltIn() const override
         {
             return true;
         }

@@ -12,31 +12,49 @@ uniform float normalStrength;
 
 void main()
 {
-    // z0 -- z1 -- z2
+    // t0 -- t1 -- t2
     // |     |     |
-    // z3 -- h  -- z4
+    // t3 -- h  -- t4
     // |     |     |
-    // z5 -- z6 -- z7
+    // t5 -- t6 -- t7
 
     ivec2 xy = ivec2(gl_GlobalInvocationID.xy);
     vec2 texCoord = gl_GlobalInvocationID.xy / float(heightmapWidth);
 
     float texelSize = 1.0 / heightmapWidth;
 
-    float z0 = texture(heightmap, texCoord + vec2(-texelSize, -texelSize)).r;
-    float z1 = texture(heightmap, texCoord + vec2(0.0, -texelSize)).r;
-    float z2 = texture(heightmap, texCoord + vec2(texelSize, -texelSize)).r;
-    float z3 = texture(heightmap, texCoord + vec2(-texelSize, 0.0)).r;
-    float z4 = texture(heightmap, texCoord + vec2(texelSize, 0.0)).r;
-    float z5 = texture(heightmap, texCoord + vec2(-texelSize, texelSize)).r;
-    float z6 = texture(heightmap, texCoord + vec2(0.0, texelSize)).r;
-    float z7 = texture(heightmap, texCoord + vec2(texelSize, texelSize)).r;
+    float t0 = texture(heightmap, texCoord + vec2(-texelSize, -texelSize)).r;
+    float t1 = texture(heightmap, texCoord + vec2(0.0, -texelSize)).r;
+    float t2 = texture(heightmap, texCoord + vec2(texelSize, -texelSize)).r;
+    float t3 = texture(heightmap, texCoord + vec2(-texelSize, 0.0)).r;
+    float t4 = texture(heightmap, texCoord + vec2(texelSize, 0.0)).r;
+    float t5 = texture(heightmap, texCoord + vec2(-texelSize, texelSize)).r;
+    float t6 = texture(heightmap, texCoord + vec2(0.0, texelSize)).r;
+    float t7 = texture(heightmap, texCoord + vec2(texelSize, texelSize)).r;
 
     vec3 normal;
 
     normal.z = 1.0 / normalStrength;
-    normal.x = z0 + 2 * z3 + z5 - z2 - 2 * z4 - z7;
-    normal.y = z0 + 2 * z1 + z2 - z5 - 2 * z6 - z7;
+    normal.x = t0 + 2 * t3 + t5 - t2 - 2 * t4 - t7;
+    normal.y = t0 + 2 * t1 + t2 - t5 - 2 * t6 - t7;
+
+    // Compute x using Sobel:
+    //           -1 0 1 
+    //           -2 0 2
+    //           -1 0 1
+    //float x = t2 + 2 * t4 + t7 - t0 - 2 * t3 - t5;
+
+    // Compute y using Sobel:
+    //           -1 -2 -1 
+    //            0  0  0
+    //            1  2  1
+    //float y = t5 + 2 * t6 + t7 - t0 - 2 * t1 - t2;
+
+    // Build the normalized normal
+    //vec4 n = vec4(normalize(vec3(x, y, 1.0 / normalStrength)), 1.0);
+
+    // Convert (-1.0, 1.0) to (0.0, 1.0)
+    //n = n * 0.5 + 0.5;
 
     imageStore(normalmap, xy, vec4((normalize(normal) + 1.0) / 2.0, 1.0));
 }

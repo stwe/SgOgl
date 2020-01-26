@@ -33,6 +33,7 @@ namespace sg::ogl::resource::shaderprogram
         {
             SetUniform("heightmap", 0);
             TextureManager::BindForReading(t_terrainConfig.GetHeightmapTextureId(), GL_TEXTURE0);
+            TextureManager::UseBilinearFilter();
 
             SetUniform("heightmapWidth", t_terrainConfig.GetHeightmapWidth());
             SetUniform("normalStrength", t_terrainConfig.normalStrength);

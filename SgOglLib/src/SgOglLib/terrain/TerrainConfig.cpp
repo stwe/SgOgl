@@ -14,6 +14,7 @@
 #include "Log.h"
 #include "resource/TextureManager.h"
 #include "resource/shaderprogram/ComputeNormalmap.h"
+#include "resource/shaderprogram/ComputeSplatmap.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -43,6 +44,11 @@ uint32_t sg::ogl::terrain::TerrainConfig::GetHeightmapTextureId() const
 uint32_t sg::ogl::terrain::TerrainConfig::GetNormalmapTextureId() const
 {
     return m_normalmapTextureId;
+}
+
+uint32_t sg::ogl::terrain::TerrainConfig::GetSplatmapTextureId() const
+{
+    return m_splatmapTextureId;
 }
 
 uint32_t sg::ogl::terrain::TerrainConfig::GetSandTextureId() const
@@ -81,7 +87,8 @@ const std::vector<int>& sg::ogl::terrain::TerrainConfig::GetLodMorphingArea() co
 
 void sg::ogl::terrain::TerrainConfig::InitMaps(
     const std::string& t_heightmapFilePath,
-    const std::string& t_normalmapTextureName
+    const std::string& t_normalmapTextureName,
+    const std::string& t_splatmapTextureName
 )
 {
     // init heightmap
@@ -105,6 +112,23 @@ void sg::ogl::terrain::TerrainConfig::InitMaps(
     normalmapShaderProgram.UpdateUniforms(*this);
 
     glBindImageTexture(0, m_normalmapTextureId, 0, false, 0, GL_WRITE_ONLY, GL_RGBA32F);
+    glDispatchCompute(m_heightmapWidth / 16, m_heightmapWidth / 16, 1);
+
+    resource::ShaderProgram::Unbind();
+
+    // init && render splatmap texture
+    m_splatmapTextureId = m_application->GetTextureManager().GetTextureId(t_splatmapTextureName);
+    resource::TextureManager::Bind(m_splatmapTextureId);
+    resource::TextureManager::UseBilinearFilter();
+
+    glTexStorage2D(GL_TEXTURE_2D, static_cast<int32_t>(numMipmaps), GL_RGBA32F, m_heightmapWidth, m_heightmapWidth);
+
+    m_application->GetShaderManager().AddComputeShaderProgram<resource::shaderprogram::ComputeSplatmap>();
+    auto& splatmapShaderProgram{ m_application->GetShaderManager().GetComputeShaderProgram<resource::shaderprogram::ComputeSplatmap>() };
+    splatmapShaderProgram.Bind();
+    splatmapShaderProgram.UpdateUniforms(*this);
+
+    glBindImageTexture(0, m_splatmapTextureId, 0, false, 0, GL_WRITE_ONLY, GL_RGBA32F);
     glDispatchCompute(m_heightmapWidth / 16, m_heightmapWidth / 16, 1);
 
     resource::ShaderProgram::Unbind();
