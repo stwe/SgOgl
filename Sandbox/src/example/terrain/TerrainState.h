@@ -11,6 +11,13 @@
 
 #include "SgOgl.h"
 
+// todo: Fog
+// todo: get heights
+// todo: wireframe rendering
+// todo: Frustum culling
+// todo: dynamic texture tiling
+// todo: check number of specified root nodes
+
 class TerrainState : public sg::ogl::state::State
 {
 public:

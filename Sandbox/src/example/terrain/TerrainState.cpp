@@ -50,9 +50,9 @@ void TerrainState::Init()
 
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
         GetApplicationContext(),
-        glm::vec3(-143.0f, 85.0f, 128.0f),
-        297.0f,
-        -12.0f
+        glm::vec3(150.0f, 1285.0f, -484.0f),
+        344.0f,
+        -24.0f
     );
     m_firstPersonCamera->SetCameraVelocity(64.0f);
 
@@ -60,9 +60,10 @@ void TerrainState::Init()
     m_scene->SetCurrentCamera(m_firstPersonCamera);
 
     m_terrainConfig = std::make_shared<sg::ogl::terrain::TerrainConfig>(GetApplicationContext());
-    m_terrainConfig->scaleXz = 1024.0f;
-    m_terrainConfig->scaleY = 200.0f;
-    m_terrainConfig->rootNodes = 2;
+    // todo: If too few "root nodes" are specified, this leads to holes in the terrain.
+    m_terrainConfig->scaleXz = 6144.0f;
+    m_terrainConfig->scaleY = 1536.0f;
+    m_terrainConfig->rootNodes = 8;
     m_terrainConfig->normalStrength = 60.0f;
     m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
     m_terrainConfig->InitMaps(
