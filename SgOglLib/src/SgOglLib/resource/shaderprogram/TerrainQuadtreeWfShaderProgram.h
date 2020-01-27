@@ -1,6 +1,6 @@
 // This file is part of the SgOgl package.
 // 
-// Filename: TerrainQuadtreeShaderProgram.h
+// Filename: TerrainQuadtreeWfShaderProgram.h
 // Author:   stwe
 // 
 // License:  MIT
@@ -13,7 +13,7 @@
 
 namespace sg::ogl::resource::shaderprogram
 {
-    class TerrainQuadtreeShaderProgram : public ShaderProgram
+    class TerrainQuadtreeWfShaderProgram : public ShaderProgram
     {
     public:
         void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
@@ -23,12 +23,12 @@ namespace sg::ogl::resource::shaderprogram
 
         [[nodiscard]] Options GetOptions() const override
         {
-            return VERTEX_SHADER | TESSELLATION_CONTROL_SHADER |TESSELLATION_EVALUATION_SHADER | GEOMETRY_SHADER | FRAGMENT_SHADER;
+            return VERTEX_SHADER | TESSELLATION_CONTROL_SHADER | TESSELLATION_EVALUATION_SHADER | GEOMETRY_SHADER | FRAGMENT_SHADER;
         }
 
         [[nodiscard]] std::string GetFolderName() const override
         {
-            return "terrain_quadtree";
+            return "terrain_quadtree_wireframe";
         }
 
         [[nodiscard]] bool IsBuiltIn() const override

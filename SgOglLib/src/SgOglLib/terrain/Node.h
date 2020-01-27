@@ -59,6 +59,7 @@ namespace sg::ogl::terrain
         //-------------------------------------------------
 
         void Render(resource::ShaderProgram& t_shaderProgram, const MeshSharedPtr& t_patchMesh);
+        void RenderWireframe(resource::ShaderProgram& t_shaderProgram, const MeshSharedPtr& t_patchMesh);
         void Update();
 
         //-------------------------------------------------

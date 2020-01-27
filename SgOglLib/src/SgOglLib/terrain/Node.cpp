@@ -64,7 +64,6 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         t_shaderProgram.SetUniform("localMatrix", static_cast<glm::mat4>(m_localTransform));
         t_shaderProgram.SetUniform("worldMatrix", static_cast<glm::mat4>(m_worldTransform));
         t_shaderProgram.SetUniform("viewProjectionMatrix", projectionMatrix * m_scene->GetCurrentCamera().GetViewMatrix());
-        t_shaderProgram.SetUniform("color", m_color);
 
         t_shaderProgram.SetUniform("cameraPosition", m_scene->GetCurrentCamera().GetPosition());
         t_shaderProgram.SetUniform("scaleY", m_terrainConfig->scaleY);
@@ -113,6 +112,46 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
     for (const auto& child : m_children)
     {
         child->Render(t_shaderProgram, t_patchMesh);
+    }
+}
+
+void sg::ogl::terrain::Node::RenderWireframe(resource::ShaderProgram& t_shaderProgram, const MeshSharedPtr& t_patchMesh)
+{
+    if (m_isLeaf)
+    {
+        const auto projectionMatrix{ m_scene->GetApplicationContext()->GetWindow().GetProjectionMatrix() };
+
+        t_shaderProgram.SetUniform("localMatrix", static_cast<glm::mat4>(m_localTransform));
+        t_shaderProgram.SetUniform("worldMatrix", static_cast<glm::mat4>(m_worldTransform));
+        t_shaderProgram.SetUniform("viewProjectionMatrix", projectionMatrix * m_scene->GetCurrentCamera().GetViewMatrix());
+
+        t_shaderProgram.SetUniform("cameraPosition", m_scene->GetCurrentCamera().GetPosition());
+        t_shaderProgram.SetUniform("scaleY", m_terrainConfig->scaleY);
+        t_shaderProgram.SetUniform("lod", m_lod);
+        t_shaderProgram.SetUniform("index", m_index);
+        t_shaderProgram.SetUniform("gap", m_gap);
+        t_shaderProgram.SetUniform("location", m_location);
+        t_shaderProgram.SetUniform("lodMorphArea", m_terrainConfig->GetLodMorphingArea());
+
+        t_shaderProgram.SetUniform("tessellationFactor", m_terrainConfig->tessellationFactor);
+        t_shaderProgram.SetUniform("tessellationSlope", m_terrainConfig->tessellationSlope);
+        t_shaderProgram.SetUniform("tessellationShift", m_terrainConfig->tessellationShift);
+
+        t_shaderProgram.SetUniform("tessellationEnabled", m_terrainConfig->tessellationEnabled);
+        t_shaderProgram.SetUniform("morphingEnabled", m_terrainConfig->morphingEnabled);
+
+        t_shaderProgram.SetUniform("heightmap", 0);
+        resource::TextureManager::BindForReading(m_terrainConfig->GetHeightmapTextureId(), GL_TEXTURE0);
+        resource::TextureManager::UseBilinearFilter();
+
+        t_patchMesh->InitDraw();
+        t_patchMesh->DrawPrimitives(GL_PATCHES);
+        t_patchMesh->EndDraw();
+    }
+
+    for (const auto& child : m_children)
+    {
+        child->RenderWireframe(t_shaderProgram, t_patchMesh);
     }
 }
 

@@ -24,14 +24,29 @@ bool TerrainState::Update(const double t_dt)
 {
     m_scene->GetCurrentCamera().Update(t_dt);
 
-    m_terrainQuadtreeRenderSystem->Update(t_dt);
+    if (m_renderWireframe)
+    {
+        m_terrainQuadtreeWfRenderSystem->Update(t_dt);
+    }
+    else
+    {
+        m_terrainQuadtreeRenderSystem->Update(t_dt);
+    }
 
     return true;
 }
 
 void TerrainState::Render()
 {
-    m_terrainQuadtreeRenderSystem->Render();
+    if (m_renderWireframe)
+    {
+        m_terrainQuadtreeWfRenderSystem->Render();
+    }
+    else
+    {
+        m_terrainQuadtreeRenderSystem->Render();
+    }
+
     m_skyboxRenderSystem->Render();
     //m_guiRenderSystem->Render();
 
@@ -54,7 +69,7 @@ void TerrainState::Init()
         344.0f,
         -24.0f
     );
-    m_firstPersonCamera->SetCameraVelocity(64.0f);
+    m_firstPersonCamera->SetCameraVelocity(128.0f);
 
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_firstPersonCamera);
@@ -83,6 +98,7 @@ void TerrainState::Init()
     GetApplicationContext()->GetEntityFactory().CreateTerrainQuadtreeEntity(m_terrainQuadtree);
 
     m_terrainQuadtreeRenderSystem = std::make_unique<sg::ogl::ecs::system::TerrainQuadtreeRenderSystem>(m_scene.get());
+    m_terrainQuadtreeWfRenderSystem = std::make_unique<sg::ogl::ecs::system::TerrainQuadtreeWfRenderSystem>(m_scene.get());
     m_skyboxRenderSystem = std::make_unique<sg::ogl::ecs::system::SkyboxRenderSystem>(m_scene.get());
     //m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
 
@@ -116,7 +132,7 @@ void TerrainState::InitImGui() const
     ImGui_ImplOpenGL3_Init("#version 130");
 }
 
-void TerrainState::RenderImGui() const
+void TerrainState::RenderImGui()
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -136,6 +152,7 @@ void TerrainState::RenderImGui() const
 
     ImGui::Checkbox("Morphing", &m_terrainConfig->morphingEnabled);
     ImGui::Checkbox("Tessellation", &m_terrainConfig->tessellationEnabled);
+    ImGui::Checkbox("Wireframe", &m_renderWireframe);
 
     ImGui::Separator();
 

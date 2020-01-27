@@ -11,12 +11,14 @@
 
 #include "SgOgl.h"
 
+// todo: directional lighting
 // todo: Fog
 // todo: get heights
-// todo: wireframe rendering
 // todo: Frustum culling
 // todo: dynamic texture tiling
 // todo: check number of specified root nodes
+// todo: Triplanar UV mapping
+// todo: Fix quadtree update
 
 class TerrainState : public sg::ogl::state::State
 {
@@ -29,6 +31,7 @@ public:
     using TerrainQuadtreeSharedPtr = std::shared_ptr<sg::ogl::terrain::TerrainQuadtree>;
 
     using TerrainQuadtreeRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::TerrainQuadtreeRenderSystem>;
+    using TerrainQuadtreeWfRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::TerrainQuadtreeWfRenderSystem>;
     using SkyboxRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkyboxRenderSystem>;
     using GuiRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::GuiRenderSystem>;
 
@@ -74,8 +77,11 @@ private:
     TerrainQuadtreeSharedPtr m_terrainQuadtree;
 
     TerrainQuadtreeRenderSystemUniquePtr m_terrainQuadtreeRenderSystem;
+    TerrainQuadtreeWfRenderSystemUniquePtr m_terrainQuadtreeWfRenderSystem;
     SkyboxRenderSystemUniquePtr m_skyboxRenderSystem;
     GuiRenderSystemUniquePtr m_guiRenderSystem;
+
+    bool m_renderWireframe{ false };
 
     //-------------------------------------------------
     // Helper
@@ -88,6 +94,6 @@ private:
     //-------------------------------------------------
 
     void InitImGui() const;
-    void RenderImGui() const;
+    void RenderImGui();
     static void CleanUpImGui();
 };

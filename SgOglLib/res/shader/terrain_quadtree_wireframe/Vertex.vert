@@ -1,6 +1,6 @@
 #version 430
 
-// terrain_quadtree/Vertex.vert
+// terrain_quadtree_wireframe/Vertex.vert
 
 // In
 

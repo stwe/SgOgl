@@ -13,8 +13,6 @@ out vec4 fragColor;
 
 // Uniforms
 
-uniform vec3 color;
-
 uniform sampler2D normalmap;
 uniform sampler2D splatmap;
 
