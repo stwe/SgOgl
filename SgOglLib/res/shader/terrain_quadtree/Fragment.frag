@@ -43,19 +43,30 @@ void main()
     // transform normal vector to range [-1, 1]
     //vec3 normalTrans = normalize(normal * 2.0 - 1.0);
 
-    vec4 sand = texture(sand, mapCoord_FS * 10.0);
-    vec4 grass = texture(grass, mapCoord_FS * 35.0);
-    vec4 rock = texture(rock, mapCoord_FS * 35.0);
-    vec4 snow = texture(snow, mapCoord_FS * 5.0);
+    vec4 sand = texture(sand, mapCoord_FS * 100.0);
+    vec4 grass = texture(grass, mapCoord_FS * 100.0);
+    vec4 rock = texture(rock, mapCoord_FS * 24.0);
+    vec4 snow = texture(snow, mapCoord_FS * 24.0);
 
     float diff = Diffuse(lightDirection, normal, intensity);
 
     vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
 
-    color = blendValues.r * rock;
+    // height_FS
+
+    if (height_FS < 300.0)
+    {
+        color = blendValues.r * sand;
+    }
+    else
+    {
+        color = blendValues.r * snow;
+    }
+
     color += blendValues.g * grass;
     color += blendValues.b * rock;
     color += blendValues.a * snow;
 
     fragColor = color * diff;
+    //fragColor = blendValues;
 }

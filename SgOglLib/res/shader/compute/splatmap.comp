@@ -22,19 +22,19 @@ void main()
 
     if (slope > 0.82)
     {
-        color.x = 1.0; // r
-    }
-    else if (slope > 0.72)
-    {
-        color.y = 1.0; // g
+        color.x = 1.0; // r -> Sand or snow
     }
     else if (slope > 0.62)
     {
-        color.z = 1.0; // b
+        color.y = 1.0; // g -> grass
+    }
+    else if (slope > 0.32)
+    {
+        color.z = 1.0; // b -> rock
     }
     else
     {
-        color.w = 1.0; // a
+        color.w = 1.0; // a -> snow
     }
 
     imageStore(splatmap, xy, color);
