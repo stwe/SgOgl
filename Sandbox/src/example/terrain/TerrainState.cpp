@@ -77,16 +77,15 @@ void TerrainState::Init()
     m_terrainConfig = std::make_shared<sg::ogl::terrain::TerrainConfig>(GetApplicationContext());
     // todo: If too few "root nodes" are specified, this leads to holes in the terrain.
     m_terrainConfig->scaleXz = 6144.0f;
-    m_terrainConfig->scaleY = 1536.0f;
+    m_terrainConfig->scaleY = 1024.0f;
     m_terrainConfig->rootNodes = 8;
     m_terrainConfig->normalStrength = 60.0f;
     m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
-    m_terrainConfig->InitMaps(
+    m_terrainConfig->InitMapsAndMorphing(
         "res/heightmap/heightmap_1024x1024x8.bmp",
         "normalmapTexture",
         "splatmapTexture"
     );
-    m_terrainConfig->InitMorphing();
     m_terrainConfig->InitTextures(
         "res/terrain/terrain2/sand.jpg",
         "res/terrain/terrain2/grass.jpg",

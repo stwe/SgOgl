@@ -76,29 +76,68 @@ int sg::ogl::terrain::TerrainConfig::GetHeightmapWidth() const
     return m_heightmapWidth;
 }
 
-const std::vector<int>& sg::ogl::terrain::TerrainConfig::GetLodMorphingArea() const
+const sg::ogl::terrain::TerrainConfig::LodMorphingAreaContainer& sg::ogl::terrain::TerrainConfig::GetLodMorphingArea() const
 {
     return m_lodMorphingArea;
+}
+
+sg::ogl::terrain::TerrainConfig::HeightmapHeightContainer& sg::ogl::terrain::TerrainConfig::GetHeightmapData()
+{
+    return m_heightmapData;
+}
+
+const sg::ogl::terrain::TerrainConfig::HeightmapHeightContainer& sg::ogl::terrain::TerrainConfig::GetHeightmapData() const
+{
+    return m_heightmapData;
 }
 
 //-------------------------------------------------
 // Init
 //-------------------------------------------------
 
-void sg::ogl::terrain::TerrainConfig::InitMaps(
+void sg::ogl::terrain::TerrainConfig::InitMapsAndMorphing(
     const std::string& t_heightmapFilePath,
     const std::string& t_normalmapTextureName,
     const std::string& t_splatmapTextureName
 )
 {
-    // init heightmap
+    LoadHeightmap(t_heightmapFilePath);
+    LoadNormalmap(t_normalmapTextureName);
+    LoadSplatmap(t_splatmapTextureName);
+
+    InitMorphing();
+
+    InitHeightmapData();
+}
+
+void sg::ogl::terrain::TerrainConfig::InitTextures(
+    const std::string& t_sandFilePath,
+    const std::string& t_grassFilePath,
+    const std::string& t_rockFilePath,
+    const std::string& t_snowFilePath
+)
+{
+    m_sandTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_sandFilePath);
+    m_grassTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_grassFilePath);
+    m_rockTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_rockFilePath);
+    m_snowTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_snowFilePath);
+}
+
+//-------------------------------------------------
+// Load maps
+//-------------------------------------------------
+
+void sg::ogl::terrain::TerrainConfig::LoadHeightmap(const std::string& t_heightmapFilePath)
+{
     m_heightmapTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_heightmapFilePath);
     m_heightmapWidth = m_application->GetTextureManager().GetMetadata(t_heightmapFilePath).width;
 
-    SG_OGL_CORE_ASSERT(m_heightmapWidth, "[TerrainConfig::InitMaps()] Invalid value.")
-    SG_OGL_CORE_ASSERT(m_heightmapWidth == m_application->GetTextureManager().GetMetadata(t_heightmapFilePath).height, "[TerrainConfig::InitMaps()] Width and Height should have the same value.")
+    SG_OGL_CORE_ASSERT(m_heightmapWidth, "[TerrainConfig::LoadHeightmap()] Invalid value.")
+    SG_OGL_CORE_ASSERT(m_heightmapWidth == m_application->GetTextureManager().GetMetadata(t_heightmapFilePath).height, "[TerrainConfig::LoadHeightmap()] Width and Height should have the same value.")
+}
 
-    // init && render normalmap texture
+void sg::ogl::terrain::TerrainConfig::LoadNormalmap(const std::string& t_normalmapTextureName)
+{
     m_normalmapTextureId = m_application->GetTextureManager().GetTextureId(t_normalmapTextureName);
     resource::TextureManager::Bind(m_normalmapTextureId);
     resource::TextureManager::UseBilinearFilter();
@@ -115,12 +154,15 @@ void sg::ogl::terrain::TerrainConfig::InitMaps(
     glDispatchCompute(m_heightmapWidth / 16, m_heightmapWidth / 16, 1);
 
     resource::ShaderProgram::Unbind();
+}
 
-    // init && render splatmap texture
+void sg::ogl::terrain::TerrainConfig::LoadSplatmap(const std::string& t_splatmapTextureName)
+{
     m_splatmapTextureId = m_application->GetTextureManager().GetTextureId(t_splatmapTextureName);
     resource::TextureManager::Bind(m_splatmapTextureId);
     resource::TextureManager::UseBilinearFilter();
 
+    const auto numMipmaps{ log(m_heightmapWidth) / log(2) };
     glTexStorage2D(GL_TEXTURE_2D, static_cast<int32_t>(numMipmaps), GL_RGBA32F, m_heightmapWidth, m_heightmapWidth);
 
     m_application->GetShaderManager().AddComputeShaderProgram<resource::shaderprogram::ComputeSplatmap>();
@@ -132,19 +174,6 @@ void sg::ogl::terrain::TerrainConfig::InitMaps(
     glDispatchCompute(m_heightmapWidth / 16, m_heightmapWidth / 16, 1);
 
     resource::ShaderProgram::Unbind();
-}
-
-void sg::ogl::terrain::TerrainConfig::InitTextures(
-    const std::string& t_sandFilePath,
-    const std::string& t_grassFilePath,
-    const std::string& t_rockFilePath,
-    const std::string& t_snowFilePath
-)
-{
-    m_sandTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_sandFilePath);
-    m_grassTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_grassFilePath);
-    m_rockTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_rockFilePath);
-    m_snowTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_snowFilePath);
 }
 
 void sg::ogl::terrain::TerrainConfig::InitMorphing()
@@ -165,4 +194,13 @@ void sg::ogl::terrain::TerrainConfig::InitMorphing()
             );
         }
     }
+}
+
+void sg::ogl::terrain::TerrainConfig::InitHeightmapData()
+{
+    resource::TextureManager::Bind(m_heightmapTextureId);
+
+    // Create float buffer of red channel heightmap data.
+    m_heightmapData.resize(m_heightmapWidth * m_heightmapWidth);
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, m_heightmapData.data());
 }

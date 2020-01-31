@@ -52,6 +52,53 @@ sg::ogl::terrain::Node::Node(
 }
 
 //-------------------------------------------------
+// Getter
+//-------------------------------------------------
+
+float sg::ogl::terrain::Node::GetHeightAt(const float t_x, const float t_z) const
+{
+    const auto heightmapWidth{ m_terrainConfig->GetHeightmapWidth() };
+
+    auto pos{ glm::vec2(t_x, t_z) };
+    pos += m_terrainConfig->scaleXz * 0.5f;
+    pos /= m_terrainConfig->scaleXz;
+
+    const auto floorVec{ glm::vec2(static_cast<int>(floor(pos.x)), static_cast<int>(floor(pos.y))) };
+    pos -= floorVec;
+    pos *= heightmapWidth;
+
+    const auto x0{ static_cast<int>(floor(pos.x)) };
+    const auto x1{ x0 + 1 };
+    const auto z0{ static_cast<int>(floor(pos.y)) };
+    const auto z1{ z0 + 1 };
+
+    const auto h0{ m_terrainConfig->GetHeightmapData()[heightmapWidth * z0 + x0] };
+    const auto h1{ m_terrainConfig->GetHeightmapData()[heightmapWidth * z0 + x1] };
+    const auto h2{ m_terrainConfig->GetHeightmapData()[heightmapWidth * z1 + x0] };
+    const auto h3{ m_terrainConfig->GetHeightmapData()[heightmapWidth * z1 + x1] };
+
+    const auto percentU{ pos.x - x0 };
+    const auto percentV{ pos.y - z0 };
+
+    float dU, dV;
+    if (percentU > percentV)
+    {   // bottom triangle
+        dU = h1 - h0;
+        dV = h3 - h1;
+    }
+    else
+    {   // top triangle
+        dU = h3 - h2;
+        dV = h2 - h0;
+    }
+
+    auto h{ h0 + (dU * percentU) + (dV * percentV) };
+    h *= m_terrainConfig->scaleY;
+
+    return h;
+}
+
+//-------------------------------------------------
 // Logic
 //-------------------------------------------------
 
@@ -104,9 +151,7 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         t_shaderProgram.SetUniform("snow", 6);
         resource::TextureManager::BindForReading(m_terrainConfig->GetSnowTextureId(), GL_TEXTURE6);
 
-        t_patchMesh->InitDraw();
         t_patchMesh->DrawPrimitives(GL_PATCHES);
-        t_patchMesh->EndDraw();
     }
 
     for (const auto& child : m_children)
@@ -144,9 +189,7 @@ void sg::ogl::terrain::Node::RenderWireframe(resource::ShaderProgram& t_shaderPr
         resource::TextureManager::BindForReading(m_terrainConfig->GetHeightmapTextureId(), GL_TEXTURE0);
         resource::TextureManager::UseBilinearFilter();
 
-        t_patchMesh->InitDraw();
         t_patchMesh->DrawPrimitives(GL_PATCHES);
-        t_patchMesh->EndDraw();
     }
 
     for (const auto& child : m_children)
@@ -157,15 +200,6 @@ void sg::ogl::terrain::Node::RenderWireframe(resource::ShaderProgram& t_shaderPr
 
 void sg::ogl::terrain::Node::Update()
 {
-    if (m_scene->GetCurrentCamera().GetPosition().y > m_terrainConfig->scaleY)
-    {
-        m_center.y = m_terrainConfig->scaleY;
-    }
-    else
-    {
-        m_center.y = m_scene->GetCurrentCamera().GetPosition().y;
-    }
-
     const auto distance{ glm::distance(m_scene->GetCurrentCamera().GetPosition(), m_center) };
     const auto range{ m_terrainConfig->lodRanges[m_lod] };
 
@@ -249,9 +283,7 @@ void sg::ogl::terrain::Node::ComputeCenterPosition()
     loc *= m_terrainConfig->scaleXz;
     loc -= m_terrainConfig->scaleXz * 0.5f;
 
-    //const auto height{ GetTerrainHeight(loc.x, loc.y) };
-
-    const auto height{ 0.0f };
+    const auto height{ GetHeightAt(loc.x, loc.y) };
 
     m_center = glm::vec3(loc.x, height, loc.y);
 }

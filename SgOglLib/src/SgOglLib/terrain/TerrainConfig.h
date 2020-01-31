@@ -33,6 +33,14 @@ namespace sg::ogl::terrain
     class TerrainConfig
     {
     public:
+        using LodRangeContainer = std::vector<int>;
+        using LodMorphingAreaContainer = std::vector<int>;
+        using HeightmapHeightContainer = std::vector<float>;
+
+        //-------------------------------------------------
+        // Public member
+        //-------------------------------------------------
+
         float scaleXz{ 1.0f };
         float scaleY{ 1.0f };
         int rootNodes{ 2 };
@@ -46,7 +54,7 @@ namespace sg::ogl::terrain
         bool morphingEnabled{ true };
         bool tessellationEnabled{ true };
 
-        std::vector<int> lodRanges;
+        LodRangeContainer lodRanges;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -77,13 +85,16 @@ namespace sg::ogl::terrain
         [[nodiscard]] uint32_t GetSnowTextureId() const;
 
         [[nodiscard]] int GetHeightmapWidth() const;
-        [[nodiscard]] const std::vector<int>& GetLodMorphingArea() const;
+        [[nodiscard]] const LodMorphingAreaContainer& GetLodMorphingArea() const;
+
+        [[nodiscard]] HeightmapHeightContainer& GetHeightmapData();
+        [[nodiscard]] const HeightmapHeightContainer& GetHeightmapData() const;
 
         //-------------------------------------------------
         // Init
         //-------------------------------------------------
 
-        void InitMaps(
+        void InitMapsAndMorphing(
             const std::string& t_heightmapFilePath,
             const std::string& t_normalmapTextureName,
             const std::string& t_splatmapTextureName
@@ -95,8 +106,6 @@ namespace sg::ogl::terrain
             const std::string& t_rockFilePath,
             const std::string& t_snowFilePath
         );
-
-        void InitMorphing();
 
     protected:
 
@@ -114,6 +123,19 @@ namespace sg::ogl::terrain
 
         int m_heightmapWidth{ 0 };
 
-        std::vector<int> m_lodMorphingArea;
+        LodMorphingAreaContainer m_lodMorphingArea;
+        HeightmapHeightContainer m_heightmapData;
+
+        //-------------------------------------------------
+        // Load maps
+        //-------------------------------------------------
+
+        void LoadHeightmap(const std::string& t_heightmapFilePath);
+        void LoadNormalmap(const std::string& t_normalmapTextureName);
+        void LoadSplatmap(const std::string& t_splatmapTextureName);
+
+        void InitMorphing();
+
+        void InitHeightmapData();
     };
 }

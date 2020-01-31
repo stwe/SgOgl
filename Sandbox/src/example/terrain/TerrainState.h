@@ -13,12 +13,8 @@
 
 // todo: directional lighting
 // todo: Fog
-// todo: get heights
-// todo: Frustum culling
-// todo: dynamic texture tiling
 // todo: check number of specified root nodes
 // todo: Triplanar UV mapping
-// todo: Fix quadtree update
 
 class TerrainState : public sg::ogl::state::State
 {

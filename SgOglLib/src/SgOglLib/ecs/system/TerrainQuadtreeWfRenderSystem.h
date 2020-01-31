@@ -63,8 +63,12 @@ namespace sg::ogl::ecs::system
 
             for (auto entity : view)
             {
+                m_patchMesh->InitDraw();
+
                 auto& terrainQuadtreeComponent{ m_scene->GetApplicationContext()->registry.get<component::TerrainQuadtreeComponent>(entity) };
                 terrainQuadtreeComponent.terrainQuadtree->RenderWireframe(shaderProgram, m_patchMesh);
+
+                m_patchMesh->EndDraw();
             }
 
             resource::ShaderProgram::Unbind();
