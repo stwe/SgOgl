@@ -172,10 +172,10 @@ void main()
         if (lod > 0)
         {
             localPosition += Morph(localPosition, height, lodMorphArea[lod - 1]);
-            height = texture(heightmap, localPosition).r;
         }
     }
 
+    height = texture(heightmap, localPosition).r;
     mapCoord_TC = localPosition;
 
     gl_Position = worldMatrix * vec4(localPosition.x, height, localPosition.y, 1.0);

@@ -11,11 +11,9 @@
 
 #include "SgOgl.h"
 
-// todo: directional lighting
 // todo: Fog
 // todo: check number of specified root nodes -> 8 -> otherwise cracks will form
 // todo: Triplanar UV mapping
-// todo: The terrain has cracked since the GetHeightAt function was used.
 
 class TerrainState : public sg::ogl::state::State
 {
@@ -32,6 +30,7 @@ public:
 
     using SkydomeRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkydomeRenderSystem>;
 
+    using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::Sun>;
     using SunRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SunRenderSystem>;
 
     //-------------------------------------------------
@@ -40,22 +39,14 @@ public:
 
     TerrainState() = delete;
 
-    explicit TerrainState(sg::ogl::state::StateStack* t_stateStack)
-        : State{ t_stateStack, "TerrainState" }
-    {
-        Init();
-    }
+    explicit TerrainState(sg::ogl::state::StateStack* t_stateStack);
 
     TerrainState(const TerrainState& t_other) = delete;
     TerrainState(TerrainState&& t_other) noexcept = delete;
     TerrainState& operator=(const TerrainState& t_other) = delete;
     TerrainState& operator=(TerrainState&& t_other) noexcept = delete;
 
-    ~TerrainState() noexcept override
-    {
-        SG_OGL_LOG_DEBUG("[TerrainState::~TerrainState()] Destruct TerrainState.");
-        CleanUpImGui();
-    }
+    ~TerrainState() noexcept override;
 
     //-------------------------------------------------
     // Logic
@@ -82,7 +73,7 @@ private:
 
     bool m_renderWireframe{ false };
 
-    std::shared_ptr<sg::ogl::light::Sun> m_sun;
+    DirectionalLightSharedPtr m_sun;
 
     //-------------------------------------------------
     // Helper

@@ -10,6 +10,22 @@
 #include "TerrainState.h"
 
 //-------------------------------------------------
+// Ctors. / Dtor.
+//-------------------------------------------------
+
+TerrainState::TerrainState(sg::ogl::state::StateStack* t_stateStack)
+    : State{ t_stateStack, "TerrainState" }
+{
+    Init();
+}
+
+TerrainState::~TerrainState() noexcept
+{
+    SG_OGL_LOG_DEBUG("[TerrainState::~TerrainState()] Destruct TerrainState.");
+    CleanUpImGui();
+}
+
+//-------------------------------------------------
 // Logic
 //-------------------------------------------------
 
@@ -69,7 +85,7 @@ void TerrainState::Init()
         344.0f,
         -24.0f
     );
-    m_firstPersonCamera->SetCameraVelocity(128.0f);
+    m_firstPersonCamera->SetCameraVelocity(256.0f);
 
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_firstPersonCamera);
@@ -158,7 +174,7 @@ void TerrainState::RenderImGui()
 
     ImGui::SliderInt("Tessellation Factor", &m_terrainConfig->tessellationFactor, 100, 1200);
     ImGui::SliderFloat("Tessellation Slope", &m_terrainConfig->tessellationSlope, 1.0f, 4.0f);
-    ImGui::SliderFloat("Tessellation Shift", &m_terrainConfig->tessellationShift, 0.1f, 1.0f);
+    ImGui::SliderFloat("Tessellation Shift", &m_terrainConfig->tessellationShift, -1.0f, 1.0f);
 
     ImGui::Separator();
 

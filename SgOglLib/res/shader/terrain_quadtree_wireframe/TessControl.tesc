@@ -31,16 +31,24 @@ const int DA = 1;
 
 float LodFactor(float t_dist)
 {
-    return max(0.0, tessellationFactor / pow(t_dist, tessellationSlope) + tessellationShift);
+    return max(0.0, tessellationFactor / (pow(t_dist, tessellationSlope)) - tessellationShift);
 }
 
 void SetTessLevel()
 {
-        vec3 abMid = vec3(gl_in[0].gl_Position + gl_in[3].gl_Position) / 2.0;
-        vec3 bcMid = vec3(gl_in[3].gl_Position + gl_in[15].gl_Position) / 2.0;
-        vec3 cdMid = vec3(gl_in[15].gl_Position + gl_in[12].gl_Position) / 2.0;
-        vec3 daMid = vec3(gl_in[12].gl_Position + gl_in[0].gl_Position) / 2.0;
-        
+        vec3 abMid = vec3((gl_in[0].gl_Position.x + gl_in[3].gl_Position.x) / 2.0,
+                          (gl_in[0].gl_Position.y + gl_in[3].gl_Position.y) / 2.0,
+                          (gl_in[0].gl_Position.z + gl_in[3].gl_Position.z) / 2.0);
+        vec3 bcMid = vec3((gl_in[3].gl_Position.x + gl_in[15].gl_Position.x) / 2.0,
+                          (gl_in[3].gl_Position.y + gl_in[15].gl_Position.y) / 2.0,
+                          (gl_in[3].gl_Position.z + gl_in[15].gl_Position.z) / 2.0);
+        vec3 cdMid = vec3((gl_in[15].gl_Position.x + gl_in[12].gl_Position.x) / 2.0,
+                          (gl_in[15].gl_Position.y + gl_in[12].gl_Position.y) / 2.0,
+                          (gl_in[15].gl_Position.z + gl_in[12].gl_Position.z) / 2.0);
+        vec3 daMid = vec3((gl_in[12].gl_Position.x + gl_in[0].gl_Position.x) / 2.0,
+                          (gl_in[12].gl_Position.y + gl_in[0].gl_Position.y) / 2.0,
+                          (gl_in[12].gl_Position.z + gl_in[0].gl_Position.z) / 2.0);
+
         float distanceAB = distance(abMid, cameraPosition);
         float distanceBC = distance(bcMid, cameraPosition);
         float distanceCD = distance(cdMid, cameraPosition);
@@ -51,8 +59,8 @@ void SetTessLevel()
         gl_TessLevelOuter[CD] = mix(1, gl_MaxTessGenLevel, LodFactor(distanceCD));
         gl_TessLevelOuter[DA] = mix(1, gl_MaxTessGenLevel, LodFactor(distanceDA));
         
-        gl_TessLevelInner[0] = (gl_TessLevelOuter[BC] + gl_TessLevelOuter[DA]) / 4;
-        gl_TessLevelInner[1] = (gl_TessLevelOuter[AB] + gl_TessLevelOuter[CD]) / 4;
+        gl_TessLevelInner[0] = (gl_TessLevelOuter[BC] + gl_TessLevelOuter[DA]) / 4.0;
+        gl_TessLevelInner[1] = (gl_TessLevelOuter[AB] + gl_TessLevelOuter[CD]) / 4.0;
 }
 
 // Main

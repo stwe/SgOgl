@@ -5,7 +5,7 @@
 // In
 
 in vec2 mapCoord_FS;
-in float height_FS;
+in vec3 worldPosition_FS;
 
 // Out
 
@@ -50,17 +50,14 @@ void main()
     vec3 normal = normalize(texture(normalmap, mapCoord_FS).rgb);
     vec4 blendValues = texture(splatmap, mapCoord_FS);
 
-    // transform normal vector to range [-1, 1]
-    //vec3 normalTrans = normalize(normal * 2.0 - 1.0);
-
-    vec4 sand = texture(sand, mapCoord_FS * 100.0);
+    vec4 sand = texture(sand, mapCoord_FS * 24.0);
     vec4 grass = texture(grass, mapCoord_FS * 100.0);
     vec4 rock = texture(rock, mapCoord_FS * 24.0);
     vec4 snow = texture(snow, mapCoord_FS * 24.0);
 
     vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
 
-    if (height_FS < 300.0)
+    if (worldPosition_FS.y < 300.0)
     {
         color = blendValues.r * sand;
     }

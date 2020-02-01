@@ -47,9 +47,9 @@ namespace sg::ogl::terrain
 
         float normalStrength{ 4.0f };
 
-        int tessellationFactor{ 600 };
-        float tessellationSlope{ 1.8f };
-        float tessellationShift{ 0.1f };
+        int tessellationFactor{ 700 };
+        float tessellationSlope{ 1.63f };
+        float tessellationShift{ -0.5f };
 
         bool morphingEnabled{ true };
         bool tessellationEnabled{ true };
