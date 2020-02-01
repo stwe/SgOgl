@@ -11,6 +11,15 @@ in float height_FS;
 
 out vec4 fragColor;
 
+// Types
+
+struct DirectionalLight
+{
+    vec3 direction;
+    vec3 diffuseIntensity;
+    vec3 specularIntensity;
+};
+
 // Uniforms
 
 uniform sampler2D normalmap;
@@ -21,17 +30,18 @@ uniform sampler2D grass;
 uniform sampler2D rock;
 uniform sampler2D snow;
 
+uniform vec3 ambientIntensity;
+uniform DirectionalLight directionalLight;
+
 // Function
 
-float Diffuse(vec3 t_direction, vec3 t_normal, float t_intensity)
+vec4 CalcDirectionalLight(vec3 normal)
 {
-    return max(0.3, dot(t_normal, -t_direction * t_intensity));
+    vec3 lightDir = normalize(-directionalLight.direction);
+    float diffuseFactor = max(0.0, dot(normal, lightDir));
+
+    return diffuseFactor * vec4(directionalLight.diffuseIntensity, 1.0);
 }
-
-// Const
-
-const vec3 lightDirection = vec3(0.1f, -1.0f, 0.1);
-const float intensity = 1.2;
 
 // Main
 
@@ -48,11 +58,7 @@ void main()
     vec4 rock = texture(rock, mapCoord_FS * 24.0);
     vec4 snow = texture(snow, mapCoord_FS * 24.0);
 
-    float diff = Diffuse(lightDirection, normal, intensity);
-
     vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
-
-    // height_FS
 
     if (height_FS < 300.0)
     {
@@ -67,6 +73,9 @@ void main()
     color += blendValues.b * rock;
     color += blendValues.a * snow;
 
-    fragColor = color * diff;
+    vec4 ambient = vec4(ambientIntensity, 1.0) * color;
+    vec4 diffuse = CalcDirectionalLight(normal) * color;
+
+    fragColor = ambient + diffuse;
     //fragColor = blendValues;
 }

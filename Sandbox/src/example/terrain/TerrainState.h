@@ -13,8 +13,9 @@
 
 // todo: directional lighting
 // todo: Fog
-// todo: check number of specified root nodes
+// todo: check number of specified root nodes -> 8 -> otherwise cracks will form
 // todo: Triplanar UV mapping
+// todo: The terrain has cracked since the GetHeightAt function was used.
 
 class TerrainState : public sg::ogl::state::State
 {
@@ -28,8 +29,10 @@ public:
 
     using TerrainQuadtreeRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::TerrainQuadtreeRenderSystem>;
     using TerrainQuadtreeWfRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::TerrainQuadtreeWfRenderSystem>;
-    using SkyboxRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkyboxRenderSystem>;
-    using GuiRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::GuiRenderSystem>;
+
+    using SkydomeRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkydomeRenderSystem>;
+
+    using SunRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SunRenderSystem>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -74,10 +77,12 @@ private:
 
     TerrainQuadtreeRenderSystemUniquePtr m_terrainQuadtreeRenderSystem;
     TerrainQuadtreeWfRenderSystemUniquePtr m_terrainQuadtreeWfRenderSystem;
-    SkyboxRenderSystemUniquePtr m_skyboxRenderSystem;
-    GuiRenderSystemUniquePtr m_guiRenderSystem;
+    SkydomeRenderSystemUniquePtr m_skydomeRenderSystem;
+    SunRenderSystemUniquePtr m_sunRenderSystem;
 
     bool m_renderWireframe{ false };
+
+    std::shared_ptr<sg::ogl::light::Sun> m_sun;
 
     //-------------------------------------------------
     // Helper

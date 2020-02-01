@@ -47,8 +47,8 @@ void TerrainState::Render()
         m_terrainQuadtreeRenderSystem->Render();
     }
 
-    m_skyboxRenderSystem->Render();
-    //m_guiRenderSystem->Render();
+    m_skydomeRenderSystem->Render();
+    m_sunRenderSystem->Render();
 
     RenderImGui();
 }
@@ -75,7 +75,6 @@ void TerrainState::Init()
     m_scene->SetCurrentCamera(m_firstPersonCamera);
 
     m_terrainConfig = std::make_shared<sg::ogl::terrain::TerrainConfig>(GetApplicationContext());
-    // todo: If too few "root nodes" are specified, this leads to holes in the terrain.
     m_terrainConfig->scaleXz = 6144.0f;
     m_terrainConfig->scaleY = 768.0f;
     m_terrainConfig->rootNodes = 8;
@@ -86,15 +85,6 @@ void TerrainState::Init()
         "normalmapTexture",
         "splatmapTexture"
     );
-    /*
-    m_terrainConfig->InitTextures(
-        "res/terrain/terrain2/sand.jpg",
-        "res/terrain/terrain2/grass.jpg",
-        "res/terrain/terrain2/rock2.jpg",
-        "res/terrain/terrain2/snow.jpg"
-    );
-    */
-
     m_terrainConfig->InitTextures(
         "res/terrain/terrain1/grass2.jpg",
         "res/terrain/terrain1/Grass.jpg",
@@ -107,20 +97,20 @@ void TerrainState::Init()
 
     m_terrainQuadtreeRenderSystem = std::make_unique<sg::ogl::ecs::system::TerrainQuadtreeRenderSystem>(m_scene.get());
     m_terrainQuadtreeWfRenderSystem = std::make_unique<sg::ogl::ecs::system::TerrainQuadtreeWfRenderSystem>(m_scene.get());
-    m_skyboxRenderSystem = std::make_unique<sg::ogl::ecs::system::SkyboxRenderSystem>(m_scene.get());
-    //m_guiRenderSystem = std::make_unique<sg::ogl::ecs::system::GuiRenderSystem>(m_scene.get());
+    m_skydomeRenderSystem = std::make_unique<sg::ogl::ecs::system::SkydomeRenderSystem>(m_scene.get());
+    m_sunRenderSystem = std::make_unique<sg::ogl::ecs::system::SunRenderSystem>(m_scene.get());
 
-    const std::vector<std::string> cubemapFileNames{
-        "res/skybox/sky0/left.jpg",
-        "res/skybox/sky0/right.jpg",
-        "res/skybox/sky0/top.jpg",
-        "res/skybox/sky0/bottom.jpg",
-        "res/skybox/sky0/front.jpg",
-        "res/skybox/sky0/back.jpg"
-    };
-    GetApplicationContext()->GetEntityFactory().CreateSkyboxEntity(cubemapFileNames);
+    GetApplicationContext()->GetEntityFactory().CreateSkydomeEntity("res/model/Dome/dome.obj");
 
-    //GetApplicationContext()->GetEntityFactory().CreateGuiEntity(-0.5f, 0.5f, 0.25f, 0.25f, m_terrainConfig->GetSplatmapTextureId());
+    m_sun = std::make_shared<sg::ogl::light::Sun>();
+    m_sun->direction = glm::vec3(0.55f, -0.34f, 0.0f);
+    m_sun->diffuseIntensity = glm::vec3(0.8f, 0.8f, 0.8f);
+    m_sun->textureId = GetApplicationContext()->GetTextureManager().GetTextureIdFromPath("res/sun/sun.png");
+    m_sun->scale = 12.0f;
+
+    GetApplicationContext()->GetEntityFactory().CreateSunEntity(m_sun);
+
+    m_scene->SetDirectionalLight(m_sun);
 }
 
 //-------------------------------------------------
@@ -148,7 +138,7 @@ void TerrainState::RenderImGui()
 
     ImGui::Begin("Debug");
 
-    ImGui::SliderFloat3("Camera", reinterpret_cast<float*>(&m_scene->GetCurrentCamera().GetPosition()), 0.0f, 2400.0f);
+    ImGui::SliderFloat3("Camera", reinterpret_cast<float*>(&m_scene->GetCurrentCamera().GetPosition()), 0.0f, 6300.0f);
 
     ImGui::Separator();
 
@@ -164,11 +154,15 @@ void TerrainState::RenderImGui()
 
     ImGui::Separator();
 
-    ImGui::SliderFloat("Scale Y", &m_terrainConfig->scaleY, 1.0f, 600.0f);
+    ImGui::SliderFloat("Scale Y", &m_terrainConfig->scaleY, 1.0f, 2000.0f);
 
     ImGui::SliderInt("Tessellation Factor", &m_terrainConfig->tessellationFactor, 100, 1200);
     ImGui::SliderFloat("Tessellation Slope", &m_terrainConfig->tessellationSlope, 1.0f, 4.0f);
     ImGui::SliderFloat("Tessellation Shift", &m_terrainConfig->tessellationShift, 0.1f, 1.0f);
+
+    ImGui::Separator();
+
+    ImGui::SliderFloat3("Sun direction", reinterpret_cast<float*>(&m_scene->GetDirectionalLight().direction), -1.0f, 1.0f);
 
     ImGui::End();
 
