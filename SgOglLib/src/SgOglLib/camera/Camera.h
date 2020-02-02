@@ -11,6 +11,8 @@
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include <vector>
+#include "math/Plane.h"
 
 namespace sg::ogl
 {
@@ -32,6 +34,8 @@ namespace sg::ogl::camera
     class Camera
     {
     public:
+        using FrustumPlaneContainer = std::vector<math::Plane>;
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
@@ -78,6 +82,13 @@ namespace sg::ogl::camera
         virtual void Input() = 0;
         virtual void Update(double t_dt) = 0;
 
+        //-------------------------------------------------
+        // Frustum planes
+        //-------------------------------------------------
+
+        void GetFrustumPlanes(std::vector<glm::vec4>& t_planes) const;
+        void UpdateFrustumPlanes();
+
     protected:
         Application* m_application{ nullptr };
 
@@ -93,6 +104,12 @@ namespace sg::ogl::camera
         glm::vec3 m_worldUp{ glm::vec3(0.0f, 1.0f, 0.0f) };
         glm::vec3 m_right{ glm::vec3(1.0f, 0.0f, 0.0f) };
 
+        // frustum points
+        glm::vec3 m_farPts[4];
+        glm::vec3 m_nearPts[4];
+
+        // frustum planes
+        FrustumPlaneContainer m_planes;
     private:
 
     };

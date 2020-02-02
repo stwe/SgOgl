@@ -13,7 +13,6 @@
 
 // todo: Fog
 // todo: check number of specified root nodes -> 8 -> otherwise cracks will form
-// todo: Triplanar UV mapping
 
 class TerrainState : public sg::ogl::state::State
 {

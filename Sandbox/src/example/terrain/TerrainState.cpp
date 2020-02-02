@@ -81,9 +81,9 @@ void TerrainState::Init()
 
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
         GetApplicationContext(),
-        glm::vec3(150.0f, 1285.0f, -484.0f),
-        344.0f,
-        -24.0f
+        glm::vec3(-985.0f, 1377.0f, -2210.0f),
+        58.0f,
+        -16.0f
     );
     m_firstPersonCamera->SetCameraVelocity(256.0f);
 
@@ -97,12 +97,12 @@ void TerrainState::Init()
     m_terrainConfig->normalStrength = 60.0f;
     m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
     m_terrainConfig->InitMapsAndMorphing(
-        "res/heightmap/heightmap_1024x1024x8.bmp",
+        "res/heightmap/h_2048x2048.png",
         "normalmapTexture",
         "splatmapTexture"
     );
     m_terrainConfig->InitTextures(
-        "res/terrain/terrain1/grass2.jpg",
+        "res/terrain/terrain0/Grass (Hill).jpg",
         "res/terrain/terrain1/Grass.jpg",
         "res/terrain/terrain1/moss.jpg",
         "res/terrain/terrain0/Cliff (Layered Rock).jpg"
@@ -119,8 +119,8 @@ void TerrainState::Init()
     GetApplicationContext()->GetEntityFactory().CreateSkydomeEntity("res/model/Dome/dome.obj");
 
     m_sun = std::make_shared<sg::ogl::light::Sun>();
-    m_sun->direction = glm::vec3(0.55f, -0.34f, 0.0f);
-    m_sun->diffuseIntensity = glm::vec3(0.8f, 0.8f, 0.8f);
+    m_sun->direction = glm::vec3(0.55f, -1.0f, -1.0f);
+    m_sun->diffuseIntensity = glm::vec3(1.2f, 1.2f, 1.2f);
     m_sun->textureId = GetApplicationContext()->GetTextureManager().GetTextureIdFromPath("res/sun/sun.png");
     m_sun->scale = 12.0f;
 
