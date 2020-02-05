@@ -102,12 +102,11 @@ void sg::ogl::terrain::TerrainConfig::InitMapsAndMorphing(
 )
 {
     LoadHeightmap(t_heightmapFilePath);
+
     LoadNormalmap(t_normalmapTextureName);
     LoadSplatmap(t_splatmapTextureName);
 
     InitMorphing();
-
-    InitHeightmapData();
 }
 
 void sg::ogl::terrain::TerrainConfig::InitTextures(
@@ -129,11 +128,19 @@ void sg::ogl::terrain::TerrainConfig::InitTextures(
 
 void sg::ogl::terrain::TerrainConfig::LoadHeightmap(const std::string& t_heightmapFilePath)
 {
-    m_heightmapTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_heightmapFilePath);
-    m_heightmapWidth = m_application->GetTextureManager().GetMetadata(t_heightmapFilePath).width;
+    if (use16BitHeightmap)
+    {
+        m_heightmapTextureId = m_application->GetTextureManager().Get16BitHeightmapIdFromPath(t_heightmapFilePath);
+    }
+    else
+    {
+        m_heightmapTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_heightmapFilePath);
+    }
 
-    SG_OGL_CORE_ASSERT(m_heightmapWidth, "[TerrainConfig::LoadHeightmap()] Invalid value.")
+    m_heightmapWidth = m_application->GetTextureManager().GetMetadata(t_heightmapFilePath).width;
     SG_OGL_CORE_ASSERT(m_heightmapWidth == m_application->GetTextureManager().GetMetadata(t_heightmapFilePath).height, "[TerrainConfig::LoadHeightmap()] Width and Height should have the same value.")
+
+    InitHeightmapData();
 }
 
 void sg::ogl::terrain::TerrainConfig::LoadNormalmap(const std::string& t_normalmapTextureName)
@@ -203,4 +210,6 @@ void sg::ogl::terrain::TerrainConfig::InitHeightmapData()
     // Create float buffer of red channel heightmap data.
     m_heightmapData.resize(m_heightmapWidth * m_heightmapWidth);
     glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, m_heightmapData.data());
+
+    // glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, m_16BitHeightmapData.data());
 }

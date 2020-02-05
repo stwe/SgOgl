@@ -65,6 +65,29 @@ uint32_t sg::ogl::resource::TextureManager::GetTextureIdFromPath(const std::stri
     return textureId;
 }
 
+uint32_t sg::ogl::resource::TextureManager::Get16BitHeightmapIdFromPath(const std::string& t_path)
+{
+    uint32_t textureId;
+
+    if (m_textures.count(t_path) == 0)
+    {
+        textureId = GenerateNewTextureHandle();
+
+        Load16BitHeightmap(t_path, textureId);
+
+        SG_OGL_CORE_LOG_DEBUG("[TextureManager::Get16BitHeightmapIdFromPath()] A new heightmap file {} was successfully loaded and used for the new created texture handle. Id: {}", t_path, textureId);
+        m_textures.emplace(t_path, textureId);
+    }
+    else
+    {
+        textureId = m_textures.at(t_path);
+    }
+
+    SG_OGL_CORE_ASSERT(textureId, "[TextureManager::Get16BitHeightmapIdFromPath()] Invalid texture Id.")
+
+    return textureId;
+}
+
 uint32_t sg::ogl::resource::TextureManager::GetTextureId(const std::string& t_name)
 {
     uint32_t textureId;
@@ -265,6 +288,32 @@ void sg::ogl::resource::TextureManager::LoadTextureFromFile(const std::string& t
     else
     {
         throw SG_OGL_EXCEPTION("[TextureManager::LoadTextureFromFile()] Texture failed to load at path: " + t_path);
+    }
+}
+
+void sg::ogl::resource::TextureManager::Load16BitHeightmap(const std::string& t_path, const uint32_t t_textureId)
+{
+    SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::Load16BitHeightmap()] Invalid texture Id.")
+
+    int width, height;
+    auto* image{ stbi_load_16(t_path.c_str(), &width, &height, nullptr, STBI_rgb_alpha) };
+    if (image)
+    {
+        Meta meta;
+        meta.nrChannels = STBI_rgb_alpha;
+        meta.width = width;
+        meta.height = height;
+        m_metadata.emplace(t_path, meta);
+
+        Bind(t_textureId);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16, width, height, 0, GL_RGBA, GL_UNSIGNED_SHORT, image);
+
+        stbi_image_free(image);
+    }
+    else
+    {
+        throw SG_OGL_EXCEPTION("[TextureManager::Load16BitHeightmap()] Heightmap failed to load at path: " + t_path);
     }
 }
 

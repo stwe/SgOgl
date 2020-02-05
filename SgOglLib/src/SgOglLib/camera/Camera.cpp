@@ -11,6 +11,7 @@
 #include "Application.h"
 #include "Camera.h"
 #include "Core.h"
+#include "Log.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.

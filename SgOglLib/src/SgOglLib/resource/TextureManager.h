@@ -59,6 +59,13 @@ namespace sg::ogl::resource
         [[nodiscard]] uint32_t GetTextureIdFromPath(const std::string& t_path);
 
         /**
+         * @brief Load 16-bit grayscale heightmaps.
+         * @param t_path The file path of the heightmap.
+         * @return The texture handle.
+         */
+        [[nodiscard]] uint32_t Get16BitHeightmapIdFromPath(const std::string& t_path);
+
+        /**
          * @brief Get the texture handle for the given name.
          * @param t_name The name of the texture.
          * @return The texture handle.
@@ -158,6 +165,7 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         void LoadTextureFromFile(const std::string& t_path, uint32_t t_textureId);
+        void Load16BitHeightmap(const std::string& t_path, uint32_t t_textureId);
         void LoadTextureFromDdsFile(const std::string& t_path, uint32_t t_textureId) const;
 
         static void LoadTextureFromFile(const std::vector<std::string>& t_pathNames, uint32_t t_textureId);

@@ -77,13 +77,13 @@ void TerrainState::Init()
 {
     InitImGui();
 
-    sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::Black());
+    sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
         GetApplicationContext(),
-        glm::vec3(-985.0f, 1377.0f, -2210.0f),
-        58.0f,
-        -16.0f
+        glm::vec3(1943.0f, 1606.0f, 1895.0f),
+        -118.0f,
+        -10.0f
     );
     m_firstPersonCamera->SetCameraVelocity(256.0f);
 
@@ -92,13 +92,14 @@ void TerrainState::Init()
 
     m_terrainConfig = std::make_shared<sg::ogl::terrain::TerrainConfig>(GetApplicationContext());
     m_terrainConfig->scaleXz = 6144.0f;
-    m_terrainConfig->scaleY = 768.0f;
+    m_terrainConfig->scaleY = 1736.0f;
     m_terrainConfig->rootNodes = 8;
     m_terrainConfig->normalStrength = 60.0f;
     m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
+    m_terrainConfig->use16BitHeightmap = true;
     m_terrainConfig->InitMapsAndMorphing(
-        "res/heightmap/h_2048x2048.png",
-        "normalmapTexture",
+        "res/heightmap/Ruhpolding.png",
+        "normalmapTexture", // todo auto generate names heightmap path + normalmap etc.
         "splatmapTexture"
     );
     m_terrainConfig->InitTextures(

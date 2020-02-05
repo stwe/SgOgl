@@ -56,6 +56,8 @@ namespace sg::ogl::terrain
 
         LodRangeContainer lodRanges;
 
+        bool use16BitHeightmap{ false };
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
@@ -131,6 +133,7 @@ namespace sg::ogl::terrain
         //-------------------------------------------------
 
         void LoadHeightmap(const std::string& t_heightmapFilePath);
+
         void LoadNormalmap(const std::string& t_normalmapTextureName);
         void LoadSplatmap(const std::string& t_splatmapTextureName);
 
