@@ -44,7 +44,6 @@
 #include "SgOglLib/ecs/system/SunRenderSystem.h"
 #include "SgOglLib/ecs/system/TerrainQuadtreeRenderSystem.h"
 #include "SgOglLib/ecs/system/TerrainQuadtreeWfRenderSystem.h"
-#include "SgOglLib/ecs/system/TerrainRenderSystem.h"
 #include "SgOglLib/ecs/system/WaterRenderSystem.h"
 
 // imgui
@@ -87,7 +86,6 @@
 #include "SgOglLib/resource/shaderprogram/SunShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/TerrainQuadtreeShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/TerrainQuadtreeWfShaderProgram.h"
-#include "SgOglLib/resource/shaderprogram/TerrainShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/WaterShaderProgram.h"
 
 // scene
@@ -100,7 +98,6 @@
 // terrain
 #include "SgOglLib/terrain/TerrainConfig.h"
 #include "SgOglLib/terrain/TerrainQuadtree.h"
-#include "SgOglLib/terrain/Terrain.h"
 
 // water
 #include "SgOglLib/water/Water.h"

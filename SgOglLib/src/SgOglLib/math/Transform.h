@@ -11,7 +11,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace sg::ogl::terrain
+namespace sg::ogl::math
 {
     struct Transform
     {

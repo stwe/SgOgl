@@ -11,7 +11,7 @@
 
 #include <vector>
 #include <memory>
-#include "Transform.h"
+#include "math/Transform.h"
 
 namespace sg::ogl::resource
 {
@@ -107,8 +107,8 @@ namespace sg::ogl::terrain
 
         float m_gap{ 1.0f };
 
-        Transform m_localTransform;
-        Transform m_worldTransform;
+        math::Transform m_localTransform;
+        math::Transform m_worldTransform;
 
         glm::vec3 m_color{ glm::vec3(0.0f, 1.0f, 0.0f) };
 

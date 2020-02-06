@@ -39,7 +39,6 @@ namespace sg::ogl::particle
 
 namespace sg::ogl::terrain
 {
-    class Terrain;
     class TerrainQuadtree;
 }
 
@@ -90,7 +89,7 @@ namespace sg::ogl::ecs::component
         static constexpr auto GRAVITY{ -50.0f };
         static constexpr auto JUMP_POWER{ 18.0f };
 
-        std::shared_ptr<terrain::Terrain> terrain;
+        // todo terrain to get the current height
 
         float currentSpeed{ 0.0f };
         float currentTurnSpeed{ 0.0f };
@@ -179,11 +178,6 @@ namespace sg::ogl::ecs::component
     //-------------------------------------------------
 
     struct SkydomeComponent {};
-
-    struct TerrainComponent
-    {
-        std::shared_ptr<terrain::Terrain> terrain;
-    };
 
     struct TerrainQuadtreeComponent
     {

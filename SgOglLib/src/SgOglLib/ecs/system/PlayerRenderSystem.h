@@ -15,7 +15,6 @@
 #include "resource/ShaderManager.h"
 #include "resource/SkeletalModel.h"
 #include "ecs/component/Components.h"
-#include "terrain/Terrain.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -94,6 +93,7 @@ namespace sg::ogl::ecs::system
             transformComponent.position.y += playerComponent.upSpeed * dt;
 
             // keep the player on the terrain
+            /*
             if (playerComponent.terrain == nullptr)
             {
                 if (transformComponent.position.y < DEFAULT_TERRAIN_HEIGHT)
@@ -113,6 +113,7 @@ namespace sg::ogl::ecs::system
                     transformComponent.position.y = height;
                 }
             }
+            */
 
             // the camera follows the player
             thirdPersonCameraComponent.thirdPersonCamera->SetPlayerPosition(transformComponent.position);

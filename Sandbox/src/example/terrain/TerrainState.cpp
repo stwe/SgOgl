@@ -63,7 +63,7 @@ void TerrainState::Render()
         m_terrainQuadtreeRenderSystem->Render();
     }
 
-    //m_skydomeRenderSystem->Render();
+    m_skydomeRenderSystem->Render();
     m_sunRenderSystem->Render();
 
     RenderImGui();

@@ -16,7 +16,6 @@
 #include "camera/Camera.h"
 #include "input/MouseInput.h"
 #include "scene/Scene.h"
-#include "terrain/Terrain.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -276,7 +275,11 @@ bool sg::ogl::input::MousePicker::IntersectionInRange(const float t_start, const
 
 bool sg::ogl::input::MousePicker::IsUnderground(const glm::vec3 t_point) const
 {
+    /*
     const auto height{ m_terrain->GetHeightAtWorldPosition(t_point.x, t_point.z) };
 
     return t_point.y < height;
+    */
+
+    return false;
 }

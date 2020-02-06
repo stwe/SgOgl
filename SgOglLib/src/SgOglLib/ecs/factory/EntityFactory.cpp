@@ -10,15 +10,16 @@
 #include "EntityFactory.h"
 #include "Log.h"
 #include "Core.h"
+#include "buffer/Vao.h"
 #include "buffer/Vbo.h"
 #include "camera/ThirdPersonCamera.h"
 #include "ecs/component/Components.h"
 #include "resource/Model.h"
+#include "resource/Mesh.h"
 #include "resource/SkeletalModel.h"
 #include "resource/ModelManager.h"
 #include "resource/TextureManager.h"
 #include "light/PointLight.h"
-#include "terrain/Terrain.h"
 #include "water/Water.h"
 #include "particle/ParticleEmitter.h"
 
@@ -313,6 +314,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
     return entity;
 }
 
+/*
 entt::entity sg::ogl::ecs::factory::EntityFactory::CreateTppCharacterEntity(
     const ThirdPersonCameraSharedPtr& t_thirdPersonCamera,
     const std::string& t_fullModelFilePath,
@@ -357,24 +359,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateTppCharacterEntity(
 
     return entity;
 }
-
-void sg::ogl::ecs::factory::EntityFactory::CreateTerrainEntity(const TerrainSharedPtr& t_terrain) const
-{
-    // create an entity
-    const auto entity{ m_application->registry.create() };
-
-    // add terrain component
-    m_application->registry.assign<component::TerrainComponent>(
-        entity,
-        t_terrain
-    );
-
-    // add transform component
-    m_application->registry.assign<component::TransformComponent>(
-        entity,
-        glm::vec3(t_terrain->GetTerrainOptions().xPos, 0.0f, t_terrain->GetTerrainOptions().zPos)
-    );
-}
+*/
 
 void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(ParticleEmitterSharedPtr& t_particleEmitter) const
 {

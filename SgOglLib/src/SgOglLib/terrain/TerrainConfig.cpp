@@ -13,6 +13,7 @@
 #include "Core.h"
 #include "Log.h"
 #include "resource/TextureManager.h"
+#include "resource/ShaderManager.h"
 #include "resource/shaderprogram/ComputeNormalmap.h"
 #include "resource/shaderprogram/ComputeSplatmap.h"
 

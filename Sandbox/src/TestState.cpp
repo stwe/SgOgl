@@ -109,6 +109,7 @@ void TestState::Init()
     );
 
     // the animated character in the third person perspective - our player or game hero
+    /*
     m_player = GetApplicationContext()->GetEntityFactory().CreateTppCharacterEntity(
         m_thirdPersonCamera,
         "res/model/Player/drone.X",
@@ -117,6 +118,7 @@ void TestState::Init()
         glm::vec3(1.0f),
         nullptr
     );
+    */
 
     // an other skeletal model
     m_castleGuardIdle = GetApplicationContext()->GetEntityFactory().CreateSkeletalModelEntity(

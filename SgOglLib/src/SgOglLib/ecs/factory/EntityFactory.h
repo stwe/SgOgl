@@ -29,7 +29,6 @@ namespace sg::ogl::light
 
 namespace sg::ogl::terrain
 {
-    class Terrain;
     class TerrainQuadtree;
 }
 
@@ -56,7 +55,6 @@ namespace sg::ogl::ecs::factory
         using PointLightSharedPtr = std::shared_ptr<light::PointLight>;
         using SunSharedPtr = std::shared_ptr<light::Sun>;
         using ThirdPersonCameraSharedPtr = std::shared_ptr<camera::ThirdPersonCamera>;
-        using TerrainSharedPtr = std::shared_ptr<terrain::Terrain>;
         using WaterSharedPtr = std::shared_ptr<water::Water>;
         using ParticleEmitterSharedPtr = std::shared_ptr<particle::ParticleEmitter>;
 
@@ -199,6 +197,8 @@ namespace sg::ogl::ecs::factory
          * @param t_terrain A pointer to a terrain to get the current height position of the player.
          * @return The created Entity.
          */
+
+        /*
         entt::entity CreateTppCharacterEntity(
             const ThirdPersonCameraSharedPtr& t_thirdPersonCamera,
             const std::string& t_fullModelFilePath,
@@ -207,8 +207,7 @@ namespace sg::ogl::ecs::factory
             const glm::vec3& t_playerScale,
             const TerrainSharedPtr& t_terrain
         ) const;
-
-        void CreateTerrainEntity(const TerrainSharedPtr& t_terrain) const;
+        */
 
         void CreateParticleEntity(ParticleEmitterSharedPtr& t_particleEmitter) const;
 
