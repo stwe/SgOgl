@@ -63,7 +63,7 @@ void TerrainState::Render()
         m_terrainQuadtreeRenderSystem->Render();
     }
 
-    m_skydomeRenderSystem->Render();
+    //m_skydomeRenderSystem->Render();
     m_sunRenderSystem->Render();
 
     RenderImGui();
@@ -81,9 +81,9 @@ void TerrainState::Init()
 
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
         GetApplicationContext(),
-        glm::vec3(1943.0f, 1606.0f, 1895.0f),
-        -118.0f,
-        -10.0f
+        glm::vec3(2542.0f, 1754.0f, 2357.0f),
+        -125.0f,
+        -21.0f
     );
     m_firstPersonCamera->SetCameraVelocity(256.0f);
 
@@ -91,14 +91,14 @@ void TerrainState::Init()
     m_scene->SetCurrentCamera(m_firstPersonCamera);
 
     m_terrainConfig = std::make_shared<sg::ogl::terrain::TerrainConfig>(GetApplicationContext());
-    m_terrainConfig->scaleXz = 6144.0f;
-    m_terrainConfig->scaleY = 1736.0f;
+    m_terrainConfig->scaleXz = 8000.0f;
+    m_terrainConfig->scaleY = 1700.0f;
     m_terrainConfig->rootNodes = 8;
     m_terrainConfig->normalStrength = 60.0f;
     m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
     m_terrainConfig->use16BitHeightmap = true;
     m_terrainConfig->InitMapsAndMorphing(
-        "res/heightmap/Ruhpolding.png",
+        "res/heightmap/Ruhpolding8km.png",
         "normalmapTexture", // todo auto generate names heightmap path + normalmap etc.
         "splatmapTexture"
     );

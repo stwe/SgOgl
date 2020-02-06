@@ -113,6 +113,7 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         t_shaderProgram.SetUniform("viewProjectionMatrix", projectionMatrix * m_scene->GetCurrentCamera().GetViewMatrix());
 
         t_shaderProgram.SetUniform("cameraPosition", m_scene->GetCurrentCamera().GetPosition());
+        t_shaderProgram.SetUniform("scaleXz", m_terrainConfig->scaleXz);
         t_shaderProgram.SetUniform("scaleY", m_terrainConfig->scaleY);
         t_shaderProgram.SetUniform("lod", m_lod);
         t_shaderProgram.SetUniform("index", m_index);
@@ -174,6 +175,7 @@ void sg::ogl::terrain::Node::RenderWireframe(resource::ShaderProgram& t_shaderPr
         t_shaderProgram.SetUniform("viewProjectionMatrix", projectionMatrix * m_scene->GetCurrentCamera().GetViewMatrix());
 
         t_shaderProgram.SetUniform("cameraPosition", m_scene->GetCurrentCamera().GetPosition());
+        t_shaderProgram.SetUniform("scaleXz", m_terrainConfig->scaleXz);
         t_shaderProgram.SetUniform("scaleY", m_terrainConfig->scaleY);
         t_shaderProgram.SetUniform("lod", m_lod);
         t_shaderProgram.SetUniform("index", m_index);
