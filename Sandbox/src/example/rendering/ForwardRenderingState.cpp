@@ -69,10 +69,10 @@ void ForwardRenderingState::Init()
 
     AddScenePointLights(4);
     AddEntityPointLights();
-    AddEntityDirectionalLight("res/texture/sun/sun.png");
+    AddEntityDirectionalLight("res/sun/sun.png");
 
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
-        "res/model/Plane/plane1.obj",
+        "res/primitive/plane1/plane1.obj",
         glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f),
         glm::vec3(100.0f, 1.0f, 100.0f),
@@ -80,12 +80,12 @@ void ForwardRenderingState::Init()
     );
 
     const std::vector<std::string> cubemapFileNames{
-        "res/texture/sky/sRight.png",
-        "res/texture/sky/sLeft.png",
-        "res/texture/sky/sUp.png",
-        "res/texture/sky/sDown.png",
-        "res/texture/sky/sBack.png",
-        "res/texture/sky/sFront.png"
+        "res/skybox/sky1/sRight.png",
+        "res/skybox/sky1/sLeft.png",
+        "res/skybox/sky1/sUp.png",
+        "res/skybox/sky1/sDown.png",
+        "res/skybox/sky1/sBack.png",
+        "res/skybox/sky1/sFront.png"
     };
     GetApplicationContext()->GetEntityFactory().CreateSkyboxEntity(cubemapFileNames);
 

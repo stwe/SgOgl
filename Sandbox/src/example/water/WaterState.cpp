@@ -68,12 +68,12 @@ void WaterState::Init()
     m_scene->SetCurrentCamera(m_firstPersonCamera);
 
     const std::vector<std::string> cubemapFileNames{
-        "res/texture/sky/sRight.png",
-        "res/texture/sky/sLeft.png",
-        "res/texture/sky/sUp.png",
-        "res/texture/sky/sDown.png",
-        "res/texture/sky/sBack.png",
-        "res/texture/sky/sFront.png"
+        "res/skybox/sky1/sRight.png",
+        "res/skybox/sky1/sLeft.png",
+        "res/skybox/sky1/sUp.png",
+        "res/skybox/sky1/sDown.png",
+        "res/skybox/sky1/sBack.png",
+        "res/skybox/sky1/sFront.png"
     };
     GetApplicationContext()->GetEntityFactory().CreateSkyboxEntity(cubemapFileNames);
 
@@ -91,8 +91,8 @@ void WaterState::Init()
         -220.0f, 500.0f,
         -66.0f,
         glm::vec3(1636.0f, 1.0f, 1318.0f),
-        "res/texture/water/waterDUDV.png",
-        "res/texture/water/normal.png"
+        "res/water/waterDUDV.png",
+        "res/water/normal.png"
     );
     GetApplicationContext()->GetEntityFactory().CreateWaterEntity(m_water);
 
@@ -100,7 +100,7 @@ void WaterState::Init()
     sunUniquePtr->direction = glm::vec3(0.55f, -0.34f, 0.0f);
     sunUniquePtr->diffuseIntensity = glm::vec3(1.0f, 0.8f, 0.5f);
     sunUniquePtr->specularIntensity = glm::vec3(0.5f);
-    sunUniquePtr->textureId = GetApplicationContext()->GetTextureManager().GetTextureIdFromPath("res/texture/sun/sun.png");
+    sunUniquePtr->textureId = GetApplicationContext()->GetTextureManager().GetTextureIdFromPath("res/sun/sun.png");
     sunUniquePtr->scale = 12.0f;
 
     GetApplicationContext()->GetEntityFactory().CreateSunEntity(std::move(sunUniquePtr));
