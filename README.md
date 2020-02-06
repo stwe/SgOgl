@@ -31,7 +31,7 @@ Install Visual Studio 2019 and use Premake5 and the premake5.lua file to create 
 ## 3. Features
 
 - Deferred rendering / Forward rendering
-- Terrain rendering
+- Advanced Terrain rendering (Quadtree and Tessellation, 16-bit Heightmaps)
 - Water rendering
 - Gui rendering
 - Skydome / Skybox
@@ -267,16 +267,20 @@ The config file can look like this.
 [Water rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/water/WaterState.cpp)
 
 
+### Terrain rendering (Quadtree and Tessellation, 16-bit Heightmaps)
+
+<img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/terrain.png" alt="Water" width="128" height="128" />
+
+
+[Terrain rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/terrain/TerrainState.cpp)
+
+
 ### Other examples
 
 [Sponza playground](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/SponzaPlaygroundState.cpp)
 
 
 [Animations](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/TestState.cpp)
-
-
-[Terrain](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/TerrainState.cpp)
-
 
 ```cpp
     // create third person camera
