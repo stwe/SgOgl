@@ -93,7 +93,7 @@ void TerrainState::Init()
     m_terrainConfig = std::make_shared<sg::ogl::terrain::TerrainConfig>(GetApplicationContext());
     m_terrainConfig->scaleXz = 8000.0f;
     m_terrainConfig->scaleY = 1700.0f;
-    m_terrainConfig->rootNodes = 8;
+    m_terrainConfig->rootNodes = 12;
     m_terrainConfig->normalStrength = 60.0f;
     m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
     m_terrainConfig->use16BitHeightmap = true;
