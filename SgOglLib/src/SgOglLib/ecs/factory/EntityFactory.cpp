@@ -202,7 +202,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const Water
     return entity;
 }
 
-void sg::ogl::ecs::factory::EntityFactory::CreateTerrainQuadtreeEntity(const std::shared_ptr<terrain::TerrainQuadtree>& t_terrainQuadtree) const
+void sg::ogl::ecs::factory::EntityFactory::CreateTerrainQuadtreeEntity(const TerrainQuadtreeSharedPtr& t_terrainQuadtree) const
 {
     // create an entity
     const auto entity{ m_application->registry.create() };

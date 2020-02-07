@@ -145,24 +145,20 @@ void sg::ogl::OpenGl::DisableBlending()
     glDisable(GL_BLEND);
 }
 
-void sg::ogl::OpenGl::EnableClipping()
+void sg::ogl::OpenGl::EnableClipping(const uint32_t t_nrOfClipDistances)
 {
-    glEnable(GL_CLIP_DISTANCE0);
-    glEnable(GL_CLIP_DISTANCE1);
-    glEnable(GL_CLIP_DISTANCE2);
-    glEnable(GL_CLIP_DISTANCE3);
-    glEnable(GL_CLIP_DISTANCE4);
-    glEnable(GL_CLIP_DISTANCE5);
+    for (auto i{ 0u }; i < t_nrOfClipDistances; ++i)
+    {
+        glEnable(GL_CLIP_DISTANCE0 + i);
+    }
 }
 
-void sg::ogl::OpenGl::DisableClipping()
+void sg::ogl::OpenGl::DisableClipping(const uint32_t t_nrOfClipDistances)
 {
-    glDisable(GL_CLIP_DISTANCE0);
-    glDisable(GL_CLIP_DISTANCE1);
-    glDisable(GL_CLIP_DISTANCE2);
-    glDisable(GL_CLIP_DISTANCE3);
-    glDisable(GL_CLIP_DISTANCE4);
-    glDisable(GL_CLIP_DISTANCE5);
+    for (auto i{ 0u }; i < t_nrOfClipDistances; ++i)
+    {
+        glDisable(GL_CLIP_DISTANCE0 + i);
+    }
 }
 
 void sg::ogl::OpenGl::EnableWireframeMode()

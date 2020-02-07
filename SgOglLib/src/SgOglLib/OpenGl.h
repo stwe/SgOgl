@@ -68,8 +68,8 @@ namespace sg::ogl
         static void EnableAlphaBlending();
         static void DisableBlending();
 
-        static void EnableClipping();
-        static void DisableClipping();
+        static void EnableClipping(uint32_t t_nrOfClipDistances = 0);
+        static void DisableClipping(uint32_t t_nrOfClipDistances = 0);
 
         static void EnableWireframeMode();
         static void DisableWireframeMode();

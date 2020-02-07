@@ -57,6 +57,7 @@ namespace sg::ogl::ecs::factory
         using ThirdPersonCameraSharedPtr = std::shared_ptr<camera::ThirdPersonCamera>;
         using WaterSharedPtr = std::shared_ptr<water::Water>;
         using ParticleEmitterSharedPtr = std::shared_ptr<particle::ParticleEmitter>;
+        using TerrainQuadtreeSharedPtr = std::shared_ptr<terrain::TerrainQuadtree>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -160,10 +161,11 @@ namespace sg::ogl::ecs::factory
          */
         entt::entity CreateWaterEntity(const WaterSharedPtr& t_water) const;
 
-
-        // todo
-
-        void CreateTerrainQuadtreeEntity(const std::shared_ptr<terrain::TerrainQuadtree>& t_terrainQuadtree) const;
+        /**
+         * @brief Creates a Terrain Quadtree Entity.
+         * @param t_terrainQuadtree A Terrain Quadtree instance.
+         */
+        void CreateTerrainQuadtreeEntity(const TerrainQuadtreeSharedPtr& t_terrainQuadtree) const;
 
 
         ///////////////////////////////////////////////////////////////////////
