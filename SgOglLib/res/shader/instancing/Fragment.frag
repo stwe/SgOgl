@@ -36,7 +36,7 @@ struct PointLight
 
 uniform vec3 ambientIntensity;
 uniform DirectionalLight directionalLight;
-uniform PointLight pointLight;
+//uniform PointLight pointLight;
 
 uniform vec3 cameraPosition;
 
@@ -93,6 +93,7 @@ vec3 CalcDirectionalLight(vec3 normal, vec3 viewDir)
     return diffuse + specular;
 }
 
+/*
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
     vec3 lightDir = normalize(pointLight.position - fragPos);
@@ -120,6 +121,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     // result
     return ambient + diffuse + specular;
 }
+*/
 
 // Main
 
@@ -138,7 +140,7 @@ void main()
     vec3 ambient = ambientIntensity * diffuseCol.rgb;
 
     vec3 result = CalcDirectionalLight(normal, viewDir);
-    result += CalcPointLight(pointLight, normal, vPosition, viewDir);
+    //result += CalcPointLight(pointLight, normal, vPosition, viewDir);
 
     fragColor = vec4(ambient + result, 1.0);
 }

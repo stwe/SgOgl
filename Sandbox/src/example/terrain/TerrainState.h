@@ -12,12 +12,15 @@
 #include "SgOgl.h"
 
 // todo: Fog
-// todo: check number of specified root nodes -> 8 -> otherwise cracks will form
+// todo: check number of specified root nodes -> 12 -> otherwise cracks will form
 // todo: maps auto names
 
 class TerrainState : public sg::ogl::state::State
 {
 public:
+    static constexpr auto TREES{ 100000u };
+    static constexpr auto GRASS{ 150000u };
+
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
 
     using FirstPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::FirstPersonCamera>;
@@ -29,6 +32,7 @@ public:
     using TerrainQuadtreeWfRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::TerrainQuadtreeWfRenderSystem>;
 
     using SkydomeRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkydomeRenderSystem>;
+    using InstancingRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::InstancingRenderSystem>;
 
     using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::Sun>;
     using SunRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SunRenderSystem>;
@@ -70,16 +74,22 @@ private:
     TerrainQuadtreeWfRenderSystemUniquePtr m_terrainQuadtreeWfRenderSystem;
     SkydomeRenderSystemUniquePtr m_skydomeRenderSystem;
     SunRenderSystemUniquePtr m_sunRenderSystem;
+    InstancingRenderSystemUniquePtr m_instancingRenderSystem;
 
     bool m_renderWireframe{ false };
 
     DirectionalLightSharedPtr m_sun;
+    uint32_t m_instances{ 0 };
 
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------
 
     void Init();
+
+    [[nodiscard]] float GetHeightAt(float t_x, float t_z, float t_min, float t_max) const;
+    [[nodiscard]] std::vector<glm::mat4> CreateTreePositions(uint32_t t_instances);
+    [[nodiscard]] std::vector<glm::mat4> CreateGrassPositions(uint32_t t_instances);
 
     //-------------------------------------------------
     // ImGui

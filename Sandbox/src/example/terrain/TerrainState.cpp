@@ -7,6 +7,7 @@
 // 
 // 2020 (c) stwe <https://github.com/stwe/SgOgl>
 
+#include <random>
 #include "TerrainState.h"
 
 //-------------------------------------------------
@@ -63,10 +64,12 @@ void TerrainState::Render()
         m_terrainQuadtreeRenderSystem->Render();
     }
 
+    m_instancingRenderSystem->Render();
+
     m_skydomeRenderSystem->Render();
     m_sunRenderSystem->Render();
 
-    RenderImGui();
+    //RenderImGui();
 }
 
 //-------------------------------------------------
@@ -98,7 +101,7 @@ void TerrainState::Init()
     m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
     m_terrainConfig->use16BitHeightmap = true;
     m_terrainConfig->InitMapsAndMorphing(
-        "res/heightmap/Ruhpolding8km.png",
+        "res/heightmap/ruhpolding/Ruhpolding8km.png",
         "normalmapTexture", // todo auto generate names heightmap path + normalmap etc.
         "splatmapTexture"
     );
@@ -116,6 +119,7 @@ void TerrainState::Init()
     m_terrainQuadtreeWfRenderSystem = std::make_unique<sg::ogl::ecs::system::TerrainQuadtreeWfRenderSystem>(m_scene.get());
     m_skydomeRenderSystem = std::make_unique<sg::ogl::ecs::system::SkydomeRenderSystem>(m_scene.get());
     m_sunRenderSystem = std::make_unique<sg::ogl::ecs::system::SunRenderSystem>(m_scene.get());
+    m_instancingRenderSystem = std::make_unique<sg::ogl::ecs::system::InstancingRenderSystem>(m_scene.get());
 
     GetApplicationContext()->GetEntityFactory().CreateSkydomeEntity("res/model/Dome/dome.obj");
 
@@ -128,6 +132,140 @@ void TerrainState::Init()
     GetApplicationContext()->GetEntityFactory().CreateSunEntity(m_sun);
 
     m_scene->SetCurrentDirectionalLight(m_sun);
+
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        TREES,
+        "res/model/Tree_01/billboardmodel.obj",
+        CreateTreePositions(TREES),
+        true
+    );
+
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        TREES,
+        "res/model/Tree_02/billboardmodel.obj",
+        CreateTreePositions(TREES),
+        true
+    );
+
+    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
+        GRASS,
+        "res/model/Grass/grassmodel.obj",
+        CreateGrassPositions(GRASS),
+        true
+    );
+}
+
+float TerrainState::GetHeightAt(const float t_x, const float t_z, const float t_min, const float t_max) const
+{
+    const auto heightmapWidth{ m_terrainConfig->GetHeightmapWidth() };
+
+    auto pos{ glm::vec2(t_x, t_z) };
+    pos -= m_terrainConfig->scaleXz * 0.5f;
+    pos /= m_terrainConfig->scaleXz;
+
+    const auto floorVec{ glm::vec2(static_cast<int>(floor(pos.x)), static_cast<int>(floor(pos.y))) };
+    pos -= floorVec;
+    pos *= heightmapWidth;
+
+    const auto x0{ static_cast<int>(floor(pos.x)) };
+    const auto x1{ x0 + 1 };
+    const auto z0{ static_cast<int>(floor(pos.y)) };
+    const auto z1{ z0 + 1 };
+
+    const auto h0{ m_terrainConfig->GetHeightmapData()[heightmapWidth * z0 + x0] };
+    const auto h1{ m_terrainConfig->GetHeightmapData()[heightmapWidth * z0 + x1] };
+    const auto h2{ m_terrainConfig->GetHeightmapData()[heightmapWidth * z1 + x0] };
+    const auto h3{ m_terrainConfig->GetHeightmapData()[heightmapWidth * z1 + x1] };
+
+    const auto percentU{ pos.x - x0 };
+    const auto percentV{ pos.y - z0 };
+
+    float dU, dV;
+    if (percentU > percentV)
+    {   // bottom triangle
+        dU = h1 - h0;
+        dV = h3 - h1;
+    }
+    else
+    {   // top triangle
+        dU = h3 - h2;
+        dV = h2 - h0;
+    }
+
+    auto h{ h0 + (dU * percentU) + (dV * percentV) };
+
+    if (h < t_min || h > t_max)
+    {
+        return -900.0f;
+    }
+
+    h *= m_terrainConfig->scaleY;
+
+    return h;
+}
+
+std::vector<glm::mat4> TerrainState::CreateTreePositions(const uint32_t t_instances)
+{
+    std::random_device seeder;
+    std::mt19937 engine(seeder());
+
+    const std::uniform_real_distribution<float> posX(-3980.0f, 3980.0f);
+    const std::uniform_real_distribution<float> posZ(-3980.0f, 3980.0f);
+
+    std::vector<glm::mat4> matrices;
+
+    while (m_instances < t_instances)
+    {
+        const auto pos{ glm::vec3(posX(engine), 0.0f, posZ(engine)) };
+        const auto height{ GetHeightAt(pos.x, pos.z, 0.08f, 0.8f) };
+
+        if (height > 0.0f)
+        {
+            sg::ogl::math::Transform transform;
+            transform.position = glm::vec3(pos.x, height, pos.z);
+            transform.scale = glm::vec3(36.0f);
+
+            matrices.push_back(static_cast<glm::mat4>(transform));
+
+            m_instances++;
+        }
+    }
+
+    m_instances = 0;
+
+    return matrices;
+}
+
+std::vector<glm::mat4> TerrainState::CreateGrassPositions(const uint32_t t_instances)
+{
+    std::random_device seeder;
+    std::mt19937 engine(seeder());
+
+    const std::uniform_real_distribution<float> posX(-3980.0f, 3980.0f);
+    const std::uniform_real_distribution<float> posZ(-3980.0f, 3980.0f);
+
+    std::vector<glm::mat4> matrices;
+
+    while (m_instances < t_instances)
+    {
+        const auto pos{ glm::vec3(posX(engine), 0.0f, posZ(engine)) };
+        const auto height{ GetHeightAt(pos.x, pos.z, 0.01f, 0.1f) };
+
+        if (height > 0.0f)
+        {
+            sg::ogl::math::Transform transform;
+            transform.position = glm::vec3(pos.x, height, pos.z);
+            transform.scale = glm::vec3(8.0f);
+
+            matrices.push_back(static_cast<glm::mat4>(transform));
+
+            m_instances++;
+        }
+    }
+
+    m_instances = 0;
+
+    return matrices;
 }
 
 //-------------------------------------------------
