@@ -153,7 +153,7 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         resource::TextureManager::BindForReading(m_terrainConfig->GetSnowTextureId(), GL_TEXTURE6);
 
         t_shaderProgram.SetUniform("ambientIntensity", m_scene->GetAmbientIntensity());
-        t_shaderProgram.SetUniform("directionalLight", m_scene->GetDirectionalLight());
+        t_shaderProgram.SetUniform("directionalLight", m_scene->GetCurrentDirectionalLight());
 
         t_patchMesh->DrawPrimitives(GL_PATCHES);
     }

@@ -22,28 +22,22 @@ public:
     using ForwardRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ForwardRenderSystem>;
     using SunRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SunRenderSystem>;
 
+    using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::Sun>;
+
     //-------------------------------------------------
     // Ctors. / Dtor.
     //-------------------------------------------------
 
     ForwardRenderingState() = delete;
 
-    explicit ForwardRenderingState(sg::ogl::state::StateStack* t_stateStack)
-        : State{ t_stateStack, "ForwardRenderingState" }
-    {
-        Init();
-    }
+    explicit ForwardRenderingState(sg::ogl::state::StateStack* t_stateStack);
 
     ForwardRenderingState(const ForwardRenderingState& t_other) = delete;
     ForwardRenderingState(ForwardRenderingState&& t_other) noexcept = delete;
     ForwardRenderingState& operator=(const ForwardRenderingState& t_other) = delete;
     ForwardRenderingState& operator=(ForwardRenderingState&& t_other) noexcept = delete;
 
-    ~ForwardRenderingState() noexcept override
-    {
-        SG_OGL_LOG_DEBUG("[ForwardRenderingState::~ForwardRenderingState()] Destruct ForwardRenderingState.");
-        CleanUpImGui();
-    }
+    ~ForwardRenderingState() noexcept override;
 
     //-------------------------------------------------
     // Logic
@@ -66,6 +60,8 @@ private:
 
     float m_temp{ 0.0f };
 
+    DirectionalLightSharedPtr m_sun;
+
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------
@@ -87,7 +83,7 @@ private:
      * @brief Creates the Sun from a texture and a Directional Light.
      * @param t_sunTexturePath The texture of the Sun.
      */
-    void AddEntityDirectionalLight(const std::string& t_sunTexturePath) const;
+    void AddDirectionalLight(const std::string& t_sunTexturePath);
 
     //-------------------------------------------------
     // ImGui

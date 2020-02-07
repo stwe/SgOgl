@@ -23,28 +23,22 @@ public:
     using DeferredRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::DeferredRenderSystem>;
     using SunRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SunRenderSystem>;
 
+    using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::Sun>;
+
     //-------------------------------------------------
     // Ctors. / Dtor.
     //-------------------------------------------------
 
     DeferredRenderingState() = delete;
 
-    explicit DeferredRenderingState(sg::ogl::state::StateStack* t_stateStack)
-        : State{ t_stateStack, "DeferredRenderingState" }
-    {
-        Init();
-    }
+    explicit DeferredRenderingState(sg::ogl::state::StateStack* t_stateStack);
 
     DeferredRenderingState(const DeferredRenderingState& t_other) = delete;
     DeferredRenderingState(DeferredRenderingState&& t_other) noexcept = delete;
     DeferredRenderingState& operator=(const DeferredRenderingState& t_other) = delete;
     DeferredRenderingState& operator=(DeferredRenderingState&& t_other) noexcept = delete;
 
-    ~DeferredRenderingState() noexcept override
-    {
-        SG_OGL_LOG_DEBUG("[DeferredRenderingState::~DeferredRenderingState()] Destruct DeferredRenderingState.");
-        CleanUpImGui();
-    }
+    ~DeferredRenderingState() noexcept override;
 
     //-------------------------------------------------
     // Logic
@@ -68,6 +62,8 @@ private:
 
     float m_temp{ 0.0f };
 
+    DirectionalLightSharedPtr m_sun;
+
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------
@@ -89,7 +85,7 @@ private:
      * @brief Creates the Sun from a texture and a Directional Light.
      * @param t_sunTexturePath The texture of the Sun.
      */
-    void AddEntityDirectionalLight(const std::string& t_sunTexturePath) const;
+    void AddDirectionalLight(const std::string& t_sunTexturePath);
 
     //-------------------------------------------------
     // ImGui

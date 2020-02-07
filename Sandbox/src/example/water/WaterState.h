@@ -15,7 +15,9 @@ class WaterState : public sg::ogl::state::State
 {
 public:
     using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
+
     using FirstPersonCameraSharedPtr = std::shared_ptr<sg::ogl::camera::FirstPersonCamera>;
+
     using SkyboxRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SkyboxRenderSystem>;
     using ForwardRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ForwardRenderSystem>;
     using WaterRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::WaterRenderSystem>;
@@ -23,28 +25,22 @@ public:
 
     using WaterSharedPtr = std::shared_ptr<sg::ogl::water::Water>;
 
+    using DirectionalLightSharedPtr = std::shared_ptr<sg::ogl::light::Sun>;
+
     //-------------------------------------------------
     // Ctors. / Dtor.
     //-------------------------------------------------
 
     WaterState() = delete;
 
-    explicit WaterState(sg::ogl::state::StateStack* t_stateStack)
-        : State{ t_stateStack, "WaterState" }
-    {
-        Init();
-    }
+    explicit WaterState(sg::ogl::state::StateStack* t_stateStack);
 
     WaterState(const WaterState& t_other) = delete;
     WaterState(WaterState&& t_other) noexcept = delete;
     WaterState& operator=(const WaterState& t_other) = delete;
     WaterState& operator=(WaterState&& t_other) noexcept = delete;
 
-    ~WaterState() noexcept override
-    {
-        SG_OGL_LOG_DEBUG("[WaterState::~WaterState()] Destruct WaterState.");
-        CleanUpImGui();
-    }
+    ~WaterState() noexcept override;
 
     //-------------------------------------------------
     // Logic
@@ -67,6 +63,8 @@ private:
     SunRenderSystemUniquePtr m_sunRenderSystem;
 
     WaterSharedPtr m_water;
+
+    DirectionalLightSharedPtr m_sun;
 
     //-------------------------------------------------
     // Helper

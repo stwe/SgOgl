@@ -42,22 +42,26 @@ sg::ogl::Application* sg::ogl::scene::Scene::GetApplicationContext() const
 
 sg::ogl::camera::Camera& sg::ogl::scene::Scene::GetCurrentCamera() noexcept
 {
+    SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::GetCurrentCamera()] Null pointer.")
     return *m_currentCamera;
 }
 
 const sg::ogl::camera::Camera& sg::ogl::scene::Scene::GetCurrentCamera() const noexcept
 {
+    SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::GetCurrentCamera()] Null pointer.")
     return *m_currentCamera;
 }
 
-sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetDirectionalLight() noexcept
+sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetCurrentDirectionalLight() noexcept
 {
-    return *m_directionalLight;
+    SG_OGL_CORE_ASSERT(m_currentDirectionalLight, "[Scene::GetCurrentDirectionalLight()] Null pointer.")
+    return *m_currentDirectionalLight;
 }
 
-const sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetDirectionalLight() const noexcept
+const sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetCurrentDirectionalLight() const noexcept
 {
-    return *m_directionalLight;
+    SG_OGL_CORE_ASSERT(m_currentDirectionalLight, "[Scene::GetCurrentDirectionalLight()] Null pointer.")
+    return *m_currentDirectionalLight;
 }
 
 const sg::ogl::scene::Scene::ScenePointLightContainer& sg::ogl::scene::Scene::GetScenePointLights() const noexcept
@@ -72,7 +76,7 @@ const sg::ogl::scene::Scene::EntityPointLightContainer& sg::ogl::scene::Scene::G
 
 bool sg::ogl::scene::Scene::HasDirectionalLight() const
 {
-    return m_directionalLight != nullptr;
+    return m_currentDirectionalLight != nullptr;
 }
 
 glm::vec4 sg::ogl::scene::Scene::GetCurrentClipPlane() const
@@ -100,14 +104,10 @@ void sg::ogl::scene::Scene::SetCurrentCamera(const CameraSharedPtr& t_camera)
     m_currentCamera = t_camera;
 }
 
-void sg::ogl::scene::Scene::SetDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight)
+void sg::ogl::scene::Scene::SetCurrentDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight)
 {
-    if (m_directionalLight)
-    {
-        m_directionalLight.reset();
-    }
-
-    m_directionalLight = t_directionalLight;
+    m_currentDirectionalLight.reset();
+    m_currentDirectionalLight = t_directionalLight;
 }
 
 void sg::ogl::scene::Scene::AddScenePointLight(const PointLightSharedPtr& t_pointLight)

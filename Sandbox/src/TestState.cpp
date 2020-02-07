@@ -77,7 +77,7 @@ void TestState::Init()
     m_sun->direction = glm::vec3(0.9f, -0.1f, 0.0f);
     m_sun->diffuseIntensity = glm::vec3(0.3f, 0.2f, 0.1f);
     m_sun->specularIntensity = glm::vec3(0.2f, 0.2f, 0.2f);
-    m_scene->SetDirectionalLight(m_sun);
+    m_scene->SetCurrentDirectionalLight(m_sun);
 
     // create and add a point light to the scene
     m_pointLight = std::make_shared<sg::ogl::light::PointLight>();

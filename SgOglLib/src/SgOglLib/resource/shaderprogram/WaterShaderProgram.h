@@ -46,7 +46,7 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("hasDirectionalLight", t_scene.HasDirectionalLight());
             if (t_scene.HasDirectionalLight())
             {
-                SetUniform("directionalLight", t_scene.GetDirectionalLight());
+                SetUniform("directionalLight", t_scene.GetCurrentDirectionalLight());
             }
 
             // set camera position

@@ -11,6 +11,22 @@
 #include "DeferredRenderingState.h"
 
 //-------------------------------------------------
+// Ctors. / Dtor.
+//-------------------------------------------------
+
+DeferredRenderingState::DeferredRenderingState(sg::ogl::state::StateStack* t_stateStack)
+    : State{ t_stateStack, "DeferredRenderingState" }
+{
+    Init();
+}
+
+DeferredRenderingState::~DeferredRenderingState() noexcept
+{
+    SG_OGL_LOG_DEBUG("[DeferredRenderingState::~DeferredRenderingState()] Destruct DeferredRenderingState.");
+    CleanUpImGui();
+}
+
+//-------------------------------------------------
 // Logic
 //-------------------------------------------------
 
@@ -70,7 +86,7 @@ void DeferredRenderingState::Init()
 
     AddScenePointLights(4);
     AddEntityPointLights();
-    AddEntityDirectionalLight("res/sun/sun.png");
+    AddDirectionalLight("res/sun/sun.png");
 
     GetApplicationContext()->GetEntityFactory().CreateModelEntity(
         "res/primitive/plane1/plane1.obj",
@@ -154,16 +170,18 @@ void DeferredRenderingState::AddEntityPointLights() const
     );
 }
 
-void DeferredRenderingState::AddEntityDirectionalLight(const std::string& t_sunTexturePath) const
+void DeferredRenderingState::AddDirectionalLight(const std::string& t_sunTexturePath)
 {
-    auto sunUniquePtr{ std::make_unique<sg::ogl::light::Sun>() };
-    sunUniquePtr->direction = glm::vec3(0.55f, -0.34f, 1.0f);
-    sunUniquePtr->diffuseIntensity = glm::vec3(1.0f, 0.8f, 0.5f);
-    sunUniquePtr->specularIntensity = glm::vec3(1.0f, 1.0f, 1.0f);
-    sunUniquePtr->textureId = GetApplicationContext()->GetTextureManager().GetTextureIdFromPath(t_sunTexturePath);
-    sunUniquePtr->scale = 12.0f;
+    m_sun = std::make_shared<sg::ogl::light::Sun>();
+    m_sun->direction = glm::vec3(0.55f, -0.34f, 1.0f);
+    m_sun->diffuseIntensity = glm::vec3(1.0f, 0.8f, 0.5f);
+    m_sun->specularIntensity = glm::vec3(1.0f, 1.0f, 1.0f);
+    m_sun->textureId = GetApplicationContext()->GetTextureManager().GetTextureIdFromPath(t_sunTexturePath);
+    m_sun->scale = 12.0f;
 
-    GetApplicationContext()->GetEntityFactory().CreateSunEntity(std::move(sunUniquePtr));
+    GetApplicationContext()->GetEntityFactory().CreateSunEntity(m_sun);
+
+    m_scene->SetCurrentDirectionalLight(m_sun);
 }
 
 //-------------------------------------------------
@@ -193,7 +211,7 @@ void DeferredRenderingState::RenderImGui() const
 
     if (m_scene->HasDirectionalLight())
     {
-        ImGui::SliderFloat3("Sun direction", reinterpret_cast<float*>(&m_scene->GetDirectionalLight().direction), -1.0f, 1.0f);
+        ImGui::SliderFloat3("Sun direction", reinterpret_cast<float*>(&m_scene->GetCurrentDirectionalLight().direction), -1.0f, 1.0f);
     }
 
     ImGui::End();

@@ -10,8 +10,6 @@
 #pragma once
 
 #include "RenderSystem.h"
-#include "light/DirectionalLight.h"
-#include "light/Sun.h"
 #include "resource/shaderprogram/ModelShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "resource/Model.h"
@@ -37,7 +35,6 @@ namespace sg::ogl::ecs::system
         void Update(double t_dt) override
         {
             AddEntityPointLights();
-            AddSun();
         }
 
         void Render() override
@@ -97,7 +94,7 @@ namespace sg::ogl::ecs::system
 
     private:
         //-------------------------------------------------
-        // Lighting
+        // Point lights
         //-------------------------------------------------
 
         /**
@@ -117,20 +114,6 @@ namespace sg::ogl::ecs::system
                 m_scene->AddEntityPointLight(pointLightComponent.name, pointLightComponent.pointLight);
 
                 // todo: remove
-            }
-        }
-
-        /**
-         * @brief Set current Directional Light.
-         */
-        void AddSun() const
-        {
-            auto view{ m_scene->GetApplicationContext()->registry.view<component::SunComponent>() };
-
-            for (auto entity : view)
-            {
-                auto& sunComponent{ view.get<component::SunComponent>(entity) };
-                m_scene->SetDirectionalLight(sunComponent.sun); // overwrites any other current light
             }
         }
     };

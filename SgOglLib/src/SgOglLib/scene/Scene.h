@@ -69,8 +69,8 @@ namespace sg::ogl::scene
         [[nodiscard]] camera::Camera& GetCurrentCamera() noexcept;
         [[nodiscard]] const camera::Camera& GetCurrentCamera() const noexcept;
 
-        [[nodiscard]] light::DirectionalLight& GetDirectionalLight() noexcept;
-        [[nodiscard]] const light::DirectionalLight& GetDirectionalLight() const noexcept;
+        [[nodiscard]] light::DirectionalLight& GetCurrentDirectionalLight() noexcept;
+        [[nodiscard]] const light::DirectionalLight& GetCurrentDirectionalLight() const noexcept;
 
         [[nodiscard]] const ScenePointLightContainer& GetScenePointLights() const noexcept;
         [[nodiscard]] const EntityPointLightContainer& GetEntityPointLights() const noexcept;
@@ -89,7 +89,7 @@ namespace sg::ogl::scene
 
         void SetCurrentCamera(const CameraSharedPtr& t_camera);
 
-        void SetDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
+        void SetCurrentDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
 
         void AddScenePointLight(const PointLightSharedPtr& t_pointLight);
         void AddEntityPointLight(const std::string& t_name, const PointLightSharedPtr& t_pointLight);
@@ -103,7 +103,7 @@ namespace sg::ogl::scene
 
         CameraSharedPtr m_currentCamera;
 
-        DirectionalLightSharedPtr m_directionalLight;
+        DirectionalLightSharedPtr m_currentDirectionalLight;
 
         ScenePointLightContainer m_scenePointLights;
         EntityPointLightContainer m_entityPointLights;

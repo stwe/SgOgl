@@ -10,6 +10,22 @@
 #include "WaterState.h"
 
 //-------------------------------------------------
+// Ctors. / Dtor.
+//-------------------------------------------------
+
+WaterState::WaterState(sg::ogl::state::StateStack* t_stateStack)
+    : State{ t_stateStack, "WaterState" }
+{
+    Init();
+}
+
+WaterState::~WaterState() noexcept
+{
+    SG_OGL_LOG_DEBUG("[WaterState::~WaterState()] Destruct WaterState.");
+    CleanUpImGui();
+}
+
+//-------------------------------------------------
 // Logic
 //-------------------------------------------------
 
@@ -62,7 +78,7 @@ void WaterState::Init()
         183.0f,
         -18.0f
     );
-    m_firstPersonCamera->SetCameraVelocity(12.0f);
+    m_firstPersonCamera->SetCameraVelocity(96.0f);
 
     m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext());
     m_scene->SetCurrentCamera(m_firstPersonCamera);
@@ -96,14 +112,16 @@ void WaterState::Init()
     );
     GetApplicationContext()->GetEntityFactory().CreateWaterEntity(m_water);
 
-    auto sunUniquePtr{ std::make_unique<sg::ogl::light::Sun>() };
-    sunUniquePtr->direction = glm::vec3(0.55f, -0.34f, 0.0f);
-    sunUniquePtr->diffuseIntensity = glm::vec3(1.0f, 0.8f, 0.5f);
-    sunUniquePtr->specularIntensity = glm::vec3(0.5f);
-    sunUniquePtr->textureId = GetApplicationContext()->GetTextureManager().GetTextureIdFromPath("res/sun/sun.png");
-    sunUniquePtr->scale = 12.0f;
+    m_sun = std::make_shared<sg::ogl::light::Sun>();
+    m_sun->direction = glm::vec3(0.55f, -0.34f, 1.0f);
+    m_sun->diffuseIntensity = glm::vec3(1.0f, 0.8f, 0.5f);
+    m_sun->specularIntensity = glm::vec3(1.0f, 1.0f, 1.0f);
+    m_sun->textureId = GetApplicationContext()->GetTextureManager().GetTextureIdFromPath("res/sun/sun.png");
+    m_sun->scale = 12.0f;
 
-    GetApplicationContext()->GetEntityFactory().CreateSunEntity(std::move(sunUniquePtr));
+    GetApplicationContext()->GetEntityFactory().CreateSunEntity(m_sun);
+
+    m_scene->SetCurrentDirectionalLight(m_sun);
 
     m_skyboxRenderSystem = std::make_unique<sg::ogl::ecs::system::SkyboxRenderSystem>(m_scene.get());
     m_forwardRenderSystem = std::make_unique<sg::ogl::ecs::system::ForwardRenderSystem>(m_scene.get());
@@ -152,8 +170,8 @@ void WaterState::RenderImGui() const
 
     if (m_scene->HasDirectionalLight())
     {
-        ImGui::SliderFloat3("Sun direction", reinterpret_cast<float*>(&m_scene->GetDirectionalLight().direction), -1.0f, 1.0f);
-        ImGui::SliderFloat3("Sun specular", reinterpret_cast<float*>(&m_scene->GetDirectionalLight().specularIntensity), 0.0f, 1.0f);
+        ImGui::SliderFloat3("Sun direction", reinterpret_cast<float*>(&m_scene->GetCurrentDirectionalLight().direction), -1.0f, 1.0f);
+        ImGui::SliderFloat3("Sun specular", reinterpret_cast<float*>(&m_scene->GetCurrentDirectionalLight().specularIntensity), 0.0f, 1.0f);
     }
 
     ImGui::End();

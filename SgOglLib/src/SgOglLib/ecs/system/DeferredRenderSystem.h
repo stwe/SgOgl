@@ -11,8 +11,6 @@
 
 #include "RenderSystem.h"
 #include "buffer/GBufferFbo.h"
-#include "light/DirectionalLight.h"
-#include "light/Sun.h"
 #include "resource/shaderprogram/GBufferPassShaderProgram.h"
 #include "resource/shaderprogram/LightingPassShaderProgram.h"
 #include "resource/ShaderManager.h"
@@ -54,7 +52,6 @@ namespace sg::ogl::ecs::system
         void Update(double t_dt) override
         {
             AddEntityPointLights();
-            AddSun();
         }
 
         void Render() override
@@ -150,7 +147,7 @@ namespace sg::ogl::ecs::system
         }
 
         //-------------------------------------------------
-        // Lighting
+        // Point lights
         //-------------------------------------------------
 
         /**
@@ -170,22 +167,6 @@ namespace sg::ogl::ecs::system
                 m_scene->AddEntityPointLight(pointLightComponent.name, pointLightComponent.pointLight);
 
                 // todo: remove
-            }
-        }
-
-        /**
-         * @brief Set current Directional Light.
-         */
-        void AddSun() const
-        {
-            auto view{ m_scene->GetApplicationContext()->registry.view<
-                component::SunComponent>()
-            };
-
-            for (auto entity : view)
-            {
-                auto& sunComponent{ view.get<component::SunComponent>(entity) };
-                m_scene->SetDirectionalLight(sunComponent.sun); // overwrites any other current light
             }
         }
     };

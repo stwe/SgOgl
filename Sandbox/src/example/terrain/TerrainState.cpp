@@ -127,7 +127,7 @@ void TerrainState::Init()
 
     GetApplicationContext()->GetEntityFactory().CreateSunEntity(m_sun);
 
-    m_scene->SetDirectionalLight(m_sun);
+    m_scene->SetCurrentDirectionalLight(m_sun);
 }
 
 //-------------------------------------------------
@@ -179,7 +179,7 @@ void TerrainState::RenderImGui()
 
     ImGui::Separator();
 
-    ImGui::SliderFloat3("Sun direction", reinterpret_cast<float*>(&m_scene->GetDirectionalLight().direction), -1.0f, 1.0f);
+    ImGui::SliderFloat3("Sun direction", reinterpret_cast<float*>(&m_scene->GetCurrentDirectionalLight().direction), -1.0f, 1.0f);
 
     ImGui::End();
 
