@@ -3,10 +3,13 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/499a4726db5844449126e0101ac1074f)](https://app.codacy.com/app/stwe/SgOgl?utm_source=github.com&utm_medium=referral&utm_content=stwe/SgOgl&utm_campaign=Badge_Grade_Dashboard)
 
 
+![Terrain](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/terrainWithTrees.png)
+
+
 [![](http://img.youtube.com/vi/LKAUq4dDoZE/0.jpg)](http://www.youtube.com/watch?v=LKAUq4dDoZE "SgOgl Sponza Playground with an animated model.")
 
 
-![Result](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/SponzaLight.png)
+![Sponza](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/SponzaLight.png)
 
 
 ***
@@ -269,8 +272,8 @@ The config file can look like this.
 
 ### Terrain rendering (Quadtree and Tessellation, 16-bit Heightmaps)
 
-<img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/terrain.png" alt="Water" width="128" height="128" />
-
+<img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/terrain.png" alt="Terrain" width="128" height="128" />
+<img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/terrainWithTrees.png" alt="Terrain_with_trees" width="128" height="128" />
 
 [Terrain rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/terrain/TerrainState.cpp)
 
