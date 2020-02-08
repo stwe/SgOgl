@@ -96,16 +96,12 @@ const sg::ogl::terrain::TerrainConfig::HeightmapHeightContainer& sg::ogl::terrai
 // Init
 //-------------------------------------------------
 
-void sg::ogl::terrain::TerrainConfig::InitMapsAndMorphing(
-    const std::string& t_heightmapFilePath,
-    const std::string& t_normalmapTextureName,
-    const std::string& t_splatmapTextureName
-)
+void sg::ogl::terrain::TerrainConfig::InitMapsAndMorphing(const std::string& t_heightmapFilePath)
 {
     LoadHeightmap(t_heightmapFilePath);
 
-    LoadNormalmap(t_normalmapTextureName);
-    LoadSplatmap(t_splatmapTextureName);
+    LoadNormalmap(t_heightmapFilePath);
+    LoadSplatmap(t_heightmapFilePath);
 
     InitMorphing();
 }
@@ -146,7 +142,9 @@ void sg::ogl::terrain::TerrainConfig::LoadHeightmap(const std::string& t_heightm
 
 void sg::ogl::terrain::TerrainConfig::LoadNormalmap(const std::string& t_normalmapTextureName)
 {
-    m_normalmapTextureId = m_application->GetTextureManager().GetTextureId(t_normalmapTextureName);
+    const auto textureName{ GetFilenameWithoutExtension(t_normalmapTextureName) + "_normalmap" };
+
+    m_normalmapTextureId = m_application->GetTextureManager().GetTextureId(textureName);
     resource::TextureManager::Bind(m_normalmapTextureId);
     resource::TextureManager::UseBilinearFilter();
 
@@ -166,7 +164,9 @@ void sg::ogl::terrain::TerrainConfig::LoadNormalmap(const std::string& t_normalm
 
 void sg::ogl::terrain::TerrainConfig::LoadSplatmap(const std::string& t_splatmapTextureName)
 {
-    m_splatmapTextureId = m_application->GetTextureManager().GetTextureId(t_splatmapTextureName);
+    const auto textureName{ GetFilenameWithoutExtension(t_splatmapTextureName) + "_splatmap" };
+
+    m_splatmapTextureId = m_application->GetTextureManager().GetTextureId(textureName);
     resource::TextureManager::Bind(m_splatmapTextureId);
     resource::TextureManager::UseBilinearFilter();
 
@@ -211,6 +211,17 @@ void sg::ogl::terrain::TerrainConfig::InitHeightmapData()
     // Create float buffer of red channel heightmap data.
     m_heightmapData.resize(m_heightmapWidth * m_heightmapWidth);
     glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, m_heightmapData.data());
+}
 
-    // glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, m_16BitHeightmapData.data());
+//-------------------------------------------------
+// Helper
+//-------------------------------------------------
+
+std::string sg::ogl::terrain::TerrainConfig::GetFilenameWithoutExtension(const std::string& t_filename)
+{
+    const auto directoryPos{ t_filename.find_last_of('/') };
+    const auto filename{ t_filename.substr(directoryPos + 1) };
+    const auto extensionPos{ filename.find_last_of('.') };
+
+    return filename.substr(0, extensionPos);
 }

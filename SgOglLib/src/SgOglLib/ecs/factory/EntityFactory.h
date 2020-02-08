@@ -167,9 +167,7 @@ namespace sg::ogl::ecs::factory
          */
         void CreateTerrainQuadtreeEntity(const TerrainQuadtreeSharedPtr& t_terrainQuadtree) const;
 
-
-        ///////////////////////////////////////////////////////////////////////
-
+        // todo
 
         void CreateModelEntity(
             uint32_t t_instances,
@@ -177,6 +175,9 @@ namespace sg::ogl::ecs::factory
             const std::vector<glm::mat4>& t_matrices,
             bool t_fakeNormals = false
         ) const;
+
+
+        ///////////////////////////////////////////////////////////////////////
 
         entt::entity CreateSkeletalModelEntity(
             const std::string& t_fullModelFilePath,

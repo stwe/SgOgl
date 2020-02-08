@@ -13,7 +13,6 @@
 
 // todo: Fog
 // todo: check number of specified root nodes -> 12 -> otherwise cracks will form
-// todo: maps auto names
 
 class TerrainState : public sg::ogl::state::State
 {

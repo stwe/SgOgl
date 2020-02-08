@@ -100,11 +100,7 @@ void TerrainState::Init()
     m_terrainConfig->normalStrength = 60.0f;
     m_terrainConfig->lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 };
     m_terrainConfig->use16BitHeightmap = true;
-    m_terrainConfig->InitMapsAndMorphing(
-        "res/heightmap/ruhpolding/Ruhpolding8km.png",
-        "normalmapTexture", // todo auto generate names heightmap path + normalmap etc.
-        "splatmapTexture"
-    );
+    m_terrainConfig->InitMapsAndMorphing("res/heightmap/ruhpolding/Ruhpolding8km.png");
     m_terrainConfig->InitTextures(
         "res/terrain/terrain0/Grass (Hill).jpg",
         "res/terrain/terrain1/Grass.jpg",

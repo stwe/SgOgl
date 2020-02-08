@@ -96,11 +96,7 @@ namespace sg::ogl::terrain
         // Init
         //-------------------------------------------------
 
-        void InitMapsAndMorphing(
-            const std::string& t_heightmapFilePath,
-            const std::string& t_normalmapTextureName,
-            const std::string& t_splatmapTextureName
-        );
+        void InitMapsAndMorphing(const std::string& t_heightmapFilePath);
 
         void InitTextures(
             const std::string& t_sandFilePath,
@@ -140,5 +136,11 @@ namespace sg::ogl::terrain
         void InitMorphing();
 
         void InitHeightmapData();
+
+        //-------------------------------------------------
+        // Helper
+        //-------------------------------------------------
+
+        static std::string GetFilenameWithoutExtension(const std::string& t_filename);
     };
 }
