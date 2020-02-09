@@ -64,12 +64,12 @@ void TerrainState::Render()
         m_terrainQuadtreeRenderSystem->Render();
     }
 
-    m_instancingRenderSystem->Render();
+    //m_instancingRenderSystem->Render();
 
     m_skydomeRenderSystem->Render();
     m_sunRenderSystem->Render();
 
-    //RenderImGui();
+    RenderImGui();
 }
 
 //-------------------------------------------------
@@ -80,13 +80,13 @@ void TerrainState::Init()
 {
     InitImGui();
 
-    sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
+    glClearColor(0.5f, 0.6f, 0.7f, 1.0f);
 
     m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
         GetApplicationContext(),
-        glm::vec3(2542.0f, 1754.0f, 2357.0f),
-        -125.0f,
-        -21.0f
+        glm::vec3(1100.0f, 150.0f, 737.0f),
+        89.0f,
+        -2.0f
     );
     m_firstPersonCamera->SetCameraVelocity(256.0f);
 

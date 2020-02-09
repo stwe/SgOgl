@@ -110,6 +110,7 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
 
         t_shaderProgram.SetUniform("localMatrix", static_cast<glm::mat4>(m_localTransform));
         t_shaderProgram.SetUniform("worldMatrix", static_cast<glm::mat4>(m_worldTransform));
+        t_shaderProgram.SetUniform("viewMatrix", m_scene->GetCurrentCamera().GetViewMatrix());
         t_shaderProgram.SetUniform("viewProjectionMatrix", projectionMatrix * m_scene->GetCurrentCamera().GetViewMatrix());
 
         t_shaderProgram.SetUniform("cameraPosition", m_scene->GetCurrentCamera().GetPosition());
