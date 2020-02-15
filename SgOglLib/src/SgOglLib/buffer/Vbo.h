@@ -53,14 +53,24 @@ namespace sg::ogl::buffer
         //-------------------------------------------------
 
         /**
+         * @brief Function to define a vertex attribute.
+         * @param t_vboId The Vbo for which the attribute is to be defined.
+         * @param t_index The index of the vertex attribute.
+         * @param t_nrOfFloatComponents The number of float components for this attribute. Must be 1, 2, 3, or 4.
+         * @param t_nrOfAllFloats Number of floats of all attributes.
+         * @param t_startPoint The starting point of this attribute.
+         */
+        static void AddAttribute(uint32_t t_vboId, uint32_t t_index, int32_t t_nrOfFloatComponents, int32_t t_nrOfAllFloats, uint64_t t_startPoint);
+
+        /**
          * @brief Function to define per instance data.
          * @param t_vboId The Vbo for which the attribute is to be defined.
          * @param t_index The index of the vertex attribute.
-         * @param t_dataSize The number of components for this attribute. Must be 1, 2, 3, or 4.
-         * @param t_instancedDataLength Amount of bytes between each instance.
-         * @param t_offset Pointer to the starting point of this attribute.
+         * @param t_nrOfFloatComponents The number of components for this attribute. Must be 1, 2, 3, or 4.
+         * @param t_nrOfAllFloats Number of floats of all attributes.
+         * @param t_startPoint The starting point of this attribute.
          */
-        static void AddInstancedAttribute(uint32_t t_vboId, uint32_t t_index, int32_t t_dataSize, int32_t t_instancedDataLength, uint64_t t_offset);
+        static void AddInstancedAttribute(uint32_t t_vboId, uint32_t t_index, int32_t t_nrOfFloatComponents, int32_t t_nrOfAllFloats, uint64_t t_startPoint);
 
     protected:
 

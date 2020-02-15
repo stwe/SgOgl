@@ -93,18 +93,34 @@ void sg::ogl::buffer::Vbo::StoreTransformationMatrices(const uint32_t t_vboId, c
 // Attributes
 //-------------------------------------------------
 
-void sg::ogl::buffer::Vbo::AddInstancedAttribute(
+void sg::ogl::buffer::Vbo::AddAttribute(
     const uint32_t t_vboId,
     const uint32_t t_index,
-    const int32_t t_dataSize,
-    const int32_t t_instancedDataLength,
-    const uint64_t t_offset
+    const int32_t t_nrOfFloatComponents,
+    const int32_t t_nrOfAllFloats,
+    const uint64_t t_startPoint
 )
 {
     BindVbo(t_vboId);
 
     glEnableVertexAttribArray(t_index);
-    glVertexAttribPointer(t_index, t_dataSize, GL_FLOAT, GL_FALSE, t_instancedDataLength * sizeof(float), reinterpret_cast<uintptr_t*>(t_offset * sizeof(float)));
+    glVertexAttribPointer(t_index, t_nrOfFloatComponents, GL_FLOAT, GL_FALSE, t_nrOfAllFloats * sizeof(float), reinterpret_cast<uintptr_t*>(t_startPoint * sizeof(float)));
+
+    UnbindVbo();
+}
+
+void sg::ogl::buffer::Vbo::AddInstancedAttribute(
+    const uint32_t t_vboId,
+    const uint32_t t_index,
+    const int32_t t_nrOfFloatComponents,
+    const int32_t t_nrOfAllFloats,
+    const uint64_t t_startPoint
+)
+{
+    AddAttribute(t_vboId, t_index, t_nrOfFloatComponents, t_nrOfAllFloats, t_startPoint);
+
+    BindVbo(t_vboId);
+
     glVertexAttribDivisor(t_index, 1);
 
     UnbindVbo();

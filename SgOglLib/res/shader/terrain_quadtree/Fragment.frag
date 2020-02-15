@@ -51,7 +51,7 @@ const float fogDensity = 0.00025; // 0.0 ... 0.1
 
 vec4 Fog(vec4 t_color)
 {
-    float fogFactor = 1.0 / exp(length(viewPosition_FS) * fogDensity);
+    float fogFactor = 1.0 / exp(length(viewPosition_FS.xyz) * fogDensity);
     fogFactor = clamp(fogFactor, 0.0, 1.0 );
 
     vec3 result = mix(fogColor, t_color.xyz, fogFactor);
