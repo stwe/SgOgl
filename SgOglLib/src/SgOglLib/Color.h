@@ -10,6 +10,8 @@
 #pragma once
 
 #include <cstdint>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace sg::ogl
 {
@@ -50,7 +52,7 @@ namespace sg::ogl
          * @brief Retrieve the color as a 32-bit unsigned integer.
          * @return Color represented as a 32-bit unsigned integer
          */
-        uint32_t ToInteger() const;
+        [[nodiscard]] uint32_t ToInteger() const;
 
         //-------------------------------------------------
         // Color components
@@ -119,6 +121,29 @@ namespace sg::ogl
         {
             static const auto COL = Color(39, 58, 93);
             return COL;
+        }
+
+        explicit operator glm::vec3() const
+        {
+            glm::vec3 result;
+
+            result.x = static_cast<float>(r) / 255.0f;
+            result.y = static_cast<float>(g) / 255.0f;
+            result.z = static_cast<float>(b) / 255.0f;
+
+            return result;
+        }
+
+        explicit operator glm::vec4() const
+        {
+            glm::vec4 result;
+
+            result.x = static_cast<float>(r) / 255.0f;
+            result.y = static_cast<float>(g) / 255.0f;
+            result.z = static_cast<float>(b) / 255.0f;
+            result.w = static_cast<float>(a) / 255.0f;
+
+            return result;
         }
     };
 }
