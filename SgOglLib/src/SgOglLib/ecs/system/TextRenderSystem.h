@@ -169,7 +169,7 @@ namespace sg::ogl::ecs::system
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
             // Load first 128 characters of ASCII set.
-            for (uint8_t c = 0; c < 128; ++c)
+            for (uint8_t c{ 0 }; c < 128; ++c)
             {
                 // Load character glyph.
                 if (FT_Load_Char(face, c, FT_LOAD_RENDER))
@@ -193,10 +193,8 @@ namespace sg::ogl::ecs::system
                 );
 
                 // Set texture options.
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                resource::TextureManager::UseClampToEdgeWrapping();
+                resource::TextureManager::UseBilinearFilter();
 
                 // Now store character for later use.
                 Character character = {
@@ -208,8 +206,6 @@ namespace sg::ogl::ecs::system
 
                 m_characters.insert(std::pair<char, Character>(c, character));
             }
-
-            glBindTexture(GL_TEXTURE_2D, 0);
 
             // Destroy FreeType once we're finished.
             FT_Done_Face(face);
