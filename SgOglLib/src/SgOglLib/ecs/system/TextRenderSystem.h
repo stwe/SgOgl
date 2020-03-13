@@ -22,7 +22,7 @@ namespace sg::ogl::ecs::system
     class TextRenderSystem : public RenderSystem<resource::shaderprogram::TextShaderProgram>
     {
     public:
-        using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
+        using MeshUniquedPtr = std::unique_ptr<resource::Mesh>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -33,7 +33,7 @@ namespace sg::ogl::ecs::system
             , m_fontPath{ std::move(t_fontPath) }
         {
             InitFreeType();
-            CreateVao();
+            CreateMesh();
         }
 
         //-------------------------------------------------
@@ -52,29 +52,29 @@ namespace sg::ogl::ecs::system
         {
             PrepareRendering();
 
+            // bind shader program
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::TextShaderProgram>() };
             shaderProgram.Bind();
 
+            // update uniforms
             shaderProgram.UpdateUniforms(*m_scene, t_color);
 
+            // bind Vao
+            m_textMesh->GetVao().BindVao();
 
-
-            glBindVertexArray(m_vao);
-
-            // Iterate through all characters
-            std::string::const_iterator c;
-            for (c = t_text.begin(); c != t_text.end(); c++)
+            // iterate through all characters
+            for (auto c = t_text.begin(); c != t_text.end(); ++c)
             {
-                Character ch = m_characters[*c];
+                const auto ch{ m_characters[*c] };
 
-                float xpos = t_xPos + ch.bearing.x * t_scale;
-                float ypos = t_yPos - (ch.size.y - ch.bearing.y) * t_scale;
+                const auto xpos{ t_xPos + ch.bearing.x * t_scale };
+                const auto ypos{ t_yPos - (ch.size.y - ch.bearing.y) * t_scale };
 
-                float w = ch.size.x * t_scale;
-                float h = ch.size.y * t_scale;
+                const auto w{ ch.size.x * t_scale };
+                const auto h{ ch.size.y * t_scale };
 
-                // Update VBO for each character
-                GLfloat vertices[6][4] = {
+                // update Vbo for each character
+                float vertices[6][4] {
                     { xpos,     ypos + h,   0.0, 0.0 },
                     { xpos,     ypos,       0.0, 1.0 },
                     { xpos + w, ypos,       1.0, 1.0 },
@@ -84,24 +84,28 @@ namespace sg::ogl::ecs::system
                     { xpos + w, ypos + h,   1.0, 0.0 }
                 };
 
-                // Render glyph texture over quad
+                // render glyph texture over quad
                 glBindTexture(GL_TEXTURE_2D, ch.textureId);
 
-                // Update content of VBO memory
-                glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-                glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
+                // update content of Vbo memory
+                buffer::Vbo::BindVbo(m_vboId);
+                glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+                buffer::Vbo::UnbindVbo();
 
-                glBindBuffer(GL_ARRAY_BUFFER, 0);
-                // Render quad
-                glDrawArrays(GL_TRIANGLES, 0, 6);
-                // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-                t_xPos += (ch.advance >> 6)* t_scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+                // render
+                m_textMesh->DrawPrimitives();
+
+                // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+                t_xPos += static_cast<float>(ch.advance >> 6) * t_scale;
             }
-            glBindVertexArray(0);
+
+            // unbind Vao
+            buffer::Vao::UnbindVao();
+
+            // unbind texture
             glBindTexture(GL_TEXTURE_2D, 0);
 
-
-
+            // undbind shader program
             resource::ShaderProgram::Unbind();
 
             FinishRendering();
@@ -123,7 +127,7 @@ namespace sg::ogl::ecs::system
     private:
         struct Character
         {
-            uint32_t textureId;   // ID handle of the glyph texture.
+            uint32_t textureId;   // Id handle of the glyph texture.
             glm::ivec2 size;      // Size of glyph.
             glm::ivec2 bearing;   // Offset from baseline to left/top of glyph.
             signed long advance;  // Horizontal offset to advance to next glyph.
@@ -131,11 +135,15 @@ namespace sg::ogl::ecs::system
 
         std::map<char, Character> m_characters;
 
-        MeshSharedPtr m_textMesh;
+        MeshUniquedPtr m_textMesh;
         std::string m_fontPath;
-        uint32_t m_texture{ 0 };
-        uint32_t m_vao{ 0 };
-        uint32_t m_vbo{ 0 };
+
+        uint32_t m_textureId{ 0 };
+        uint32_t m_vboId{ 0 };
+
+        //-------------------------------------------------
+        // Init
+        //-------------------------------------------------
 
         void InitFreeType()
         {
@@ -144,14 +152,14 @@ namespace sg::ogl::ecs::system
             // All functions return a value different than 0 whenever an error occurred.
             if (FT_Init_FreeType(&ft))
             {
-                throw SG_OGL_EXCEPTION("[TextRenderSystem::Init()] Could not init FreeType Library.");
+                throw SG_OGL_EXCEPTION("[TextRenderSystem::InitFreeType()] Could not init FreeType Library.");
             }
 
             // Load font as face.
             FT_Face face;
             if (FT_New_Face(ft, m_fontPath.c_str(), 0, &face))
             {
-                throw SG_OGL_EXCEPTION("[TextRenderSystem::Init()] Failed to load font.");
+                throw SG_OGL_EXCEPTION("[TextRenderSystem::InitFreeType()] Failed to load font.");
             }
 
             // Set size to load glyphs as.
@@ -166,12 +174,12 @@ namespace sg::ogl::ecs::system
                 // Load character glyph.
                 if (FT_Load_Char(face, c, FT_LOAD_RENDER))
                 {
-                    throw SG_OGL_EXCEPTION("[TextRenderSystem::Init()] Failed to load Glyph.");
+                    throw SG_OGL_EXCEPTION("[TextRenderSystem::InitFreeType()] Failed to load Glyph.");
                 }
 
                 // Generate texture.
-                glGenTextures(1, &m_texture);
-                glBindTexture(GL_TEXTURE_2D, m_texture);
+                glGenTextures(1, &m_textureId);
+                glBindTexture(GL_TEXTURE_2D, m_textureId);
                 glTexImage2D(
                     GL_TEXTURE_2D,
                     0,
@@ -192,7 +200,7 @@ namespace sg::ogl::ecs::system
 
                 // Now store character for later use.
                 Character character = {
-                    m_texture,
+                    m_textureId,
                     glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
                     glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
                     face->glyph->advance.x
@@ -208,17 +216,22 @@ namespace sg::ogl::ecs::system
             FT_Done_FreeType(ft);
         }
 
-        void CreateVao()
+        void CreateMesh()
         {
-            glGenVertexArrays(1, &m_vao);
-            glGenBuffers(1, &m_vbo);
-            glBindVertexArray(m_vao);
-            glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), nullptr);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindVertexArray(0);
+            // create an bind a new Vao
+            m_textMesh = std::make_unique<resource::Mesh>();
+            m_textMesh->GetVao().BindVao();
+
+            // create a new Vbo
+            m_vboId = buffer::Vbo::GenerateVbo();
+            buffer::Vbo::InitEmpty(m_vboId, 6 * 4, GL_DYNAMIC_DRAW);
+            buffer::Vbo::AddAttribute(m_vboId, 0, 4, 4, 0);
+
+            // unbind Vao
+            buffer::Vao::UnbindVao();
+
+            // set draw count
+            m_textMesh->GetVao().SetDrawCount(6);
         }
     };
 }
