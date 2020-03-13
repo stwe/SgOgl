@@ -58,6 +58,9 @@ void WaterState::Render()
     m_skyboxRenderSystem->Render();
     m_sunRenderSystem->Render();
 
+    // render an example text
+    m_textRenderSystem->RenderText("Water rendering", 800.0f, 700.0f, 0.5f, glm::vec3(0.1f, 0.9f, 0.2f));
+
     // render ImGui
     RenderImGui();
 }
@@ -127,6 +130,7 @@ void WaterState::Init()
     m_forwardRenderSystem = std::make_unique<sg::ogl::ecs::system::ForwardRenderSystem>(m_scene.get());
     m_waterRenderSystem = std::make_unique<sg::ogl::ecs::system::WaterRenderSystem>(m_scene.get());
     m_sunRenderSystem = std::make_unique<sg::ogl::ecs::system::SunRenderSystem>(m_scene.get());
+    m_textRenderSystem = std::make_unique<sg::ogl::ecs::system::TextRenderSystem>(m_scene.get(), "res/font/calibri.ttf");
 }
 
 //-------------------------------------------------

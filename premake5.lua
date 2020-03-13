@@ -47,7 +47,8 @@ project "SgOglLib"
         "%{prj.name}/vendor/assimp/include",
         "%{prj.name}/vendor/entt",
         "%{prj.name}/vendor/imgui",
-        "%{prj.name}/vendor/gli"
+        "%{prj.name}/vendor/gli",
+        "%{prj.name}/vendor/freetype/include",
     }
 
     linkoptions
@@ -74,7 +75,8 @@ project "SgOglLib"
             "%{prj.name}/vendor/glew/lib/static/win",
             "%{prj.name}/vendor/glfw/lib/static/win",
             "%{prj.name}/vendor/tinyxml2/lib/static/win/debug",
-            "%{prj.name}/vendor/assimp/lib/static/win/debug"
+            "%{prj.name}/vendor/assimp/lib/static/win/debug",
+            "%{prj.name}/vendor/freetype/lib/dll",
         }
         links
         {
@@ -84,7 +86,8 @@ project "SgOglLib"
             "opengl32",
             "IrrXML",
             "zlibstaticd",
-            "assimp-vc140-mt"
+            "assimp-vc140-mt",
+            "freetype"
         }
 
     filter "configurations:Release"
@@ -95,7 +98,8 @@ project "SgOglLib"
             "%{prj.name}/vendor/glew/lib/static/win",
             "%{prj.name}/vendor/glfw/lib/static/win",
             "%{prj.name}/vendor/tinyxml2/lib/static/win/release",
-            "%{prj.name}/vendor/assimp/lib/static/win/release"
+            "%{prj.name}/vendor/assimp/lib/static/win/release",
+            "%{prj.name}/vendor/freetype/lib/dll",
         }
         links
         {
@@ -105,7 +109,8 @@ project "SgOglLib"
             "opengl32",
             "IrrXML",
             "zlibstatic",
-            "assimp-vc140-mt"
+            "assimp-vc140-mt",
+            "freetype"
         }
 
 project "Sandbox"
@@ -135,7 +140,8 @@ project "Sandbox"
         "SgOglLib/vendor/glm",
         "SgOglLib/vendor/assimp/include",
         "SgOglLib/vendor/entt",
-        "SgOglLib/vendor/imgui"
+        "SgOglLib/vendor/imgui",
+        "SgOglLib/vendor/freetype/include",
     }
 
     links

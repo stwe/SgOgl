@@ -150,7 +150,7 @@ namespace sg::ogl::resource
         [[nodiscard]] virtual Options GetOptions() const;
 
         virtual void UpdateUniforms(const scene::Scene& t_scene, entt::entity t_entity, const Mesh& t_currentMesh) {}
-
+        virtual void UpdateUniforms(const scene::Scene& t_scene, const glm::vec3& t_vec3) {}
         virtual void UpdateUniforms(
             const scene::Scene& t_scene,
             const Mesh& t_mesh,

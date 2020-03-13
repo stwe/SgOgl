@@ -44,6 +44,7 @@
 #include "SgOglLib/ecs/system/SunRenderSystem.h"
 #include "SgOglLib/ecs/system/TerrainQuadtreeRenderSystem.h"
 #include "SgOglLib/ecs/system/TerrainQuadtreeWfRenderSystem.h"
+#include "SgOglLib/ecs/system/TextRenderSystem.h"
 #include "SgOglLib/ecs/system/WaterRenderSystem.h"
 
 // imgui
@@ -86,6 +87,7 @@
 #include "SgOglLib/resource/shaderprogram/SunShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/TerrainQuadtreeShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/TerrainQuadtreeWfShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/TextShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/WaterShaderProgram.h"
 
 // scene

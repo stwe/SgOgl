@@ -22,6 +22,7 @@ public:
     using ForwardRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::ForwardRenderSystem>;
     using WaterRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::WaterRenderSystem>;
     using SunRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::SunRenderSystem>;
+    using TextRenderSystemUniquePtr = std::unique_ptr<sg::ogl::ecs::system::TextRenderSystem>;
 
     using WaterSharedPtr = std::shared_ptr<sg::ogl::water::Water>;
 
@@ -61,6 +62,7 @@ private:
     ForwardRenderSystemUniquePtr m_forwardRenderSystem;
     WaterRenderSystemUniquePtr m_waterRenderSystem;
     SunRenderSystemUniquePtr m_sunRenderSystem;
+    TextRenderSystemUniquePtr m_textRenderSystem;
 
     WaterSharedPtr m_water;
 
