@@ -84,8 +84,8 @@ namespace sg::ogl::ecs::system
                     { xpos + w, ypos + h,   1.0, 0.0 }
                 };
 
-                // render glyph texture over quad
-                glBindTexture(GL_TEXTURE_2D, ch.textureId);
+                // bind a texture
+                resource::TextureManager::BindForReading(ch.textureId, GL_TEXTURE0);
 
                 // update content of Vbo memory
                 buffer::Vbo::BindVbo(m_vboId);
@@ -103,7 +103,7 @@ namespace sg::ogl::ecs::system
             buffer::Vao::UnbindVao();
 
             // unbind texture
-            glBindTexture(GL_TEXTURE_2D, 0);
+            resource::TextureManager::Unbind();
 
             // undbind shader program
             resource::ShaderProgram::Unbind();
