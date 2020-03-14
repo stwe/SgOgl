@@ -54,9 +54,11 @@ namespace sg::ogl::resource
         /**
          * @brief Get the texture handle for the given file path.
          * @param t_path The file path of the texture.
+         * @param t_flipVertically When set to true, flip the image vertically,
+         *                         so the first pixel corresponds to the lower left corner of the image.
          * @return The texture handle.
          */
-        [[nodiscard]] uint32_t GetTextureIdFromPath(const std::string& t_path);
+        [[nodiscard]] uint32_t GetTextureIdFromPath(const std::string& t_path, bool t_flipVertically = false);
 
         /**
          * @brief Load 16-bit grayscale heightmaps.
@@ -164,7 +166,7 @@ namespace sg::ogl::resource
         // Image loader
         //-------------------------------------------------
 
-        void LoadTextureFromFile(const std::string& t_path, uint32_t t_textureId);
+        void LoadTextureFromFile(const std::string& t_path, uint32_t t_textureId, bool t_flipVertically);
         void Load16BitHeightmap(const std::string& t_path, uint32_t t_textureId);
         void LoadTextureFromDdsFile(const std::string& t_path, uint32_t t_textureId) const;
 

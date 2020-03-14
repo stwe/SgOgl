@@ -34,7 +34,7 @@ sg::ogl::resource::TextureManager::~TextureManager() noexcept
 // Load && Create
 //-------------------------------------------------
 
-uint32_t sg::ogl::resource::TextureManager::GetTextureIdFromPath(const std::string& t_path)
+uint32_t sg::ogl::resource::TextureManager::GetTextureIdFromPath(const std::string& t_path, const bool t_flipVertically)
 {
     uint32_t textureId;
 
@@ -49,7 +49,7 @@ uint32_t sg::ogl::resource::TextureManager::GetTextureIdFromPath(const std::stri
         }
         else
         {
-            LoadTextureFromFile(t_path, textureId);
+            LoadTextureFromFile(t_path, textureId, t_flipVertically);
         }
 
         SG_OGL_CORE_LOG_DEBUG("[TextureManager::GetTextureIdFromPath()] A new texture file {} was successfully loaded and used for the new created texture handle. Id: {}", t_path, textureId);
@@ -251,9 +251,14 @@ uint32_t sg::ogl::resource::TextureManager::GenerateNewTextureHandle()
     return textureId;
 }
 
-void sg::ogl::resource::TextureManager::LoadTextureFromFile(const std::string& t_path, const uint32_t t_textureId)
+void sg::ogl::resource::TextureManager::LoadTextureFromFile(const std::string& t_path, const uint32_t t_textureId, const bool t_flipVertically)
 {
     SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::LoadTextureFromFile()] Invalid texture Id.")
+
+    if (t_flipVertically)
+    {
+        stbi_set_flip_vertically_on_load(true);
+    }
 
     int nrChannels, width, height;
     auto* const image{ stbi_load(t_path.c_str(), &width, &height, &nrChannels, 0) };
