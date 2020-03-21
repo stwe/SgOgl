@@ -53,6 +53,11 @@ bool sg::ogl::buffer::Vao::HasIndexBuffer() const
     return m_eboId != 0;
 }
 
+int32_t sg::ogl::buffer::Vao::GetDrawCount() const
+{
+    return m_drawCount;
+}
+
 //-------------------------------------------------
 // Setter
 //-------------------------------------------------

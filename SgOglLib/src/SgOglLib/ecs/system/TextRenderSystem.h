@@ -15,6 +15,7 @@
 #include "RenderSystem.h"
 #include "resource/shaderprogram/TextShaderProgram.h"
 #include "resource/ShaderManager.h"
+#include "resource/TextureManager.h"
 #include "resource/Mesh.h"
 
 namespace sg::ogl::ecs::system

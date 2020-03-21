@@ -49,6 +49,7 @@ namespace sg::ogl::buffer
         [[nodiscard]] const VboContainer& GetVbos() const;
         [[nodiscard]] uint32_t GetEboId() const;
         [[nodiscard]] bool HasIndexBuffer() const;
+        [[nodiscard]] int32_t GetDrawCount() const;
 
         //-------------------------------------------------
         // Setter
