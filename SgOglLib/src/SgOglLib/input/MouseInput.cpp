@@ -10,6 +10,19 @@
 #include "MouseInput.h"
 
 //-------------------------------------------------
+// Ctors. / Dtor.
+//-------------------------------------------------
+
+sg::ogl::input::MouseInput::MouseInput()
+{
+    ClearMouseStates();
+}
+
+sg::ogl::input::MouseInput::~MouseInput() noexcept
+{
+}
+
+//-------------------------------------------------
 // Getter
 //-------------------------------------------------
 
@@ -23,14 +36,24 @@ glm::vec2 sg::ogl::input::MouseInput::GetDisplVec() const
     return m_displVec;
 }
 
-bool sg::ogl::input::MouseInput::IsLeftButtonPressed() const
+bool sg::ogl::input::MouseInput::IsLeftButtonPressed()
 {
-    return m_leftButtonPressed;
+    return buttonStates.at(MouseButton::LEFT) == MouseState::PRESSED;
 }
 
-bool sg::ogl::input::MouseInput::IsRightButtonPressed() const
+bool sg::ogl::input::MouseInput::IsRightButtonPressed()
 {
-    return m_rightButtonPressed;
+    return buttonStates.at(MouseButton::RIGHT) == MouseState::PRESSED;
+}
+
+bool sg::ogl::input::MouseInput::IsLeftButtonReleased()
+{
+    return buttonStates.at(MouseButton::LEFT) == MouseState::RELEASED;
+}
+
+bool sg::ogl::input::MouseInput::IsRightButtonReleased()
+{
+    return buttonStates.at(MouseButton::RIGHT) == MouseState::RELEASED;
 }
 
 bool sg::ogl::input::MouseInput::IsScrolled() const
@@ -67,16 +90,6 @@ void sg::ogl::input::MouseInput::SetInWindow(const bool t_inWindow)
     m_inWindow = t_inWindow;
 }
 
-void sg::ogl::input::MouseInput::SetLeftButtonPressed(const bool t_leftButtonPressed)
-{
-    m_leftButtonPressed = t_leftButtonPressed;
-}
-
-void sg::ogl::input::MouseInput::SetRightButtonPressed(const bool t_rightButtonPressed)
-{
-    m_rightButtonPressed = t_rightButtonPressed;
-}
-
 void sg::ogl::input::MouseInput::SetScrolled(const bool t_scrolled)
 {
     m_scrolled = t_scrolled;
@@ -104,4 +117,12 @@ void sg::ogl::input::MouseInput::Update()
 
     m_previousPosition.x = m_currentPosition.x;
     m_previousPosition.y = m_currentPosition.y;
+}
+
+void sg::ogl::input::MouseInput::ClearMouseStates()
+{
+    for (auto& buttonState : buttonStates)
+    {
+        buttonState.second = MouseState::NONE;
+    }
 }

@@ -156,7 +156,7 @@ void sg::ogl::camera::FirstPersonCamera::ProcessKeyboard(const CameraMovement t_
 
 void sg::ogl::camera::FirstPersonCamera::ProcessMouse()
 {
-    if (m_application->GetMouseInput().IsRightButtonPressed())
+    if (input::MouseInput::IsRightButtonPressed())
     {
         m_yaw += m_application->GetMouseInput().GetDisplVec().x * m_mouseSensitivity;
         m_pitch += m_application->GetMouseInput().GetDisplVec().y * m_mouseSensitivity;

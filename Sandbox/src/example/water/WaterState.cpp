@@ -33,6 +33,13 @@ bool WaterState::Input()
 {
     m_scene->GetCurrentCamera().Input();
 
+    if (sg::ogl::input::MouseInput::IsLeftButtonPressed())
+    {
+        SG_OGL_CORE_LOG_INFO("[WaterState::Input()] Left mouse button pressed.");
+        // left mouse button is pressed only once
+        sg::ogl::input::MouseInput::ClearMouseStates();
+    }
+
     return true;
 }
 

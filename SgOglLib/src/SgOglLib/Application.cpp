@@ -229,7 +229,6 @@ void sg::ogl::Application::GameLoop()
     auto timer{ lastTime };
 
     auto deltaTime = 0.0;
-    auto nowTime = 0.0;
 
     auto frames = 0;
     auto updates = 0;
@@ -237,7 +236,7 @@ void sg::ogl::Application::GameLoop()
     while (m_window->WindowIsNotClosed())
     {
         // measure time
-        nowTime = glfwGetTime();
+        const auto nowTime{ glfwGetTime() };
         deltaTime += (nowTime - lastTime) / frametime;
         lastTime = nowTime;
 
@@ -329,24 +328,24 @@ void sg::ogl::Application::Input(event::CircularEventQueue& t_circularEventQueue
             {
                 if (t_event.button == GLFW_MOUSE_BUTTON_1)
                 {
-                    m_mouseInput->SetLeftButtonPressed(true);
+                    m_mouseInput->buttonStates.at(input::MouseInput::MouseButton::LEFT) = input::MouseInput::MouseState::PRESSED;
                 }
 
                 if (t_event.button == GLFW_MOUSE_BUTTON_2)
                 {
-                    m_mouseInput->SetRightButtonPressed(true);
+                    m_mouseInput->buttonStates.at(input::MouseInput::MouseButton::RIGHT) = input::MouseInput::MouseState::PRESSED;
                 }
             }
             if (t_event.eventType == event::EventType::BUTTON_RELEASED)
             {
                 if (t_event.button == GLFW_MOUSE_BUTTON_1)
                 {
-                    m_mouseInput->SetLeftButtonPressed(false);
+                    m_mouseInput->buttonStates.at(input::MouseInput::MouseButton::LEFT) = input::MouseInput::MouseState::RELEASED;
                 }
 
                 if (t_event.button == GLFW_MOUSE_BUTTON_2)
                 {
-                    m_mouseInput->SetRightButtonPressed(false);
+                    m_mouseInput->buttonStates.at(input::MouseInput::MouseButton::RIGHT) = input::MouseInput::MouseState::RELEASED;
                 }
             }
         },

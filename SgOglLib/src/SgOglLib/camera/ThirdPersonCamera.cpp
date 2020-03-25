@@ -107,7 +107,7 @@ void sg::ogl::camera::ThirdPersonCamera::CalculateZoom()
 
 void sg::ogl::camera::ThirdPersonCamera::CalculatePitch()
 {
-    if (m_application->GetMouseInput().IsRightButtonPressed())
+    if (input::MouseInput::IsRightButtonPressed())
     {
         const auto pitchChange{ m_application->GetMouseInput().GetDisplVec().y * SPEED };
         m_pitch -= pitchChange;
@@ -118,7 +118,7 @@ void sg::ogl::camera::ThirdPersonCamera::CalculatePitch()
 
 void sg::ogl::camera::ThirdPersonCamera::CalculateAngleAroundPlayer()
 {
-    if (m_application->GetMouseInput().IsLeftButtonPressed())
+    if (input::MouseInput::IsLeftButtonPressed())
     {
         const auto angleChange{ m_application->GetMouseInput().GetDisplVec().x * SPEED };
         m_angleAroundPlayer -= angleChange;

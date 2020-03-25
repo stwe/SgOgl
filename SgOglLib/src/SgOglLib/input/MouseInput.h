@@ -10,6 +10,7 @@
 #pragma once
 
 #include <glm/vec2.hpp>
+#include <unordered_map>
 
 namespace sg::ogl
 {
@@ -21,14 +22,61 @@ namespace sg::ogl::input
     class MouseInput
     {
     public:
+        enum class MouseButton
+        {
+            LEFT,
+            RIGHT
+        };
+
+        enum class MouseState
+        {
+            NONE,
+            PRESSED,
+            RELEASED
+        };
+
+        struct MouseButtonHash
+        {
+            std::size_t operator()(MouseButton t_mouseButton) const
+            {
+                return static_cast<std::size_t>(t_mouseButton);
+            }
+        };
+
+        using MouseButtonStateContainer = std::unordered_map<MouseButton, MouseState>;
+
+        inline static MouseButtonStateContainer buttonStates
+        {
+            { MouseButton::LEFT, MouseState::NONE },
+            { MouseButton::RIGHT, MouseState::NONE }
+        };
+
+        //-------------------------------------------------
+        // Ctors. / Dtor.
+        //-------------------------------------------------
+
+        MouseInput();
+
+        MouseInput(const MouseInput& t_other) = delete;
+        MouseInput(MouseInput&& t_other) noexcept = delete;
+        MouseInput& operator=(const MouseInput& t_other) = delete;
+        MouseInput& operator=(MouseInput&& t_other) noexcept = delete;
+
+        ~MouseInput() noexcept;
+
         //-------------------------------------------------
         // Getter
         //-------------------------------------------------
 
         [[nodiscard]] glm::ivec2 GetCurrentPos() const;
         [[nodiscard]] glm::vec2 GetDisplVec() const;
-        [[nodiscard]] bool IsLeftButtonPressed() const;
-        [[nodiscard]] bool IsRightButtonPressed() const;
+
+        [[nodiscard]] static bool IsLeftButtonPressed();
+        [[nodiscard]] static bool IsRightButtonPressed();
+
+        [[nodiscard]] static bool IsLeftButtonReleased();
+        [[nodiscard]] static bool IsRightButtonReleased();
+
         [[nodiscard]] bool IsScrolled() const;
         [[nodiscard]] glm::vec2& GetScrollOffset();
 
@@ -40,8 +88,6 @@ namespace sg::ogl::input
         void SetCurrentPosition(const glm::ivec2& t_currentPosition);
         void SetDisplVec(const glm::vec2& t_displVec);
         void SetInWindow(bool t_inWindow);
-        void SetLeftButtonPressed(bool t_leftButtonPressed);
-        void SetRightButtonPressed(bool t_rightButtonPressed);
         void SetScrolled(bool t_scrolled);
         void SetScrollOffset(const glm::vec2& t_scrollOffset);
 
@@ -50,6 +96,8 @@ namespace sg::ogl::input
         //-------------------------------------------------
 
         void Update();
+
+        static void ClearMouseStates();
 
     protected:
 
@@ -60,8 +108,6 @@ namespace sg::ogl::input
         glm::vec2 m_scrollOffset{ glm::vec2(0.0f, 0.0f) };
 
         bool m_inWindow{ false };
-        bool m_leftButtonPressed{ false };
-        bool m_rightButtonPressed{ false };
         bool m_scrolled{ false };
     };
 }
