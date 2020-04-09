@@ -15,11 +15,10 @@
 ***
 
 1. [What is does](#1-what-is-does)
-1. [Installing](#2-installing)
-1. [Features](#3-features)
-1. [Dependencies](#4-dependencies)
-1. [Getting started](#5-getting-started)
-1. [Code snippets](#6-code-snippets)
+2. [Installing](#2-installing)
+3. [Features](#3-features)
+4. [Getting started](#4-getting-started)
+5. [Code snippets](#6-code-snippets)
 
 ***
 
@@ -29,7 +28,26 @@ A GameEngine library for OpenGL developed for educational purposes - a hobby pro
 
 ## 2. Installing
 
-Install Visual Studio 2019 and use Premake5 and the premake5.lua file to create the project files.
+It should be easy:
+
+Install Visual Studio 2019 and use Premake5 and the `premake5.lua` file to create the project files.
+
+```bash
+premake5 vs2019
+```
+
+
+Use the Conan Package Manager to install the thirdparty libraries. The project already includes a `conanfile.txt`.
+
+```bash
+conan install . -s build_type=Release
+```
+
+Or when need to debug:
+
+```bash
+conan install . -s build_type=Debug
+```
 
 ## 3. Features
 
@@ -48,24 +66,7 @@ Install Visual Studio 2019 and use Premake5 and the premake5.lua file to create 
 - Normal mapping
 - Entity component system from [EnTT](https://github.com/skypjack/entt)
 
-## 4. Dependencies
-
-Everything is included except the Assimp Lib.
-
-ImGui is optional.
-
-- [GLFW3](https://www.glfw.org/)
-- [GLEW](http://glew.sourceforge.net/)
-- [GLM](https://glm.g-truc.net/0.9.9/index.html)
-- [GLI](http://gli.g-truc.net/0.8.2/index.html)
-- [stb](https://github.com/nothings/stb)
-- [Assimp](http://www.assimp.org/)
-- [EnTT](https://github.com/skypjack/entt)
-- [spdlog](https://github.com/gabime/spdlog)
-- [TinyXML2](https://github.com/leethomason/tinyxml2)
-- [ImGui](https://github.com/ocornut/imgui)
-
-## 5. Getting started
+## 4. Getting started
 
 We need to create a class that inherits from `sg::ogl::Application`. Here we call this class `Sandbox`.
 The header `SgOgl.h` must be included.
@@ -243,7 +244,7 @@ The config file can look like this.
 </init>
 ```
 
-## 6. Code snippets
+## 5. Code snippets
 
 
 ### Forward rendering with some Point Lights and the Sun as directional light source
