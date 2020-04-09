@@ -1,0 +1,13 @@
+[requires]
+glm/0.9.9.7
+glfw/3.3.2@bincrafters/stable
+glew/2.1.0@bincrafters/stable
+spdlog/1.5.0
+tinyxml2/8.0.0
+entt/3.3.2
+assimp/5.0.1
+freetype/2.10.1
+imgui/1.75
+
+[generators]
+premake

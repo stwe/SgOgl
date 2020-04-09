@@ -1,4 +1,8 @@
+include("conanbuildinfo.premake.lua")
+
 workspace "SgOgl"
+    conan_basic_setup()
+
     architecture "x64"
     startproject "Sandbox"
 
@@ -27,28 +31,19 @@ project "SgOglLib"
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("obj/" .. outputdir .. "/%{prj.name}")
 
+    linkoptions { conan_exelinkflags }
+
     files
     {
         "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp",
-        "%{prj.name}/vendor/imgui/**.h",
-        "%{prj.name}/vendor/imgui/**.cpp"
+        "%{prj.name}/src/**.cpp"
     }
 
     includedirs
     {
         "%{prj.name}/src",
-        "%{prj.name}/src/SgOglLib", 
-        "%{prj.name}/vendor/spdlog/include",
-        "%{prj.name}/vendor/glew/include",
-        "%{prj.name}/vendor/glfw/include",
-        "%{prj.name}/vendor/tinyxml2/include",
-        "%{prj.name}/vendor/glm",
-        "%{prj.name}/vendor/assimp/include",
-        "%{prj.name}/vendor/entt",
-        "%{prj.name}/vendor/imgui",
-        "%{prj.name}/vendor/gli",
-        "%{prj.name}/vendor/freetype/include",
+        "%{prj.name}/src/SgOglLib",
+        "%{prj.name}/vendor/gli"
     }
 
     linkoptions
@@ -70,48 +65,10 @@ project "SgOglLib"
         defines "SG_OGL_DEBUG_BUILD"
         runtime "Debug"
         symbols "on"
-        libdirs
-        {
-            "%{prj.name}/vendor/glew/lib/static/win",
-            "%{prj.name}/vendor/glfw/lib/static/win",
-            "%{prj.name}/vendor/tinyxml2/lib/static/win/debug",
-            "%{prj.name}/vendor/assimp/lib/static/win/debug",
-            "%{prj.name}/vendor/freetype/lib/dll",
-        }
-        links
-        {
-            "tinyxml2",
-            "glew32s",
-            "glfw3",
-            "opengl32",
-            "IrrXML",
-            "zlibstaticd",
-            "assimp-vc140-mt",
-            "freetype"
-        }
 
     filter "configurations:Release"
         runtime "Release"
         optimize "on"
-        libdirs
-        {
-            "%{prj.name}/vendor/glew/lib/static/win",
-            "%{prj.name}/vendor/glfw/lib/static/win",
-            "%{prj.name}/vendor/tinyxml2/lib/static/win/release",
-            "%{prj.name}/vendor/assimp/lib/static/win/release",
-            "%{prj.name}/vendor/freetype/lib/dll",
-        }
-        links
-        {
-            "tinyxml2",
-            "glew32s",
-            "glfw3",
-            "opengl32",
-            "IrrXML",
-            "zlibstatic",
-            "assimp-vc140-mt",
-            "freetype"
-        }
 
 project "Sandbox"
     location "Sandbox"
@@ -123,6 +80,8 @@ project "Sandbox"
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("obj/" .. outputdir .. "/%{prj.name}")
 
+    linkoptions { conan_exelinkflags }
+
     files
     {
         "%{prj.name}/src/**.h",
@@ -133,15 +92,6 @@ project "Sandbox"
     {
         "SgOglLib/src",
         "SgOglLib/src/SgOglLib",
-        "SgOglLib/vendor/spdlog/include",
-        "SgOglLib/vendor/glew/include",
-        "SgOglLib/vendor/glfw/include",
-        "SgOglLib/vendor/tinyxml2/include",
-        "SgOglLib/vendor/glm",
-        "SgOglLib/vendor/assimp/include",
-        "SgOglLib/vendor/entt",
-        "SgOglLib/vendor/imgui",
-        "SgOglLib/vendor/freetype/include",
     }
 
     links
