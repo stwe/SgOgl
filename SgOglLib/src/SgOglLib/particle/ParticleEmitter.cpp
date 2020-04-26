@@ -239,11 +239,11 @@ void sg::ogl::particle::ParticleEmitter::BuildNewParticles()
     std::random_device seeder;
     std::mt19937 engine(seeder());
 
-    const std::uniform_real_distribution<float> velocityX(m_buildConfig.xRange.x, m_buildConfig.xRange.y);
-    const std::uniform_real_distribution<float> velocityY(m_buildConfig.yRange.x, m_buildConfig.yRange.y);
-    const std::uniform_real_distribution<float> velocityZ(m_buildConfig.zRange.x, m_buildConfig.zRange.y);
-    const std::uniform_real_distribution<float> scale(m_buildConfig.scaleRange.x, m_buildConfig.scaleRange.y);
-    const std::uniform_real_distribution<float> lifetime(m_buildConfig.lifetimeRange.x, m_buildConfig.lifetimeRange.y);
+    std::uniform_real_distribution<float> velocityX(m_buildConfig.xRange.x, m_buildConfig.xRange.y);
+    std::uniform_real_distribution<float> velocityY(m_buildConfig.yRange.x, m_buildConfig.yRange.y);
+    std::uniform_real_distribution<float> velocityZ(m_buildConfig.zRange.x, m_buildConfig.zRange.y);
+    std::uniform_real_distribution<float> scale(m_buildConfig.scaleRange.x, m_buildConfig.scaleRange.y);
+    std::uniform_real_distribution<float> lifetime(m_buildConfig.lifetimeRange.x, m_buildConfig.lifetimeRange.y);
 
     const auto currentNrOfParticles{ m_particles.size() };
 

@@ -12,6 +12,7 @@
 #include "Core.h"
 #include "Log.h"
 #include "scene/Scene.h"
+#include "resource/ShaderManager.h"
 
 namespace sg::ogl::ecs::system
 {

@@ -205,8 +205,8 @@ std::vector<glm::mat4> TerrainState::CreateTreePositions(const uint32_t t_instan
     std::random_device seeder;
     std::mt19937 engine(seeder());
 
-    const std::uniform_real_distribution<float> posX(-3980.0f, 3980.0f);
-    const std::uniform_real_distribution<float> posZ(-3980.0f, 3980.0f);
+    std::uniform_real_distribution<float> posX(-3980.0f, 3980.0f);
+    std::uniform_real_distribution<float> posZ(-3980.0f, 3980.0f);
 
     std::vector<glm::mat4> matrices;
 
@@ -237,8 +237,8 @@ std::vector<glm::mat4> TerrainState::CreateGrassPositions(const uint32_t t_insta
     std::random_device seeder;
     std::mt19937 engine(seeder());
 
-    const std::uniform_real_distribution<float> posX(-3980.0f, 3980.0f);
-    const std::uniform_real_distribution<float> posZ(-3980.0f, 3980.0f);
+    std::uniform_real_distribution<float> posX(-3980.0f, 3980.0f);
+    std::uniform_real_distribution<float> posZ(-3980.0f, 3980.0f);
 
     std::vector<glm::mat4> matrices;
 

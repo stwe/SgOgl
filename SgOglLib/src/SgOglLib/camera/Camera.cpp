@@ -119,9 +119,9 @@ void sg::ogl::camera::Camera::UpdateFrustumPlanes()
 
     const auto aspectRatio{ static_cast<float>(projectionOptions.width) / static_cast<float>(projectionOptions.height) };
 
-    const auto hnear{ 2.0f * tan(glm::radians(projectionOptions.fovDeg * 0.5f)) * projectionOptions.nearPlane };
+    const auto hnear{ 2.0f * glm::tan(glm::radians(projectionOptions.fovDeg * 0.5f)) * projectionOptions.nearPlane };
     const auto wnear{ hnear * aspectRatio };
-    const auto hfar{ 2.0f * tan(glm::radians(projectionOptions.fovDeg * 0.5f)) * projectionOptions.farPlane };
+    const auto hfar{ 2.0f * glm::tan(glm::radians(projectionOptions.fovDeg * 0.5f)) * projectionOptions.farPlane };
     const auto wfar{ hfar * aspectRatio };
     const auto hHnear{ hnear * 0.5f };
     const auto hWnear{ wnear * 0.5f };

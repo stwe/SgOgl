@@ -115,8 +115,8 @@ void ForwardRenderingState::AddScenePointLights(const int t_numPointLights) cons
     std::random_device seeder;
     std::mt19937 engine(seeder());
 
-    const std::uniform_real_distribution<float> pos(-50.0f, 50.0f);
-    const std::uniform_real_distribution<float> col(0.0f, 3.0f);
+    std::uniform_real_distribution<float> pos(-50.0f, 50.0f);
+    std::uniform_real_distribution<float> col(0.0f, 3.0f);
 
     for (auto i{ 0 }; i < t_numPointLights; ++i)
     {
