@@ -28,7 +28,7 @@ A GameEngine library for OpenGL developed for educational purposes - a hobby pro
 
 ## 2. Installing
 
-It should be easy:
+#### Vs2019 && Premake
 
 Install Visual Studio 2019 and use Premake5 and the `premake5.lua` file to create the project files.
 
@@ -36,8 +36,19 @@ Install Visual Studio 2019 and use Premake5 and the `premake5.lua` file to creat
 premake5 vs2019
 ```
 
-
 Use the Conan Package Manager to install the thirdparty libraries. The project already includes a `conanfile.txt`.
+It is important that `premake` is specified as a generator in this file.
+
+```txt
+#conanfile.txt
+
+# ...
+
+[generators]
+premake
+```
+
+For a release build:
 
 ```bash
 conan install . -s build_type=Release
@@ -48,6 +59,66 @@ Or when need to debug:
 ```bash
 conan install . -s build_type=Debug
 ```
+
+#### Gcc && CMake
+
+I work with Win10 and MinGW and have created two new Conan profiles.
+CLion profiles are a handy way to create different configurations to build your project.
+
+```txt
+# debug_gcc
+
+[settings]
+os=Windows
+os_build=Windows
+arch=x86_64
+arch_build=x86_64
+compiler=gcc
+compiler.version=9.3
+compiler.libcxx=libstdc++11
+build_type=Debug
+[options]
+[build_requires]
+[env]
+
+```
+
+
+
+```txt
+# release_gcc
+
+[settings]
+os=Windows
+os_build=Windows
+arch=x86_64
+arch_build=x86_64
+compiler=gcc
+compiler.version=9.3
+compiler.libcxx=libstdc++11
+build_type=Release
+[options]
+[build_requires]
+[env]
+```
+
+
+CLion users can now, for example, assign the Conan profiles to the CLion profiles.
+The Conan plugin does the rest. Before that the generator has to be changed.
+
+
+```txt
+#conanfile.txt
+
+# ...
+
+[generators]
+cmake
+```
+
+
+***It may be necessary to compile the packages. Do this with `--build missing`.***
+
 
 ## 3. Features
 
