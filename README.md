@@ -63,7 +63,6 @@ conan install . -s build_type=Debug
 #### Gcc && CMake
 
 I work with Win10 and MinGW and have created two new Conan profiles.
-CLion profiles are a handy way to create different configurations to build your project.
 
 ```txt
 # debug_gcc
