@@ -482,14 +482,14 @@ uint32_t sg::ogl::resource::ShaderProgram::AddShader(const std::string& t_shader
     return shaderId;
 }
 
-int32_t sg::ogl::resource::ShaderProgram::GetUniformLocation(const std::string& t_uniformName)
+int32_t sg::ogl::resource::ShaderProgram::GetUniformLocation(const std::string& t_uniformName) const
 {
-    if (m_uniforms.count(t_uniformName) == 0)
+    if (m_uniforms.find(t_uniformName) == m_uniforms.end())
     {
         throw SG_OGL_EXCEPTION("[ShaderProgram::GetUniformLocation()] Uniform " + t_uniformName + " location not exist.");
     }
 
-    return m_uniforms.at(t_uniformName);
+    return m_uniforms[t_uniformName];
 }
 
 //-------------------------------------------------

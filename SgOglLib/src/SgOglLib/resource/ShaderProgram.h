@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <memory>
 #include <glm/glm.hpp>
 
@@ -179,7 +180,7 @@ namespace sg::ogl::resource
         uint32_t m_computeShaderId{ 0 };
 
         std::vector<std::string> m_uniformStructs;
-        std::map<std::string, int32_t> m_uniforms;
+        mutable std::unordered_map<std::string, int32_t> m_uniforms;
         std::vector<Uniform> m_foundUniforms;
 
         //-------------------------------------------------
@@ -192,7 +193,7 @@ namespace sg::ogl::resource
 
         uint32_t AddShader(const std::string& t_shaderCode, int32_t t_shaderType);
 
-        int32_t GetUniformLocation(const std::string& t_uniformName);
+        int32_t GetUniformLocation(const std::string& t_uniformName) const;
 
         //-------------------------------------------------
         // CleanUp
