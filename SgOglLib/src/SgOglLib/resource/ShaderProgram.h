@@ -133,14 +133,9 @@ namespace sg::ogl::resource
         void SetUniform(const std::string& t_uniformName, const std::vector<std::shared_ptr<light::PointLight>>& t_pointLights);
         void SetUniform(const std::string& t_uniformName, const std::map<std::string, std::shared_ptr<light::PointLight>>& t_pointLights);
 
-        template <typename T>
-        void SetUniform(const std::string& t_uniformName, const std::vector<T>& t_container)
-        {
-            for (auto i{ 0u }; i < t_container.size(); ++i)
-            {
-                SetUniform(t_uniformName + "[" + std::to_string(i) + "]", t_container[i]);
-            }
-        }
+        void SetUniform(const std::string& t_uniformName, const std::vector<float>& t_container);
+        void SetUniform(const std::string& t_uniformName, const std::vector<int32_t>& t_container);
+        void SetUniform(const std::string& t_uniformName, const std::vector<glm::mat4>& t_container);
 
         //-------------------------------------------------
         // To implement
@@ -180,8 +175,20 @@ namespace sg::ogl::resource
         uint32_t m_computeShaderId{ 0 };
 
         std::vector<std::string> m_uniformStructs;
-        mutable std::unordered_map<std::string, int32_t> m_uniforms;
+        std::unordered_map<std::string, int32_t> m_uniforms;
         std::vector<Uniform> m_foundUniforms;
+
+        /*
+        Stores array uniforms in the format:
+            first: lodMorphArea
+                second: lodMorphArea[0]
+                second: lodMorphArea[1]
+                second: lodMorphArea[2]
+                            .
+                            .
+                            .
+         */
+        std::unordered_map<std::string, std::vector<std::string>> m_arrayUniformNames;
 
         //-------------------------------------------------
         // Helper
@@ -192,8 +199,6 @@ namespace sg::ogl::resource
         static void CheckCompileStatus(uint32_t t_shaderId);
 
         uint32_t AddShader(const std::string& t_shaderCode, int32_t t_shaderType);
-
-        int32_t GetUniformLocation(const std::string& t_uniformName) const;
 
         //-------------------------------------------------
         // CleanUp

@@ -8,6 +8,7 @@ entt/3.3.2
 assimp/5.0.1
 freetype/2.10.1
 imgui/1.75
+fmt/6.2.0
 
 [generators]
 premake

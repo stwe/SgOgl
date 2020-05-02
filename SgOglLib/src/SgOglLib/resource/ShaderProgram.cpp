@@ -262,43 +262,43 @@ void sg::ogl::resource::ShaderProgram::Unbind()
 
 void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const int32_t t_value)
 {
-    glUniform1i(GetUniformLocation(t_uniformName), t_value);
+    glUniform1i(m_uniforms.at(t_uniformName), t_value);
 }
 
 void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const float t_value)
 {
-    glUniform1f(GetUniformLocation(t_uniformName), t_value);
+    glUniform1f(m_uniforms.at(t_uniformName), t_value);
 }
 
 void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const bool t_value)
 {
     // if value == true load 1 else 0 as float
-    glUniform1f(GetUniformLocation(t_uniformName), t_value ? 1.0f : 0.0f);
+    glUniform1f(m_uniforms.at(t_uniformName), t_value ? 1.0f : 0.0f);
 }
 
 void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const glm::vec2& t_value)
 {
-    glUniform2f(GetUniformLocation(t_uniformName), t_value.x, t_value.y);
+    glUniform2f(m_uniforms.at(t_uniformName), t_value.x, t_value.y);
 }
 
 void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const glm::vec3& t_value)
 {
-    glUniform3f(GetUniformLocation(t_uniformName), t_value.x, t_value.y, t_value.z);
+    glUniform3f(m_uniforms.at(t_uniformName), t_value.x, t_value.y, t_value.z);
 }
 
 void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const glm::vec4& t_value)
 {
-    glUniform4f(GetUniformLocation(t_uniformName), t_value.x, t_value.y, t_value.z, t_value.w);
+    glUniform4f(m_uniforms.at(t_uniformName), t_value.x, t_value.y, t_value.z, t_value.w);
 }
 
 void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const glm::mat4& t_value)
 {
-    glUniformMatrix4fv(GetUniformLocation(t_uniformName), 1, GL_FALSE, value_ptr(t_value));
+    glUniformMatrix4fv(m_uniforms.at(t_uniformName), 1, GL_FALSE, value_ptr(t_value));
 }
 
 void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const glm::mat3& t_value)
 {
-    glUniformMatrix3fv(GetUniformLocation(t_uniformName), 1, GL_FALSE, value_ptr(t_value));
+    glUniformMatrix3fv(m_uniforms.at(t_uniformName), 1, GL_FALSE, value_ptr(t_value));
 }
 
 void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const light::DirectionalLight& t_directionalLight)
@@ -332,7 +332,8 @@ void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformNa
 {
     for (auto i{ 0u }; i < t_pointLights.size(); ++i)
     {
-        SetUniform(t_uniformName + "[" + std::to_string(i) + "]", *t_pointLights[i]);
+        fmt::format_int f(i);
+        SetUniform(t_uniformName + "[" + f.c_str() + "]", *t_pointLights[i]);
     }
 }
 
@@ -341,8 +342,45 @@ void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformNa
     auto i{ 0 };
     for (auto const& [name, pointLight] : t_pointLights)
     {
-        SetUniform(t_uniformName + "[" + std::to_string(i) + "]", *pointLight);
+        fmt::format_int f(i);
+        SetUniform(t_uniformName + "[" + f.c_str() + "]", *pointLight);
         i++;
+    }
+}
+
+void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const std::vector<float>& t_container)
+{
+    const auto& m{ m_arrayUniformNames[t_uniformName] };
+
+    auto c{ 0 };
+    for (auto& value : m)
+    {
+        glUniform1f(m_uniforms.at(value), t_container[c]);
+        c++;
+    }
+}
+
+void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const std::vector<int32_t>& t_container)
+{
+    const auto& m{ m_arrayUniformNames[t_uniformName] };
+
+    auto c{ 0 };
+    for (auto& value : m)
+    {
+        glUniform1i(m_uniforms.at(value), t_container[c]);
+        c++;
+    }
+}
+
+void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const std::vector<glm::mat4>& t_container)
+{
+    const auto& m{ m_arrayUniformNames[t_uniformName] };
+
+    auto c{ 0 };
+    for (auto& value : m)
+    {
+        glUniformMatrix4fv(m_uniforms.at(value), 1, GL_FALSE, glm::value_ptr(t_container[c]));
+        c++;
     }
 }
 
@@ -456,6 +494,7 @@ uint32_t sg::ogl::resource::ShaderProgram::AddShader(const std::string& t_shader
             }
         }
 
+        std::vector<std::string> cache;
         const auto uniformArrayStartPos{ uniformName.find_first_of('[') };
         if (uniformArrayStartPos != std::string::npos)
         {
@@ -466,10 +505,14 @@ uint32_t sg::ogl::resource::ShaderProgram::AddShader(const std::string& t_shader
 
             for (auto i{ 0 }; i < iNumber; ++i)
             {
-                uniform.name = newUniformName + "[" + std::to_string(i) + "]";
+                fmt::format_int f(i);
+                uniform.name = newUniformName + "[" + f.c_str() + "]";
 
+                cache.push_back(uniform.name);
                 m_foundUniforms.push_back(uniform);
             }
+
+            m_arrayUniformNames.emplace(newUniformName, cache);
         }
         else
         {
@@ -480,16 +523,6 @@ uint32_t sg::ogl::resource::ShaderProgram::AddShader(const std::string& t_shader
     }
 
     return shaderId;
-}
-
-int32_t sg::ogl::resource::ShaderProgram::GetUniformLocation(const std::string& t_uniformName) const
-{
-    if (m_uniforms.find(t_uniformName) == m_uniforms.end())
-    {
-        throw SG_OGL_EXCEPTION("[ShaderProgram::GetUniformLocation()] Uniform " + t_uniformName + " location not exist.");
-    }
-
-    return m_uniforms[t_uniformName];
 }
 
 //-------------------------------------------------
