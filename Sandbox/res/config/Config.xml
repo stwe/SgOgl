@@ -4,7 +4,6 @@
     <libResFolder>E:\Dev\SgOgl\SgOglLib\res</libResFolder>
     <window>
         <title>Sandbox</title>
-        <showTriangles>0</showTriangles>
         <compatibleProfile>0</compatibleProfile>
         <debugContext>1</debugContext>
         <antialiasing>1</antialiasing>

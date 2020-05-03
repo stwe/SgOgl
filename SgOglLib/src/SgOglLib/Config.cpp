@@ -53,7 +53,6 @@ void sg::ogl::Config::LoadOptions(
         if (window)
         {
             t_windowOptions.title = window->FirstChildElement("title")->GetText();
-            t_windowOptions.showTriangles = ToBool(window->FirstChildElement("showTriangles")->GetText());
             t_windowOptions.compatibleProfile = ToBool(window->FirstChildElement("compatibleProfile")->GetText());
             t_windowOptions.debugContext = ToBool(window->FirstChildElement("debugContext")->GetText());
             t_windowOptions.antialiasing = ToBool(window->FirstChildElement("antialiasing")->GetText());

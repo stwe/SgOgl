@@ -162,12 +162,6 @@ void sg::ogl::Window::Init()
     // Make the window visible.
     glfwShowWindow(GetWindowHandle());
 
-    // If showTriangles, draw a surface with outlined polygons.
-    if (windowOptions.showTriangles)
-    {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    }
-
     // Enable Depth and Stencil buffer.
     OpenGl::EnableDepthAndStencilTesting();
 

@@ -30,13 +30,7 @@ A GameEngine library for OpenGL developed for educational purposes - a hobby pro
 
 #### Vs2019 && Premake
 
-Install Visual Studio 2019 and use Premake5 and the `premake5.lua` file to create the project files.
-
-```bash
-premake5 vs2019
-```
-
-Use the Conan Package Manager to install the thirdparty libraries. The project already includes a `conanfile.txt`.
+First: Use the Conan Package Manager to install the thirdparty libraries. The project already includes a `conanfile.txt`.
 It is important that `premake` is specified as a generator in this file.
 
 ```txt
@@ -59,6 +53,13 @@ Or when need to debug:
 ```bash
 conan install . -s build_type=Debug
 ```
+
+After that use Premake5 and the `premake5.lua` file to create the project files.
+
+```bash
+premake5 vs2019
+```
+
 
 #### Gcc && CMake
 
@@ -137,6 +138,10 @@ cmake
 - Entity component system from [EnTT](https://github.com/skypjack/entt)
 
 ## 4. Getting started
+
+The project already contains a sandbox and it is a good idea to start with it.
+
+If you want to create it yourself, do this as follows:
 
 We need to create a class that inherits from `sg::ogl::Application`. Here we call this class `Sandbox`.
 The header `SgOgl.h` must be included.
@@ -243,12 +248,12 @@ public:
 protected:
     void RegisterStates() override
     {
-        GetStateStack()->RegisterState<GameState>(sg::ogl::state::GAME);
+        GetStateStack().RegisterState<GameState>(sg::ogl::state::GAME);
     }
 
     void Init() override
     {
-        GetStateStack()->PushState(sg::ogl::state::GAME);
+        GetStateStack().PushState(sg::ogl::state::GAME);
     }
 
 private:
@@ -290,13 +295,15 @@ std::unique_ptr<sg::ogl::Application> sg::ogl::create_application()
 We can see that the constructor of the `Application` class or `Sandbox` class takes the path to a config file as an argument.
 The config file can look like this.
 
+The libResFolder option contains the full path to the library's built-in assets.
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 
 <init>
+    <libResFolder>E:\Dev\SgOgl\SgOglLib\res</libResFolder>
     <window>
         <title>Sandbox</title>
-        <showTriangles>0</showTriangles>
         <compatibleProfile>0</compatibleProfile>
         <debugContext>1</debugContext>
         <antialiasing>1</antialiasing>
@@ -304,6 +311,7 @@ The config file can look like this.
         <glMajor>4</glMajor>
         <glMinor>3</glMinor>
         <fps>60.0</fps>
+    </window>
     <projection>
         <fovDeg>70.0</fovDeg>
         <width>1024</width>

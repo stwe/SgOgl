@@ -21,7 +21,6 @@ namespace sg::ogl
     struct WindowOptions
     {
         std::string title{ "" };
-        bool showTriangles{ false };
         bool compatibleProfile{ false };
         bool debugContext{ false };
         bool antialiasing{ false };
