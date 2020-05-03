@@ -1,6 +1,14 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: State.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include "State.h"
 #include "StateStack.h"
-#include "Log.h"
 #include "Core.h"
 
 //-------------------------------------------------
@@ -11,14 +19,14 @@ sg::ogl::state::State::State(StateStack* const t_stateStack, std::string t_debug
     : m_stateStack{ t_stateStack }
     , m_debugName{ std::move(t_debugName) }
 {
-    SG_OGL_CORE_ASSERT(m_stateStack, "[State::State()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_stateStack, "[State::State()] Null pointer.");
 
-    SG_OGL_CORE_LOG_DEBUG("[State::State()] Create State: " + m_debugName);
+    Log::SG_OGL_CORE_LOG_DEBUG("[State::State()] Create State: " + m_debugName);
 }
 
 sg::ogl::state::State::~State() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[State::~State()] Destruct State: " + m_debugName);
+    Log::SG_OGL_CORE_LOG_DEBUG("[State::~State()] Destruct State: " + m_debugName);
 }
 
 //-------------------------------------------------

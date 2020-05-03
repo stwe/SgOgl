@@ -9,6 +9,7 @@
 
 #include "SgOgl.h"
 #include "SgOglEntryPoint.h"
+#include "ClientLog.h"
 #include "example/rendering/DeferredRenderingState.h"
 #include "example/rendering/ForwardRenderingState.h"
 #include "example/terrain/TerrainState.h"
@@ -26,7 +27,8 @@ public:
     explicit Sandbox(const std::string& t_configFileName)
         : Application{ t_configFileName }
     {
-        SG_OGL_LOG_DEBUG("[Sandbox::Sandbox()] Create Sandbox.");
+        ClientLog::Init();
+        ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::Sandbox()] Create Sandbox.");
     }
 
     Sandbox(const Sandbox& t_other) = delete;
@@ -36,7 +38,7 @@ public:
 
     ~Sandbox() noexcept override
     {
-        SG_OGL_LOG_DEBUG("[Sandbox::~Sandbox()] Destruct Sandbox.");
+        ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::~Sandbox()] Destruct Sandbox.");
     }
 
 protected:
@@ -46,22 +48,22 @@ protected:
 
     void RegisterStates() override
     {
-        //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: DeferredRenderingState as Game.");
+        //ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: DeferredRenderingState as Game.");
         //GetStateStack().RegisterState<DeferredRenderingState>(sg::ogl::state::GAME);
 
-        //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: ForwardRenderingState as Game.");
+        //ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: ForwardRenderingState as Game.");
         //GetStateStack().RegisterState<ForwardRenderingState>(sg::ogl::state::GAME);
 
-        SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: TerrainState as Game.");
+        ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: TerrainState as Game.");
         GetStateStack().RegisterState<TerrainState>(sg::ogl::state::GAME);
 
-        //SG_OGL_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: WaterState as Game.");
+        //ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: WaterState as Game.");
         //GetStateStack().RegisterState<WaterState>(sg::ogl::state::GAME);
     }
 
     void Init() override
     {
-        SG_OGL_LOG_DEBUG("[Sandbox::Init()] Init (Push) Game State.");
+        ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::Init()] Init (Push) Game State.");
         GetStateStack().PushState(sg::ogl::state::GAME);
     }
 

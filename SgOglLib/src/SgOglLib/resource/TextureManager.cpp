@@ -11,7 +11,6 @@
 #include <filesystem>
 #include "TextureManager.h"
 #include "OpenGl.h"
-#include "Log.h"
 #include "SgOglException.h"
 #include "Core.h"
 
@@ -21,12 +20,12 @@
 
 sg::ogl::resource::TextureManager::TextureManager()
 {
-    SG_OGL_CORE_LOG_DEBUG("[TextureManager::TextureManager()] Create TextureManager.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[TextureManager::TextureManager()] Create TextureManager.");
 }
 
 sg::ogl::resource::TextureManager::~TextureManager() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[TextureManager::~TextureManager()] Destruct TextureManager.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[TextureManager::~TextureManager()] Destruct TextureManager.");
     CleanUp();
 }
 
@@ -52,7 +51,7 @@ uint32_t sg::ogl::resource::TextureManager::GetTextureIdFromPath(const std::stri
             LoadTextureFromFile(t_path, textureId, t_flipVertically);
         }
 
-        SG_OGL_CORE_LOG_DEBUG("[TextureManager::GetTextureIdFromPath()] A new texture file {} was successfully loaded and used for the new created texture handle. Id: {}", t_path, textureId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[TextureManager::GetTextureIdFromPath()] A new texture file {} was successfully loaded and used for the new created texture handle. Id: {}", t_path, textureId);
         m_textures.emplace(t_path, textureId);
     }
     else
@@ -60,7 +59,7 @@ uint32_t sg::ogl::resource::TextureManager::GetTextureIdFromPath(const std::stri
         textureId = m_textures.at(t_path);
     }
 
-    SG_OGL_CORE_ASSERT(textureId, "[TextureManager::GetTextureIdFromPath()] Invalid texture Id.")
+    SG_OGL_CORE_ASSERT(textureId, "[TextureManager::GetTextureIdFromPath()] Invalid texture Id.");
 
     return textureId;
 }
@@ -75,7 +74,7 @@ uint32_t sg::ogl::resource::TextureManager::Get16BitHeightmapIdFromPath(const st
 
         Load16BitHeightmap(t_path, textureId);
 
-        SG_OGL_CORE_LOG_DEBUG("[TextureManager::Get16BitHeightmapIdFromPath()] A new heightmap file {} was successfully loaded and used for the new created texture handle. Id: {}", t_path, textureId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[TextureManager::Get16BitHeightmapIdFromPath()] A new heightmap file {} was successfully loaded and used for the new created texture handle. Id: {}", t_path, textureId);
         m_textures.emplace(t_path, textureId);
     }
     else
@@ -83,7 +82,7 @@ uint32_t sg::ogl::resource::TextureManager::Get16BitHeightmapIdFromPath(const st
         textureId = m_textures.at(t_path);
     }
 
-    SG_OGL_CORE_ASSERT(textureId, "[TextureManager::Get16BitHeightmapIdFromPath()] Invalid texture Id.")
+    SG_OGL_CORE_ASSERT(textureId, "[TextureManager::Get16BitHeightmapIdFromPath()] Invalid texture Id.");
 
     return textureId;
 }
@@ -95,7 +94,7 @@ uint32_t sg::ogl::resource::TextureManager::GetTextureId(const std::string& t_na
     if (m_textures.count(t_name) == 0)
     {
         textureId = GenerateNewTextureHandle();
-        SG_OGL_CORE_LOG_DEBUG("[TextureManager::GetTextureId()] A new texture handle for an empty texture was created. Id: {}", textureId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[TextureManager::GetTextureId()] A new texture handle for an empty texture was created. Id: {}", textureId);
         m_textures.emplace(t_name, textureId);
     }
     else
@@ -103,7 +102,7 @@ uint32_t sg::ogl::resource::TextureManager::GetTextureId(const std::string& t_na
         textureId = m_textures.at(t_name);
     }
 
-    SG_OGL_CORE_ASSERT(textureId, "[TextureManager::GetTextureId()] Invalid texture Id.")
+    SG_OGL_CORE_ASSERT(textureId, "[TextureManager::GetTextureId()] Invalid texture Id.");
     return textureId;
 }
 
@@ -115,7 +114,7 @@ uint32_t sg::ogl::resource::TextureManager::GetCubemapId(const std::vector<std::
     {
         cubemapId = GenerateNewTextureHandle();
         LoadTextureFromFile(t_pathNames, cubemapId);
-        SG_OGL_CORE_LOG_DEBUG("[TextureManager::GetCubemapId()] Cubemap files successfully loaded and used for the new created texture handle. Id: {}", cubemapId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[TextureManager::GetCubemapId()] Cubemap files successfully loaded and used for the new created texture handle. Id: {}", cubemapId);
         m_cubemaps.emplace(t_pathNames, cubemapId);
     }
     else
@@ -123,7 +122,7 @@ uint32_t sg::ogl::resource::TextureManager::GetCubemapId(const std::vector<std::
         cubemapId = m_cubemaps.at(t_pathNames);
     }
 
-    SG_OGL_CORE_ASSERT(cubemapId, "[TextureManager::GetCubemapId()] Invalid cubemap Id.")
+    SG_OGL_CORE_ASSERT(cubemapId, "[TextureManager::GetCubemapId()] Invalid cubemap Id.");
     return cubemapId;
 }
 
@@ -197,7 +196,7 @@ void sg::ogl::resource::TextureManager::UseClampToEdgeWrapping()
 
 void sg::ogl::resource::TextureManager::Bind(const uint32_t t_textureId, const uint32_t t_target)
 {
-    SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::Bind()] Invalid texture Id.")
+    SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::Bind()] Invalid texture Id.");
     glBindTexture(t_target, t_textureId);
 }
 
@@ -218,7 +217,7 @@ void sg::ogl::resource::TextureManager::Unbind()
 
 void sg::ogl::resource::TextureManager::BindForReading(const uint32_t t_textureId, const uint32_t t_textureUnit, const uint32_t t_target)
 {
-    SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::BindForReading()] Invalid texture Id.")
+    SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::BindForReading()] Invalid texture Id.");
     glActiveTexture(t_textureUnit);
 
     Bind(t_textureId, t_target);
@@ -253,7 +252,7 @@ uint32_t sg::ogl::resource::TextureManager::GenerateNewTextureHandle()
 
 void sg::ogl::resource::TextureManager::LoadTextureFromFile(const std::string& t_path, const uint32_t t_textureId, const bool t_flipVertically)
 {
-    SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::LoadTextureFromFile()] Invalid texture Id.")
+    SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::LoadTextureFromFile()] Invalid texture Id.");
 
     if (t_flipVertically)
     {
@@ -272,7 +271,7 @@ void sg::ogl::resource::TextureManager::LoadTextureFromFile(const std::string& t
         else if (nrChannels == STBI_rgb_alpha)
             format = GL_RGBA;
 
-        SG_OGL_CORE_ASSERT(format, "[TextureManager::LoadTextureFromFile()] Invalid image format.")
+        SG_OGL_CORE_ASSERT(format, "[TextureManager::LoadTextureFromFile()] Invalid image format.");
 
         Meta meta;
         meta.nrChannels = nrChannels;
@@ -298,7 +297,7 @@ void sg::ogl::resource::TextureManager::LoadTextureFromFile(const std::string& t
 
 void sg::ogl::resource::TextureManager::Load16BitHeightmap(const std::string& t_path, const uint32_t t_textureId)
 {
-    SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::Load16BitHeightmap()] Invalid texture Id.")
+    SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::Load16BitHeightmap()] Invalid texture Id.");
 
     int width, height;
     auto* image{ stbi_load_16(t_path.c_str(), &width, &height, nullptr, STBI_rgb_alpha) };
@@ -349,8 +348,8 @@ void sg::ogl::resource::TextureManager::LoadTextureFromFile(const std::vector<st
 {
     const auto count{ t_pathNames.size() };
 
-    SG_OGL_CORE_ASSERT(count == 6, "[TextureManager::LoadTextureFromFile()] Invalid number of images.")
-    SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::LoadTextureFromFile()] Invalid texture Id.")
+    SG_OGL_CORE_ASSERT(count == 6, "[TextureManager::LoadTextureFromFile()] Invalid number of images.");
+    SG_OGL_CORE_ASSERT(t_textureId, "[TextureManager::LoadTextureFromFile()] Invalid texture Id.");
 
     Bind(t_textureId, GL_TEXTURE_CUBE_MAP);
 
@@ -380,17 +379,17 @@ void sg::ogl::resource::TextureManager::LoadTextureFromFile(const std::vector<st
 
 void sg::ogl::resource::TextureManager::CleanUp()
 {
-    SG_OGL_CORE_LOG_DEBUG("[TextureManager::CleanUp()] Start the OpenGL clean up process for textures.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[TextureManager::CleanUp()] Start the OpenGL clean up process for textures.");
 
     for (const auto& texture : m_textures)
     {
         glDeleteTextures(1, &texture.second);
-        SG_OGL_CORE_LOG_DEBUG("[TextureManager::CleanUp()] Texture was deleted. Id: {}", texture.second);
+        Log::SG_OGL_CORE_LOG_DEBUG("[TextureManager::CleanUp()] Texture was deleted. Id: {}", texture.second);
     }
 
     for (const auto& cubemap : m_cubemaps)
     {
         glDeleteTextures(1, &cubemap.second);
-        SG_OGL_CORE_LOG_DEBUG("[TextureManager::CleanUp()] Cubemap was deleted. Id: {}", cubemap.second);
+        Log::SG_OGL_CORE_LOG_DEBUG("[TextureManager::CleanUp()] Cubemap was deleted. Id: {}", cubemap.second);
     }
 }

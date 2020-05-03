@@ -9,7 +9,6 @@
 
 #include "Water.h"
 #include "Application.h"
-#include "Log.h"
 #include "Core.h"
 #include "buffer/WaterFbos.h"
 #include "resource/TextureManager.h"
@@ -33,19 +32,19 @@ sg::ogl::water::Water::Water(
     , m_height{ t_height }
     , m_tileSize{ t_tileSize }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[Water::Water()] Null pointer.")
-    SG_OGL_CORE_LOG_DEBUG("[Water::Water()] Create Water.");
+    SG_OGL_CORE_ASSERT(m_application, "[Water::Water()] Null pointer.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Water::Water()] Create Water.");
 
     m_dudvTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_dudvMapFilePath);
     m_normalTextureId = m_application->GetTextureManager().GetTextureIdFromPath(t_normalMapFilePath);
 
     m_waterFbos = std::make_unique<buffer::WaterFbos>(m_application);
-    SG_OGL_CORE_ASSERT(m_waterFbos, "[Water::Water()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_waterFbos, "[Water::Water()] Null pointer.");
 }
 
 sg::ogl::water::Water::~Water() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[Water::~Water()] Destruct Water.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Water::~Water()] Destruct Water.");
 }
 
 //-------------------------------------------------

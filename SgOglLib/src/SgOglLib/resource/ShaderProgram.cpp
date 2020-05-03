@@ -9,7 +9,6 @@
 
 #include <glm/gtc/type_ptr.hpp>
 #include "ShaderProgram.h"
-#include "Log.h"
 #include "SgOglException.h"
 #include "OpenGl.h"
 #include "ShaderUtil.h"
@@ -25,14 +24,14 @@
 sg::ogl::resource::ShaderProgram::ShaderProgram()
 {
     m_programId = glCreateProgram();
-    SG_OGL_CORE_ASSERT(m_programId, "[ShaderProgram::ShaderProgram()] Error while creating a new Shader Program.")
+    SG_OGL_CORE_ASSERT(m_programId, "[ShaderProgram::ShaderProgram()] Error while creating a new Shader Program.");
 
-    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::ShaderProgram()] A new ShaderProgram was created. Id: {}", m_programId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::ShaderProgram()] A new ShaderProgram was created. Id: {}", m_programId);
 }
 
 sg::ogl::resource::ShaderProgram::~ShaderProgram() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::~ShaderProgram()] Destruct ShaderProgram.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::~ShaderProgram()] Destruct ShaderProgram.");
     CleanUp();
 }
 
@@ -52,37 +51,37 @@ uint32_t sg::ogl::resource::ShaderProgram::GetProgramId() const
 void sg::ogl::resource::ShaderProgram::AddVertexShader(const std::string& t_shaderCode)
 {
     m_vertexShaderId = AddShader(t_shaderCode, GL_VERTEX_SHADER);
-    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddVertexShader()] A new vertex shader was added. Id: {}", m_vertexShaderId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddVertexShader()] A new vertex shader was added. Id: {}", m_vertexShaderId);
 }
 
 void sg::ogl::resource::ShaderProgram::AddTessellationControlShader(const std::string& t_shaderCode)
 {
     m_tessellationControlShaderId = AddShader(t_shaderCode, GL_TESS_CONTROL_SHADER);
-    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddTessellationControlShader()] A new tessellation control shader was added. Id: {}", m_tessellationControlShaderId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddTessellationControlShader()] A new tessellation control shader was added. Id: {}", m_tessellationControlShaderId);
 }
 
 void sg::ogl::resource::ShaderProgram::AddTessellationEvaluationShader(const std::string& t_shaderCode)
 {
     m_tessellationEvaluationShaderId = AddShader(t_shaderCode, GL_TESS_EVALUATION_SHADER);
-    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddTessellationEvaluationShader()] A new tessellation evaluation shader was added. Id: {}", m_tessellationEvaluationShaderId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddTessellationEvaluationShader()] A new tessellation evaluation shader was added. Id: {}", m_tessellationEvaluationShaderId);
 }
 
 void sg::ogl::resource::ShaderProgram::AddGeometryShader(const std::string& t_shaderCode)
 {
     m_geometryShaderId = AddShader(t_shaderCode, GL_GEOMETRY_SHADER);
-    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddGeometryShader()] A new geometry shader was added. Id: {}", m_geometryShaderId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddGeometryShader()] A new geometry shader was added. Id: {}", m_geometryShaderId);
 }
 
 void sg::ogl::resource::ShaderProgram::AddFragmentShader(const std::string& t_shaderCode)
 {
     m_fragmentShaderId = AddShader(t_shaderCode, GL_FRAGMENT_SHADER);
-    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddFragmentShader()] A new fragment shader was added. Id: {}", m_fragmentShaderId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddFragmentShader()] A new fragment shader was added. Id: {}", m_fragmentShaderId);
 }
 
 void sg::ogl::resource::ShaderProgram::AddComputeShader(const std::string& t_shaderCode)
 {
     m_computeShaderId = AddShader(t_shaderCode, GL_COMPUTE_SHADER);
-    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddComputeShader()] A new compute shader was added. Id: {}", m_computeShaderId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddComputeShader()] A new compute shader was added. Id: {}", m_computeShaderId);
 }
 
 //-------------------------------------------------
@@ -91,7 +90,7 @@ void sg::ogl::resource::ShaderProgram::AddComputeShader(const std::string& t_sha
 
 void sg::ogl::resource::ShaderProgram::LinkAndValidateProgram() const
 {
-    SG_OGL_CORE_ASSERT(m_programId, "[ShaderProgram::LinkAndValidateProgram()] Invalid Shader Program Id.")
+    SG_OGL_CORE_ASSERT(m_programId, "[ShaderProgram::LinkAndValidateProgram()] Invalid Shader Program Id.");
 
     // link our program
     glLinkProgram(m_programId);
@@ -238,7 +237,7 @@ void sg::ogl::resource::ShaderProgram::AddAllFoundUniforms()
         }
     }
 
-    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddAllFoundUniforms()] {} found uniforms have been added to shader program. Id: {}", m_foundUniforms.size(), m_programId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::AddAllFoundUniforms()] {} found uniforms have been added to shader program. Id: {}", m_foundUniforms.size(), m_programId);
 }
 
 //-------------------------------------------------
@@ -247,7 +246,7 @@ void sg::ogl::resource::ShaderProgram::AddAllFoundUniforms()
 
 void sg::ogl::resource::ShaderProgram::Bind() const
 {
-    SG_OGL_CORE_ASSERT(m_programId, "[ShaderProgram::Bind()] Invalid ShaderProgram Id.")
+    SG_OGL_CORE_ASSERT(m_programId, "[ShaderProgram::Bind()] Invalid ShaderProgram Id.");
     glUseProgram(m_programId);
 }
 
@@ -531,49 +530,49 @@ uint32_t sg::ogl::resource::ShaderProgram::AddShader(const std::string& t_shader
 
 void sg::ogl::resource::ShaderProgram::CleanUp() const
 {
-    SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Start the OpenGL clean up process for ShaderProgram. Id: {}", m_programId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Start the OpenGL clean up process for ShaderProgram. Id: {}", m_programId);
 
     Unbind();
 
     if (m_vertexShaderId)
     {
         glDeleteShader(m_vertexShaderId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Vertex shader was deleted. Id: {}", m_vertexShaderId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Vertex shader was deleted. Id: {}", m_vertexShaderId);
     }
 
     if (m_tessellationControlShaderId)
     {
         glDeleteShader(m_tessellationControlShaderId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Tessellation control shader was deleted. Id: {}", m_tessellationControlShaderId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Tessellation control shader was deleted. Id: {}", m_tessellationControlShaderId);
     }
 
     if (m_tessellationEvaluationShaderId)
     {
         glDeleteShader(m_tessellationEvaluationShaderId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Tessellation evaluation shader was deleted. Id: {}", m_tessellationEvaluationShaderId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Tessellation evaluation shader was deleted. Id: {}", m_tessellationEvaluationShaderId);
     }
 
     if (m_geometryShaderId)
     {
         glDeleteShader(m_geometryShaderId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Geometry shader was deleted. Id: {}", m_geometryShaderId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Geometry shader was deleted. Id: {}", m_geometryShaderId);
     }
 
     if (m_fragmentShaderId)
     {
         glDeleteShader(m_fragmentShaderId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Fragment shader was deleted. Id: {}", m_fragmentShaderId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Fragment shader was deleted. Id: {}", m_fragmentShaderId);
     }
 
     if (m_computeShaderId)
     {
         glDeleteShader(m_computeShaderId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Compute shader was deleted. Id: {}", m_computeShaderId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Compute shader was deleted. Id: {}", m_computeShaderId);
     }
 
     if (m_programId)
     {
         glDeleteProgram(m_programId);
-        SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Shader program was deleted. Id: {}", m_programId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[ShaderProgram::CleanUp()] Shader program was deleted. Id: {}", m_programId);
     }
 }

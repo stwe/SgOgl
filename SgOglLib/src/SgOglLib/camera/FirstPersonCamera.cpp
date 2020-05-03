@@ -13,7 +13,6 @@
 #include "Window.h"
 #include "OpenGl.h"
 #include "FirstPersonCamera.h"
-#include "Log.h"
 #include "Core.h"
 #include "input/MouseInput.h"
 
@@ -24,20 +23,20 @@
 sg::ogl::camera::FirstPersonCamera::FirstPersonCamera(Application* t_application)
     : Camera(t_application)
 {
-    SG_OGL_CORE_ASSERT(m_application, "[FirstPersonCamera::FirstPersonCamera()] Null pointer.")
-    SG_OGL_CORE_LOG_DEBUG("[FirstPersonCamera::FirstPersonCamera()] Create FirstPersonCamera.");
+    SG_OGL_CORE_ASSERT(m_application, "[FirstPersonCamera::FirstPersonCamera()] Null pointer.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[FirstPersonCamera::FirstPersonCamera()] Create FirstPersonCamera.");
 }
 
 sg::ogl::camera::FirstPersonCamera::FirstPersonCamera(Application* t_application, const glm::vec3& t_position, float t_yaw, float t_pitch)
     : Camera(t_application, t_position, t_yaw, t_pitch)
 {
-    SG_OGL_CORE_ASSERT(m_application, "[FirstPersonCamera::FirstPersonCamera()] Null pointer.")
-    SG_OGL_CORE_LOG_DEBUG("[FirstPersonCamera::FirstPersonCamera()] Create FirstPersonCamera.");
+    SG_OGL_CORE_ASSERT(m_application, "[FirstPersonCamera::FirstPersonCamera()] Null pointer.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[FirstPersonCamera::FirstPersonCamera()] Create FirstPersonCamera.");
 }
 
 sg::ogl::camera::FirstPersonCamera::~FirstPersonCamera() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[FirstPersonCamera::FirstPersonCamera()] Destruct FirstPersonCamera.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[FirstPersonCamera::FirstPersonCamera()] Destruct FirstPersonCamera.");
 }
 
 //-------------------------------------------------
@@ -99,8 +98,8 @@ void sg::ogl::camera::FirstPersonCamera::Update(const double t_dt)
 
     if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_I))
     {
-        SG_OGL_CORE_LOG_INFO("[FirstPersonCamera::Update()] Camera x: {}  y: {}  z: {}", GetPosition().x, GetPosition().y, GetPosition().z);
-        SG_OGL_CORE_LOG_INFO("[FirstPersonCamera::Update()] Camera yaw: {}  pitch: {}", GetYaw(), GetPitch());
+        Log::SG_OGL_CORE_LOG_INFO("[FirstPersonCamera::Update()] Camera x: {}  y: {}  z: {}", GetPosition().x, GetPosition().y, GetPosition().z);
+        Log::SG_OGL_CORE_LOG_INFO("[FirstPersonCamera::Update()] Camera yaw: {}  pitch: {}", GetYaw(), GetPitch());
     }
 
     // calculate the new Front vector

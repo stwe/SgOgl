@@ -12,7 +12,6 @@
 #include "Model.h"
 #include "SkeletalModel.h"
 #include "Mesh.h"
-#include "Log.h"
 #include "Application.h"
 #include "SgOglException.h"
 #include "Core.h"
@@ -26,8 +25,8 @@
 sg::ogl::resource::ModelManager::ModelManager(Application* t_application)
     : m_application{ t_application }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[ModelManager::ModelManager()] Null pointer.")
-    SG_OGL_CORE_LOG_DEBUG("[ModelManager::ModelManager()] Create ModelManager.");
+    SG_OGL_CORE_ASSERT(m_application, "[ModelManager::ModelManager()] Null pointer.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::ModelManager()] Create ModelManager.");
 
     AddMaterials();
     AddStaticMeshes();
@@ -35,7 +34,7 @@ sg::ogl::resource::ModelManager::ModelManager(Application* t_application)
 
 sg::ogl::resource::ModelManager::~ModelManager() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[ModelManager::~ModelManager()] Destruct ModelManager.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::~ModelManager()] Destruct ModelManager.");
 }
 
 //-------------------------------------------------
@@ -68,7 +67,7 @@ sg::ogl::resource::ModelManager::ModelSharedPtr sg::ogl::resource::ModelManager:
     if (m_models.count(t_fullFilePath) == 0)
     {
         auto modelSharedPtr{ std::make_shared<Model>(t_fullFilePath, m_application, t_pFlags) };
-        SG_OGL_CORE_ASSERT(modelSharedPtr, "[ModelManager::GetModelByPath()] Null pointer.")
+        SG_OGL_CORE_ASSERT(modelSharedPtr, "[ModelManager::GetModelByPath()] Null pointer.");
 
         m_models.emplace(t_fullFilePath, modelSharedPtr);
     }
@@ -82,7 +81,7 @@ sg::ogl::resource::ModelManager::SkeletalModelSharedPtr sg::ogl::resource::Model
     if (m_skeletalModels.count(t_fullFilePath) == 0)
     {
         auto skeletalModelSharedPtr{ std::make_shared<SkeletalModel>(t_fullFilePath, m_application, t_pFlags) };
-        SG_OGL_CORE_ASSERT(skeletalModelSharedPtr, "[ModelManager::GetSkeletalModelByPath()] Null pointer.")
+        SG_OGL_CORE_ASSERT(skeletalModelSharedPtr, "[ModelManager::GetSkeletalModelByPath()] Null pointer.");
 
         m_skeletalModels.emplace(t_fullFilePath, skeletalModelSharedPtr);
     }
@@ -134,7 +133,7 @@ void sg::ogl::resource::ModelManager::AddMaterials()
 {
     // add some example materials
 
-    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add emerald material.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add emerald material.");
 
     Material emerald;
     emerald.newmtl = "emerald";
@@ -144,7 +143,7 @@ void sg::ogl::resource::ModelManager::AddMaterials()
     emerald.ns = 0.6f;
     m_materials.emplace(emerald.newmtl, std::make_shared<Material>(emerald));
 
-    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add chrome material.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add chrome material.");
 
     Material chrome;
     chrome.newmtl = "chrome";
@@ -171,7 +170,7 @@ void sg::ogl::resource::ModelManager::AddStaticMeshes()
 
 void sg::ogl::resource::ModelManager::AddSkyboxStaticMesh()
 {
-    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddSkyboxStaticMesh()] Add Skybox mesh.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddSkyboxStaticMesh()] Add Skybox mesh.");
 
     // create Mesh
     auto meshSharedPtr{ std::make_shared<Mesh>() };
@@ -193,7 +192,7 @@ void sg::ogl::resource::ModelManager::AddSkyboxStaticMesh()
 
 void sg::ogl::resource::ModelManager::AddGuiStaticMesh()
 {
-    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddGuiStaticMesh()] Add Gui mesh.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddGuiStaticMesh()] Add Gui mesh.");
 
     // create Mesh
     auto meshSharedPtr{ std::make_shared<Mesh>() };
@@ -220,7 +219,7 @@ void sg::ogl::resource::ModelManager::AddGuiStaticMesh()
 
 void sg::ogl::resource::ModelManager::AddWaterStaticMesh()
 {
-    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddWaterStaticMesh()] Add Water mesh.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddWaterStaticMesh()] Add Water mesh.");
 
     // create Mesh
     auto meshSharedPtr{ std::make_shared<Mesh>() };
@@ -249,7 +248,7 @@ void sg::ogl::resource::ModelManager::AddWaterStaticMesh()
 
 void sg::ogl::resource::ModelManager::AddQuadStaticMesh()
 {
-    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddQuadStaticMesh()] Add Quad mesh.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddQuadStaticMesh()] Add Quad mesh.");
 
     // create Mesh
     auto meshSharedPtr{ std::make_shared<Mesh>() };
@@ -279,7 +278,7 @@ void sg::ogl::resource::ModelManager::AddQuadStaticMesh()
 
 void sg::ogl::resource::ModelManager::AddSunQuadStaticMesh()
 {
-    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddSunQuadStaticMesh()] Add Sun quad mesh.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddSunQuadStaticMesh()] Add Sun quad mesh.");
 
     // create Mesh
     auto meshSharedPtr{ std::make_shared<Mesh>() };
@@ -306,7 +305,7 @@ void sg::ogl::resource::ModelManager::AddSunQuadStaticMesh()
 
 void sg::ogl::resource::ModelManager::AddTerrainPatchStaticMesh()
 {
-    SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddTerrainPatchStaticMesh()] Add Terrain Patch mesh.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddTerrainPatchStaticMesh()] Add Terrain Patch mesh.");
 
     // create Mesh
     auto meshSharedPtr{ std::make_shared<Mesh>() };

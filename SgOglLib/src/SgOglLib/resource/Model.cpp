@@ -11,7 +11,6 @@
 #include "Model.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "Log.h"
 #include "TextureManager.h"
 #include "SgOglException.h"
 #include "Application.h"
@@ -27,8 +26,8 @@ sg::ogl::resource::Model::Model(std::string t_fullFilePath, Application* t_appli
     : m_application{ t_application }
     , m_fullFilePath{ std::move(t_fullFilePath) }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[Model::Model()] Null pointer.")
-    SG_OGL_CORE_LOG_DEBUG("[Model::Model()] Create Model.");
+    SG_OGL_CORE_ASSERT(m_application, "[Model::Model()] Null pointer.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Model::Model()] Create Model.");
 
     m_directory = m_fullFilePath.substr(0, m_fullFilePath.find_last_of('/'));
 
@@ -37,7 +36,7 @@ sg::ogl::resource::Model::Model(std::string t_fullFilePath, Application* t_appli
 
 sg::ogl::resource::Model::~Model() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[Model::~Model()] Destruct Model.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Model::~Model()] Destruct Model.");
 }
 
 //-------------------------------------------------
@@ -57,7 +56,7 @@ void sg::ogl::resource::Model::LoadModel(const unsigned int t_pFlags)
 {
     Assimp::Importer importer;
 
-    SG_OGL_LOG_DEBUG("[Model::LoadModel()] Start loading model file at: {}", m_fullFilePath);
+    Log::SG_OGL_CORE_LOG_DEBUG("[Model::LoadModel()] Start loading model file at: {}", m_fullFilePath);
 
     const auto* scene{ importer.ReadFile(m_fullFilePath, t_pFlags) };
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -67,7 +66,7 @@ void sg::ogl::resource::Model::LoadModel(const unsigned int t_pFlags)
 
     ProcessNode(scene->mRootNode, scene);
 
-    SG_OGL_LOG_DEBUG("[Model::LoadModel()] Model file at {} successfully loaded.", m_fullFilePath);
+    Log::SG_OGL_CORE_LOG_DEBUG("[Model::LoadModel()] Model file at {} successfully loaded.", m_fullFilePath);
 }
 
 void sg::ogl::resource::Model::ProcessNode(aiNode* t_node, const aiScene* t_scene)
@@ -125,7 +124,7 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
             if (!missingUv)
             {
                 missingUv = true;
-                SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing texture coords. Set default values (0, 0).");
+                Log::SG_OGL_CORE_LOG_WARN("[Model::ProcessMesh()] Missing texture coords. Set default values (0, 0).");
             }
         }
 
@@ -144,7 +143,7 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
             if (!missingTangent)
             {
                 missingTangent = true;
-                SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing tangent coords. Set default values (0, 0, 0).");
+                Log::SG_OGL_CORE_LOG_WARN("[Model::ProcessMesh()] Missing tangent coords. Set default values (0, 0, 0).");
             }
         }
 
@@ -163,7 +162,7 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
             if (!missingBiTangent)
             {
                 missingBiTangent = true;
-                SG_OGL_LOG_WARN("[Model::ProcessMesh()] Missing bitangent coords. Set default values (0, 0, 0).");
+                Log::SG_OGL_CORE_LOG_WARN("[Model::ProcessMesh()] Missing bitangent coords. Set default values (0, 0, 0).");
             }
         }
     }
@@ -185,7 +184,7 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
 
     // Create a unique_ptr Material instance.
     auto materialUniquePtr{ std::make_unique<Material>() };
-    SG_OGL_CORE_ASSERT(materialUniquePtr, "[Model::ProcessMesh()] Null pointer.")
+    SG_OGL_CORE_ASSERT(materialUniquePtr, "[Model::ProcessMesh()] Null pointer.");
 
     // Set material name.
     aiString name;
@@ -207,7 +206,7 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
     materialUniquePtr->ns = shininess;
 
     // Load textures.
-    SG_OGL_LOG_DEBUG("[Model::ProcessMesh()] Loading textures for the model: {}", m_fullFilePath);
+    Log::SG_OGL_CORE_LOG_DEBUG("[Model::ProcessMesh()] Loading textures for the model: {}", m_fullFilePath);
 
     auto ambientMaps{ LoadMaterialTextures(aiMeshMaterial, aiTextureType_AMBIENT) };
     auto diffuseMaps{ LoadMaterialTextures(aiMeshMaterial, aiTextureType_DIFFUSE) };
@@ -252,7 +251,7 @@ sg::ogl::resource::Model::MeshUniquePtr sg::ogl::resource::Model::ProcessMesh(ai
 
     // Create a unique_ptr Mesh instance.
     auto meshUniquePtr{ std::make_unique<Mesh>() };
-    SG_OGL_CORE_ASSERT(meshUniquePtr, "[Model::ProcessMesh()] Null pointer.")
+    SG_OGL_CORE_ASSERT(meshUniquePtr, "[Model::ProcessMesh()] Null pointer.");
 
     // Add Vbo.
     meshUniquePtr->GetVao().AddVertexDataVbo(vertices.data(), t_mesh->mNumVertices, bufferLayout);

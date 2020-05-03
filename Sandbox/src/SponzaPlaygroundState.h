@@ -10,6 +10,7 @@
 #pragma once
 
 #include "SgOgl.h"
+#include "ClientLog.h"
 
 class SponzaPlaygroundState : public sg::ogl::state::State
 {
@@ -48,7 +49,7 @@ public:
 
     ~SponzaPlaygroundState() noexcept override
     {
-        SG_OGL_LOG_DEBUG("[SponzaPlaygroundState::~SponzaPlaygroundState()] Destruct SponzaPlaygroundState.");
+        ClientLog::SG_SANDBOX_LOG_DEBUG("[SponzaPlaygroundState::~SponzaPlaygroundState()] Destruct SponzaPlaygroundState.");
 
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();

@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: OpenGl.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include <iostream>
 #include "OpenGl.h"
 #include "Log.h"
@@ -107,7 +116,7 @@ void sg::ogl::OpenGl::EnableDepthAndStencilTesting()
     glEnable(GL_STENCIL_TEST);
     glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
 
-    SG_OGL_CORE_LOG_WARN("[OpenGl::EnableDepthAndStencilTesting()] Depth and Stencil testing enabled.");
+    Log::SG_OGL_CORE_LOG_WARN("[OpenGl::EnableDepthAndStencilTesting()] Depth and Stencil testing enabled.");
 }
 
 void sg::ogl::OpenGl::EnableWritingIntoDepthBuffer()

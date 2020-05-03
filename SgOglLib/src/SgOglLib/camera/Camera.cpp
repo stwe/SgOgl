@@ -11,7 +11,6 @@
 #include "Application.h"
 #include "Camera.h"
 #include "Core.h"
-#include "Log.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -20,7 +19,7 @@
 sg::ogl::camera::Camera::Camera(Application* t_application)
     : m_application{ t_application }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[Camera::Camera()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_application, "[Camera::Camera()] Null pointer.");
 }
 
 sg::ogl::camera::Camera::Camera(Application* t_application, const glm::vec3& t_position, float t_yaw, float t_pitch)
@@ -29,7 +28,7 @@ sg::ogl::camera::Camera::Camera(Application* t_application, const glm::vec3& t_p
     , m_yaw{ t_yaw }
     , m_pitch{ t_pitch }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[Camera::Camera()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_application, "[Camera::Camera()] Null pointer.");
 }
 
 //-------------------------------------------------

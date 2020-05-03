@@ -10,7 +10,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "MousePicker.h"
 #include "Core.h"
-#include "Log.h"
 #include "Application.h"
 #include "Window.h"
 #include "camera/Camera.h"
@@ -25,14 +24,14 @@ sg::ogl::input::MousePicker::MousePicker(scene::Scene* t_scene, terrain::Terrain
     : m_scene{ t_scene }
     , m_terrain{ t_terrain }
 {
-    SG_OGL_CORE_ASSERT(m_scene, "[MousePicker::MousePicker()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_scene, "[MousePicker::MousePicker()] Null pointer.");
 
-    SG_OGL_CORE_LOG_DEBUG("[MousePicker::MousePicker()] Create MousePicker.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[MousePicker::MousePicker()] Create MousePicker.");
 }
 
 sg::ogl::input::MousePicker::~MousePicker()
 {
-    SG_OGL_CORE_LOG_DEBUG("[MousePicker::~MousePicker()] Destruct MousePicker.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[MousePicker::~MousePicker()] Destruct MousePicker.");
 }
 
 //-------------------------------------------------

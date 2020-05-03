@@ -8,6 +8,7 @@
 // 2020 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include "WaterState.h"
+#include "ClientLog.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -21,7 +22,7 @@ WaterState::WaterState(sg::ogl::state::StateStack* t_stateStack)
 
 WaterState::~WaterState() noexcept
 {
-    SG_OGL_LOG_DEBUG("[WaterState::~WaterState()] Destruct WaterState.");
+    ClientLog::SG_SANDBOX_LOG_DEBUG("[WaterState::~WaterState()] Destruct WaterState.");
     CleanUpImGui();
 }
 
@@ -35,7 +36,7 @@ bool WaterState::Input()
 
     if (sg::ogl::input::MouseInput::IsLeftButtonPressed())
     {
-        SG_OGL_CORE_LOG_INFO("[WaterState::Input()] Left mouse button pressed.");
+        ClientLog::SG_SANDBOX_LOG_DEBUG("[WaterState::Input()] Left mouse button pressed.");
         // left mouse button is pressed only once
         sg::ogl::input::MouseInput::ClearMouseStates();
     }

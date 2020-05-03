@@ -11,7 +11,6 @@
 
 #include <memory>
 #include <vector>
-#include "Log.h"
 #include "OpenGl.h"
 #include "buffer/Vao.h"
 

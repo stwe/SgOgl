@@ -9,6 +9,7 @@
 
 #include <random>
 #include "TerrainState.h"
+#include "ClientLog.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -22,7 +23,7 @@ TerrainState::TerrainState(sg::ogl::state::StateStack* t_stateStack)
 
 TerrainState::~TerrainState() noexcept
 {
-    SG_OGL_LOG_DEBUG("[TerrainState::~TerrainState()] Destruct TerrainState.");
+    ClientLog::SG_SANDBOX_LOG_DEBUG("[TerrainState::~TerrainState()] Destruct TerrainState.");
     CleanUpImGui();
 }
 

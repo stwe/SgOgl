@@ -13,7 +13,6 @@
 #include <memory>
 #include <map>
 #include <typeindex>
-#include "Log.h"
 #include "ShaderUtil.h"
 #include "SgOglException.h"
 #include "ShaderProgram.h"
@@ -55,7 +54,7 @@ namespace sg::ogl::resource
             {
                 // create ShaderProgram
                 auto shaderProgram{ std::make_unique<T>() };
-                SG_OGL_CORE_ASSERT(shaderProgram, "[ShaderManager::AddShaderProgram()] Null pointer.")
+                SG_OGL_CORE_ASSERT(shaderProgram, "[ShaderManager::AddShaderProgram()] Null pointer.");
 
                 // get folder name
                 auto folderName{ shaderProgram->GetFolderName() };
@@ -74,7 +73,7 @@ namespace sg::ogl::resource
                 // get options
                 const auto options{ shaderProgram->GetOptions() };
 
-                SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] Start adding shader to program: {}.", folderName);
+                Log::SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] Start adding shader to program: {}.", folderName);
 
                 // add vertex shader
                 if ((options & ShaderProgram::Flags::VERTEX_SHADER) == ShaderProgram::Flags::VERTEX_SHADER)
@@ -111,7 +110,7 @@ namespace sg::ogl::resource
 
                 m_shaderPrograms.emplace(typeid(T), std::move(shaderProgram));
 
-                SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] All shader was added successfully to program {}.", folderName);
+                Log::SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddShaderProgram()] All shader was added successfully to program {}.", folderName);
             }
         }
 
@@ -122,7 +121,7 @@ namespace sg::ogl::resource
             if (m_computeShaderPrograms.count(typeid(T)) == 0)
             {
                 auto shaderProgram{ std::make_unique<T>() };
-                SG_OGL_CORE_ASSERT(shaderProgram, "[ShaderManager::AddComputeShaderProgram()] Null pointer.")
+                SG_OGL_CORE_ASSERT(shaderProgram, "[ShaderManager::AddComputeShaderProgram()] Null pointer.");
 
                 // get file name
                 auto fileName{ shaderProgram->GetFolderName() + ".comp" };
@@ -138,7 +137,7 @@ namespace sg::ogl::resource
                     shader = "res/shader/compute/" + fileName;
                 }
 
-                SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] Start adding compute shader to program: {}.", fileName);
+                Log::SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] Start adding compute shader to program: {}.", fileName);
 
                 shaderProgram->AddComputeShader(ShaderUtil::ReadShaderFile(shader));
                 shaderProgram->LinkAndValidateProgram();
@@ -146,7 +145,7 @@ namespace sg::ogl::resource
 ;
                 m_computeShaderPrograms.emplace(typeid(T), std::move(shaderProgram));
 
-                SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] A compute shader was added successfully to program {}.", fileName);
+                Log::SG_OGL_CORE_LOG_DEBUG("[ShaderManager::AddComputeShaderProgram()] A compute shader was added successfully to program {}.", fileName);
             }
         }
 

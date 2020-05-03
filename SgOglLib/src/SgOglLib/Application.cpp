@@ -10,7 +10,6 @@
 #include <sstream>
 #include "Application.h"
 #include "Core.h"
-#include "Log.h"
 #include "Window.h"
 #include "OpenGl.h"
 #include "state/StateStack.h"
@@ -28,43 +27,43 @@
 
 void sg::ogl::DeleteWindow::operator()(Window* t_window) const
 {
-    SG_OGL_CORE_LOG_DEBUG("[DeleteWindow::operator()] Delete Window.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[DeleteWindow::operator()] Delete Window.");
     delete t_window;
 }
 
 void sg::ogl::DeleteShaderManager::operator()(resource::ShaderManager* t_shaderManager) const
 {
-    SG_OGL_CORE_LOG_DEBUG("[DeleteShaderManager::operator()] Delete ShaderManager.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[DeleteShaderManager::operator()] Delete ShaderManager.");
     delete t_shaderManager;
 }
 
 void sg::ogl::DeleteTextureManager::operator()(resource::TextureManager* t_textureManager) const
 {
-    SG_OGL_CORE_LOG_DEBUG("[DeleteTextureManager::operator()] Delete TextureManager.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[DeleteTextureManager::operator()] Delete TextureManager.");
     delete t_textureManager;
 }
 
 void sg::ogl::DeleteModelManager::operator()(resource::ModelManager* t_modelManager) const
 {
-    SG_OGL_CORE_LOG_DEBUG("[DeleteModelManager::operator()] Delete ModelManager.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[DeleteModelManager::operator()] Delete ModelManager.");
     delete t_modelManager;
 }
 
 void sg::ogl::DeleteStateStack::operator()(state::StateStack* t_stateStack) const
 {
-    SG_OGL_CORE_LOG_DEBUG("[DeleteStateStack::operator()] Delete StateStack.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[DeleteStateStack::operator()] Delete StateStack.");
     delete t_stateStack;
 }
 
 void sg::ogl::DeleteCircularEventQueue::operator()(event::CircularEventQueue* t_circularEventQueue) const
 {
-    SG_OGL_CORE_LOG_DEBUG("[DeleteCircularEventQueue::operator()] Delete CircularEventQueue.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[DeleteCircularEventQueue::operator()] Delete CircularEventQueue.");
     delete t_circularEventQueue;
 }
 
 void sg::ogl::DeleteMouseInput::operator()(input::MouseInput* t_mouseInput) const
 {
-    SG_OGL_CORE_LOG_DEBUG("[DeleteCircularEventQueue::operator()] Delete MouseInput.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[DeleteCircularEventQueue::operator()] Delete MouseInput.");
     delete t_mouseInput;
 }
 
@@ -74,14 +73,14 @@ void sg::ogl::DeleteMouseInput::operator()(input::MouseInput* t_mouseInput) cons
 
 sg::ogl::Application::Application(const std::string& t_configFileName)
 {
-    SG_OGL_CORE_LOG_DEBUG("[Application::Application()] Create Application.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Application::Application()] Create Application.");
 
     Config::LoadOptions(t_configFileName, m_libResFolder, m_windowOptions, m_projectionOptions);
 }
 
 sg::ogl::Application::~Application() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[Application::~Application()] Destruct Application.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Application::~Application()] Destruct Application.");
 }
 
 //-------------------------------------------------
@@ -159,7 +158,7 @@ sg::ogl::ecs::factory::EntityFactory& sg::ogl::Application::GetEntityFactory() n
 
 void sg::ogl::Application::Run()
 {
-    SG_OGL_CORE_LOG_DEBUG("[Application::Run()] Application is started.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Application::Run()] Application is started.");
 
     CoreInit();
     ClientInit();
@@ -185,29 +184,29 @@ void sg::ogl::Application::Init()
 void sg::ogl::Application::CoreInit()
 {
     m_window.reset(new Window{ this });
-    SG_OGL_CORE_ASSERT(m_window, "[Application::CoreInit()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_window, "[Application::CoreInit()] Null pointer.");
     m_window->Init();
 
     m_shaderManager.reset(new resource::ShaderManager(m_libResFolder));
-    SG_OGL_CORE_ASSERT(m_shaderManager, "[Application::CoreInit()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_shaderManager, "[Application::CoreInit()] Null pointer.");
 
     m_textureManager.reset(new resource::TextureManager);
-    SG_OGL_CORE_ASSERT(m_textureManager, "[Application::CoreInit()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_textureManager, "[Application::CoreInit()] Null pointer.");
 
     m_modelManager.reset(new resource::ModelManager(this));
-    SG_OGL_CORE_ASSERT(m_modelManager, "[Application::CoreInit()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_modelManager, "[Application::CoreInit()] Null pointer.");
 
     m_stateStack.reset(new state::StateStack{ this });
-    SG_OGL_CORE_ASSERT(m_stateStack, "[Application::CoreInit()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_stateStack, "[Application::CoreInit()] Null pointer.");
 
     m_circularEventQueue.reset(new event::CircularEventQueue {m_window->GetWindowHandle(), 1024});
-    SG_OGL_CORE_ASSERT(m_circularEventQueue, "[Application::CoreInit()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_circularEventQueue, "[Application::CoreInit()] Null pointer.");
 
     m_mouseInput.reset(new input::MouseInput);
-    SG_OGL_CORE_ASSERT(m_mouseInput, "[Application::CoreInit()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_mouseInput, "[Application::CoreInit()] Null pointer.");
 
     m_entityFactory = std::make_unique<ecs::factory::EntityFactory>(this);
-    SG_OGL_CORE_ASSERT(m_entityFactory, "[Application::CoreInit()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_entityFactory, "[Application::CoreInit()] Null pointer.");
 
     // replace all callbacks
     m_circularEventQueue->SetCallbacks();

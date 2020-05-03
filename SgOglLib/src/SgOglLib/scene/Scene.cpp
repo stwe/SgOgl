@@ -9,7 +9,6 @@
 
 #include "Scene.h"
 #include "Core.h"
-#include "Log.h"
 #include "light/DirectionalLight.h"
 #include "light/PointLight.h"
 #include "camera/Camera.h"
@@ -21,14 +20,14 @@
 sg::ogl::scene::Scene::Scene(Application* t_application)
     : m_application{ t_application }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[Scene::Scene()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_application, "[Scene::Scene()] Null pointer.");
 
-    SG_OGL_CORE_LOG_DEBUG("[Scene::Scene()] Create Scene.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Scene::Scene()] Create Scene.");
 }
 
 sg::ogl::scene::Scene::~Scene() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[Scene::~Scene()] Destruct Scene.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Scene::~Scene()] Destruct Scene.");
 }
 
 //-------------------------------------------------
@@ -42,25 +41,25 @@ sg::ogl::Application* sg::ogl::scene::Scene::GetApplicationContext() const
 
 sg::ogl::camera::Camera& sg::ogl::scene::Scene::GetCurrentCamera() noexcept
 {
-    SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::GetCurrentCamera()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::GetCurrentCamera()] Null pointer.");
     return *m_currentCamera;
 }
 
 const sg::ogl::camera::Camera& sg::ogl::scene::Scene::GetCurrentCamera() const noexcept
 {
-    SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::GetCurrentCamera()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_currentCamera, "[Scene::GetCurrentCamera()] Null pointer.");
     return *m_currentCamera;
 }
 
 sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetCurrentDirectionalLight() noexcept
 {
-    SG_OGL_CORE_ASSERT(m_currentDirectionalLight, "[Scene::GetCurrentDirectionalLight()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_currentDirectionalLight, "[Scene::GetCurrentDirectionalLight()] Null pointer.");
     return *m_currentDirectionalLight;
 }
 
 const sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetCurrentDirectionalLight() const noexcept
 {
-    SG_OGL_CORE_ASSERT(m_currentDirectionalLight, "[Scene::GetCurrentDirectionalLight()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_currentDirectionalLight, "[Scene::GetCurrentDirectionalLight()] Null pointer.");
     return *m_currentDirectionalLight;
 }
 
@@ -112,19 +111,19 @@ void sg::ogl::scene::Scene::SetCurrentDirectionalLight(const DirectionalLightSha
 
 void sg::ogl::scene::Scene::AddScenePointLight(const PointLightSharedPtr& t_pointLight)
 {
-    SG_OGL_CORE_ASSERT(t_pointLight, "[Scene::AddScenePointLight()] Null pointer.")
+    SG_OGL_CORE_ASSERT(t_pointLight, "[Scene::AddScenePointLight()] Null pointer.");
     m_scenePointLights.push_back(t_pointLight);
 }
 
 void sg::ogl::scene::Scene::AddEntityPointLight(const std::string& t_name, const PointLightSharedPtr& t_pointLight)
 {
-    SG_OGL_CORE_ASSERT(!t_name.empty(), "[Scene::AddEntityPointLight()] Invalid name.")
-    SG_OGL_CORE_ASSERT(t_pointLight, "[Scene::AddEntityPointLight()] Null pointer.")
+    SG_OGL_CORE_ASSERT(!t_name.empty(), "[Scene::AddEntityPointLight()] Invalid name.");
+    SG_OGL_CORE_ASSERT(t_pointLight, "[Scene::AddEntityPointLight()] Null pointer.");
 
     if (m_entityPointLights.count(t_name) == 0)
     {
         m_entityPointLights.emplace(t_name, t_pointLight);
-        SG_OGL_CORE_LOG_DEBUG("[Scene::AddEntityPointLight()] Entity Point Light {} added to the scene.", t_name);
+        Log::SG_OGL_CORE_LOG_DEBUG("[Scene::AddEntityPointLight()] Entity Point Light {} added to the scene.", t_name);
     }
 }
 

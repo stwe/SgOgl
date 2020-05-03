@@ -11,11 +11,10 @@
 #include "Config.h"
 #include "Core.h"
 #include "SgOglException.h"
-#include "Log.h"
 
 bool sg::ogl::Config::ToBool(const std::string& t_value)
 {
-    SG_OGL_CORE_ASSERT(t_value == "0" || t_value == "1", "[Config::ToBool()] Invalid value.")
+    SG_OGL_CORE_ASSERT(t_value == "0" || t_value == "1", "[Config::ToBool()] Invalid value.");
     return t_value == "1";
 }
 
@@ -26,7 +25,7 @@ void sg::ogl::Config::LoadOptions(
     ProjectionOptions& t_projectionOptions
 )
 {
-    SG_OGL_CORE_LOG_DEBUG("[Config::LoadOptions()] Loading options from {}.", t_fileName);
+    Log::SG_OGL_CORE_LOG_DEBUG("[Config::LoadOptions()] Loading options from {}.", t_fileName);
 
     tinyxml2::XMLDocument document;
 
@@ -88,7 +87,7 @@ void sg::ogl::Config::LoadOptions(
 
 void sg::ogl::Config::LoadOptions(const std::string& t_fileName, TerrainOptions& t_terrainOptions)
 {
-    SG_OGL_CORE_LOG_DEBUG("[Config::LoadOptions()] Loading terrain options from {}.", t_fileName);
+    Log::SG_OGL_CORE_LOG_DEBUG("[Config::LoadOptions()] Loading terrain options from {}.", t_fileName);
 
     tinyxml2::XMLDocument document;
 

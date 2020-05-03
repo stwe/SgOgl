@@ -11,7 +11,6 @@
 #include "Application.h"
 #include "OpenGl.h"
 #include "Core.h"
-#include "Log.h"
 #include "resource/TextureManager.h"
 #include "resource/ShaderManager.h"
 #include "resource/shaderprogram/ComputeNormalmap.h"
@@ -24,13 +23,13 @@
 sg::ogl::terrain::TerrainConfig::TerrainConfig(Application* t_application)
     : m_application{ t_application }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[TerrainConfig::TerrainConfig()] Null pointer.")
-    SG_OGL_CORE_LOG_DEBUG("[TerrainConfig::TerrainConfig()] Create TerrainConfig.");
+    SG_OGL_CORE_ASSERT(m_application, "[TerrainConfig::TerrainConfig()] Null pointer.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[TerrainConfig::TerrainConfig()] Create TerrainConfig.");
 }
 
 sg::ogl::terrain::TerrainConfig::~TerrainConfig() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[TerrainConfig::~TerrainConfig()] Destruct TerrainConfig.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[TerrainConfig::~TerrainConfig()] Destruct TerrainConfig.");
 }
 
 //-------------------------------------------------
@@ -135,7 +134,7 @@ void sg::ogl::terrain::TerrainConfig::LoadHeightmap(const std::string& t_heightm
     }
 
     m_heightmapWidth = m_application->GetTextureManager().GetMetadata(t_heightmapFilePath).width;
-    SG_OGL_CORE_ASSERT(m_heightmapWidth == m_application->GetTextureManager().GetMetadata(t_heightmapFilePath).height, "[TerrainConfig::LoadHeightmap()] Width and Height should have the same value.")
+    SG_OGL_CORE_ASSERT(m_heightmapWidth == m_application->GetTextureManager().GetMetadata(t_heightmapFilePath).height, "[TerrainConfig::LoadHeightmap()] Width and Height should have the same value.");
 
     InitHeightmapData();
 }
@@ -186,8 +185,8 @@ void sg::ogl::terrain::TerrainConfig::LoadSplatmap(const std::string& t_splatmap
 
 void sg::ogl::terrain::TerrainConfig::InitMorphing()
 {
-    SG_OGL_CORE_ASSERT(!lodRanges.empty(), "[TerrainConfig::InitMorphing()] There are no values for the Lod Ranges.")
-    SG_OGL_CORE_ASSERT(lodRanges.size() <= 10, "[TerrainConfig::InitMorphing()] There are to many values for the Lod Ranges.")
+    SG_OGL_CORE_ASSERT(!lodRanges.empty(), "[TerrainConfig::InitMorphing()] There are no values for the Lod Ranges.");
+    SG_OGL_CORE_ASSERT(lodRanges.size() <= 10, "[TerrainConfig::InitMorphing()] There are to many values for the Lod Ranges.");
 
     for (auto i{ 0u }; i < lodRanges.size(); ++i)
     {

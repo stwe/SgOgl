@@ -1,6 +1,14 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: StateStack.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include "StateStack.h"
 #include "SgOglException.h"
-#include "Log.h"
 #include "Core.h"
 
 //-------------------------------------------------
@@ -9,7 +17,7 @@
 
 void sg::ogl::state::DeleteState::operator()(State* t_state) const
 {
-    SG_OGL_CORE_LOG_DEBUG("[DeleteState::operator()] Delete State.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[DeleteState::operator()] Delete State.");
     delete t_state;
 }
 
@@ -20,14 +28,14 @@ void sg::ogl::state::DeleteState::operator()(State* t_state) const
 sg::ogl::state::StateStack::StateStack(Application* const t_application)
     : m_application{ t_application }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[StateStack::StateStack()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_application, "[StateStack::StateStack()] Null pointer.");
 
-    SG_OGL_CORE_LOG_DEBUG("[StateStack::StateStack()] Create StateStack.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[StateStack::StateStack()] Create StateStack.");
 }
 
 sg::ogl::state::StateStack::~StateStack() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[StateStack::~StateStack()] Destruct StateStack.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[StateStack::~StateStack()] Destruct StateStack.");
 }
 
 //-------------------------------------------------

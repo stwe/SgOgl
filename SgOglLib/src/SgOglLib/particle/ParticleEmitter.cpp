@@ -13,7 +13,6 @@
 #include "Application.h"
 #include "ParticleEmitter.h"
 #include "Particle.h"
-#include "Log.h"
 #include "Window.h"
 #include "OpenGl.h"
 #include "camera/Camera.h"
@@ -39,10 +38,10 @@ sg::ogl::particle::ParticleEmitter::ParticleEmitter(
     , m_newParticles{ t_newParticles }
     , m_nrOfTextureRows{ t_nrOfTextureRows }
 {
-    SG_OGL_CORE_ASSERT(m_scene, "[ParticleEmitter::ParticleEmitter()] Null pointer.")
-    SG_OGL_CORE_ASSERT(m_maxParticles > 0, "[ParticleEmitter::ParticleEmitter()] Invalid value.")
-    SG_OGL_CORE_ASSERT(m_newParticles > 0, "[ParticleEmitter::ParticleEmitter()] Invalid value.")
-    SG_OGL_CORE_ASSERT(m_nrOfTextureRows > 0, "[ParticleEmitter::ParticleEmitter()] Invalid value.")
+    SG_OGL_CORE_ASSERT(m_scene, "[ParticleEmitter::ParticleEmitter()] Null pointer.");
+    SG_OGL_CORE_ASSERT(m_maxParticles > 0, "[ParticleEmitter::ParticleEmitter()] Invalid value.");
+    SG_OGL_CORE_ASSERT(m_newParticles > 0, "[ParticleEmitter::ParticleEmitter()] Invalid value.");
+    SG_OGL_CORE_ASSERT(m_nrOfTextureRows > 0, "[ParticleEmitter::ParticleEmitter()] Invalid value.");
 
     m_textureId = m_scene->GetApplicationContext()->GetTextureManager().GetTextureIdFromPath(t_texturePath);
 
@@ -126,7 +125,7 @@ void sg::ogl::particle::ParticleEmitter::Update(const double t_dt)
         // particle is alive, thus update
         else
         {
-            SG_OGL_CORE_ASSERT(particle.life, "[ParticleEmitter::Update()] Trying to update a dead particle.")
+            SG_OGL_CORE_ASSERT(particle.life, "[ParticleEmitter::Update()] Trying to update a dead particle.");
 
             particle.remainingLifetime -= frametime;
 
@@ -175,7 +174,7 @@ void sg::ogl::particle::ParticleEmitter::Render()
     // set instanced data
     for (const auto& particle : m_particles)
     {
-        SG_OGL_CORE_ASSERT(particle.life, "[ParticleEmitter::Render()] The particle should be alive.")
+        SG_OGL_CORE_ASSERT(particle.life, "[ParticleEmitter::Render()] The particle should be alive.");
 
         // create model matrix
         auto modelMatrix = translate(glm::mat4(1.0f), particle.position);
@@ -312,7 +311,7 @@ void sg::ogl::particle::ParticleEmitter::UpdateTextureInfo(Particle& t_particle)
         lifeFactor = 0.0f;
     }
 
-    SG_OGL_CORE_ASSERT(lifeFactor >= 0.0f && lifeFactor <= 1.0f, "[ParticleEmitter::UpdateTextureInfo()] Invalid value.")
+    SG_OGL_CORE_ASSERT(lifeFactor >= 0.0f && lifeFactor <= 1.0f, "[ParticleEmitter::UpdateTextureInfo()] Invalid value.");
 
     const auto texturesCount{ m_nrOfTextureRows * m_nrOfTextureRows };
     const auto atlasProgression{ lifeFactor * texturesCount };

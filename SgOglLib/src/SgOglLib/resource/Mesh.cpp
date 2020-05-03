@@ -17,21 +17,21 @@
 sg::ogl::resource::Mesh::Mesh()
     : m_vao{ std::make_unique<buffer::Vao>() }
 {
-    SG_OGL_CORE_ASSERT(m_vao, "[Mesh::Mesh()] Null pointer.")
-    SG_OGL_CORE_LOG_DEBUG("[Mesh::Mesh()] Create Mesh.");
+    SG_OGL_CORE_ASSERT(m_vao, "[Mesh::Mesh()] Null pointer.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Mesh::Mesh()] Create Mesh.");
 }
 
 sg::ogl::resource::Mesh::Mesh(const std::string& t_name)
     : m_vao{ std::make_unique<buffer::Vao>() }
     , m_name{ t_name }
 {
-    SG_OGL_CORE_ASSERT(m_vao, "[Mesh::Mesh()] Null pointer.")
-    SG_OGL_CORE_LOG_DEBUG("[Mesh::Mesh()] Create Mesh with name {}.", t_name);
+    SG_OGL_CORE_ASSERT(m_vao, "[Mesh::Mesh()] Null pointer.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Mesh::Mesh()] Create Mesh with name {}.", t_name);
 }
 
 sg::ogl::resource::Mesh::~Mesh() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[Mesh::Mesh()] Destruct Mesh.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Mesh::Mesh()] Destruct Mesh.");
 }
 
 //-------------------------------------------------
@@ -45,7 +45,7 @@ std::string sg::ogl::resource::Mesh::GetName() const
 
 sg::ogl::resource::Mesh::MaterialSharedPtr sg::ogl::resource::Mesh::GetDefaultMaterial() const
 {
-    SG_OGL_CORE_ASSERT(m_defaultMaterial, "[Mesh::GetDefaultMaterial()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_defaultMaterial, "[Mesh::GetDefaultMaterial()] Null pointer.");
     return m_defaultMaterial;
 }
 
@@ -65,7 +65,7 @@ void sg::ogl::resource::Mesh::SetName(const std::string& t_name)
 
 void sg::ogl::resource::Mesh::SetDefaultMaterial(const MaterialSharedPtr& t_defaultMaterial)
 {
-    SG_OGL_CORE_ASSERT(!m_defaultMaterial, "[Mesh::SetDefaultMaterial()] Default material already exist.")
+    SG_OGL_CORE_ASSERT(!m_defaultMaterial, "[Mesh::SetDefaultMaterial()] Default material already exist.");
     m_defaultMaterial = t_defaultMaterial;
 }
 

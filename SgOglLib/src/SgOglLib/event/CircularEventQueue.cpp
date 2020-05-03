@@ -1,7 +1,15 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: CircularEventQueue.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include "CircularEventQueue.h"
 #include "OpenGl.h"
 #include "Core.h"
-#include "Log.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -11,13 +19,13 @@ sg::ogl::event::CircularEventQueue::CircularEventQueue(GLFWwindow* const t_glfWw
     : m_glfWwindow{ t_glfWwindow }
     , m_maxSize{ t_maxSize }
 {
-    SG_OGL_CORE_ASSERT(m_glfWwindow, "[CircularEventQueue::CircularEventQueue()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_glfWwindow, "[CircularEventQueue::CircularEventQueue()] Null pointer.");
     glfwSetWindowUserPointer(m_glfWwindow, this);
 }
 
 sg::ogl::event::CircularEventQueue::~CircularEventQueue() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[CircularEventQueue::~CircularEventQueue()] Execute the CircularEventQueue destructor.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[CircularEventQueue::~CircularEventQueue()] Execute the CircularEventQueue destructor.");
 }
 
 //-------------------------------------------------

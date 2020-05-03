@@ -13,7 +13,6 @@
 #include "SgOglLib/Application.h"
 #include "SgOglLib/OpenGl.h"
 #include "SgOglLib/Color.h"
-#include "SgOglLib/Log.h"
 #include "SgOglLib/Window.h"
 
 // buffer

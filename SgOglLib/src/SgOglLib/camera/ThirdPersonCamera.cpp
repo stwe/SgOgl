@@ -13,7 +13,6 @@
 #include "Window.h"
 #include "OpenGl.h"
 #include "Core.h"
-#include "Log.h"
 #include "input/MouseInput.h"
 
 //-------------------------------------------------
@@ -24,14 +23,14 @@ sg::ogl::camera::ThirdPersonCamera::ThirdPersonCamera(Application* t_application
     : Camera(t_application)
     , m_playerPosition{ t_playerPosition }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[ThirdPersonCamera::ThirdPersonCamera()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_application, "[ThirdPersonCamera::ThirdPersonCamera()] Null pointer.");
 
-    SG_OGL_CORE_LOG_DEBUG("[ThirdPersonCamera::ThirdPersonCamera()] Create ThirdPersonCamera.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ThirdPersonCamera::ThirdPersonCamera()] Create ThirdPersonCamera.");
 }
 
 sg::ogl::camera::ThirdPersonCamera::~ThirdPersonCamera() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[ThirdPersonCamera::~ThirdPersonCamera()] Destruct ThirdPersonCamera.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ThirdPersonCamera::~ThirdPersonCamera()] Destruct ThirdPersonCamera.");
 }
 
 //-------------------------------------------------
@@ -68,8 +67,8 @@ void sg::ogl::camera::ThirdPersonCamera::Update(const double t_dt)
 
     if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_I))
     {
-        SG_OGL_CORE_LOG_INFO("[ThirdPersonCamera::Update()] Camera x: {}  y: {}  z: {}", GetPosition().x, GetPosition().y, GetPosition().z);
-        SG_OGL_CORE_LOG_INFO("[ThirdPersonCamera::Update()] Camera yaw: {}  pitch: {}", GetYaw(), GetPitch());
+        Log::SG_OGL_CORE_LOG_INFO("[ThirdPersonCamera::Update()] Camera x: {}  y: {}  z: {}", GetPosition().x, GetPosition().y, GetPosition().z);
+        Log::SG_OGL_CORE_LOG_INFO("[ThirdPersonCamera::Update()] Camera yaw: {}  pitch: {}", GetYaw(), GetPitch());
     }
 }
 

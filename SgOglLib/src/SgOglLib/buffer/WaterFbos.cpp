@@ -8,7 +8,6 @@
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include "WaterFbos.h"
-#include "Log.h"
 #include "OpenGl.h"
 #include "SgOglException.h"
 #include "Application.h"
@@ -21,7 +20,7 @@
 sg::ogl::buffer::WaterFbos::WaterFbos(Application* t_application)
     : m_application{ t_application }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[WaterFbos::WaterFbos()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_application, "[WaterFbos::WaterFbos()] Null pointer.");
 
     m_reflectionWidth = m_application->GetProjectionOptions().width / 2;
     m_reflectionHeight = m_application->GetProjectionOptions().height / 2;
@@ -32,13 +31,13 @@ sg::ogl::buffer::WaterFbos::WaterFbos(Application* t_application)
     InitReflectionFbo();
     InitRefractionFbo();
 
-    SG_OGL_CORE_LOG_DEBUG("[WaterFbos::WaterFbos()] A new Reflection Fbo was created. Id: {}", m_reflectionFboId);
-    SG_OGL_CORE_LOG_DEBUG("[WaterFbos::WaterFbos()] A new Refraction Fbo was created. Id: {}", m_refractionFboId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[WaterFbos::WaterFbos()] A new Reflection Fbo was created. Id: {}", m_reflectionFboId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[WaterFbos::WaterFbos()] A new Refraction Fbo was created. Id: {}", m_refractionFboId);
 }
 
 sg::ogl::buffer::WaterFbos::~WaterFbos() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[WaterFbos::~WaterFbos()] Destruct WaterFbos.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[WaterFbos::~WaterFbos()] Destruct WaterFbos.");
     CleanUp();
 }
 
@@ -92,7 +91,7 @@ uint32_t sg::ogl::buffer::WaterFbos::GenerateAndBindFbo()
 
 void sg::ogl::buffer::WaterFbos::BindFbo(const uint32_t t_fboId)
 {
-    SG_OGL_CORE_ASSERT(t_fboId, "[WaterFbos::BindFbo()] Invalid Fbo Id.")
+    SG_OGL_CORE_ASSERT(t_fboId, "[WaterFbos::BindFbo()] Invalid Fbo Id.");
     glBindFramebuffer(GL_FRAMEBUFFER, t_fboId);
 }
 
@@ -159,7 +158,7 @@ uint32_t sg::ogl::buffer::WaterFbos::CreateColorTextureAttachment(const int32_t 
     uint32_t textureId;
     glGenTextures(1, &textureId);
 
-    SG_OGL_CORE_ASSERT(textureId, "[WaterFbos::CreateColorTextureAttachment()] Invalid texture id.")
+    SG_OGL_CORE_ASSERT(textureId, "[WaterFbos::CreateColorTextureAttachment()] Invalid texture id.");
 
     glBindTexture(GL_TEXTURE_2D, textureId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, t_width, t_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
@@ -176,7 +175,7 @@ uint32_t sg::ogl::buffer::WaterFbos::CreateDepthTextureAttachment(const int32_t 
     uint32_t textureId;
     glGenTextures(1, &textureId);
 
-    SG_OGL_CORE_ASSERT(textureId, "[WaterFbos::CreateDepthTextureAttachment()] Invalid texture id.")
+    SG_OGL_CORE_ASSERT(textureId, "[WaterFbos::CreateDepthTextureAttachment()] Invalid texture id.");
 
     glBindTexture(GL_TEXTURE_2D, textureId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, t_width, t_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
@@ -193,7 +192,7 @@ uint32_t sg::ogl::buffer::WaterFbos::CreateDepthRenderBufferAttachment(const int
     uint32_t depthRenderBufferId;
     glGenRenderbuffers(1, &depthRenderBufferId);
 
-    SG_OGL_CORE_ASSERT(depthRenderBufferId, "[WaterFbos::CreateDepthRenderBufferAttachment()] Invalid depth render buffer id.")
+    SG_OGL_CORE_ASSERT(depthRenderBufferId, "[WaterFbos::CreateDepthRenderBufferAttachment()] Invalid depth render buffer id.");
 
     glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBufferId);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, t_width, t_height);
@@ -218,41 +217,41 @@ void sg::ogl::buffer::WaterFbos::CheckFbo()
 
 void sg::ogl::buffer::WaterFbos::CleanUp() const
 {
-    SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Start the OpenGL clean up process for the WaterFbos objects.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Start the OpenGL clean up process for the WaterFbos objects.");
 
     if (m_reflectionFboId)
     {
         glDeleteFramebuffers(1, &m_reflectionFboId);
-        SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Reflection Fbo was deleted. Id: {}", m_reflectionFboId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Reflection Fbo was deleted. Id: {}", m_reflectionFboId);
     }
 
     if (m_reflectionColorTextureId)
     {
         glDeleteTextures(1, &m_reflectionColorTextureId);
-        SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Reflection texture was deleted. Id: {}", m_reflectionColorTextureId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Reflection texture was deleted. Id: {}", m_reflectionColorTextureId);
     }
 
     if (m_reflectionDepthRenderBufferId)
     {
         glDeleteRenderbuffers(1, &m_reflectionDepthRenderBufferId);
-        SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Depth render buffer was deleted. Id: {}", m_reflectionDepthRenderBufferId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Depth render buffer was deleted. Id: {}", m_reflectionDepthRenderBufferId);
     }
 
     if (m_refractionFboId)
     {
         glDeleteFramebuffers(1, &m_refractionFboId);
-        SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Refraction Fbo was deleted. Id: {}", m_refractionFboId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Refraction Fbo was deleted. Id: {}", m_refractionFboId);
     }
 
     if (m_refractionColorTextureId)
     {
         glDeleteTextures(1, &m_refractionColorTextureId);
-        SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Refraction texture was deleted. Id: {}", m_refractionColorTextureId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Refraction texture was deleted. Id: {}", m_refractionColorTextureId);
     }
 
     if (m_refractionDepthTextureId)
     {
         glDeleteTextures(1, &m_refractionDepthTextureId);
-        SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Refraction depth texture was deleted. Id: {}", m_refractionDepthTextureId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[WaterFbos::CleanUp()] Refraction depth texture was deleted. Id: {}", m_refractionDepthTextureId);
     }
 }

@@ -1,9 +1,17 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Window.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include "Window.h"
 #include "OpenGl.h"
 #include "Application.h"
 #include "SgOglException.h"
-#include "Log.h"
 #include "Core.h"
 
 //-------------------------------------------------
@@ -12,7 +20,7 @@
 
 void sg::ogl::GlfwDeleteWindow::operator()(GLFWwindow* t_window) const
 {
-    SG_OGL_CORE_LOG_DEBUG("[GlfwDeleteWindow::operator()] Destroying GLFW Window Context.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[GlfwDeleteWindow::operator()] Destroying GLFW Window Context.");
     glfwDestroyWindow(t_window);
     glfwTerminate();
 }
@@ -24,14 +32,14 @@ void sg::ogl::GlfwDeleteWindow::operator()(GLFWwindow* t_window) const
 sg::ogl::Window::Window(Application* const t_application)
     : m_application{ t_application }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[Window::Window()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_application, "[Window::Window()] Null pointer.");
 
-    SG_OGL_CORE_LOG_DEBUG("[Window::Window()] Create Window.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Window::Window()] Create Window.");
 }
 
 sg::ogl::Window::~Window() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[Window::~Window()] Destruct Window.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Window::~Window()] Destruct Window.");
 }
 
 //-------------------------------------------------
@@ -59,17 +67,17 @@ const glm::mat4& sg::ogl::Window::GetOrthographicProjectionMatrix() const noexce
 
 void sg::ogl::Window::Init()
 {
-    SG_OGL_CORE_ASSERT(m_application, "[Window::Init()] Application missing.")
+    SG_OGL_CORE_ASSERT(m_application, "[Window::Init()] Application missing.");
 
     // Setup an error callback.
     glfwSetErrorCallback([](int t_error, const char* t_description)
         {
-            SG_OGL_CORE_LOG_ERROR("GLFW Error ({}) {}", t_error, t_description);
+            Log::SG_OGL_CORE_LOG_ERROR("GLFW Error ({}) {}", t_error, t_description);
         }
     );
 
     // Initialize GLFW.
-    SG_OGL_CORE_LOG_DEBUG("[Window::Init()] Initialize GLFW3.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Window::Init()] Initialize GLFW3.");
     if (!glfwInit())
     {
         throw SG_OGL_EXCEPTION("[Window::Init()] Unable to initialize GLFW.");
@@ -86,13 +94,13 @@ void sg::ogl::Window::Init()
 
     if (windowOptions.debugContext)
     {
-        SG_OGL_CORE_LOG_WARN("WARNING: Using OpenGL in Debug Context!");
+        Log::SG_OGL_CORE_LOG_WARN("WARNING: Using OpenGL in Debug Context!");
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     }
 
     if (windowOptions.compatibleProfile)
     {
-        SG_OGL_CORE_LOG_WARN("WARNING: Using the OpenGL Compatibility Profile!");
+        Log::SG_OGL_CORE_LOG_WARN("WARNING: Using the OpenGL Compatibility Profile!");
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     }
     else
@@ -101,11 +109,11 @@ void sg::ogl::Window::Init()
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     }
 
-    SG_OGL_CORE_ASSERT(projectionOptions.width > 0, "The width should be greater than 0.")
-    SG_OGL_CORE_ASSERT(projectionOptions.height > 0, "The height should be greater than 0.")
+    SG_OGL_CORE_ASSERT(projectionOptions.width > 0, "The width should be greater than 0.");
+    SG_OGL_CORE_ASSERT(projectionOptions.height > 0, "The height should be greater than 0.");
 
     // Create the glfw window.
-    SG_OGL_CORE_LOG_DEBUG("[Window::Init()] Initialize GLFW3 Window. Width: {}, Height {}", projectionOptions.width, projectionOptions.height);
+    Log::SG_OGL_CORE_LOG_DEBUG("[Window::Init()] Initialize GLFW3 Window. Width: {}, Height {}", projectionOptions.width, projectionOptions.height);
     m_windowHandle.reset(glfwCreateWindow(projectionOptions.width, projectionOptions.height, windowOptions.title.c_str(), nullptr, nullptr));
     if (!m_windowHandle)
     {
@@ -126,7 +134,7 @@ void sg::ogl::Window::Init()
     glfwMakeContextCurrent(GetWindowHandle());
 
     // Initialize GLEW.
-    SG_OGL_CORE_LOG_DEBUG("[Window::Init()] Initialize GLEW.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Window::Init()] Initialize GLEW.");
     const auto err{ glewInit() };
     if (err != GLEW_OK)
     {
@@ -140,7 +148,7 @@ void sg::ogl::Window::Init()
         glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
         if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
         {
-            SG_OGL_CORE_LOG_DEBUG("[Window::Init()] Initialize OpenGL debug output.");
+            Log::SG_OGL_CORE_LOG_DEBUG("[Window::Init()] Initialize OpenGL debug output.");
 
             glEnable(GL_DEBUG_OUTPUT);
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -154,10 +162,10 @@ void sg::ogl::Window::Init()
     }
 
     // Print out some informations about the graphics drivers.
-    SG_OGL_CORE_LOG_INFO("OpenGL version: {}", glGetString(GL_VERSION));
-    SG_OGL_CORE_LOG_INFO("GLSL version: {}", glGetString(GL_SHADING_LANGUAGE_VERSION));
-    SG_OGL_CORE_LOG_INFO("Vendor: {}", glGetString(GL_VENDOR));
-    SG_OGL_CORE_LOG_INFO("Renderer: {}", glGetString(GL_RENDERER));
+    Log::SG_OGL_CORE_LOG_INFO("OpenGL version: {}", glGetString(GL_VERSION));
+    Log::SG_OGL_CORE_LOG_INFO("GLSL version: {}", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    Log::SG_OGL_CORE_LOG_INFO("Vendor: {}", glGetString(GL_VENDOR));
+    Log::SG_OGL_CORE_LOG_INFO("Renderer: {}", glGetString(GL_RENDERER));
 
     // Make the window visible.
     glfwShowWindow(GetWindowHandle());

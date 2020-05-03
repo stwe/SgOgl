@@ -9,6 +9,7 @@
 
 #include <random>
 #include "DeferredRenderingState.h"
+#include "ClientLog.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -22,7 +23,7 @@ DeferredRenderingState::DeferredRenderingState(sg::ogl::state::StateStack* t_sta
 
 DeferredRenderingState::~DeferredRenderingState() noexcept
 {
-    SG_OGL_LOG_DEBUG("[DeferredRenderingState::~DeferredRenderingState()] Destruct DeferredRenderingState.");
+    ClientLog::SG_SANDBOX_LOG_DEBUG("[DeferredRenderingState::~DeferredRenderingState()] Destruct DeferredRenderingState.");
     CleanUpImGui();
 }
 

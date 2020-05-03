@@ -8,7 +8,6 @@
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include "EntityFactory.h"
-#include "Log.h"
 #include "Core.h"
 #include "buffer/Vao.h"
 #include "buffer/Vbo.h"
@@ -30,13 +29,13 @@
 sg::ogl::ecs::factory::EntityFactory::EntityFactory(Application* t_application)
     : m_application{ t_application }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[EntityFactory::EntityFactory()] Null pointer.")
-    SG_OGL_CORE_LOG_DEBUG("[EntityFactory::EntityFactory()] Create EntityFactory.");
+    SG_OGL_CORE_ASSERT(m_application, "[EntityFactory::EntityFactory()] Null pointer.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[EntityFactory::EntityFactory()] Create EntityFactory.");
 }
 
 sg::ogl::ecs::factory::EntityFactory::~EntityFactory() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[EntityFactory::~EntityFactory()] Destruct EntityFactory.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[EntityFactory::~EntityFactory()] Destruct EntityFactory.");
 }
 
 //-------------------------------------------------
@@ -253,7 +252,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
 
         buffer::Vao::UnbindVao();
     }
-    SG_OGL_CORE_LOG_WARN("[EntityFactory::CreateModelEntity()] The Vao for the model {} has been changed.", t_fullModelFilePath);
+    Log::SG_OGL_CORE_LOG_WARN("[EntityFactory::CreateModelEntity()] The Vao for the model {} has been changed.", t_fullModelFilePath);
 
     // create an entity
     const auto entity{ m_application->registry.create() };

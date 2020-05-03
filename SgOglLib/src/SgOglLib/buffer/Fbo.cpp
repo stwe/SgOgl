@@ -1,6 +1,14 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: Fbo.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include "Fbo.h"
 #include "Core.h"
-#include "Log.h"
 #include "OpenGl.h"
 #include "SgOglException.h"
 #include "Application.h"
@@ -14,7 +22,7 @@ sg::ogl::buffer::Fbo::Fbo(Application* t_application, const int32_t t_width, con
     , m_width{ t_width }
     , m_height{ t_height }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[Fbo::Fbo()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_application, "[Fbo::Fbo()] Null pointer.");
 
     GenerateFbo();
     BindFbo();
@@ -28,12 +36,12 @@ sg::ogl::buffer::Fbo::Fbo(Application* t_application, const int32_t t_width, con
 
     UnbindFbo();
 
-    SG_OGL_CORE_LOG_DEBUG("[Fbo::Fbo()] A new Fbo was created. Id: {}", m_fboId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[Fbo::Fbo()] A new Fbo was created. Id: {}", m_fboId);
 }
 
 sg::ogl::buffer::Fbo::~Fbo() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[Fbo::~Fbo()] Destruct Fbo.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[Fbo::~Fbo()] Destruct Fbo.");
     CleanUp();
 }
 
@@ -57,7 +65,7 @@ void sg::ogl::buffer::Fbo::GenerateFbo()
 
 void sg::ogl::buffer::Fbo::BindFbo() const
 {
-    SG_OGL_CORE_ASSERT(m_fboId, "[Fbo::BindFbo()] Invalid Fbo Id.")
+    SG_OGL_CORE_ASSERT(m_fboId, "[Fbo::BindFbo()] Invalid Fbo Id.");
     glBindFramebuffer(GL_FRAMEBUFFER, m_fboId);
 }
 
@@ -113,19 +121,19 @@ void sg::ogl::buffer::Fbo::Attach()
 
 void sg::ogl::buffer::Fbo::CleanUp() const
 {
-    SG_OGL_CORE_LOG_DEBUG("[Fbo::CleanUp()] Start the OpenGL clean up process for Fbo. Id: {}", m_fboId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[Fbo::CleanUp()] Start the OpenGL clean up process for Fbo. Id: {}", m_fboId);
 
     UnbindFbo();
 
     if (m_fboId)
     {
         glDeleteFramebuffers(1, &m_fboId);
-        SG_OGL_CORE_LOG_DEBUG("[Fbo::CleanUp()] Fbo was deleted. Id: {}", m_fboId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[Fbo::CleanUp()] Fbo was deleted. Id: {}", m_fboId);
     }
 
     if (m_depthTexture)
     {
         glDeleteTextures(1, &m_depthTexture);
-        SG_OGL_CORE_LOG_DEBUG("[Fbo::CleanUp()] Texture was deleted. Id: {}", m_depthTexture);
+        Log::SG_OGL_CORE_LOG_DEBUG("[Fbo::CleanUp()] Texture was deleted. Id: {}", m_depthTexture);
     }
 }

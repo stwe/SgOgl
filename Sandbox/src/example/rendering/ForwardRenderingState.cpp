@@ -9,6 +9,7 @@
 
 #include <random>
 #include "ForwardRenderingState.h"
+#include "ClientLog.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -22,7 +23,7 @@ ForwardRenderingState::ForwardRenderingState(sg::ogl::state::StateStack* t_state
 
 ForwardRenderingState::~ForwardRenderingState() noexcept
 {
-    SG_OGL_LOG_DEBUG("[ForwardRenderingState::~ForwardRenderingState()] Destruct ForwardRenderingState.");
+    ClientLog::SG_SANDBOX_LOG_DEBUG("[ForwardRenderingState::~ForwardRenderingState()] Destruct ForwardRenderingState.");
     CleanUpImGui();
 }
 

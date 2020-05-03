@@ -10,6 +10,7 @@
 #pragma once
 
 #include "SgOgl.h"
+#include "ClientLog.h"
 
 class EmptyState : public sg::ogl::state::State
 {
@@ -33,7 +34,7 @@ public:
 
     ~EmptyState() noexcept override
     {
-        SG_OGL_LOG_DEBUG("[EmptyState::~EmptyState()] Destruct EmptyState.");
+        ClientLog::SG_SANDBOX_LOG_DEBUG("[EmptyState::~EmptyState()] Destruct EmptyState.");
     }
 
     //-------------------------------------------------

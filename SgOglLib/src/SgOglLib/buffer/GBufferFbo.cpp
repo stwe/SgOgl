@@ -10,7 +10,6 @@
 #include "GBufferFbo.h"
 #include "Application.h"
 #include "Core.h"
-#include "Log.h"
 #include "OpenGl.h"
 #include "SgOglException.h"
 
@@ -21,7 +20,7 @@
 sg::ogl::buffer::GBufferFbo::GBufferFbo(Application* t_application)
     : m_application{ t_application }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[GBufferFbo::GBufferFbo()] Null pointer.")
+    SG_OGL_CORE_ASSERT(m_application, "[GBufferFbo::GBufferFbo()] Null pointer.");
 
     m_width = m_application->GetProjectionOptions().width;
     m_height = m_application->GetProjectionOptions().height;
@@ -33,12 +32,12 @@ sg::ogl::buffer::GBufferFbo::GBufferFbo(Application* t_application)
 
     UnbindFbo();
 
-    SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::GBufferFbo()] A new Fbo was created. Id: {}", m_fboId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::GBufferFbo()] A new Fbo was created. Id: {}", m_fboId);
 }
 
 sg::ogl::buffer::GBufferFbo::~GBufferFbo() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::~GBufferFbo()] Destruct GBufferFbo.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::~GBufferFbo()] Destruct GBufferFbo.");
     CleanUp();
 }
 
@@ -77,7 +76,7 @@ void sg::ogl::buffer::GBufferFbo::GenerateFbo()
 
 void sg::ogl::buffer::GBufferFbo::BindFbo() const
 {
-    SG_OGL_CORE_ASSERT(m_fboId, "[GBufferFbo::GBufferFbo()] Invalid Fbo Id.")
+    SG_OGL_CORE_ASSERT(m_fboId, "[GBufferFbo::GBufferFbo()] Invalid Fbo Id.");
     glBindFramebuffer(GL_FRAMEBUFFER, m_fboId);
 }
 
@@ -102,7 +101,7 @@ void sg::ogl::buffer::GBufferFbo::Attach()
 {
     // position color buffer
     glGenTextures(1, &m_positionTextureId);
-    SG_OGL_CORE_ASSERT(m_positionTextureId, "[GBufferFbo::Attach()] Invalid texture Id.")
+    SG_OGL_CORE_ASSERT(m_positionTextureId, "[GBufferFbo::Attach()] Invalid texture Id.");
     glBindTexture(GL_TEXTURE_2D, m_positionTextureId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_width, m_height, 0, GL_RGB, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -111,7 +110,7 @@ void sg::ogl::buffer::GBufferFbo::Attach()
 
     // normal color buffer
     glGenTextures(1, &m_normalTextureId);
-    SG_OGL_CORE_ASSERT(m_normalTextureId, "[GBufferFbo::Attach()] Invalid texture Id.")
+    SG_OGL_CORE_ASSERT(m_normalTextureId, "[GBufferFbo::Attach()] Invalid texture Id.");
     glBindTexture(GL_TEXTURE_2D, m_normalTextureId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, m_width, m_height, 0, GL_RGB, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -120,7 +119,7 @@ void sg::ogl::buffer::GBufferFbo::Attach()
 
     // color + specular color buffer
     glGenTextures(1, &m_albedoSpecTextureId);
-    SG_OGL_CORE_ASSERT(m_albedoSpecTextureId, "[GBufferFbo::Attach()] Invalid texture Id.")
+    SG_OGL_CORE_ASSERT(m_albedoSpecTextureId, "[GBufferFbo::Attach()] Invalid texture Id.");
     glBindTexture(GL_TEXTURE_2D, m_albedoSpecTextureId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -152,31 +151,31 @@ void sg::ogl::buffer::GBufferFbo::Attach()
 
 void sg::ogl::buffer::GBufferFbo::CleanUp() const
 {
-    SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::CleanUp()] Start the OpenGL clean up process for Fbo. Id: {}", m_fboId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::CleanUp()] Start the OpenGL clean up process for Fbo. Id: {}", m_fboId);
 
     UnbindFbo();
 
     if (m_fboId)
     {
         glDeleteFramebuffers(1, &m_fboId);
-        SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::CleanUp()] Fbo was deleted. Id: {}", m_fboId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::CleanUp()] Fbo was deleted. Id: {}", m_fboId);
     }
 
     if (m_positionTextureId)
     {
         glDeleteTextures(1, &m_positionTextureId);
-        SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::CleanUp()] Position texture was deleted. Id: {}", m_positionTextureId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::CleanUp()] Position texture was deleted. Id: {}", m_positionTextureId);
     }
 
     if (m_normalTextureId)
     {
         glDeleteTextures(1, &m_normalTextureId);
-        SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::CleanUp()] Normal texture was deleted. Id: {}", m_normalTextureId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::CleanUp()] Normal texture was deleted. Id: {}", m_normalTextureId);
     }
 
     if (m_albedoSpecTextureId)
     {
         glDeleteTextures(1, &m_albedoSpecTextureId);
-        SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::CleanUp()] Albedo texture was deleted. Id: {}", m_albedoSpecTextureId);
+        Log::SG_OGL_CORE_LOG_DEBUG("[GBufferFbo::CleanUp()] Albedo texture was deleted. Id: {}", m_albedoSpecTextureId);
     }
 }

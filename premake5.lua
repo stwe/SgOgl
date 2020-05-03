@@ -90,6 +90,7 @@ project "Sandbox"
 
     includedirs
     {
+        "%{prj.name}/src",
         "SgOglLib/src",
         "SgOglLib/src/SgOglLib",
     }

@@ -8,7 +8,6 @@
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include "Vbo.h"
-#include "Log.h"
 #include "Core.h"
 
 //-------------------------------------------------
@@ -19,9 +18,9 @@ uint32_t sg::ogl::buffer::Vbo::GenerateVbo()
 {
     uint32_t vboId{ 0 };
     glGenBuffers(1, &vboId);
-    SG_OGL_CORE_ASSERT(vboId, "[Vbo::GenerateVbo()] Error while creating a new Vbo.")
+    SG_OGL_CORE_ASSERT(vboId, "[Vbo::GenerateVbo()] Error while creating a new Vbo.");
 
-    SG_OGL_CORE_LOG_DEBUG("[Vbo::GenerateVbo()] A new Vbo was created. Id: {}", vboId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[Vbo::GenerateVbo()] A new Vbo was created. Id: {}", vboId);
 
     return vboId;
 }
@@ -33,9 +32,9 @@ uint32_t sg::ogl::buffer::Vbo::GenerateEbo()
 
 void sg::ogl::buffer::Vbo::DeleteVbo(const uint32_t t_vboId)
 {
-    SG_OGL_CORE_ASSERT(t_vboId, "[Vbo::DeleteVbo()] Invalid Vbo Id.")
+    SG_OGL_CORE_ASSERT(t_vboId, "[Vbo::DeleteVbo()] Invalid Vbo Id.");
     glDeleteBuffers(1, &t_vboId);
-    SG_OGL_CORE_LOG_DEBUG("[Vbo::DeleteVbo()] Vbo was deleted. Id: {}", t_vboId);
+    Log::SG_OGL_CORE_LOG_DEBUG("[Vbo::DeleteVbo()] Vbo was deleted. Id: {}", t_vboId);
 }
 
 void sg::ogl::buffer::Vbo::DeleteEbo(const uint32_t t_eboId)
@@ -49,7 +48,7 @@ void sg::ogl::buffer::Vbo::DeleteEbo(const uint32_t t_eboId)
 
 void sg::ogl::buffer::Vbo::BindVbo(const uint32_t t_vboId, const uint32_t t_target)
 {
-    SG_OGL_CORE_ASSERT(t_vboId, "[Vbo::BindVbo()] Invalid Vbo Id.")
+    SG_OGL_CORE_ASSERT(t_vboId, "[Vbo::BindVbo()] Invalid Vbo Id.");
     glBindBuffer(t_target, t_vboId);
 }
 

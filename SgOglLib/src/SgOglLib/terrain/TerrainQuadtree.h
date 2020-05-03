@@ -27,9 +27,9 @@ namespace sg::ogl::terrain
         explicit TerrainQuadtree(scene::Scene* t_scene, const TerrainConfigSharedPtr& t_terrainConfig)
             : Node(t_scene, t_terrainConfig, START_LOD, glm::vec2(0.0f), glm::vec2(0.0f))
         {
-            SG_OGL_CORE_ASSERT(t_terrainConfig, "[TerrainQuadtree::TerrainQuadtree()] Null pointer.")
-            SG_OGL_CORE_ASSERT(!t_terrainConfig->GetLodMorphingArea().empty(), "[TerrainQuadtree::TerrainQuadtree()] No Morphing Area values / Call the Init Function.")
-            SG_OGL_CORE_LOG_DEBUG("[TerrainQuadtree::TerrainQuadtree()] Create TerrainQuadtree.");
+            SG_OGL_CORE_ASSERT(t_terrainConfig, "[TerrainQuadtree::TerrainQuadtree()] Null pointer.");
+            SG_OGL_CORE_ASSERT(!t_terrainConfig->GetLodMorphingArea().empty(), "[TerrainQuadtree::TerrainQuadtree()] No Morphing Area values / Call the Init Function.");
+            Log::SG_OGL_CORE_LOG_DEBUG("[TerrainQuadtree::TerrainQuadtree()] Create TerrainQuadtree.");
 
             for (auto i{ 0 }; i < m_terrainConfig->rootNodes; ++i)
             {
@@ -54,7 +54,7 @@ namespace sg::ogl::terrain
 
         virtual ~TerrainQuadtree() noexcept
         {
-            SG_OGL_CORE_LOG_DEBUG("[TerrainQuadtree::~TerrainQuadtree()] Destruct TerrainQuadtree.");
+            Log::SG_OGL_CORE_LOG_DEBUG("[TerrainQuadtree::~TerrainQuadtree()] Destruct TerrainQuadtree.");
         }
 
         //-------------------------------------------------

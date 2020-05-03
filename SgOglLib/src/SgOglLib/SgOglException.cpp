@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: SgOglException.cpp
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
+
 #include <sstream>
 #include "SgOglException.h"
 

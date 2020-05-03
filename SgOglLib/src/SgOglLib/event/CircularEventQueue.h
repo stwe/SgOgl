@@ -1,3 +1,12 @@
+// This file is part of the SgOgl package.
+// 
+// Filename: CircularEventQueue.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
+
 #pragma once
 
 #include <variant>
@@ -111,7 +120,7 @@ namespace sg::ogl::event
         {
             if (m_events.size() >= m_maxSize)
             {
-                SG_OGL_CORE_LOG_WARN("[CircularEventQueue::Add()] Buffer overflow.");
+                Log::SG_OGL_CORE_LOG_WARN("[CircularEventQueue::Add()] Buffer overflow.");
                 return QueueResult::BUFFER_OVERFLOW;
             }
 

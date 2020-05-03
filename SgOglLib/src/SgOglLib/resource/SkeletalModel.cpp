@@ -11,7 +11,6 @@
 #include "SkeletalModel.h"
 #include "Mesh.h"
 #include "Material.h"
-#include "Log.h"
 #include "TextureManager.h"
 #include "SgOglException.h"
 #include "Application.h"
@@ -27,8 +26,8 @@ sg::ogl::resource::SkeletalModel::SkeletalModel(std::string t_fullFilePath, Appl
     : m_application{ t_application }
     , m_fullFilePath{ std::move(t_fullFilePath) }
 {
-    SG_OGL_CORE_ASSERT(m_application, "[SkeletalModel::SkeletalModel()] Null pointer.")
-    SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::SkeletalModel()] Create SkeletalModel.");
+    SG_OGL_CORE_ASSERT(m_application, "[SkeletalModel::SkeletalModel()] Null pointer.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::SkeletalModel()] Create SkeletalModel.");
 
     m_directory = m_fullFilePath.substr(0, m_fullFilePath.find_last_of('/'));
 
@@ -37,7 +36,7 @@ sg::ogl::resource::SkeletalModel::SkeletalModel(std::string t_fullFilePath, Appl
 
 sg::ogl::resource::SkeletalModel::~SkeletalModel() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::~SkeletalModel()] Destruct SkeletalModel.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::~SkeletalModel()] Destruct SkeletalModel.");
 }
 
 //-------------------------------------------------
@@ -75,13 +74,13 @@ float sg::ogl::resource::SkeletalModel::GetDefaultTicksPerSecond() const
 
 void sg::ogl::resource::SkeletalModel::SetCurrentAnimation(const uint32_t t_animation)
 {
-    SG_OGL_CORE_ASSERT(t_animation < m_scene->mNumAnimations, "[SkeletalModel::SetCurrentAnimation()] Invalid animation value.")
+    SG_OGL_CORE_ASSERT(t_animation < m_scene->mNumAnimations, "[SkeletalModel::SetCurrentAnimation()] Invalid animation value.");
     m_currentAnimation = t_animation;
 }
 
 void sg::ogl::resource::SkeletalModel::SetDefaultTicksPerSecond(const float t_ticksPerSecond)
 {
-    SG_OGL_CORE_ASSERT(t_ticksPerSecond > 0, "[SkeletalModel::SetDefaultTicksPerSecond()] Invalid ticks per second.")
+    SG_OGL_CORE_ASSERT(t_ticksPerSecond > 0, "[SkeletalModel::SetDefaultTicksPerSecond()] Invalid ticks per second.");
     m_defaultTicksPerSecond = t_ticksPerSecond;
 }
 
@@ -118,7 +117,7 @@ void sg::ogl::resource::SkeletalModel::BoneTransform(const double t_timeInSec, s
 
 void sg::ogl::resource::SkeletalModel::LoadModel(const unsigned int t_pFlags)
 {
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Start loading skeletal model file at: {}", m_fullFilePath);
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::LoadModel()] Start loading skeletal model file at: {}", m_fullFilePath);
 
     m_scene = m_importer.ReadFile(m_fullFilePath, t_pFlags);
     if (!m_scene || m_scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !m_scene->mRootNode)
@@ -134,18 +133,18 @@ void sg::ogl::resource::SkeletalModel::LoadModel(const unsigned int t_pFlags)
         throw SG_OGL_EXCEPTION("[SkeletalModel::LoadModel()] The model should contain animations.");
     }
 
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Num meshes: {}", m_scene->mNumMeshes);
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Num animations: {}", m_scene->mNumAnimations);
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Current animation: {}", m_currentAnimation);
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Current duration in ticks: {}", m_scene->mAnimations[m_currentAnimation]->mDuration);
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Current ticks per second: {}", m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond);
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::LoadModel()] Num meshes: {}", m_scene->mNumMeshes);
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::LoadModel()] Num animations: {}", m_scene->mNumAnimations);
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::LoadModel()] Current animation: {}", m_currentAnimation);
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::LoadModel()] Current duration in ticks: {}", m_scene->mAnimations[m_currentAnimation]->mDuration);
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::LoadModel()] Current ticks per second: {}", m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond);
     const auto ticksPerSecond{ static_cast<float>(m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond != 0 ? m_scene->mAnimations[m_currentAnimation]->mTicksPerSecond : m_defaultTicksPerSecond) };
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] The current animation lasts {} seconds.", m_scene->mAnimations[m_currentAnimation]->mDuration / ticksPerSecond);
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Current number of bone animation channels: {}", m_scene->mAnimations[m_currentAnimation]->mNumChannels);
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::LoadModel()] The current animation lasts {} seconds.", m_scene->mAnimations[m_currentAnimation]->mDuration / ticksPerSecond);
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::LoadModel()] Current number of bone animation channels: {}", m_scene->mAnimations[m_currentAnimation]->mNumChannels);
 
     ProcessNode(m_scene->mRootNode, m_scene);
 
-    SG_OGL_LOG_DEBUG("[SkeletalModel::LoadModel()] Skeletal model file at {} successfully loaded.", m_fullFilePath);
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::LoadModel()] Skeletal model file at {} successfully loaded.", m_fullFilePath);
 }
 
 void sg::ogl::resource::SkeletalModel::ProcessNode(aiNode* t_node, const aiScene* t_scene)
@@ -166,8 +165,8 @@ void sg::ogl::resource::SkeletalModel::ProcessNode(aiNode* t_node, const aiScene
 
 sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel::ProcessMesh(aiMesh* t_mesh, const aiScene* t_scene)
 {
-    SG_OGL_LOG_DEBUG("[SkeletalModel::ProcessMesh()] Mesh bones: {}", t_mesh->mNumBones);
-    SG_OGL_LOG_DEBUG("[SkeletalModel::ProcessMesh()] Mesh vertices: {}", t_mesh->mNumVertices);
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::ProcessMesh()] Mesh bones: {}", t_mesh->mNumBones);
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::ProcessMesh()] Mesh vertices: {}", t_mesh->mNumVertices);
 
     // Data to fill.
     VertexContainer vertices;
@@ -209,7 +208,7 @@ sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel
             if (!missingUv)
             {
                 missingUv = true;
-                SG_OGL_LOG_WARN("[SkeletalModel::ProcessMesh()] Missing texture coords. Set default values (0, 0).");
+                Log::SG_OGL_CORE_LOG_WARN("[SkeletalModel::ProcessMesh()] Missing texture coords. Set default values (0, 0).");
             }
         }
 
@@ -228,7 +227,7 @@ sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel
             if (!missingTangent)
             {
                 missingTangent = true;
-                SG_OGL_LOG_WARN("[SkeletalModel::ProcessMesh()] Missing tangent coords. Set default values (0, 0, 0).");
+                Log::SG_OGL_CORE_LOG_WARN("[SkeletalModel::ProcessMesh()] Missing tangent coords. Set default values (0, 0, 0).");
             }
         }
 
@@ -247,7 +246,7 @@ sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel
             if (!missingBiTangent)
             {
                 missingBiTangent = true;
-                SG_OGL_LOG_WARN("[SkeletalModel::ProcessMesh()] Missing bitangent coords. Set default values (0, 0, 0).");
+                Log::SG_OGL_CORE_LOG_WARN("[SkeletalModel::ProcessMesh()] Missing bitangent coords. Set default values (0, 0, 0).");
             }
         }
     }
@@ -270,7 +269,7 @@ sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel
         auto boneIndex{ 0u };
         std::string boneName{ t_mesh->mBones[i]->mName.data };
 
-        SG_OGL_LOG_DEBUG("[SkeletalModel::ProcessMesh()] Load Bone: {}", boneName);
+        Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::ProcessMesh()] Load Bone: {}", boneName);
 
         if (m_boneContainer.count(boneName) == 0)
         {
@@ -301,7 +300,7 @@ sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel
 
     // Create a unique_ptr Material instance.
     auto materialUniquePtr{ std::make_unique<Material>() };
-    SG_OGL_CORE_ASSERT(materialUniquePtr, "[SkeletalModel::ProcessMesh()] Null pointer.")
+    SG_OGL_CORE_ASSERT(materialUniquePtr, "[SkeletalModel::ProcessMesh()] Null pointer.");
 
     // Set material name.
     aiString name;
@@ -323,7 +322,7 @@ sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel
     materialUniquePtr->ns = shininess;
 
     // Load textures.
-    SG_OGL_LOG_DEBUG("[SkeletalModel::ProcessMesh()] Loading textures for the model: {}", m_fullFilePath);
+    Log::SG_OGL_CORE_LOG_DEBUG("[SkeletalModel::ProcessMesh()] Loading textures for the model: {}", m_fullFilePath);
 
     auto ambientMaps{ LoadMaterialTextures(aiMeshMaterial, aiTextureType_AMBIENT) };
     auto diffuseMaps{ LoadMaterialTextures(aiMeshMaterial, aiTextureType_DIFFUSE) };
@@ -373,7 +372,7 @@ sg::ogl::resource::SkeletalModel::MeshUniquePtr sg::ogl::resource::SkeletalModel
 
     // Create a unique_ptr Mesh instance.
     auto meshUniquePtr{ std::make_unique<Mesh>() };
-    SG_OGL_CORE_ASSERT(meshUniquePtr, "[SkeletalModel::ProcessMesh()] Null pointer.")
+    SG_OGL_CORE_ASSERT(meshUniquePtr, "[SkeletalModel::ProcessMesh()] Null pointer.");
 
     // Add Vbos.
     meshUniquePtr->GetVao().AddVertexDataVbo(vertices.data(), t_mesh->mNumVertices, bufferLayout);
@@ -473,7 +472,7 @@ void sg::ogl::resource::SkeletalModel::ReadNodeHierarchy(const float t_animation
 
 uint32_t sg::ogl::resource::SkeletalModel::FindScaling(const float t_animationTime, const aiNodeAnim* t_nodeAnim)
 {
-    SG_OGL_CORE_ASSERT(t_nodeAnim->mNumScalingKeys > 0, "[SkeletalModel::FindScaling()] Invalid number of scaling keys.")
+    SG_OGL_CORE_ASSERT(t_nodeAnim->mNumScalingKeys > 0, "[SkeletalModel::FindScaling()] Invalid number of scaling keys.");
 
     for (auto i{ 0u }; i < t_nodeAnim->mNumScalingKeys - 1; ++i)
     {
@@ -483,14 +482,14 @@ uint32_t sg::ogl::resource::SkeletalModel::FindScaling(const float t_animationTi
         }
     }
 
-    SG_OGL_CORE_ASSERT(false, "[SkeletalModel::FindScaling()] Invalid animation time or scaling keys.")
+    SG_OGL_CORE_ASSERT(false, "[SkeletalModel::FindScaling()] Invalid animation time or scaling keys.");
 
     return 0;
 }
 
 uint32_t sg::ogl::resource::SkeletalModel::FindRotation(const float t_animationTime, const aiNodeAnim* t_nodeAnim)
 {
-    SG_OGL_CORE_ASSERT(t_nodeAnim->mNumRotationKeys > 0, "[SkeletalModel::FindRotation()] Invalid number of rotation keys.")
+    SG_OGL_CORE_ASSERT(t_nodeAnim->mNumRotationKeys > 0, "[SkeletalModel::FindRotation()] Invalid number of rotation keys.");
 
     for (auto i{ 0u }; i < t_nodeAnim->mNumRotationKeys - 1; ++i)
     {
@@ -500,14 +499,14 @@ uint32_t sg::ogl::resource::SkeletalModel::FindRotation(const float t_animationT
         }
     }
 
-    SG_OGL_CORE_ASSERT(false, "[SkeletalModel::FindRotation()] Invalid animation time or rotation keys.")
+    SG_OGL_CORE_ASSERT(false, "[SkeletalModel::FindRotation()] Invalid animation time or rotation keys.");
 
     return 0;
 }
 
 uint32_t sg::ogl::resource::SkeletalModel::FindPosition(const float t_animationTime, const aiNodeAnim* t_nodeAnim)
 {
-    SG_OGL_CORE_ASSERT(t_nodeAnim->mNumPositionKeys > 0, "[SkeletalModel::FindPosition()] Invalid number of position keys.")
+    SG_OGL_CORE_ASSERT(t_nodeAnim->mNumPositionKeys > 0, "[SkeletalModel::FindPosition()] Invalid number of position keys.");
 
     for (auto i{ 0u }; i < t_nodeAnim->mNumPositionKeys - 1; ++i)
     {
@@ -517,7 +516,7 @@ uint32_t sg::ogl::resource::SkeletalModel::FindPosition(const float t_animationT
         }
     }
 
-    SG_OGL_CORE_ASSERT(false, "[SkeletalModel::FindPosition()] Invalid animation time or position keys.")
+    SG_OGL_CORE_ASSERT(false, "[SkeletalModel::FindPosition()] Invalid animation time or position keys.");
 
     return 0;
 }

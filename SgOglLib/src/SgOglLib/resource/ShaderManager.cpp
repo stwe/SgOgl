@@ -16,10 +16,10 @@
 sg::ogl::resource::ShaderManager::ShaderManager(const std::string& t_libResFolder)
     : m_libResFolder{ t_libResFolder }
 {
-    SG_OGL_CORE_LOG_DEBUG("[ShaderManager::ShaderManager()] Create ShaderManager.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ShaderManager::ShaderManager()] Create ShaderManager.");
 }
 
 sg::ogl::resource::ShaderManager::~ShaderManager() noexcept
 {
-    SG_OGL_CORE_LOG_DEBUG("[ShaderManager::~ShaderManager()] Destruct ShaderManager.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ShaderManager::~ShaderManager()] Destruct ShaderManager.");
 }

@@ -10,7 +10,6 @@
 #pragma once
 
 #include "Core.h"
-#include "Log.h"
 #include "scene/Scene.h"
 #include "resource/ShaderManager.h"
 
@@ -29,7 +28,7 @@ namespace sg::ogl::ecs::system
         explicit RenderSystem(scene::Scene* t_scene)
             : m_scene{ t_scene }
         {
-            SG_OGL_CORE_ASSERT(m_scene, "[RenderSystem::RenderSystem()] Null pointer.")
+            SG_OGL_CORE_ASSERT(m_scene, "[RenderSystem::RenderSystem()] Null pointer.");
 
             LoadShader();
         }
