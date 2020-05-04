@@ -287,39 +287,37 @@ private:
 
 std::unique_ptr<sg::ogl::Application> sg::ogl::create_application()
 {
-    return std::make_unique<Sandbox>("res/config/Config.xml");
+    return std::make_unique<Sandbox>("res/config/Config.lua");
 }
 
 ```
 
-We can see that the constructor of the `Application` class or `Sandbox` class takes the path to a config file as an argument.
+We can see that the constructor of the `Application` class or `Sandbox` class takes the path to a config lua-file as an argument.
 The config file can look like this.
 
-The libResFolder option contains the full path to the library's built-in assets.
+The `libResFolder` option contains the full path to the library's built-in assets.
 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
+```lua
+libResFolder = "E:/Dev/SgOgl/SgOglLib/res"
 
-<init>
-    <libResFolder>E:\Dev\SgOgl\SgOglLib\res</libResFolder>
-    <window>
-        <title>Sandbox</title>
-        <compatibleProfile>0</compatibleProfile>
-        <debugContext>1</debugContext>
-        <antialiasing>1</antialiasing>
-        <printFrameRate>1</printFrameRate>
-        <glMajor>4</glMajor>
-        <glMinor>3</glMinor>
-        <fps>60.0</fps>
-    </window>
-    <projection>
-        <fovDeg>70.0</fovDeg>
-        <width>1024</width>
-        <height>768</height>
-        <near>0.1</near>
-        <far>10000.0</far>
-    </projection>
-</init>
+window = {
+    title = "Sandbox",
+    compatibleProfile = false,
+    debugContext = true,
+    antialiasing = true,
+    printFrameRate = true,
+    glMajor = 4,
+    glMinor = 3,
+    fps = 60.0
+}
+
+projection = {
+    fovDeg = 70.0,
+    width = 1024,
+    height = 768,
+    near = 0.1,
+    far = 10000.0
+}
 ```
 
 ## 5. Code snippets
