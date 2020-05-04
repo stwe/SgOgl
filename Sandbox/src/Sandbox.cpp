@@ -77,5 +77,5 @@ private:
 
 std::unique_ptr<sg::ogl::Application> sg::ogl::create_application()
 {
-    return std::make_unique<Sandbox>("res/config/Config.xml");
+    return std::make_unique<Sandbox>("res/config/Config.lua");
 }

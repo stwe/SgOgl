@@ -12,6 +12,8 @@
 #include <string>
 #include <map>
 
+struct lua_State;
+
 namespace sg::ogl
 {
     //-------------------------------------------------
@@ -73,8 +75,6 @@ namespace sg::ogl
     class Config
     {
     public:
-        static bool ToBool(const std::string& t_value);
-
         static void LoadOptions(
             const std::string& t_fileName,
             std::string& t_libResFolder,
@@ -82,11 +82,9 @@ namespace sg::ogl
             ProjectionOptions& t_projectionOptions
         );
 
-        static void LoadOptions(const std::string& t_fileName, TerrainOptions& t_terrainOptions);
-
     protected:
 
     private:
-
+        static void PrintLuaErrorMessage(lua_State* t_luaState);
     };
 }
