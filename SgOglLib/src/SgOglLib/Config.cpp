@@ -116,6 +116,6 @@ void sg::ogl::Config::PrintLuaErrorMessage(lua_State* t_luaState)
 {
     // The error message is on top of the stack.
     // Fetch it, print it and then pop it off the stack.
-    Log::SG_OGL_CORE_LOG_FATAL("[Config::CheckLua()] Lua error {}.", lua_tostring(t_luaState, -1));
+    Log::SG_OGL_CORE_LOG_FATAL("[Config::PrintLuaErrorMessage()] Lua error {}.", lua_tostring(t_luaState, -1));
     lua_pop(t_luaState, 1);
 }

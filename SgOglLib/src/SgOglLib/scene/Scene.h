@@ -16,6 +16,8 @@
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 
+struct lua_State;
+
 namespace sg::ogl
 {
     class Application;
@@ -52,6 +54,8 @@ namespace sg::ogl::scene
         Scene() = delete;
 
         explicit Scene(Application* t_application);
+
+        Scene(Application* t_application, const std::string& t_configFileName);
 
         Scene(const Scene& t_other) = delete;
         Scene(Scene&& t_other) noexcept = delete;
@@ -101,6 +105,11 @@ namespace sg::ogl::scene
     private:
         Application* m_application{ nullptr };
 
+        std::string m_configFileName;
+        std::vector<CameraSharedPtr> m_cameras;
+
+
+
         CameraSharedPtr m_currentCamera;
 
         DirectionalLightSharedPtr m_currentDirectionalLight;
@@ -111,5 +120,7 @@ namespace sg::ogl::scene
         glm::vec4 m_currentClipPlane{ glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f) };
 
         glm::vec3 m_ambientIntensity{ glm::vec3(0.3f) };
+
+        void ConfigSceneFromFile();
     };
 }

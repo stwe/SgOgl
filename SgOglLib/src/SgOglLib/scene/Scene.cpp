@@ -7,11 +7,18 @@
 // 
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
+#include <lua.hpp>
+#include <LuaBridge.h>
 #include "Scene.h"
 #include "Core.h"
+#include "Application.h"
 #include "light/DirectionalLight.h"
 #include "light/PointLight.h"
 #include "camera/Camera.h"
+#include "SgOglException.h"
+#include "camera/FirstPersonCamera.h"
+#include "camera/ThirdPersonCamera.h"
+#include "lua/LuaHelper.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -23,6 +30,17 @@ sg::ogl::scene::Scene::Scene(Application* t_application)
     SG_OGL_CORE_ASSERT(m_application, "[Scene::Scene()] Null pointer.");
 
     Log::SG_OGL_CORE_LOG_DEBUG("[Scene::Scene()] Create Scene.");
+}
+
+sg::ogl::scene::Scene::Scene(Application* t_application, const std::string& t_configFileName)
+    : m_application{ t_application }
+    , m_configFileName{ t_configFileName }
+{
+    SG_OGL_CORE_ASSERT(m_application, "[Scene::Scene()] Null pointer.");
+
+    Log::SG_OGL_CORE_LOG_DEBUG("[Scene::Scene()] Create Scene.");
+
+    ConfigSceneFromFile();
 }
 
 sg::ogl::scene::Scene::~Scene() noexcept
@@ -130,4 +148,71 @@ void sg::ogl::scene::Scene::AddEntityPointLight(const std::string& t_name, const
 void sg::ogl::scene::Scene::SetCurrentClipPlane(const glm::vec4& t_currentClipPlane)
 {
     m_currentClipPlane = t_currentClipPlane;
+}
+
+void sg::ogl::scene::Scene::ConfigSceneFromFile()
+{
+    Log::SG_OGL_CORE_LOG_DEBUG("[Scene::ConfigSceneFromFile()] Loading scene from {}.", m_configFileName);
+
+    auto* luaState{ luaL_newstate() };
+    luaopen_base(luaState);
+    luaL_openlibs(luaState);
+
+    lua::LuaHelper::LoadScript(luaState, m_configFileName);
+
+    auto cameraKeys{ lua::LuaHelper::GetTableKeys(luaState, "cameras") };
+
+    // destroy LuaRef before lua_close
+    {
+        const auto entityTable = luabridge::getGlobal(luaState, "cameras");
+
+        for (const auto& cameraKey : cameraKeys)
+        {
+            luabridge::LuaRef camera{ entityTable[cameraKey] };
+            auto type{ camera["type"] };
+
+            std::string typeStr;
+            if (type.isString())
+            {
+                typeStr = type.cast<std::string>();
+            }
+
+            if (typeStr == std::string("first"))
+            {
+                auto velocity{ camera["cameraVelocity"] };
+                auto sensitivity{ camera["mouseSensitivity"] };
+                auto yaw{ camera["yaw"] };
+                auto pitch{ camera["pitch"] };
+                auto position{ camera["position"] };
+
+                auto firstCamera{ std::make_unique<camera::FirstPersonCamera>(
+                    GetApplicationContext(),
+                    glm::vec3(position["x"].cast<float>(), position["y"].cast<float>(), position["z"].cast<float>()),
+                    yaw.cast<float>(),
+                    pitch.cast<float>()
+                ) };
+
+                firstCamera->SetCameraVelocity(velocity.cast<float>());
+                firstCamera->SetMouseSensitivity(sensitivity.cast<float>());
+
+                m_cameras.push_back(std::move(firstCamera));
+            }
+            else if (typeStr == std::string("third"))
+            {
+                auto velocity{ camera["cameraVelocity"] };
+                auto playerPosition{ camera["playerPosition"] };
+
+                auto thirdCamera{ std::make_unique<camera::ThirdPersonCamera>(
+                    GetApplicationContext(),
+                    glm::vec3(playerPosition["x"].cast<float>(), playerPosition["y"].cast<float>(), playerPosition["z"].cast<float>())
+                ) };
+
+                thirdCamera->SetCameraVelocity(velocity.cast<float>());
+
+                m_cameras.push_back(std::move(thirdCamera));
+            }
+        }
+    }
+
+    lua_close(luaState);
 }
