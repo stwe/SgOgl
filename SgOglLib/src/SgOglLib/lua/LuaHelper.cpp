@@ -74,7 +74,6 @@ void sg::ogl::lua::LuaHelper::LoadGetKeysFunction(lua_State* t_luaState)
 {
     const std::string code =
         R"(function getKeys(t)
-            print("getKeys called")
             s = {}
             for k, v in pairs(t) do
                 table.insert(s, k)
@@ -100,8 +99,7 @@ std::vector<std::string> sg::ogl::lua::LuaHelper::GetTableKeys(lua_State* t_luaS
         lua_getglobal(t_luaState, "getKeys");
     }
 
-    //LuaGetToStack(t_luaState, t_name);
-    lua_getglobal(t_luaState, t_name.c_str());
+    LuaGetToStack(t_luaState, t_name);
 
     /*
 

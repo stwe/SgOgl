@@ -9,16 +9,20 @@
 
 #include <lua.hpp>
 #include <LuaBridge.h>
+#include <assimp/postprocess.h>
 #include "Scene.h"
 #include "Core.h"
 #include "Application.h"
 #include "light/DirectionalLight.h"
 #include "light/PointLight.h"
+#include "resource/ModelManager.h"
 #include "camera/Camera.h"
-#include "SgOglException.h"
 #include "camera/FirstPersonCamera.h"
 #include "camera/ThirdPersonCamera.h"
 #include "lua/LuaHelper.h"
+#include "ecs/component/Components.h"
+#include "ecs/system/ForwardRenderSystem.h"
+#include "ecs/system/SkyboxRenderSystem.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -150,67 +154,198 @@ void sg::ogl::scene::Scene::SetCurrentClipPlane(const glm::vec4& t_currentClipPl
     m_currentClipPlane = t_currentClipPlane;
 }
 
+//-------------------------------------------------
+// Lua data
+//-------------------------------------------------
+
+void sg::ogl::scene::Scene::AddCamera(lua_State* t_luaState, const std::string& t_cameraName)
+{
+    const auto cameras{ luabridge::getGlobal(t_luaState, "cameras") };
+    const auto camera{ cameras[t_cameraName] };
+    const auto cameraType{ camera["type"].cast<std::string>() };
+
+    if (cameraType == "first")
+    {
+        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddCamera()] Add First-Person-Camera {} to the scene.", t_cameraName);
+
+        const auto position{ camera["position"] };
+        auto firstCamera{ std::make_unique<camera::FirstPersonCamera>(
+            GetApplicationContext(),
+            glm::vec3(position["x"].cast<float>(), position["y"].cast<float>(), position["z"].cast<float>()),
+            camera["yaw"].cast<float>(),
+            camera["pitch"].cast<float>()
+        ) };
+
+        firstCamera->SetCameraVelocity(camera["cameraVelocity"].cast<float>());
+        firstCamera->SetMouseSensitivity(camera["mouseSensitivity"].cast<float>());
+        firstCamera->name = t_cameraName;
+
+        m_cameras.emplace(t_cameraName, std::move(firstCamera));
+
+        const auto current{ camera["current"].cast<bool>() };
+        if (current)
+        {
+            Log::SG_OGL_CORE_LOG_INFO("[Scene::AddCamera()] Use {} camera as current.", t_cameraName);
+            SetCurrentCamera(m_cameras.at(t_cameraName));
+        }
+    }
+
+    if (cameraType == "third")
+    {
+        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddCamera()] Add 3rd-Person-Camera {} to the scene.", t_cameraName);
+
+        const auto playerPosition{ camera["playerPosition"] };
+        auto thirdCamera{ std::make_unique<camera::ThirdPersonCamera>(
+            GetApplicationContext(),
+            glm::vec3(playerPosition["x"].cast<float>(), playerPosition["y"].cast<float>(), playerPosition["z"].cast<float>())
+        ) };
+
+        thirdCamera->SetCameraVelocity(camera["cameraVelocity"].cast<float>());
+        thirdCamera->name = t_cameraName;
+
+        m_cameras.emplace(t_cameraName, std::move(thirdCamera));
+
+        const auto current{ camera["current"].cast<bool>() };
+        if (current)
+        {
+            Log::SG_OGL_CORE_LOG_INFO("[Scene::AddCamera()] Use {} camera as current.", t_cameraName);
+            SetCurrentCamera(m_cameras.at(t_cameraName));
+        }
+    }
+}
+
+void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& t_entityName) const
+{
+    Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add entity {} to the scene.", t_entityName);
+
+    auto componentKeys{ lua::LuaHelper::GetTableKeys(t_luaState, "entities." + t_entityName) };
+
+    const auto entities{ luabridge::getGlobal(t_luaState, "entities") };
+    const auto entity{ entities[t_entityName] };
+
+    // create an entity
+    const auto e{ m_application->registry.create() };
+
+    // add components
+    for (const auto& componentKey : componentKeys)
+    {
+        if (componentKey == "ModelComponent")
+        {
+            Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add ModelComponent to the entity {}.", t_entityName);
+
+            // get model component config
+            const auto modelComponent{ entity["ModelComponent"] };
+
+            // add model component
+            const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_FlipUVs };
+            m_application->registry.emplace<ecs::component::ModelComponent>(
+                e,
+                m_application->GetModelManager().GetModelByPath(modelComponent["path"].cast<std::string>(), pFlags),
+                modelComponent["showTriangles"].cast<bool>(),
+                modelComponent["fakeNormals"].cast<bool>()
+            );
+        }
+
+        if (componentKey == "TransformComponent")
+        {
+            Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add TransformComponent to the entity {}.", t_entityName);
+
+            // get transform component config
+            const auto transformComponent{ entity["TransformComponent"] };
+
+            // add transform component
+            auto position{ transformComponent["position"] };
+            auto rotation{ transformComponent["rotation"] };
+            auto scale{ transformComponent["scale"] };
+
+            m_application->registry.emplace<ecs::component::TransformComponent>(
+                e,
+                glm::vec3(position["x"].cast<float>(), position["y"].cast<float>(), position["z"].cast<float>()),
+                glm::vec3(rotation["x"].cast<float>(), rotation["y"].cast<float>(), rotation["z"].cast<float>()),
+                glm::vec3(scale["x"].cast<float>(), scale["y"].cast<float>(), scale["z"].cast<float>())
+            );
+        }
+    }
+}
+
+void sg::ogl::scene::Scene::AddRenderer(const std::string& t_rendererName)
+{
+    if (t_rendererName == "ForwardRenderSystem")
+    {
+        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
+        m_renderer.emplace_back(std::make_unique<ecs::system::ForwardRenderSystem>(this));
+    }
+
+    if (t_rendererName == "SkyboxRenderSystem")
+    {
+        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
+        m_renderer.emplace_back(std::make_unique<ecs::system::SkyboxRenderSystem>(this));
+    }
+}
+
+//-------------------------------------------------
+// Logic
+//-------------------------------------------------
+
+void sg::ogl::scene::Scene::Input()
+{
+    GetCurrentCamera().Input();
+}
+
+void sg::ogl::scene::Scene::Update(const double t_dt)
+{
+    GetCurrentCamera().Update(t_dt);
+
+    for (auto& renderer : m_renderer)
+    {
+        renderer->Update(t_dt);
+    }
+}
+
+void sg::ogl::scene::Scene::Render()
+{
+    for (auto& renderer : m_renderer)
+    {
+        renderer->Render();
+    }
+}
+
+//-------------------------------------------------
+// Helper
+//-------------------------------------------------
+
 void sg::ogl::scene::Scene::ConfigSceneFromFile()
 {
     Log::SG_OGL_CORE_LOG_DEBUG("[Scene::ConfigSceneFromFile()] Loading scene from {}.", m_configFileName);
 
+    // new lua state
     auto* luaState{ luaL_newstate() };
     luaopen_base(luaState);
     luaL_openlibs(luaState);
 
+    // read scene config file
     lua::LuaHelper::LoadScript(luaState, m_configFileName);
 
-    auto cameraKeys{ lua::LuaHelper::GetTableKeys(luaState, "cameras") };
-
-    // destroy LuaRef before lua_close
     {
-        const auto entityTable = luabridge::getGlobal(luaState, "cameras");
-
+        // add cameras
+        auto cameraKeys{ lua::LuaHelper::GetTableKeys(luaState, "cameras") };
         for (const auto& cameraKey : cameraKeys)
         {
-            luabridge::LuaRef camera{ entityTable[cameraKey] };
-            auto type{ camera["type"] };
+            AddCamera(luaState, cameraKey);
+        }
 
-            std::string typeStr;
-            if (type.isString())
-            {
-                typeStr = type.cast<std::string>();
-            }
+        // add entities
+        auto entityKeys{ lua::LuaHelper::GetTableKeys(luaState, "entities") };
+        for (const auto& entityKey : entityKeys)
+        {
+            AddEntity(luaState, entityKey);
+        }
 
-            if (typeStr == std::string("first"))
-            {
-                auto velocity{ camera["cameraVelocity"] };
-                auto sensitivity{ camera["mouseSensitivity"] };
-                auto yaw{ camera["yaw"] };
-                auto pitch{ camera["pitch"] };
-                auto position{ camera["position"] };
-
-                auto firstCamera{ std::make_unique<camera::FirstPersonCamera>(
-                    GetApplicationContext(),
-                    glm::vec3(position["x"].cast<float>(), position["y"].cast<float>(), position["z"].cast<float>()),
-                    yaw.cast<float>(),
-                    pitch.cast<float>()
-                ) };
-
-                firstCamera->SetCameraVelocity(velocity.cast<float>());
-                firstCamera->SetMouseSensitivity(sensitivity.cast<float>());
-
-                m_cameras.push_back(std::move(firstCamera));
-            }
-            else if (typeStr == std::string("third"))
-            {
-                auto velocity{ camera["cameraVelocity"] };
-                auto playerPosition{ camera["playerPosition"] };
-
-                auto thirdCamera{ std::make_unique<camera::ThirdPersonCamera>(
-                    GetApplicationContext(),
-                    glm::vec3(playerPosition["x"].cast<float>(), playerPosition["y"].cast<float>(), playerPosition["z"].cast<float>())
-                ) };
-
-                thirdCamera->SetCameraVelocity(velocity.cast<float>());
-
-                m_cameras.push_back(std::move(thirdCamera));
-            }
+        // add renderer
+        const auto rendererTable{ luabridge::getGlobal(luaState, "renderer") };
+        for (const auto& pair : pairs(rendererTable))
+        {
+            AddRenderer(pair.second.cast<std::string>());
         }
     }
 

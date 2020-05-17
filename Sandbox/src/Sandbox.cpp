@@ -14,6 +14,7 @@
 #include "example/rendering/ForwardRenderingState.h"
 #include "example/terrain/TerrainState.h"
 #include "example/water/WaterState.h"
+#include "new/NewState.h"
 
 class Sandbox final : public sg::ogl::Application
 {
@@ -51,14 +52,17 @@ protected:
         //ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: DeferredRenderingState as Game.");
         //GetStateStack().RegisterState<DeferredRenderingState>(sg::ogl::state::GAME);
 
-        ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: ForwardRenderingState as Game.");
-        GetStateStack().RegisterState<ForwardRenderingState>(sg::ogl::state::GAME);
+        //ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: ForwardRenderingState as Game.");
+        //GetStateStack().RegisterState<ForwardRenderingState>(sg::ogl::state::GAME);
 
         //ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: TerrainState as Game.");
         //GetStateStack().RegisterState<TerrainState>(sg::ogl::state::GAME);
 
         //ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: WaterState as Game.");
         //GetStateStack().RegisterState<WaterState>(sg::ogl::state::GAME);
+
+        ClientLog::SG_SANDBOX_LOG_DEBUG("[Sandbox::RegisterStates()] Register State: NewState as Game.");
+        GetStateStack().RegisterState<NewState>(sg::ogl::state::GAME);
     }
 
     void Init() override

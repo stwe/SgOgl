@@ -96,6 +96,9 @@ project "Sandbox"
         "%{prj.name}/src",
         "SgOglLib/src",
         "SgOglLib/src/SgOglLib",
+        "SgOglLib/vendor",
+        "SgOglLib/vendor/LuaBridge",
+        "SgOglLib/vendor/LuaBridge/detail"
     }
 
     links

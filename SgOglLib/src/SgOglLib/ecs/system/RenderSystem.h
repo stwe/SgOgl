@@ -10,13 +10,14 @@
 #pragma once
 
 #include "Core.h"
+#include "RenderSystemInterface.h"
 #include "scene/Scene.h"
 #include "resource/ShaderManager.h"
 
 namespace sg::ogl::ecs::system
 {
     template <typename ...TShaderProgram>
-    class RenderSystem
+    class RenderSystem : public RenderSystemInterface
     {
     public:
         //-------------------------------------------------
@@ -44,8 +45,8 @@ namespace sg::ogl::ecs::system
         // Logic
         //-------------------------------------------------
 
-        virtual void Update(double t_dt) {}
-        virtual void Render() = 0;
+        void Update(double t_dt) override {}
+        void Render() override {};
 
     protected:
         /**

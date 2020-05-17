@@ -13,8 +13,10 @@
 #include <memory>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
+#include "ecs/system/RenderSystemInterface.h"
 
 struct lua_State;
 
@@ -40,6 +42,10 @@ namespace sg::ogl::scene
     {
     public:
         using CameraSharedPtr = std::shared_ptr<camera::Camera>;
+        using CameraContainer = std::unordered_map<std::string, CameraSharedPtr>;
+
+        using RenderSystemUniquePtr = std::unique_ptr<ecs::system::RenderSystemInterface>;
+        using RendererContainer = std::vector<RenderSystemUniquePtr>;
 
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
 
@@ -100,13 +106,30 @@ namespace sg::ogl::scene
 
         void SetCurrentClipPlane(const glm::vec4& t_currentClipPlane);
 
+        //-------------------------------------------------
+        // Lua data
+        //-------------------------------------------------
+
+        void AddCamera(lua_State* t_luaState, const std::string& t_cameraName);
+        void AddEntity(lua_State* t_luaState, const std::string& t_entityName) const;
+        void AddRenderer(const std::string& t_rendererName);
+
+        //-------------------------------------------------
+        // Logic
+        //-------------------------------------------------
+
+        void Input();
+        void Update(double t_dt);
+        void Render();
+
     protected:
 
     private:
         Application* m_application{ nullptr };
 
         std::string m_configFileName;
-        std::vector<CameraSharedPtr> m_cameras;
+        CameraContainer m_cameras;
+        RendererContainer m_renderer;
 
 
 
@@ -120,6 +143,10 @@ namespace sg::ogl::scene
         glm::vec4 m_currentClipPlane{ glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f) };
 
         glm::vec3 m_ambientIntensity{ glm::vec3(0.3f) };
+
+        //-------------------------------------------------
+        // Helper
+        //-------------------------------------------------
 
         void ConfigSceneFromFile();
     };

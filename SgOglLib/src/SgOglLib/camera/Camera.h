@@ -12,6 +12,7 @@
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <vector>
+#include <string>
 #include "math/Plane.h"
 
 namespace sg::ogl
@@ -35,6 +36,12 @@ namespace sg::ogl::camera
     {
     public:
         using FrustumPlaneContainer = std::vector<math::Plane>;
+
+        //-------------------------------------------------
+        // Public member
+        //-------------------------------------------------
+
+        std::string name;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
