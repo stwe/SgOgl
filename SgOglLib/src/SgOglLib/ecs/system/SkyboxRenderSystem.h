@@ -40,8 +40,6 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            PrepareRendering();
-
             auto view{ m_scene->GetApplicationContext()->registry.view<component::CubemapComponent>() };
 
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::SkyboxShaderProgram>() };
@@ -56,11 +54,8 @@ namespace sg::ogl::ecs::system
             }
 
             resource::ShaderProgram::Unbind();
-
-            FinishRendering();
         }
 
-    protected:
         void PrepareRendering() override
         {
             OpenGl::SetDepthFunc(GL_LEQUAL);
@@ -71,6 +66,8 @@ namespace sg::ogl::ecs::system
             // GL_LESS is the initial depth comparison function
             OpenGl::SetDepthFunc(GL_LESS);
         }
+
+    protected:
 
     private:
         MeshSharedPtr m_skyboxMesh;

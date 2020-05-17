@@ -12,6 +12,7 @@
 #include "OpenGl.h"
 #include "Application.h"
 #include "Window.h"
+#include "math/Transform.h"
 #include "scene/Scene.h"
 #include "camera/Camera.h"
 #include "resource/SkeletalModel.h"
@@ -28,7 +29,7 @@ namespace sg::ogl::resource::shaderprogram
     public:
         void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
         {
-            auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::TransformComponent>(t_entity) };
+            auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<math::Transform>(t_entity) };
             auto& skeletalModelComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::SkeletalModelComponent>(t_entity) };
 
             std::vector<glm::mat4> transforms;

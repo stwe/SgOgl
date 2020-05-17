@@ -40,8 +40,7 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            PrepareRendering();
-
+            /*
             auto view{ m_scene->GetApplicationContext()->registry.view<component::SunComponent>() };
 
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::SunShaderProgram>() };
@@ -54,13 +53,10 @@ namespace sg::ogl::ecs::system
                 m_sunQuadMesh->DrawPrimitives(GL_TRIANGLE_STRIP);
                 m_sunQuadMesh->EndDraw();
             }
-
+            */
             resource::ShaderProgram::Unbind();
-
-            FinishRendering();
         }
 
-    protected:
         void PrepareRendering() override
         {
             OpenGl::EnableAlphaBlending();
@@ -70,6 +66,8 @@ namespace sg::ogl::ecs::system
         {
             OpenGl::DisableBlending();
         }
+
+    protected:
 
     private:
         MeshSharedPtr m_sunQuadMesh;

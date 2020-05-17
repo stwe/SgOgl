@@ -11,18 +11,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <glm/gtc/matrix_transform.hpp>
-
-namespace sg::ogl::camera
-{
-    class ThirdPersonCamera;
-}
-
-namespace sg::ogl::light
-{
-    struct PointLight;
-    struct Sun;
-}
 
 namespace sg::ogl::resource
 {
@@ -49,30 +37,6 @@ namespace sg::ogl::water
 
 namespace sg::ogl::ecs::component
 {
-    //-------------------------------------------------
-    // Camera
-    //-------------------------------------------------
-
-    struct ThirdPersonCameraComponent
-    {
-        std::shared_ptr<camera::ThirdPersonCamera> thirdPersonCamera;
-    };
-
-    //-------------------------------------------------
-    // Lighting
-    //-------------------------------------------------
-
-    struct PointLightComponent
-    {
-        std::string name;
-        std::shared_ptr<light::PointLight> pointLight;
-    };
-
-    struct SunComponent
-    {
-        std::shared_ptr<light::Sun> sun;
-    };
-
     //-------------------------------------------------
     // Player
     //-------------------------------------------------
@@ -152,26 +116,6 @@ namespace sg::ogl::ecs::component
     };
 
     struct MoveableComponent {};
-
-    struct TransformComponent
-    {
-        glm::vec3 position{ glm::vec3(0.0f, 0.0f, 0.0f) };
-        glm::vec3 rotation{ glm::vec3(0.0f, 0.0f, 0.0f) };
-        glm::vec3 scale{ glm::vec3(1.0f, 1.0f, 1.0f) };
-
-        explicit operator glm::mat4() const
-        {
-            auto modelMatrix{ glm::mat4(1.0f) };
-
-            modelMatrix = translate(modelMatrix, position);
-            modelMatrix = rotate(modelMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-            modelMatrix = rotate(modelMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-            modelMatrix = rotate(modelMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-            modelMatrix = glm::scale(modelMatrix, scale);
-
-            return modelMatrix;
-        }
-    };
 
     //-------------------------------------------------
     // Environment

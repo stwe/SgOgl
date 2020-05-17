@@ -14,6 +14,7 @@
 #include "resource/ShaderManager.h"
 #include "resource/Model.h"
 #include "ecs/component/Components.h"
+#include "math/Transform.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -33,20 +34,16 @@ namespace sg::ogl::ecs::system
         //-------------------------------------------------
 
         void Update(double t_dt) override
-        {
-            AddEntityPointLights();
-        }
+        {}
 
         void Render() override
         {
-            PrepareRendering();
-
             auto& modelShaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::ModelShaderProgram>() };
             modelShaderProgram.Bind();
 
             auto view{ m_scene->GetApplicationContext()->registry.view<
                 component::ModelComponent,
-                component::TransformComponent>(
+                math::Transform>(
                     entt::exclude<component::SkydomeComponent>
                 )
             };
@@ -75,11 +72,8 @@ namespace sg::ogl::ecs::system
             }
 
             resource::ShaderProgram::Unbind();
-
-            FinishRendering();
         }
 
-    protected:
         void PrepareRendering() override
         {
             OpenGl::EnableAlphaBlending();
@@ -92,29 +86,9 @@ namespace sg::ogl::ecs::system
             OpenGl::DisableFaceCulling();
         }
 
+    protected:
+
     private:
-        //-------------------------------------------------
-        // Point lights
-        //-------------------------------------------------
 
-        /**
-         * @brief A Point Light is added to the Scene if it does not already exist there.
-         */
-        void AddEntityPointLights() const
-        {
-            auto view{ m_scene->GetApplicationContext()->registry.view<
-                component::ModelComponent,
-                component::TransformComponent,
-                component::PointLightComponent>()
-            };
-
-            for (auto entity : view)
-            {
-                auto& pointLightComponent{ view.get<component::PointLightComponent>(entity) };
-                m_scene->AddEntityPointLight(pointLightComponent.name, pointLightComponent.pointLight);
-
-                // todo: remove
-            }
-        }
     };
 }

@@ -40,8 +40,7 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            PrepareRendering();
-
+            /*
             auto view{ m_scene->GetApplicationContext()->registry.view<
                 component::TransformComponent,
                 component::GuiComponent>()
@@ -57,13 +56,10 @@ namespace sg::ogl::ecs::system
                 m_guiMesh->DrawPrimitives(GL_TRIANGLE_STRIP);
                 m_guiMesh->EndDraw();
             }
-
+            */
             resource::ShaderProgram::Unbind();
-
-            FinishRendering();
         }
 
-    protected:
         void PrepareRendering() override
         {
             OpenGl::EnableAlphaBlending();
@@ -75,6 +71,8 @@ namespace sg::ogl::ecs::system
             OpenGl::EnableDepthTesting();
             OpenGl::DisableBlending();
         }
+
+    protected:
 
     private:
         MeshSharedPtr m_guiMesh;

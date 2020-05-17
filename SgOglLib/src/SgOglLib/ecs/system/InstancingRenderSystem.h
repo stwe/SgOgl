@@ -28,8 +28,6 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            PrepareRendering();
-
             auto view = m_scene->GetApplicationContext()->registry.view<
                 component::InstancesComponent,
                 component::ModelComponent>();
@@ -53,11 +51,8 @@ namespace sg::ogl::ecs::system
             }
 
             resource::ShaderProgram::Unbind();
-
-            FinishRendering();
         }
 
-    protected:
         void PrepareRendering() override
         {
             OpenGl::EnableAlphaBlending();
@@ -67,6 +62,8 @@ namespace sg::ogl::ecs::system
         {
             OpenGl::DisableBlending();
         }
+
+    protected:
 
     private:
 

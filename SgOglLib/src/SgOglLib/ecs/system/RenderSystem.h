@@ -47,16 +47,11 @@ namespace sg::ogl::ecs::system
 
         void Update(double t_dt) override {}
         void Render() override {};
+        void PrepareRendering() override {}
+        void FinishRendering() override {}
 
     protected:
-        /**
-         * @brief Pointer to the parent Scene.
-         */
         scene::Scene* m_scene{ nullptr };
-
-        // todo
-        virtual void PrepareRendering() {}
-        virtual void FinishRendering() {}
 
     private:
         //-------------------------------------------------

@@ -11,6 +11,7 @@
 
 #include "OpenGl.h"
 #include "Application.h"
+#include "math/Transform.h"
 #include "scene/Scene.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
@@ -23,7 +24,7 @@ namespace sg::ogl::resource::shaderprogram
     public:
         void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
         {
-            auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::TransformComponent>(t_entity) };
+            auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<math::Transform>(t_entity) };
             SetUniform("transformationMatrix", static_cast<glm::mat4>(transformComponent));
 
             auto& guiComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::GuiComponent>(t_entity) };

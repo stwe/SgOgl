@@ -52,8 +52,6 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            PrepareRendering();
-
             auto view{ m_scene->GetApplicationContext()->registry.view<
                 component::TerrainQuadtreeComponent>()
             };
@@ -72,11 +70,8 @@ namespace sg::ogl::ecs::system
             }
 
             resource::ShaderProgram::Unbind();
-
-            FinishRendering();
         }
 
-    protected:
         void PrepareRendering() override
         {
             OpenGl::EnableFaceCulling();
@@ -86,6 +81,8 @@ namespace sg::ogl::ecs::system
         {
             OpenGl::DisableFaceCulling();
         }
+
+    protected:
 
     private:
         MeshSharedPtr m_patchMesh;

@@ -56,17 +56,12 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            PrepareRendering();
-
             GeometryPass();
             LightingPass();
 
             //m_gbuffer->CopyDepthBufferToDefaultFramebuffer();
-
-            FinishRendering();
         }
 
-    protected:
         void PrepareRendering() override
         {
             OpenGl::DisableBlending();   // disable GL_BLEND
@@ -78,6 +73,8 @@ namespace sg::ogl::ecs::system
             OpenGl::DisableBlending();
             OpenGl::DisableFaceCulling();
         }
+
+    protected:
 
     private:
         GBufferFboUniquePtr m_gbuffer;
@@ -96,6 +93,7 @@ namespace sg::ogl::ecs::system
             auto& gbufferPassShaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::GBufferPassShaderProgram>() };
             gbufferPassShaderProgram.Bind();
 
+            /*
             auto view{ m_scene->GetApplicationContext()->registry.view<
                 component::ModelComponent,
                 component::TransformComponent>(
@@ -125,7 +123,7 @@ namespace sg::ogl::ecs::system
                     OpenGl::DisableWireframeMode();
                 }
             }
-
+            */
             m_gbuffer->UnbindFbo();
 
             resource::ShaderProgram::Unbind();
@@ -155,6 +153,7 @@ namespace sg::ogl::ecs::system
          */
         void AddEntityPointLights() const
         {
+            /*
             auto view{ m_scene->GetApplicationContext()->registry.view<
                 component::ModelComponent,
                 component::TransformComponent,
@@ -168,6 +167,7 @@ namespace sg::ogl::ecs::system
 
                 // todo: remove
             }
+            */
         }
     };
 }

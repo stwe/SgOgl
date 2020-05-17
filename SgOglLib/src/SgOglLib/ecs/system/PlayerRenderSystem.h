@@ -32,13 +32,14 @@ namespace sg::ogl::ecs::system
             const auto dt{ static_cast<float>(t_dt) };
 
             // get components
-            auto& thirdPersonCameraComponent{ m_view.get<component::ThirdPersonCameraComponent>(t_entity) };
-            auto& skeletalModelComponent{ m_view.get<component::SkeletalModelComponent>(t_entity) };
-            auto& transformComponent{ m_view.get<component::TransformComponent>(t_entity) };
+            //auto& thirdPersonCameraComponent{ m_view.get<component::ThirdPersonCameraComponent>(t_entity) };
+            //auto& skeletalModelComponent{ m_view.get<component::SkeletalModelComponent>(t_entity) };
+            //auto& transformComponent{ m_view.get<component::TransformComponent>(t_entity) };
             //auto& healthComponent{ m_view.get<component::HealthComponent>(t_entity) };
-            auto& playerComponent{ m_view.get<component::PlayerComponent>(t_entity) };
+            //auto& playerComponent{ m_view.get<component::PlayerComponent>(t_entity) };
 
             // set current animation
+            /*
             skeletalModelComponent.model->SetCurrentAnimation(t_currentAnimation);
             skeletalModelComponent.model->SetDefaultTicksPerSecond(t_ticksPerSecond);
 
@@ -91,6 +92,7 @@ namespace sg::ogl::ecs::system
             // update player y-position
             playerComponent.upSpeed += component::PlayerComponent::GRAVITY * dt;
             transformComponent.position.y += playerComponent.upSpeed * dt;
+            */
 
             // keep the player on the terrain
             /*
@@ -116,8 +118,8 @@ namespace sg::ogl::ecs::system
             */
 
             // the camera follows the player
-            thirdPersonCameraComponent.thirdPersonCamera->SetPlayerPosition(transformComponent.position);
-            thirdPersonCameraComponent.thirdPersonCamera->SetPlayerRotationY(transformComponent.rotation.y);
+//            thirdPersonCameraComponent.thirdPersonCamera->SetPlayerPosition(transformComponent.position);
+//            thirdPersonCameraComponent.thirdPersonCamera->SetPlayerRotationY(transformComponent.rotation.y);
         }
 
         void Update(const double t_dt) override
@@ -129,6 +131,7 @@ namespace sg::ogl::ecs::system
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::SkeletalModelShaderProgram>() };
             shaderProgram.Bind();
 
+            /*
             auto& skeletalModelComponent{ m_view.get<component::SkeletalModelComponent>(t_entity) };
 
             if (skeletalModelComponent.showTriangles)
@@ -148,23 +151,20 @@ namespace sg::ogl::ecs::system
             {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             }
-
+            */
             resource::ShaderProgram::Unbind();
         }
 
         void Render() override
         {
-            PrepareRendering();
-
+            /*
             for (auto entity : m_view)
             {
                 RenderEntity(entity);
             }
-
-            FinishRendering();
+            */
         }
 
-    protected:
         void PrepareRendering() override
         {
             OpenGl::EnableAlphaBlending();
@@ -177,7 +177,10 @@ namespace sg::ogl::ecs::system
             OpenGl::DisableFaceCulling();
         }
 
+    protected:
+
     private:
+        /*
         const entt::basic_view<
             entt::entity,
             entt::exclude_t<>,
@@ -193,5 +196,6 @@ namespace sg::ogl::ecs::system
                 component::HealthComponent,
                 component::PlayerComponent>()
             };
+            */
     };
 }

@@ -12,6 +12,7 @@
 #include "OpenGl.h"
 #include "Application.h"
 #include "Window.h"
+#include "math/Transform.h"
 #include "buffer/WaterFbos.h"
 #include "camera/Camera.h"
 #include "light/DirectionalLight.h"
@@ -30,7 +31,7 @@ namespace sg::ogl::resource::shaderprogram
         {
             // get components
             auto& waterComponent = t_scene.GetApplicationContext()->registry.get<ecs::component::WaterComponent>(t_entity);
-            auto& transformComponent = t_scene.GetApplicationContext()->registry.get<ecs::component::TransformComponent>(t_entity);
+            auto& transformComponent = t_scene.GetApplicationContext()->registry.get<math::Transform>(t_entity);
 
             // get projection matrix
             const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };

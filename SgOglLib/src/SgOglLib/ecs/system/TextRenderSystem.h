@@ -51,8 +51,6 @@ namespace sg::ogl::ecs::system
 
         void RenderText(const std::string& t_text, float t_xPos, const float t_yPos, const float t_scale, const glm::vec3& t_color)
         {
-            PrepareRendering();
-
             // bind shader program
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::TextShaderProgram>() };
             shaderProgram.Bind();
@@ -108,11 +106,8 @@ namespace sg::ogl::ecs::system
 
             // undbind shader program
             resource::ShaderProgram::Unbind();
-
-            FinishRendering();
         }
 
-    protected:
         void PrepareRendering() override
         {
             OpenGl::EnableAlphaBlending();
@@ -124,6 +119,9 @@ namespace sg::ogl::ecs::system
             OpenGl::DisableBlending();
             OpenGl::DisableFaceCulling();
         }
+
+
+    protected:
 
     private:
         struct Character

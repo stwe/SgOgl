@@ -43,6 +43,7 @@ namespace sg::ogl::ecs::system
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::SkeletalModelShaderProgram>() };
             shaderProgram.Bind();
 
+            /*
             auto& skeletalModelComponent{ m_view.get<component::SkeletalModelComponent>(t_entity) };
 
             if (skeletalModelComponent.showTriangles)
@@ -62,23 +63,20 @@ namespace sg::ogl::ecs::system
             {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             }
-
+            */
             resource::ShaderProgram::Unbind();
         }
 
         void Render() override
         {
-            PrepareRendering();
-
+            /*
             for (auto entity : m_view)
             {
                 RenderEntity(entity);
             }
-
-            FinishRendering();
+            */
         }
 
-    protected:
         void PrepareRendering() override
         {
             OpenGl::EnableAlphaBlending();
@@ -91,7 +89,10 @@ namespace sg::ogl::ecs::system
             OpenGl::DisableFaceCulling();
         }
 
+    protected:
+
     private:
+        /*
         const entt::basic_view<
             entt::entity,
             entt::exclude_t<component::PlayerComponent>,
@@ -100,6 +101,6 @@ namespace sg::ogl::ecs::system
                 m_scene->GetApplicationContext()->registry.view<
                 component::SkeletalModelComponent,
                 component::TransformComponent>(entt::exclude<component::PlayerComponent>)
-            };
+            };*/
     };
 }

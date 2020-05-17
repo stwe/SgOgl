@@ -33,6 +33,8 @@ namespace sg::ogl::ecs::system
 
         virtual void Update(double t_dt) = 0;
         virtual void Render() = 0;
+        virtual void PrepareRendering() = 0;
+        virtual void FinishRendering() = 0;
 
     protected:
 

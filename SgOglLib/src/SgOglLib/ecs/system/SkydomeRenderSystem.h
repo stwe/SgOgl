@@ -37,8 +37,7 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            PrepareRendering();
-
+            /*
             auto view{ m_scene->GetApplicationContext()->registry.view<
                 component::ModelComponent,
                 component::TransformComponent,
@@ -57,13 +56,10 @@ namespace sg::ogl::ecs::system
                 modelComponent.model->GetMeshes()[0]->DrawPrimitives();
                 modelComponent.model->GetMeshes()[0]->EndDraw();
             }
-
+            */
             resource::ShaderProgram::Unbind();
-
-            FinishRendering();
         }
 
-    protected:
         void PrepareRendering() override
         {
             //OpenGl::EnableFaceCulling();
@@ -73,6 +69,8 @@ namespace sg::ogl::ecs::system
         {
             //OpenGl::DisableFaceCulling();
         }
+
+    protected:
 
     private:
 

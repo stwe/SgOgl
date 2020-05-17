@@ -11,6 +11,7 @@
 
 #include "Application.h"
 #include "Window.h"
+#include "math/Transform.h"
 #include "scene/Scene.h"
 #include "camera/Camera.h"
 #include "resource/ShaderProgram.h"
@@ -23,7 +24,7 @@ namespace sg::ogl::resource::shaderprogram
     public:
         void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
         {
-            auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::TransformComponent>(t_entity) };
+            auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<math::Transform>(t_entity) };
 
             const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
             const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };

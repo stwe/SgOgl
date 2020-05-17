@@ -24,6 +24,7 @@ namespace sg::ogl::resource::shaderprogram
     public:
         void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
         {
+            /*
             auto& sunComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::SunComponent>(t_entity) };
             const auto sunPosition{ sunComponent.sun->GetWorldPosition(t_scene.GetCurrentCamera().GetPosition()) };
 
@@ -38,6 +39,7 @@ namespace sg::ogl::resource::shaderprogram
 
             SetUniform("sunTexture", 0);
             TextureManager::BindForReading(sunComponent.sun->textureId, GL_TEXTURE0);
+            */
         }
 
         [[nodiscard]] std::string GetFolderName() const override

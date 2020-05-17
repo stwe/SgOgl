@@ -11,6 +11,7 @@
 #include "Core.h"
 #include "buffer/Vao.h"
 #include "buffer/Vbo.h"
+#include "math/Transform.h"
 #include "camera/ThirdPersonCamera.h"
 #include "ecs/component/Components.h"
 #include "resource/Model.h"
@@ -62,7 +63,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     );
 
     // add transform component
-    m_application->registry.assign<component::TransformComponent>(
+    m_application->registry.assign<math::Transform>(
         entity,
         glm::vec3(t_position.x, t_position.y, t_position.z),
         glm::vec3(t_rotation.x, t_rotation.y, t_rotation.z),
@@ -92,11 +93,13 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreatePointLightEntity(
     ) };
 
     // add point light component
+    /*
     m_application->registry.assign<component::PointLightComponent>(
         entity,
         t_name,
         t_pointLight
     );
+    */
 
     return entity;
 }
@@ -107,10 +110,12 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSunEntity(const SunShar
     const auto entity{ m_application->registry.create() };
 
     // add sun component
+    /*
     m_application->registry.assign<component::SunComponent>(
         entity,
         t_sun
     );
+    */
 
     return entity;
 }
@@ -127,7 +132,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateGuiEntity(
     const auto entity{ m_application->registry.create() };
 
     // add transform component
-    m_application->registry.assign<component::TransformComponent>(
+    m_application->registry.assign<math::Transform>(
         entity,
         glm::vec3(t_posX, t_posY, 0.0f),
         glm::vec3(0.0f),
@@ -166,7 +171,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkydomeEntity(const std
     );
 
     // add transform component
-    m_application->registry.assign<component::TransformComponent>(
+    m_application->registry.assign<math::Transform>(
         entity,
         glm::vec3(0.0f),
         glm::vec3(0.0f),
@@ -191,7 +196,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const Water
     );
 
     // add transform component
-    m_application->registry.assign<component::TransformComponent>(
+    m_application->registry.assign<math::Transform>(
         entity,
         glm::vec3(t_water->GetXPosition(), t_water->GetHeight(), t_water->GetZPosition()),
         glm::vec3(0.0f),
@@ -297,7 +302,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
     );
 
     // add transform component
-    m_application->registry.assign<component::TransformComponent>(
+    m_application->registry.assign<math::Transform>(
         entity,
         glm::vec3(t_position.x, t_position.y, t_position.z),
         glm::vec3(t_rotation.x, t_rotation.y, t_rotation.z),

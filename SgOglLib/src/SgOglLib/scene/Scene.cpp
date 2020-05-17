@@ -13,6 +13,7 @@
 #include "Scene.h"
 #include "Core.h"
 #include "Application.h"
+#include "math/Transform.h"
 #include "light/DirectionalLight.h"
 #include "light/PointLight.h"
 #include "resource/ModelManager.h"
@@ -258,11 +259,36 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
             auto rotation{ transformComponent["rotation"] };
             auto scale{ transformComponent["scale"] };
 
-            m_application->registry.emplace<ecs::component::TransformComponent>(
+            m_application->registry.emplace<math::Transform>(
                 e,
                 glm::vec3(position["x"].cast<float>(), position["y"].cast<float>(), position["z"].cast<float>()),
                 glm::vec3(rotation["x"].cast<float>(), rotation["y"].cast<float>(), rotation["z"].cast<float>()),
                 glm::vec3(scale["x"].cast<float>(), scale["y"].cast<float>(), scale["z"].cast<float>())
+            );
+        }
+
+        if (componentKey == "PointLightComponent")
+        {
+            Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add PointLightComponent to the entity {}.", t_entityName);
+
+            // get point light component config
+            const auto pointLightComponent{ entity["PointLightComponent"] };
+
+            // add point light component
+            auto position{ pointLightComponent["position"] };
+            auto ambient{ pointLightComponent["ambientIntensity"] };
+            auto diffuse{ pointLightComponent["diffuseIntensity"] };
+            auto specular{ pointLightComponent["specularIntensity"] };
+
+            m_application->registry.emplace<light::PointLight>(
+                e,
+                glm::vec3(position["x"].cast<float>(), position["y"].cast<float>(), position["z"].cast<float>()),
+                glm::vec3(ambient["x"].cast<float>(), ambient["y"].cast<float>(), ambient["z"].cast<float>()),
+                glm::vec3(diffuse["x"].cast<float>(), diffuse["y"].cast<float>(), diffuse["z"].cast<float>()),
+                glm::vec3(specular["x"].cast<float>(), specular["y"].cast<float>(), specular["z"].cast<float>()),
+                pointLightComponent["constant"].cast<float>(),
+                pointLightComponent["linear"].cast<float>(),
+                pointLightComponent["quadratic"].cast<float>()
             );
         }
     }
@@ -306,7 +332,9 @@ void sg::ogl::scene::Scene::Render()
 {
     for (auto& renderer : m_renderer)
     {
+        renderer->PrepareRendering();
         renderer->Render();
+        renderer->FinishRendering();
     }
 }
 

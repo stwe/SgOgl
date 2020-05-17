@@ -39,6 +39,7 @@ namespace sg::ogl::ecs::system
 
         void Update(const double t_dt) override
         {
+            /*
             for (auto entity : m_view)
             {
                 auto& waterComponent{ m_view.get<component::WaterComponent>(entity) };
@@ -52,6 +53,7 @@ namespace sg::ogl::ecs::system
                 transformComponent.position.z = waterComponent.water->GetZPosition();
                 transformComponent.scale = waterComponent.water->GetTileSize();
             }
+            */
         }
 
         template <typename ...RenderSystem>
@@ -109,11 +111,10 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            PrepareRendering();
-
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::WaterShaderProgram>() };
             shaderProgram.Bind();
 
+            /*
             for (auto entity : m_view)
             {
                 m_waterMesh->InitDraw();
@@ -121,26 +122,10 @@ namespace sg::ogl::ecs::system
                 m_waterMesh->DrawPrimitives();
                 m_waterMesh->EndDraw();
             }
+            */
 
             resource::ShaderProgram::Unbind();
-
-            FinishRendering();
         }
-
-    protected:
-
-    private:
-        const entt::basic_view<
-            entt::entity,
-            entt::exclude_t<>,
-            component::WaterComponent,
-            component::TransformComponent> m_view{
-                m_scene->GetApplicationContext()->registry.view<
-                component::WaterComponent,
-                component::TransformComponent>()
-            };
-
-        MeshSharedPtr m_waterMesh;
 
         void PrepareRendering() override
         {
@@ -153,5 +138,21 @@ namespace sg::ogl::ecs::system
             OpenGl::DisableFaceCulling();
             OpenGl::DisableBlending();
         }
+
+    protected:
+
+    private:
+        /*
+        const entt::basic_view<
+            entt::entity,
+            entt::exclude_t<>,
+            component::WaterComponent,
+            component::TransformComponent> m_view{
+                m_scene->GetApplicationContext()->registry.view<
+                component::WaterComponent,
+                component::TransformComponent>()
+            };*/
+
+        MeshSharedPtr m_waterMesh;
     };
 }
