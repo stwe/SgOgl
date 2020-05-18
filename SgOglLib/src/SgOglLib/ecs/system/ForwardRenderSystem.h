@@ -15,6 +15,7 @@
 #include "resource/Model.h"
 #include "ecs/component/Components.h"
 #include "math/Transform.h"
+#include "light/PointLight.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -34,18 +35,23 @@ namespace sg::ogl::ecs::system
         //-------------------------------------------------
 
         void Update(double t_dt) override
-        {}
+        {
+        }
 
         void Render() override
         {
+            std::vector<light::PointLight> pointLights;
+
+            m_scene->GetApplicationContext()->registry.view<light::PointLight>().each([&pointLights](auto t_entity, auto& t_pointLight)
+            {
+                pointLights.push_back(t_pointLight);
+            });
+
             auto& modelShaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::ModelShaderProgram>() };
             modelShaderProgram.Bind();
 
             auto view{ m_scene->GetApplicationContext()->registry.view<
-                component::ModelComponent,
-                math::Transform>(
-                    entt::exclude<component::SkydomeComponent>
-                )
+                component::ModelComponent, math::Transform>()
             };
 
             for (auto entity : view)
@@ -59,8 +65,9 @@ namespace sg::ogl::ecs::system
 
                 for (auto& mesh : modelComponent.model->GetMeshes())
                 {
+                    // todo: set fakeNormals
                     mesh->InitDraw();
-                    modelShaderProgram.UpdateUniforms(*m_scene, entity, *mesh);
+                    modelShaderProgram.UpdateUniforms(*m_scene, entity, *mesh, pointLights);
                     mesh->DrawPrimitives();
                     mesh->EndDraw();
                 }

@@ -40,5 +40,5 @@ void NewState::Init()
 {
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::CornflowerBlue());
 
-    m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext(), "res/scene/scene.lua");
+    m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext(), "res/scene/forwardRendererScene.lua");
 }

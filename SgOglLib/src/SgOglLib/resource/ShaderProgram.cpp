@@ -327,12 +327,12 @@ void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformNa
     SetUniform(t_uniformName + ".hasSpecularMap", t_material.HasSpecularMap());
 }
 
-void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const std::vector<std::shared_ptr<light::PointLight>>& t_pointLights)
+void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const std::vector<light::PointLight>& t_pointLights)
 {
     for (auto i{ 0u }; i < t_pointLights.size(); ++i)
     {
         fmt::format_int f(i);
-        SetUniform(t_uniformName + "[" + f.c_str() + "]", *t_pointLights[i]);
+        SetUniform(t_uniformName + "[" + f.c_str() + "]", t_pointLights[i]);
     }
 }
 

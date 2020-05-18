@@ -13,6 +13,7 @@
 #include "Application.h"
 #include "Window.h"
 #include "math/Transform.h"
+#include "light/PointLight.h"
 #include "light/DirectionalLight.h"
 #include "scene/Scene.h"
 #include "camera/Camera.h"
@@ -20,14 +21,18 @@
 #include "resource/Material.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
-#include "ecs/component/Components.h"
 
 namespace sg::ogl::resource::shaderprogram
 {
     class ModelShaderProgram : public ShaderProgram
     {
     public:
-        void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
+        void UpdateUniforms(
+            const scene::Scene& t_scene,
+            const entt::entity t_entity,
+            const Mesh& t_currentMesh,
+            const std::vector<light::PointLight>& t_pointLights
+        ) override
         {
             auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<math::Transform>(t_entity) };
 
@@ -38,8 +43,11 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("plane", t_scene.GetCurrentClipPlane());
             SetUniform("mvpMatrix", mvp);
 
-            SetUniform("numScenePointLights", static_cast<int32_t>(t_scene.GetScenePointLights().size()));
-            SetUniform("numEntityPointLights", static_cast<int32_t>(t_scene.GetEntityPointLights().size()));
+            if (!t_pointLights.empty())
+            {
+                SetUniform("numPointLights", static_cast<int32_t>(t_pointLights.size()));
+                SetUniform("pointLights", t_pointLights);
+            }
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
 
@@ -48,9 +56,6 @@ namespace sg::ogl::resource::shaderprogram
             {
                 SetUniform("directionalLight", t_scene.GetCurrentDirectionalLight());
             }
-
-            SetUniform("scenePointLights", t_scene.GetScenePointLights());
-            SetUniform("entityPointLights", t_scene.GetEntityPointLights());
 
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 

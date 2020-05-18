@@ -86,16 +86,6 @@ const sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetCurrentDirecti
     return *m_currentDirectionalLight;
 }
 
-const sg::ogl::scene::Scene::ScenePointLightContainer& sg::ogl::scene::Scene::GetScenePointLights() const noexcept
-{
-    return m_scenePointLights;
-}
-
-const sg::ogl::scene::Scene::EntityPointLightContainer& sg::ogl::scene::Scene::GetEntityPointLights() const noexcept
-{
-    return m_entityPointLights;
-}
-
 bool sg::ogl::scene::Scene::HasDirectionalLight() const
 {
     return m_currentDirectionalLight != nullptr;
@@ -130,24 +120,6 @@ void sg::ogl::scene::Scene::SetCurrentDirectionalLight(const DirectionalLightSha
 {
     m_currentDirectionalLight.reset();
     m_currentDirectionalLight = t_directionalLight;
-}
-
-void sg::ogl::scene::Scene::AddScenePointLight(const PointLightSharedPtr& t_pointLight)
-{
-    SG_OGL_CORE_ASSERT(t_pointLight, "[Scene::AddScenePointLight()] Null pointer.");
-    m_scenePointLights.push_back(t_pointLight);
-}
-
-void sg::ogl::scene::Scene::AddEntityPointLight(const std::string& t_name, const PointLightSharedPtr& t_pointLight)
-{
-    SG_OGL_CORE_ASSERT(!t_name.empty(), "[Scene::AddEntityPointLight()] Invalid name.");
-    SG_OGL_CORE_ASSERT(t_pointLight, "[Scene::AddEntityPointLight()] Null pointer.");
-
-    if (m_entityPointLights.count(t_name) == 0)
-    {
-        m_entityPointLights.emplace(t_name, t_pointLight);
-        Log::SG_OGL_CORE_LOG_DEBUG("[Scene::AddEntityPointLight()] Entity Point Light {} added to the scene.", t_name);
-    }
 }
 
 void sg::ogl::scene::Scene::SetCurrentClipPlane(const glm::vec4& t_currentClipPlane)
@@ -291,6 +263,28 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
                 pointLightComponent["quadratic"].cast<float>()
             );
         }
+
+        if (componentKey == "CubemapComponent")
+        {
+            Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add CubemapComponent to the entity {}.", t_entityName);
+
+            // get cubemap component config
+            const auto cubemapComponent{ entity["CubemapComponent"] };
+
+            std::vector<std::string> files;
+            files.push_back(cubemapComponent["right"].cast<std::string>());
+            files.push_back(cubemapComponent["left"].cast<std::string>());
+            files.push_back(cubemapComponent["up"].cast<std::string>());
+            files.push_back(cubemapComponent["down"].cast<std::string>());
+            files.push_back(cubemapComponent["back"].cast<std::string>());
+            files.push_back(cubemapComponent["front"].cast<std::string>());
+
+            // add cubemap component
+            m_application->registry.emplace<ecs::component::CubemapComponent>(
+                e,
+                m_application->GetTextureManager().GetCubemapId(files)
+            );
+        }
     }
 }
 
@@ -355,6 +349,18 @@ void sg::ogl::scene::Scene::ConfigSceneFromFile()
     lua::LuaHelper::LoadScript(luaState, m_configFileName);
 
     {
+        // scene
+        const auto sceneTable{ luabridge::getGlobal(luaState, "scene") };
+        for (const auto& pair : pairs(sceneTable))
+        {
+            if (pair.first.cast<std::string>() == "ambientIntensity")
+            {
+                const auto scene{ luabridge::getGlobal(luaState, "scene") };
+                const auto ambientIntensity{ scene["ambientIntensity"] };
+                SetAmbientIntensity(glm::vec3(ambientIntensity["x"].cast<float>(), ambientIntensity["y"].cast<float>(), ambientIntensity["z"].cast<float>()));
+            }
+        }
+
         // add cameras
         auto cameraKeys{ lua::LuaHelper::GetTableKeys(luaState, "cameras") };
         for (const auto& cameraKey : cameraKeys)

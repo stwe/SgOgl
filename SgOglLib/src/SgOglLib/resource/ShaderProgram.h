@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <memory>
 #include <glm/glm.hpp>
+#include "light/PointLight.h"
 
 namespace entt
 {
@@ -34,7 +35,6 @@ namespace sg::ogl::scene
 namespace sg::ogl::light
 {
     struct DirectionalLight;
-    struct PointLight;
 }
 
 namespace sg::ogl::terrain
@@ -130,7 +130,7 @@ namespace sg::ogl::resource
         void SetUniform(const std::string& t_uniformName, const light::DirectionalLight& t_directionalLight);
         void SetUniform(const std::string& t_uniformName, const light::PointLight& t_pointLight);
         void SetUniform(const std::string& t_uniformName, const Material& t_material);
-        void SetUniform(const std::string& t_uniformName, const std::vector<std::shared_ptr<light::PointLight>>& t_pointLights);
+        void SetUniform(const std::string& t_uniformName, const std::vector<light::PointLight>& t_pointLights);
         void SetUniform(const std::string& t_uniformName, const std::map<std::string, std::shared_ptr<light::PointLight>>& t_pointLights);
 
         void SetUniform(const std::string& t_uniformName, const std::vector<float>& t_container);
@@ -145,7 +145,19 @@ namespace sg::ogl::resource
         [[nodiscard]] virtual bool IsBuiltIn() const;
         [[nodiscard]] virtual Options GetOptions() const;
 
-        virtual void UpdateUniforms(const scene::Scene& t_scene, entt::entity t_entity, const Mesh& t_currentMesh) {}
+        virtual void UpdateUniforms(
+            const scene::Scene& t_scene,
+            entt::entity t_entity,
+            const Mesh& t_currentMesh
+        ) {}
+
+        virtual void UpdateUniforms(
+            const scene::Scene& t_scene,
+            entt::entity t_entity,
+            const Mesh& t_currentMesh,
+            const std::vector<light::PointLight>& t_pointLights
+        ) {}
+
         virtual void UpdateUniforms(const scene::Scene& t_scene, const glm::vec3& t_vec3) {}
         virtual void UpdateUniforms(
             const scene::Scene& t_scene,

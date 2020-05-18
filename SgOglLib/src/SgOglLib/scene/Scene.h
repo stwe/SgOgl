@@ -12,7 +12,6 @@
 #include <string>
 #include <memory>
 #include <vector>
-#include <map>
 #include <unordered_map>
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
@@ -28,7 +27,6 @@ namespace sg::ogl
 namespace sg::ogl::light
 {
     struct DirectionalLight;
-    struct PointLight;
 }
 
 namespace sg::ogl::camera
@@ -48,10 +46,6 @@ namespace sg::ogl::scene
         using RendererContainer = std::vector<RenderSystemUniquePtr>;
 
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
-
-        using PointLightSharedPtr = std::shared_ptr<light::PointLight>;
-        using ScenePointLightContainer = std::vector<PointLightSharedPtr>;
-        using EntityPointLightContainer = std::map<std::string, PointLightSharedPtr>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -82,9 +76,6 @@ namespace sg::ogl::scene
         [[nodiscard]] light::DirectionalLight& GetCurrentDirectionalLight() noexcept;
         [[nodiscard]] const light::DirectionalLight& GetCurrentDirectionalLight() const noexcept;
 
-        [[nodiscard]] const ScenePointLightContainer& GetScenePointLights() const noexcept;
-        [[nodiscard]] const EntityPointLightContainer& GetEntityPointLights() const noexcept;
-
         [[nodiscard]] bool HasDirectionalLight() const;
 
         [[nodiscard]] glm::vec4 GetCurrentClipPlane() const;
@@ -96,14 +87,8 @@ namespace sg::ogl::scene
         //-------------------------------------------------
 
         void SetAmbientIntensity(const glm::vec3& t_ambientIntensity);
-
         void SetCurrentCamera(const CameraSharedPtr& t_camera);
-
         void SetCurrentDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
-
-        void AddScenePointLight(const PointLightSharedPtr& t_pointLight);
-        void AddEntityPointLight(const std::string& t_name, const PointLightSharedPtr& t_pointLight);
-
         void SetCurrentClipPlane(const glm::vec4& t_currentClipPlane);
 
         //-------------------------------------------------
@@ -131,17 +116,11 @@ namespace sg::ogl::scene
         CameraContainer m_cameras;
         RendererContainer m_renderer;
 
-
-
         CameraSharedPtr m_currentCamera;
 
         DirectionalLightSharedPtr m_currentDirectionalLight;
 
-        ScenePointLightContainer m_scenePointLights;
-        EntityPointLightContainer m_entityPointLights;
-
         glm::vec4 m_currentClipPlane{ glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f) };
-
         glm::vec3 m_ambientIntensity{ glm::vec3(0.3f) };
 
         //-------------------------------------------------
