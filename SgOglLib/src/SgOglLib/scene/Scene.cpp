@@ -285,6 +285,26 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
                 m_application->GetTextureManager().GetCubemapId(files)
             );
         }
+
+        if (componentKey == "DirectionalLightComponent")
+        {
+            Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add DirectionalLightComponent to the entity {}.", t_entityName);
+
+            // get directional light component config
+            const auto directionalLightComponent{ entity["DirectionalLightComponent"] };
+
+            // add directional light component
+            auto position{ directionalLightComponent["direction"] };
+            auto diffuse{ directionalLightComponent["diffuseIntensity"] };
+            auto specular{ directionalLightComponent["specularIntensity"] };
+
+            m_application->registry.emplace<light::DirectionalLight>(
+                e,
+                glm::vec3(position["x"].cast<float>(), position["y"].cast<float>(), position["z"].cast<float>()),
+                glm::vec3(diffuse["x"].cast<float>(), diffuse["y"].cast<float>(), diffuse["z"].cast<float>()),
+                glm::vec3(specular["x"].cast<float>(), specular["y"].cast<float>(), specular["z"].cast<float>())
+            );
+        }
     }
 }
 

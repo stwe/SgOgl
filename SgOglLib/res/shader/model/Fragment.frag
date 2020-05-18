@@ -36,13 +36,12 @@ struct PointLight
 // Uniforms
 
 uniform int numPointLights;
+uniform int numDirectionalLights;
 
 uniform vec3 ambientIntensity;
 
-uniform float hasDirectionalLight;
-uniform DirectionalLight directionalLight;
-
-uniform PointLight pointLights[12]; // max 12 point lights
+uniform PointLight pointLights[12];            // max 12 point lights
+uniform DirectionalLight directionalLights[2]; // max 2 directional lights
 
 uniform vec3 cameraPosition;
 
@@ -133,7 +132,7 @@ vec3 GetFragPos()
     return vPosition;
 }
 
-vec3 CalcDirectionalLight(vec3 normal, vec3 viewDir)
+vec3 CalcDirectionalLight(DirectionalLight directionalLight, vec3 normal, vec3 viewDir)
 {
     // negate the global light direction vector to switch its direction
     // it's now a direction vector pointing towards the light source
@@ -219,10 +218,10 @@ void main()
     // init result
     vec3 result = vec3(0.0, 0.0, 0.0);
 
-    // calc directional light
-    if (hasDirectionalLight > 0.5)
+    // calc directional lights
+    for(int i = 0; i < numDirectionalLights; ++i)
     {
-        result = CalcDirectionalLight(normal, viewDir);
+        result += CalcDirectionalLight(directionalLights[i], normal, viewDir);
     }
 
     // get fragment position in tangent or world space

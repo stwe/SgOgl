@@ -31,7 +31,8 @@ namespace sg::ogl::resource::shaderprogram
             const scene::Scene& t_scene,
             const entt::entity t_entity,
             const Mesh& t_currentMesh,
-            const std::vector<light::PointLight>& t_pointLights
+            const std::vector<light::PointLight>& t_pointLights,
+            const std::vector<light::DirectionalLight>& t_directionalLights
         ) override
         {
             auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<math::Transform>(t_entity) };
@@ -49,13 +50,13 @@ namespace sg::ogl::resource::shaderprogram
                 SetUniform("pointLights", t_pointLights);
             }
 
-            SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
-
-            SetUniform("hasDirectionalLight", t_scene.HasDirectionalLight());
-            if (t_scene.HasDirectionalLight())
+            if (!t_directionalLights.empty())
             {
-                SetUniform("directionalLight", t_scene.GetCurrentDirectionalLight());
+                SetUniform("numDirectionalLights", static_cast<int32_t>(t_directionalLights.size()));
+                SetUniform("directionalLights", t_directionalLights);
             }
+
+            SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
 
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 

@@ -16,6 +16,7 @@
 #include "ecs/component/Components.h"
 #include "math/Transform.h"
 #include "light/PointLight.h"
+#include "light/DirectionalLight.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -41,10 +42,15 @@ namespace sg::ogl::ecs::system
         void Render() override
         {
             std::vector<light::PointLight> pointLights;
-
             m_scene->GetApplicationContext()->registry.view<light::PointLight>().each([&pointLights](auto t_entity, auto& t_pointLight)
             {
                 pointLights.push_back(t_pointLight);
+            });
+
+            std::vector<light::DirectionalLight> directionalLights;
+            m_scene->GetApplicationContext()->registry.view<light::DirectionalLight>().each([&directionalLights](auto t_entity, auto& t_directionalLight)
+            {
+                directionalLights.push_back(t_directionalLight);
             });
 
             auto& modelShaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::ModelShaderProgram>() };
@@ -67,7 +73,7 @@ namespace sg::ogl::ecs::system
                 {
                     // todo: set fakeNormals
                     mesh->InitDraw();
-                    modelShaderProgram.UpdateUniforms(*m_scene, entity, *mesh, pointLights);
+                    modelShaderProgram.UpdateUniforms(*m_scene, entity, *mesh, pointLights, directionalLights);
                     mesh->DrawPrimitives();
                     mesh->EndDraw();
                 }

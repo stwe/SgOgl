@@ -65,7 +65,7 @@ entities = {
         PointLightComponent = {
             position = { x = -3.0, y = 0.3, z = 0.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
-            diffuseIntensity = { x = 1.0, y = 1.0, z = 10.0 },
+            diffuseIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             constant = 1.0,
             linear = 0.22,
@@ -76,7 +76,7 @@ entities = {
         PointLightComponent = {
             position = { x = 3.0, y = 0.3, z = 0.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
-            diffuseIntensity = { x = 10.0, y = 1.0, z = 1.0 },
+            diffuseIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             constant = 1.0,
             linear = 0.22,
@@ -85,23 +85,37 @@ entities = {
     },
     modelWithPointLight = {
         TransformComponent = {
-            position = { x = 6.0, y = 12.0, z = 0.0 },
-            rotation = { x = 90.0, y = 0.0, z = 0.0 },
-            scale = { x = 0.0625, y = 0.0625, z = 0.0625 },
+            position = { x = 6.0, y = 0.0, z = 0.0 },
+            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = 1.0, y = 1.0, z = 1.0 },
         },
         ModelComponent = {
-            path = "res/model/Lamp/Lamp.obj",
+            path = "res/model/Streetlamp/streetlamp.obj",
             showTriangles = false,
             fakeNormals = false,
         },
         PointLightComponent = {
-            position = { x = 6.0, y = 12.0, z = 0.0 },
+            position = { x = 4.0, y = 9.0, z = 0.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
-            diffuseIntensity = { x = 1.0, y = 10.0, z = 1.0 },
+            diffuseIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             constant = 1.0,
-            linear = 0.22,
-            quadratic = 0.2,
+            linear = 0.022,
+            quadratic = 0.0019,
+        },
+    },
+    directionalLight1 = {
+        DirectionalLightComponent = {
+            direction = { x = 0.5, y = -1.0, z = 0.0 },
+            diffuseIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+            specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+        },
+    },
+    sun = {
+        DirectionalLightComponent = {
+            direction = { x = -5.0, y = -1.0, z = 0.0 },
+            diffuseIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+            specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
         },
     },
     skybox = {

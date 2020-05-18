@@ -130,7 +130,10 @@ namespace sg::ogl::resource
         void SetUniform(const std::string& t_uniformName, const light::DirectionalLight& t_directionalLight);
         void SetUniform(const std::string& t_uniformName, const light::PointLight& t_pointLight);
         void SetUniform(const std::string& t_uniformName, const Material& t_material);
+
         void SetUniform(const std::string& t_uniformName, const std::vector<light::PointLight>& t_pointLights);
+        void SetUniform(const std::string& t_uniformName, const std::vector<light::DirectionalLight>& t_directionalLights);
+
         void SetUniform(const std::string& t_uniformName, const std::map<std::string, std::shared_ptr<light::PointLight>>& t_pointLights);
 
         void SetUniform(const std::string& t_uniformName, const std::vector<float>& t_container);
@@ -155,7 +158,8 @@ namespace sg::ogl::resource
             const scene::Scene& t_scene,
             entt::entity t_entity,
             const Mesh& t_currentMesh,
-            const std::vector<light::PointLight>& t_pointLights
+            const std::vector<light::PointLight>& t_pointLights,
+            const std::vector<light::DirectionalLight>& t_directionalLights
         ) {}
 
         virtual void UpdateUniforms(const scene::Scene& t_scene, const glm::vec3& t_vec3) {}

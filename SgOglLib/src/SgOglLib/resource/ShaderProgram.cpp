@@ -336,6 +336,15 @@ void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformNa
     }
 }
 
+void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const std::vector<light::DirectionalLight>& t_directionalLights)
+{
+    for (auto i{ 0u }; i < t_directionalLights.size(); ++i)
+    {
+        fmt::format_int f(i);
+        SetUniform(t_uniformName + "[" + f.c_str() + "]", t_directionalLights[i]);
+    }
+}
+
 void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const std::map<std::string, std::shared_ptr<light::PointLight>>& t_pointLights)
 {
     auto i{ 0 };

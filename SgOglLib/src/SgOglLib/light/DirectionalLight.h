@@ -21,6 +21,16 @@ namespace sg::ogl::light
 
         DirectionalLight() = default;
 
+        DirectionalLight(
+            const glm::vec3& t_direction,
+            const glm::vec3& t_diffuseIntensity,
+            const glm::vec3& t_specularIntensity
+        )
+            : direction{ t_direction }
+            , diffuseIntensity{ t_diffuseIntensity }
+            , specularIntensity{ t_specularIntensity }
+        {}
+
         DirectionalLight(const DirectionalLight& t_other) = default;
         DirectionalLight(DirectionalLight&& t_other) noexcept = default;
         DirectionalLight& operator=(const DirectionalLight& t_other) = default;
