@@ -17,6 +17,7 @@
 #include "math/Transform.h"
 #include "light/PointLight.h"
 #include "light/DirectionalLight.h"
+#include "light/Sun.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -35,9 +36,7 @@ namespace sg::ogl::ecs::system
         // Override
         //-------------------------------------------------
 
-        void Update(double t_dt) override
-        {
-        }
+        void Update(double t_dt) override {}
 
         void Render() override
         {
@@ -51,6 +50,11 @@ namespace sg::ogl::ecs::system
             m_scene->GetApplicationContext()->registry.view<light::DirectionalLight>().each([&directionalLights](auto t_entity, auto& t_directionalLight)
             {
                 directionalLights.push_back(t_directionalLight);
+            });
+
+            m_scene->GetApplicationContext()->registry.view<light::Sun>().each([&directionalLights](auto t_entity, auto& t_sunLight)
+            {
+                directionalLights.push_back(t_sunLight);
             });
 
             auto& modelShaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::ModelShaderProgram>() };

@@ -15,7 +15,6 @@
 #include "scene/Scene.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
-#include "ecs/component/Components.h"
 
 namespace sg::ogl::resource::shaderprogram
 {
@@ -24,22 +23,20 @@ namespace sg::ogl::resource::shaderprogram
     public:
         void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
         {
-            /*
-            auto& sunComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::SunComponent>(t_entity) };
-            const auto sunPosition{ sunComponent.sun->GetWorldPosition(t_scene.GetCurrentCamera().GetPosition()) };
+            auto& sunComponent{ t_scene.GetApplicationContext()->registry.get<light::Sun>(t_entity) };
+            const auto sunPosition{ sunComponent.GetWorldPosition(t_scene.GetCurrentCamera().GetPosition()) };
 
             auto modelMatrix{ glm::mat4(1.0f) };
             modelMatrix = translate(modelMatrix, sunPosition);
             auto mvMatrix{ ApplyViewMatrix(modelMatrix, t_scene.GetCurrentCamera().GetViewMatrix()) };
-            mvMatrix = scale(mvMatrix, glm::vec3(sunComponent.sun->scale));
+            mvMatrix = scale(mvMatrix, glm::vec3(sunComponent.scale));
 
             const auto projectionMatrix{ t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix() };
 
             SetUniform("mvpMatrix", projectionMatrix * mvMatrix);
 
             SetUniform("sunTexture", 0);
-            TextureManager::BindForReading(sunComponent.sun->textureId, GL_TEXTURE0);
-            */
+            TextureManager::BindForReading(sunComponent.textureId, GL_TEXTURE0);
         }
 
         [[nodiscard]] std::string GetFolderName() const override

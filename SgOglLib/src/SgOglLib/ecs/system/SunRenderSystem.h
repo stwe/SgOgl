@@ -13,7 +13,7 @@
 #include "resource/shaderprogram/SunShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "resource/Mesh.h"
-#include "ecs/component/Components.h"
+#include "light/Sun.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -40,8 +40,7 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            /*
-            auto view{ m_scene->GetApplicationContext()->registry.view<component::SunComponent>() };
+            auto view{ m_scene->GetApplicationContext()->registry.view<light::Sun>() };
 
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::SunShaderProgram>() };
             shaderProgram.Bind();
@@ -53,7 +52,7 @@ namespace sg::ogl::ecs::system
                 m_sunQuadMesh->DrawPrimitives(GL_TRIANGLE_STRIP);
                 m_sunQuadMesh->EndDraw();
             }
-            */
+
             resource::ShaderProgram::Unbind();
         }
 

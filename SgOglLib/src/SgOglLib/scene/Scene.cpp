@@ -16,6 +16,7 @@
 #include "math/Transform.h"
 #include "light/DirectionalLight.h"
 #include "light/PointLight.h"
+#include "light/Sun.h"
 #include "resource/ModelManager.h"
 #include "camera/Camera.h"
 #include "camera/FirstPersonCamera.h"
@@ -24,6 +25,7 @@
 #include "ecs/component/Components.h"
 #include "ecs/system/ForwardRenderSystem.h"
 #include "ecs/system/SkyboxRenderSystem.h"
+#include "ecs/system/SunRenderSystem.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -128,7 +130,36 @@ void sg::ogl::scene::Scene::SetCurrentClipPlane(const glm::vec4& t_currentClipPl
 }
 
 //-------------------------------------------------
-// Lua data
+// Logic
+//-------------------------------------------------
+
+void sg::ogl::scene::Scene::Input()
+{
+    GetCurrentCamera().Input();
+}
+
+void sg::ogl::scene::Scene::Update(const double t_dt)
+{
+    GetCurrentCamera().Update(t_dt);
+
+    for (auto& renderer : m_renderer)
+    {
+        renderer->Update(t_dt);
+    }
+}
+
+void sg::ogl::scene::Scene::Render()
+{
+    for (auto& renderer : m_renderer)
+    {
+        renderer->PrepareRendering();
+        renderer->Render();
+        renderer->FinishRendering();
+    }
+}
+
+//-------------------------------------------------
+// Lua config file
 //-------------------------------------------------
 
 void sg::ogl::scene::Scene::AddCamera(lua_State* t_luaState, const std::string& t_cameraName)
@@ -305,6 +336,29 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
                 glm::vec3(specular["x"].cast<float>(), specular["y"].cast<float>(), specular["z"].cast<float>())
             );
         }
+
+        if (componentKey == "SunComponent")
+        {
+            Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add SunComponent to the entity {}.", t_entityName);
+
+            // get sun component config
+            const auto sunComponent{ entity["SunComponent"] };
+
+            // add sun component
+            auto position{ sunComponent["direction"] };
+            auto diffuse{ sunComponent["diffuseIntensity"] };
+            auto specular{ sunComponent["specularIntensity"] };
+            auto sunTextureId{ GetApplicationContext()->GetTextureManager().GetTextureIdFromPath(sunComponent["sunTexturePath"].cast<std::string>()) };
+
+            m_application->registry.emplace<light::Sun>(
+                e,
+                glm::vec3(position["x"].cast<float>(), position["y"].cast<float>(), position["z"].cast<float>()),
+                glm::vec3(diffuse["x"].cast<float>(), diffuse["y"].cast<float>(), diffuse["z"].cast<float>()),
+                glm::vec3(specular["x"].cast<float>(), specular["y"].cast<float>(), specular["z"].cast<float>()),
+                sunTextureId,
+                sunComponent["scale"].cast<float>()
+            );
+        }
     }
 }
 
@@ -321,40 +375,13 @@ void sg::ogl::scene::Scene::AddRenderer(const std::string& t_rendererName)
         Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
         m_renderer.emplace_back(std::make_unique<ecs::system::SkyboxRenderSystem>(this));
     }
-}
 
-//-------------------------------------------------
-// Logic
-//-------------------------------------------------
-
-void sg::ogl::scene::Scene::Input()
-{
-    GetCurrentCamera().Input();
-}
-
-void sg::ogl::scene::Scene::Update(const double t_dt)
-{
-    GetCurrentCamera().Update(t_dt);
-
-    for (auto& renderer : m_renderer)
+    if (t_rendererName == "SunRenderSystem")
     {
-        renderer->Update(t_dt);
+        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
+        m_renderer.emplace_back(std::make_unique<ecs::system::SunRenderSystem>(this));
     }
 }
-
-void sg::ogl::scene::Scene::Render()
-{
-    for (auto& renderer : m_renderer)
-    {
-        renderer->PrepareRendering();
-        renderer->Render();
-        renderer->FinishRendering();
-    }
-}
-
-//-------------------------------------------------
-// Helper
-//-------------------------------------------------
 
 void sg::ogl::scene::Scene::ConfigSceneFromFile()
 {

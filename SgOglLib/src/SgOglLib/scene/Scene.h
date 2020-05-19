@@ -73,10 +73,10 @@ namespace sg::ogl::scene
         [[nodiscard]] camera::Camera& GetCurrentCamera() noexcept;
         [[nodiscard]] const camera::Camera& GetCurrentCamera() const noexcept;
 
-        [[nodiscard]] light::DirectionalLight& GetCurrentDirectionalLight() noexcept;
-        [[nodiscard]] const light::DirectionalLight& GetCurrentDirectionalLight() const noexcept;
+        [[nodiscard]] [[deprecated]] light::DirectionalLight& GetCurrentDirectionalLight() noexcept;
+        [[nodiscard]] [[deprecated]] const light::DirectionalLight& GetCurrentDirectionalLight() const noexcept;
 
-        [[nodiscard]] bool HasDirectionalLight() const;
+        [[nodiscard]] [[deprecated]] bool HasDirectionalLight() const;
 
         [[nodiscard]] glm::vec4 GetCurrentClipPlane() const;
 
@@ -90,14 +90,6 @@ namespace sg::ogl::scene
         void SetCurrentCamera(const CameraSharedPtr& t_camera);
         void SetCurrentDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
         void SetCurrentClipPlane(const glm::vec4& t_currentClipPlane);
-
-        //-------------------------------------------------
-        // Lua data
-        //-------------------------------------------------
-
-        void AddCamera(lua_State* t_luaState, const std::string& t_cameraName);
-        void AddEntity(lua_State* t_luaState, const std::string& t_entityName) const;
-        void AddRenderer(const std::string& t_rendererName);
 
         //-------------------------------------------------
         // Logic
@@ -124,8 +116,12 @@ namespace sg::ogl::scene
         glm::vec3 m_ambientIntensity{ glm::vec3(0.3f) };
 
         //-------------------------------------------------
-        // Helper
+        // Lua config file
         //-------------------------------------------------
+
+        void AddCamera(lua_State* t_luaState, const std::string& t_cameraName);
+        void AddEntity(lua_State* t_luaState, const std::string& t_entityName) const;
+        void AddRenderer(const std::string& t_rendererName);
 
         void ConfigSceneFromFile();
     };

@@ -23,6 +23,17 @@ namespace sg::ogl::light
 
         Sun() = default;
 
+        Sun(
+            const glm::vec3& t_direction,
+            const glm::vec3& t_diffuseIntensity,
+            const glm::vec3& t_specularIntensity,
+            const uint32_t t_textureId, const float t_scale
+        )
+            : DirectionalLight(t_direction, t_diffuseIntensity, t_specularIntensity)
+            , textureId{ t_textureId }
+            , scale{ t_scale }
+        {}
+
         Sun(const Sun& t_other) = default;
         Sun(Sun&& t_other) noexcept = default;
         Sun& operator=(const Sun& t_other) = default;

@@ -61,6 +61,7 @@ entities = {
             fakeNormals = false,
         },
     },
+    -- point lights
     pointLight1 = {
         PointLightComponent = {
             position = { x = -3.0, y = 0.3, z = 0.0 },
@@ -104,20 +105,24 @@ entities = {
             quadratic = 0.0019,
         },
     },
+    -- directional lights
     directionalLight1 = {
         DirectionalLightComponent = {
             direction = { x = 0.5, y = -1.0, z = 0.0 },
-            diffuseIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+            diffuseIntensity = { x = 1.0, y = 10.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
         },
     },
     sun = {
-        DirectionalLightComponent = {
-            direction = { x = -5.0, y = -1.0, z = 0.0 },
-            diffuseIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+        SunComponent = {
+            sunTexturePath = "res/sun/sun.png",
+            scale = 10.0,
+            direction = { x = -0.5, y = -1.0, z = 0.0 },
+            diffuseIntensity = { x = 10.0, y = 1.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
         },
     },
+    -- other
     skybox = {
         CubemapComponent = {
             right = "res/skybox/sky1/sRight.png",
@@ -125,7 +130,7 @@ entities = {
             up = "res/skybox/sky1/sUp.png",
             down = "res/skybox/sky1/sDown.png",
             back = "res/skybox/sky1/sBack.png",
-            front = "res/skybox/sky1/sFront.png"
+            front = "res/skybox/sky1/sFront.png",
         },
     },
 }
@@ -136,5 +141,6 @@ entities = {
 
 renderer = {
     ForwardRenderer = "ForwardRenderSystem",
-    SkyboxRenderer = "SkyboxRenderSystem"
+    SkyboxRenderer = "SkyboxRenderSystem",
+    SunRenderer = "SunRenderSystem",
 }
