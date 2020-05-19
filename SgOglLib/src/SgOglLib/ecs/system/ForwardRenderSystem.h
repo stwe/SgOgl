@@ -30,7 +30,9 @@ namespace sg::ogl::ecs::system
 
         explicit ForwardRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
-        {}
+        {
+            debugName = "ForwardRenderer";
+        }
 
         //-------------------------------------------------
         // Override

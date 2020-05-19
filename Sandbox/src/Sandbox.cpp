@@ -10,10 +10,6 @@
 #include "SgOgl.h"
 #include "SgOglEntryPoint.h"
 #include "ClientLog.h"
-#include "example/rendering/DeferredRenderingState.h"
-#include "example/rendering/ForwardRenderingState.h"
-#include "example/terrain/TerrainState.h"
-#include "example/water/WaterState.h"
 #include "new/NewState.h"
 
 class Sandbox final : public sg::ogl::Application

@@ -37,6 +37,7 @@ public:
     ~NewState() noexcept override
     {
         ClientLog::SG_SANDBOX_LOG_DEBUG("[NewState::~NewState()] Destruct NewState.");
+        CleanUpImGui();
     }
 
     //-------------------------------------------------
@@ -52,9 +53,19 @@ protected:
 private:
     SceneUniquePtr m_scene;
 
+    float m_temp{ 0.0f };
+
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------
 
     void Init();
+
+    //-------------------------------------------------
+    // ImGui
+    //-------------------------------------------------
+
+    void InitImGui() const;
+    void RenderImGui() const;
+    static void CleanUpImGui();
 };

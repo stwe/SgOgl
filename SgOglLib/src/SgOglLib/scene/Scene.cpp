@@ -430,5 +430,21 @@ void sg::ogl::scene::Scene::ConfigSceneFromFile()
         }
     }
 
+    // sort renderer by priority
+    std::sort(m_renderer.begin(), m_renderer.end(), [](const auto& t_lhs, const auto& t_rhs)
+    {
+        return t_lhs->priority > t_rhs->priority;
+    });
+
+    Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] ---------------------------");
+    Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] Renderer priority settings.");
+    auto i{ 0 };
+    for (const auto& renderer : m_renderer)
+    {
+        Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] {}. {}", i, renderer->debugName);
+        i++;
+    }
+    Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] ---------------------------");
+
     lua_close(luaState);
 }

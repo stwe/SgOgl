@@ -13,11 +13,11 @@ scene = {
 cameras = {
     firstCamera = {
         type = "first",
-        cameraVelocity = 4.0,
+        cameraVelocity = 24.0,
         mouseSensitivity = 0.1,
-        position = { x = 16.0, y = 6.0, z = 10.0 },
-        yaw = -146.0,
-        pitch = -0.2,
+        position = { x = 308.0, y = 176.0, z = 268.0 },
+        yaw = -131.0,
+        pitch = -6.0,
         current = true,
     },
     secondCamera = {
@@ -41,7 +41,7 @@ entities = {
         TransformComponent = {
             position = { x = 0.0, y = 0.0, z = 0.0 },
             rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 10.0, y = 1.0, z = 10.0 },
+            scale = { x = 100.0, y = 1.0, z = 100.0 },
         },
         ModelComponent = {
             path = "res/primitive/plane1/plane1.obj",
@@ -64,24 +64,24 @@ entities = {
     -- point lights
     pointLight1 = {
         PointLightComponent = {
-            position = { x = -3.0, y = 0.3, z = 0.0 },
+            position = { x = -50.0, y = 4.0, z = 40.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
-            diffuseIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+            diffuseIntensity = { x = 2.0, y = 1.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             constant = 1.0,
-            linear = 0.22,
-            quadratic = 0.2,
+            linear = 0.045,
+            quadratic = 0.0075,
         },
     },
     pointLight2 = {
         PointLightComponent = {
-            position = { x = 3.0, y = 0.3, z = 0.0 },
+            position = { x = 10.0, y = 4.0, z = 50.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
-            diffuseIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+            diffuseIntensity = { x = 1.0, y = 2.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             constant = 1.0,
-            linear = 0.22,
-            quadratic = 0.2,
+            linear = 0.045,
+            quadratic = 0.0075,
         },
     },
     modelWithPointLight = {
@@ -106,19 +106,21 @@ entities = {
         },
     },
     -- directional lights
+    --[[
     directionalLight1 = {
         DirectionalLightComponent = {
             direction = { x = 0.5, y = -1.0, z = 0.0 },
-            diffuseIntensity = { x = 1.0, y = 10.0, z = 1.0 },
+            diffuseIntensity = { x = 0.7, y = 0.7, z = 0.7 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
         },
     },
+    --]]
     sun = {
         SunComponent = {
             sunTexturePath = "res/sun/sun.png",
             scale = 10.0,
             direction = { x = -0.5, y = -1.0, z = 0.0 },
-            diffuseIntensity = { x = 10.0, y = 1.0, z = 1.0 },
+            diffuseIntensity = { x = 0.4, y = 0.4, z = 0.4 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
         },
     },
@@ -141,6 +143,6 @@ entities = {
 
 renderer = {
     ForwardRenderer = "ForwardRenderSystem",
-    SkyboxRenderer = "SkyboxRenderSystem",
     SunRenderer = "SunRenderSystem",
+    SkyboxRenderer = "SkyboxRenderSystem",
 }

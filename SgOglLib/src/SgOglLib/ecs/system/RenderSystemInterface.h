@@ -9,11 +9,20 @@
 
 #pragma once
 
+#include <string>
+
 namespace sg::ogl::ecs::system
 {
     class RenderSystemInterface
     {
     public:
+        //-------------------------------------------------
+        // Public member
+        //-------------------------------------------------
+
+        int priority{ 100 };
+        std::string debugName;
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
