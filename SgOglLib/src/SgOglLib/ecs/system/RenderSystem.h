@@ -34,6 +34,16 @@ namespace sg::ogl::ecs::system
             LoadShader();
         }
 
+        RenderSystem(const int t_priority, scene::Scene* t_scene)
+            : m_scene{ t_scene }
+        {
+            SG_OGL_CORE_ASSERT(m_scene, "[RenderSystem::RenderSystem()] Null pointer.");
+
+            priority = t_priority;
+
+            LoadShader();
+        }
+
         RenderSystem(const RenderSystem& t_other) = delete;
         RenderSystem(RenderSystem&& t_other) noexcept = delete;
         RenderSystem& operator=(const RenderSystem& t_other) = delete;

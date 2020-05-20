@@ -36,7 +36,15 @@ namespace sg::ogl::ecs::system
         explicit DeferredRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
         {
-            priority = 9999; // todo render first
+            debugName = "DeferredRenderer";
+
+            m_gbuffer = std::make_unique<buffer::GBufferFbo>(m_scene->GetApplicationContext());
+            m_quadMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::QUAD_MESH);
+        }
+
+        DeferredRenderSystem(const int t_priority, scene::Scene* t_scene)
+            : RenderSystem(t_priority, t_scene)
+        {
             debugName = "DeferredRenderer";
 
             m_gbuffer = std::make_unique<buffer::GBufferFbo>(m_scene->GetApplicationContext());

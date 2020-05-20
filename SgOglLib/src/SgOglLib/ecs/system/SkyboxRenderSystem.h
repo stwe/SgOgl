@@ -30,7 +30,13 @@ namespace sg::ogl::ecs::system
             : RenderSystem(t_scene)
         {
             m_skyboxMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::SKYBOX_MESH);
-            priority = 999; // render first
+            debugName = "SkyboxRenderer";
+        }
+
+        SkyboxRenderSystem(const int t_priority, scene::Scene* t_scene)
+            : RenderSystem(t_priority, t_scene)
+        {
+            m_skyboxMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::SKYBOX_MESH);
             debugName = "SkyboxRenderer";
         }
 

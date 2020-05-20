@@ -33,6 +33,13 @@ namespace sg::ogl::ecs::system
             debugName = "SunRenderer";
         }
 
+        SunRenderSystem(const int t_priority, scene::Scene* t_scene)
+            : RenderSystem(t_priority, t_scene)
+        {
+            m_sunQuadMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::SUN_QUAD_MESH);
+            debugName = "SunRenderer";
+        }
+
         //-------------------------------------------------
         // Override
         //-------------------------------------------------

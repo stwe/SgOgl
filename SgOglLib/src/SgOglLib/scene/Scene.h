@@ -121,7 +121,7 @@ namespace sg::ogl::scene
 
         void AddCamera(lua_State* t_luaState, const std::string& t_cameraName);
         void AddEntity(lua_State* t_luaState, const std::string& t_entityName) const;
-        void AddRenderer(const std::string& t_rendererName);
+        void AddRenderer(int t_priority, const std::string& t_rendererName);
 
         void ConfigSceneFromFile();
     };

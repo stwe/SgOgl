@@ -363,30 +363,30 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
     }
 }
 
-void sg::ogl::scene::Scene::AddRenderer(const std::string& t_rendererName)
+void sg::ogl::scene::Scene::AddRenderer(const int t_priority, const std::string& t_rendererName)
 {
     if (t_rendererName == "ForwardRenderSystem")
     {
         Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
-        m_renderer.emplace_back(std::make_unique<ecs::system::ForwardRenderSystem>(this));
+        m_renderer.emplace_back(std::make_unique<ecs::system::ForwardRenderSystem>(t_priority, this));
     }
 
     if (t_rendererName == "DeferredRenderSystem")
     {
         Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
-        m_renderer.emplace_back(std::make_unique<ecs::system::DeferredRenderSystem>(this));
+        m_renderer.emplace_back(std::make_unique<ecs::system::DeferredRenderSystem>(t_priority, this));
     }
 
     if (t_rendererName == "SkyboxRenderSystem")
     {
         Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
-        m_renderer.emplace_back(std::make_unique<ecs::system::SkyboxRenderSystem>(this));
+        m_renderer.emplace_back(std::make_unique<ecs::system::SkyboxRenderSystem>(t_priority, this));
     }
 
     if (t_rendererName == "SunRenderSystem")
     {
         Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
-        m_renderer.emplace_back(std::make_unique<ecs::system::SunRenderSystem>(this));
+        m_renderer.emplace_back(std::make_unique<ecs::system::SunRenderSystem>(t_priority, this));
     }
 }
 
@@ -433,7 +433,10 @@ void sg::ogl::scene::Scene::ConfigSceneFromFile()
         const auto rendererTable{ luabridge::getGlobal(luaState, "renderer") };
         for (const auto& pair : pairs(rendererTable))
         {
-            AddRenderer(pair.second.cast<std::string>());
+            const auto priority{ rendererTable[pair.first.cast<std::string>()]["priority"].cast<int>() };
+            const auto name{ rendererTable[pair.first.cast<std::string>()]["name"].cast<std::string>() };
+
+            AddRenderer(priority, name);
         }
     }
 

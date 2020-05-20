@@ -34,6 +34,12 @@ namespace sg::ogl::ecs::system
             debugName = "ForwardRenderer";
         }
 
+        ForwardRenderSystem(const int t_priority, scene::Scene* t_scene)
+            : RenderSystem(t_priority, t_scene)
+        {
+            debugName = "ForwardRenderer";
+        }
+
         //-------------------------------------------------
         // Override
         //-------------------------------------------------

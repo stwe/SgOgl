@@ -142,8 +142,8 @@ entities = {
 --------------
 
 renderer = {
-    --ForwardRenderer = "ForwardRenderSystem",
-    DeferredRenderer = "DeferredRenderSystem",
-    SunRenderer = "SunRenderSystem",
-    SkyboxRenderer = "SkyboxRenderSystem",
+    --ForwardRenderer = { priority = 0, name = "ForwardRenderSystem" },
+    DeferredRenderer = { priority = 999, name = "DeferredRenderSystem" },
+    SkyboxRenderer = { priority = 10, name = "SkyboxRenderSystem" },
+    SunRenderer = { priority = 0, name = "SunRenderSystem" },
 }
