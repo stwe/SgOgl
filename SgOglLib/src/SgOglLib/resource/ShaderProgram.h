@@ -163,10 +163,13 @@ namespace sg::ogl::resource
         ) {}
 
         virtual void UpdateUniforms(const scene::Scene& t_scene, const glm::vec3& t_vec3) {}
+
         virtual void UpdateUniforms(
             const scene::Scene& t_scene,
-            const Mesh& t_mesh,
-            const buffer::GBufferFbo& t_gbufferFbo) {}
+            const buffer::GBufferFbo& t_gbufferFbo,
+            const std::vector<light::PointLight>& t_pointLights,
+            const std::vector<light::DirectionalLight>& t_directionalLights
+        ) {}
 
         [[deprecated]] virtual void UpdateUniforms(const terrain::Terrain& t_terrain) {}
         virtual void UpdateUniforms(const terrain::TerrainConfig& t_terrainConfig) {}

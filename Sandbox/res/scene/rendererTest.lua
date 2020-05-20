@@ -142,7 +142,8 @@ entities = {
 --------------
 
 renderer = {
-    ForwardRenderer = "ForwardRenderSystem",
+    --ForwardRenderer = "ForwardRenderSystem",
+    DeferredRenderer = "DeferredRenderSystem",
     SunRenderer = "SunRenderSystem",
     SkyboxRenderer = "SkyboxRenderSystem",
 }

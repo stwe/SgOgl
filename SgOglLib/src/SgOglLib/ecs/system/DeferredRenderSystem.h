@@ -17,6 +17,7 @@
 #include "resource/ModelManager.h"
 #include "resource/Model.h"
 #include "ecs/component/Components.h"
+#include "math/Transform.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -35,6 +36,9 @@ namespace sg::ogl::ecs::system
         explicit DeferredRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
         {
+            priority = 9999; // todo render first
+            debugName = "DeferredRenderer";
+
             m_gbuffer = std::make_unique<buffer::GBufferFbo>(m_scene->GetApplicationContext());
             m_quadMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::QUAD_MESH);
         }
@@ -49,10 +53,7 @@ namespace sg::ogl::ecs::system
         // Override
         //-------------------------------------------------
 
-        void Update(double t_dt) override
-        {
-            AddEntityPointLights();
-        }
+        void Update(double t_dt) override {}
 
         void Render() override
         {
@@ -93,12 +94,9 @@ namespace sg::ogl::ecs::system
             auto& gbufferPassShaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::GBufferPassShaderProgram>() };
             gbufferPassShaderProgram.Bind();
 
-            /*
             auto view{ m_scene->GetApplicationContext()->registry.view<
                 component::ModelComponent,
-                component::TransformComponent>(
-                    entt::exclude<component::SkydomeComponent>
-                )
+                math::Transform>()
             };
 
             for (auto entity : view)
@@ -123,7 +121,7 @@ namespace sg::ogl::ecs::system
                     OpenGl::DisableWireframeMode();
                 }
             }
-            */
+
             m_gbuffer->UnbindFbo();
 
             resource::ShaderProgram::Unbind();
@@ -133,41 +131,32 @@ namespace sg::ogl::ecs::system
         {
             OpenGl::ClearColorAndDepthBuffer();
 
+            std::vector<light::PointLight> pointLights;
+            m_scene->GetApplicationContext()->registry.view<light::PointLight>().each([&pointLights](auto t_entity, auto& t_pointLight)
+            {
+                pointLights.push_back(t_pointLight);
+            });
+
+            std::vector<light::DirectionalLight> directionalLights;
+            m_scene->GetApplicationContext()->registry.view<light::DirectionalLight>().each([&directionalLights](auto t_entity, auto& t_directionalLight)
+            {
+                directionalLights.push_back(t_directionalLight);
+            });
+
+            m_scene->GetApplicationContext()->registry.view<light::Sun>().each([&directionalLights](auto t_entity, auto& t_sunLight)
+                {
+                directionalLights.push_back(t_sunLight);
+            });
+
             auto& lightingPassShaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::LightingPassShaderProgram>() };
             lightingPassShaderProgram.Bind();
 
             m_quadMesh->InitDraw();
-            lightingPassShaderProgram.UpdateUniforms(*m_scene, *m_quadMesh, *m_gbuffer);
+            lightingPassShaderProgram.UpdateUniforms(*m_scene, *m_gbuffer, pointLights, directionalLights);
             m_quadMesh->DrawPrimitives(GL_TRIANGLE_STRIP);
             m_quadMesh->EndDraw();
 
             resource::ShaderProgram::Unbind();
-        }
-
-        //-------------------------------------------------
-        // Point lights
-        //-------------------------------------------------
-
-        /**
-         * @brief A Point Light is added to the Scene if it does not already exist there.
-         */
-        void AddEntityPointLights() const
-        {
-            /*
-            auto view{ m_scene->GetApplicationContext()->registry.view<
-                component::ModelComponent,
-                component::TransformComponent,
-                component::PointLightComponent>()
-            };
-
-            for (auto entity : view)
-            {
-                auto& pointLightComponent{ view.get<component::PointLightComponent>(entity) };
-                m_scene->AddEntityPointLight(pointLightComponent.name, pointLightComponent.pointLight);
-
-                // todo: remove
-            }
-            */
         }
     };
 }

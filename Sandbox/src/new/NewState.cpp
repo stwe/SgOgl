@@ -53,7 +53,7 @@ void NewState::Init()
 
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::Black());
 
-    m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext(), "res/scene/forwardRendererScene.lua");
+    m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext(), "res/scene/rendererTest.lua");
 }
 
 //-------------------------------------------------

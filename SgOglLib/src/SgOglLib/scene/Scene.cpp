@@ -24,6 +24,7 @@
 #include "lua/LuaHelper.h"
 #include "ecs/component/Components.h"
 #include "ecs/system/ForwardRenderSystem.h"
+#include "ecs/system/DeferredRenderSystem.h"
 #include "ecs/system/SkyboxRenderSystem.h"
 #include "ecs/system/SunRenderSystem.h"
 
@@ -368,6 +369,12 @@ void sg::ogl::scene::Scene::AddRenderer(const std::string& t_rendererName)
     {
         Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
         m_renderer.emplace_back(std::make_unique<ecs::system::ForwardRenderSystem>(this));
+    }
+
+    if (t_rendererName == "DeferredRenderSystem")
+    {
+        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
+        m_renderer.emplace_back(std::make_unique<ecs::system::DeferredRenderSystem>(this));
     }
 
     if (t_rendererName == "SkyboxRenderSystem")

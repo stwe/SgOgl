@@ -22,21 +22,26 @@ namespace sg::ogl::resource::shaderprogram
     class LightingPassShaderProgram : public ShaderProgram
     {
     public:
-        void UpdateUniforms(const scene::Scene& t_scene, const Mesh& t_mesh, const buffer::GBufferFbo& t_gbufferFbo) override
+        void UpdateUniforms(
+            const scene::Scene& t_scene,
+            const buffer::GBufferFbo& t_gbufferFbo,
+            const std::vector<light::PointLight>& t_pointLights,
+            const std::vector<light::DirectionalLight>& t_directionalLights
+        ) override
         {
-            //SetUniform("numScenePointLights", static_cast<int32_t>(t_scene.GetScenePointLights().size()));
-            //SetUniform("numEntityPointLights", static_cast<int32_t>(t_scene.GetEntityPointLights().size()));
-
-            SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
-
-            SetUniform("hasDirectionalLight", t_scene.HasDirectionalLight());
-            if (t_scene.HasDirectionalLight())
+            if (!t_pointLights.empty())
             {
-                SetUniform("directionalLight", t_scene.GetCurrentDirectionalLight());
+                SetUniform("numPointLights", static_cast<int32_t>(t_pointLights.size()));
+                SetUniform("pointLights", t_pointLights);
             }
 
-            //SetUniform("scenePointLights", t_scene.GetScenePointLights());
-            //SetUniform("entityPointLights", t_scene.GetEntityPointLights());
+            if (!t_directionalLights.empty())
+            {
+                SetUniform("numDirectionalLights", static_cast<int32_t>(t_directionalLights.size()));
+                SetUniform("directionalLights", t_directionalLights);
+            }
+
+            SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
 
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
@@ -46,6 +51,8 @@ namespace sg::ogl::resource::shaderprogram
             TextureManager::BindForReading(t_gbufferFbo.GetNormalTextureId(), GL_TEXTURE1);
             SetUniform("gAlbedoSpec", 2);
             TextureManager::BindForReading(t_gbufferFbo.GetAlbedoSpecTextureId(), GL_TEXTURE2);
+
+            // todo: shininess?
         }
 
         [[nodiscard]] std::string GetFolderName() const override
