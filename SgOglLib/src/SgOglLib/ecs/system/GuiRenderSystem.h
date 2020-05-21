@@ -14,6 +14,7 @@
 #include "resource/ShaderManager.h"
 #include "resource/Mesh.h"
 #include "ecs/component/Components.h"
+#include "math/Transform.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -30,6 +31,14 @@ namespace sg::ogl::ecs::system
             : RenderSystem(t_scene)
         {
             m_guiMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::GUI_MESH);
+            debugName = "GuiRenderer";
+        }
+
+        GuiRenderSystem(const int t_priority, scene::Scene* t_scene)
+            : RenderSystem(t_priority, t_scene)
+        {
+            m_guiMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::GUI_MESH);
+            debugName = "GuiRenderer";
         }
 
         //-------------------------------------------------
@@ -40,9 +49,8 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            /*
             auto view{ m_scene->GetApplicationContext()->registry.view<
-                component::TransformComponent,
+                math::Transform,
                 component::GuiComponent>()
             };
 
@@ -56,7 +64,7 @@ namespace sg::ogl::ecs::system
                 m_guiMesh->DrawPrimitives(GL_TRIANGLE_STRIP);
                 m_guiMesh->EndDraw();
             }
-            */
+
             resource::ShaderProgram::Unbind();
         }
 

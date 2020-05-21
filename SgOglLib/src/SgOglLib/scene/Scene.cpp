@@ -27,6 +27,7 @@
 #include "ecs/system/DeferredRenderSystem.h"
 #include "ecs/system/SkyboxRenderSystem.h"
 #include "ecs/system/SunRenderSystem.h"
+#include "ecs/system/GuiRenderSystem.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -360,6 +361,20 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
                 sunComponent["scale"].cast<float>()
             );
         }
+
+        if (componentKey == "GuiComponent")
+        {
+            Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add GuiComponent to the entity {}.", t_entityName);
+
+            // get gui component config
+            const auto guiComponent{ entity["GuiComponent"] };
+
+            // add gui component
+            m_application->registry.emplace<ecs::component::GuiComponent>(
+                e,
+                m_application->GetTextureManager().GetTextureIdFromPath(guiComponent["guiTexturePath"].cast<std::string>())
+            );
+        }
     }
 }
 
@@ -387,6 +402,12 @@ void sg::ogl::scene::Scene::AddRenderer(const int t_priority, const std::string&
     {
         Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
         m_renderer.emplace_back(std::make_unique<ecs::system::SunRenderSystem>(t_priority, this));
+    }
+
+    if (t_rendererName == "GuiRenderSystem")
+    {
+        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
+        m_renderer.emplace_back(std::make_unique<ecs::system::GuiRenderSystem>(t_priority, this));
     }
 }
 

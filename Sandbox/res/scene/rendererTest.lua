@@ -114,7 +114,7 @@ entities = {
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
         },
     },
-    --]]
+    ]]
     sun = {
         SunComponent = {
             sunTexturePath = "res/sun/sun.png",
@@ -124,7 +124,7 @@ entities = {
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
         },
     },
-    -- other
+    -- skybox, gui, text
     skybox = {
         CubemapComponent = {
             right = "res/skybox/sky1/sRight.png",
@@ -133,6 +133,26 @@ entities = {
             down = "res/skybox/sky1/sDown.png",
             back = "res/skybox/sky1/sBack.png",
             front = "res/skybox/sky1/sFront.png",
+        },
+    },
+    gui1 = {
+        GuiComponent = {
+            guiTexturePath = "res/gui/foodIcon.png",
+        },
+        TransformComponent = {
+            position = { x = -0.5, y = 0.5, z = 0.0 },
+            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = 0.125, y = 0.125, z = 0.125 },
+        },
+    },
+    gui2 = {
+        GuiComponent = {
+            guiTexturePath = "res/gui/healthIcon.png",
+        },
+        TransformComponent = {
+            position = { x = 0.5, y = 0.5, z = 0.0 },
+            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = 0.125, y = 0.125, z = 0.125 },
         },
     },
 }
@@ -145,5 +165,6 @@ renderer = {
     --ForwardRenderer = { priority = 0, name = "ForwardRenderSystem" },
     DeferredRenderer = { priority = 999, name = "DeferredRenderSystem" },
     SkyboxRenderer = { priority = 10, name = "SkyboxRenderSystem" },
-    SunRenderer = { priority = 0, name = "SunRenderSystem" },
+    SunRenderer = { priority = 1, name = "SunRenderSystem" },
+    GuiRenderer = { priority = 0, name = "GuiRenderSystem" }
 }

@@ -24,6 +24,9 @@ namespace sg::ogl::ecs::system
     class ForwardRenderSystem : public RenderSystem<resource::shaderprogram::ModelShaderProgram>
     {
     public:
+        using PointLightContainer = std::vector<light::PointLight>;
+        using DirectionalLightContainer = std::vector<light::DirectionalLight>;
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
@@ -48,13 +51,13 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            std::vector<light::PointLight> pointLights;
+            PointLightContainer pointLights;
             m_scene->GetApplicationContext()->registry.view<light::PointLight>().each([&pointLights](auto t_entity, auto& t_pointLight)
             {
                 pointLights.push_back(t_pointLight);
             });
 
-            std::vector<light::DirectionalLight> directionalLights;
+            DirectionalLightContainer directionalLights;
             m_scene->GetApplicationContext()->registry.view<light::DirectionalLight>().each([&directionalLights](auto t_entity, auto& t_directionalLight)
             {
                 directionalLights.push_back(t_directionalLight);

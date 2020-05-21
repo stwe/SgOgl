@@ -68,7 +68,7 @@ namespace sg::ogl::ecs::component
 
     struct CubemapComponent
     {
-        uint32_t cubemapId;
+        uint32_t cubemapId{ 0 };
     };
 
     struct GuiComponent

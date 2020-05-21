@@ -29,6 +29,9 @@ namespace sg::ogl::ecs::system
         using GBufferFboUniquePtr = std::unique_ptr<buffer::GBufferFbo>;
         using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
 
+        using PointLightContainer = std::vector<light::PointLight>;
+        using DirectionalLightContainer = std::vector<light::DirectionalLight>;
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
@@ -139,20 +142,20 @@ namespace sg::ogl::ecs::system
         {
             OpenGl::ClearColorAndDepthBuffer();
 
-            std::vector<light::PointLight> pointLights;
+            PointLightContainer pointLights;
             m_scene->GetApplicationContext()->registry.view<light::PointLight>().each([&pointLights](auto t_entity, auto& t_pointLight)
             {
                 pointLights.push_back(t_pointLight);
             });
 
-            std::vector<light::DirectionalLight> directionalLights;
+            DirectionalLightContainer directionalLights;
             m_scene->GetApplicationContext()->registry.view<light::DirectionalLight>().each([&directionalLights](auto t_entity, auto& t_directionalLight)
             {
                 directionalLights.push_back(t_directionalLight);
             });
 
             m_scene->GetApplicationContext()->registry.view<light::Sun>().each([&directionalLights](auto t_entity, auto& t_sunLight)
-                {
+            {
                 directionalLights.push_back(t_sunLight);
             });
 
