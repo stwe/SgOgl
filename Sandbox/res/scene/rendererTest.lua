@@ -13,11 +13,11 @@ scene = {
 cameras = {
     firstCamera = {
         type = "first",
-        cameraVelocity = 96.0,
+        cameraVelocity = 148.0,
         mouseSensitivity = 0.1,
-        position = { x = 675.0, y = 800.0, z = 800.0 },
-        yaw = -126.0,
-        pitch = -24.0,
+        position = { x = 2967.0, y = 2043.0, z = 994.0 },
+        yaw = -167.0,
+        pitch = -23.0,
         current = true,
     },
     secondCamera = {
@@ -41,7 +41,7 @@ entities = {
         TransformComponent = {
             position = { x = 0.0, y = 0.0, z = 0.0 },
             rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 4000.0, y = 1.0, z = 4000.0 },
+            scale = { x = 5000.0, y = 1.0, z = 5000.0 },
         },
         ModelComponent = {
             path = "res/primitive/plane1/plane1.obj",
@@ -50,9 +50,9 @@ entities = {
     },
     rock = {
         TransformComponent = {
-            position = { x = 0.0, y = 0.0, z = 0.0 },
+            position = { x = 0.0, y = 0.0, z = 380.0 },
             rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 1.0, y = 1.0, z = 1.0 },
+            scale = { x = 40.0, y = 40.0, z = 40.0 },
         },
         ModelComponent = {
             path = "res/model/Rock/rock.obj",
@@ -62,44 +62,44 @@ entities = {
     -- point lights
     pointLight1 = {
         PointLightComponent = {
-            position = { x = -50.0, y = 4.0, z = 40.0 },
+            position = { x = 100.0, y = 100.0, z = 1000.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
-            diffuseIntensity = { x = 2.0, y = 1.0, z = 1.0 },
+            diffuseIntensity = { x = 10.0, y = 1.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             constant = 1.0,
-            linear = 0.007,
-            quadratic = 0.0002,
+            linear = 0.0014,
+            quadratic = 0.000007,
         },
     },
     pointLight2 = {
         PointLightComponent = {
-            position = { x = 10.0, y = 4.0, z = 50.0 },
+            position = { x = 1300.0, y = 100.0, z = -370.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
-            diffuseIntensity = { x = 1.0, y = 2.0, z = 1.0 },
+            diffuseIntensity = { x = 1.0, y = 10.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             constant = 1.0,
-            linear = 0.007,
-            quadratic = 0.0002,
+            linear = 0.0014,
+            quadratic = 0.000007,
         },
     },
     modelWithPointLight = {
         TransformComponent = {
             position = { x = 6.0, y = 0.0, z = 0.0 },
             rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 4.0, y = 4.0, z = 4.0 },
+            scale = { x = 40.0, y = 40.0, z = 40.0 },
         },
         ModelComponent = {
             path = "res/model/Streetlamp/streetlamp.obj",
             showTriangles = false,
         },
         PointLightComponent = {
-            position = { x = 4.0, y = 9.0, z = 0.0 },
+            position = { x = -60.0, y = 150.0, z = 17.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
-            diffuseIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+            diffuseIntensity = { x = 1.0, y = 1.0, z = 10.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             constant = 1.0,
-            linear = 0.007,
-            quadratic = 0.0002,
+            linear = 0.0014,
+            quadratic = 0.000007,
         },
     },
     -- directional lights
@@ -116,7 +116,7 @@ entities = {
         SunComponent = {
             sunTexturePath = "res/sun/sun.png",
             scale = 10.0,
-            direction = { x = -0.5, y = -1.0, z = 0.0 },
+            direction = { x = -0.5, y = -0.077, z = 0.0 },
             diffuseIntensity = { x = 0.4, y = 0.4, z = 0.4 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
         },
@@ -151,9 +151,9 @@ entities = {
             guiTexturePath = "res/gui/foodIcon.png",
         },
         TransformComponent = {
-            position = { x = -0.5, y = 0.5, z = 0.0 },
+            position = { x = 0.9, y = 0.9, z = 0.0 },
             rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 0.125, y = 0.125, z = 0.125 },
+            scale = { x = 0.031, y = 0.031, z = 1.0 },
         },
     },
     gui2 = {
@@ -161,9 +161,9 @@ entities = {
             guiTexturePath = "res/gui/healthIcon.png",
         },
         TransformComponent = {
-            position = { x = 0.5, y = 0.5, z = 0.0 },
+            position = { x = 0.9, y = 0.8, z = 0.0 },
             rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 0.125, y = 0.125, z = 0.125 },
+            scale = { x = 0.031, y = 0.031, z = 1.0 },
         },
     },
 }
