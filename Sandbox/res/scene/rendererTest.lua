@@ -13,11 +13,11 @@ scene = {
 cameras = {
     firstCamera = {
         type = "first",
-        cameraVelocity = 24.0,
+        cameraVelocity = 96.0,
         mouseSensitivity = 0.1,
-        position = { x = 308.0, y = 176.0, z = 268.0 },
-        yaw = -131.0,
-        pitch = -6.0,
+        position = { x = 675.0, y = 800.0, z = 800.0 },
+        yaw = -126.0,
+        pitch = -24.0,
         current = true,
     },
     secondCamera = {
@@ -41,7 +41,7 @@ entities = {
         TransformComponent = {
             position = { x = 0.0, y = 0.0, z = 0.0 },
             rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 100.0, y = 1.0, z = 100.0 },
+            scale = { x = 4000.0, y = 1.0, z = 4000.0 },
         },
         ModelComponent = {
             path = "res/primitive/plane1/plane1.obj",
@@ -69,8 +69,8 @@ entities = {
             diffuseIntensity = { x = 2.0, y = 1.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             constant = 1.0,
-            linear = 0.045,
-            quadratic = 0.0075,
+            linear = 0.007,
+            quadratic = 0.0002,
         },
     },
     pointLight2 = {
@@ -80,8 +80,8 @@ entities = {
             diffuseIntensity = { x = 1.0, y = 2.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             constant = 1.0,
-            linear = 0.045,
-            quadratic = 0.0075,
+            linear = 0.007,
+            quadratic = 0.0002,
         },
     },
     modelWithPointLight = {
@@ -101,8 +101,8 @@ entities = {
             diffuseIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
             constant = 1.0,
-            linear = 0.022,
-            quadratic = 0.0019,
+            linear = 0.007,
+            quadratic = 0.0002,
         },
     },
     -- directional lights
@@ -124,7 +124,8 @@ entities = {
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
         },
     },
-    -- skybox, gui, text
+    -- skybox/skydome, gui
+    --[[
     skybox = {
         CubemapComponent = {
             right = "res/skybox/sky1/sRight.png",
@@ -134,6 +135,20 @@ entities = {
             back = "res/skybox/sky1/sBack.png",
             front = "res/skybox/sky1/sFront.png",
         },
+    },
+    ]]
+    skydome = {
+        TransformComponent = {
+            position = { x = 0.0, y = 0.0, z = 0.0 },
+            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = 5000.0, y = 5000.0, z = 5000.0 },
+        },
+        ModelComponent = {
+            path = "res/model/Dome/dome.obj",
+            showTriangles = true,
+            fakeNormals = false,
+        },
+        SkydomeComponent = {},
     },
     gui1 = {
         GuiComponent = {
@@ -164,7 +179,8 @@ entities = {
 renderer = {
     --ForwardRenderer = { priority = 0, name = "ForwardRenderSystem" },
     DeferredRenderer = { priority = 999, name = "DeferredRenderSystem" },
-    SkyboxRenderer = { priority = 10, name = "SkyboxRenderSystem" },
+    --SkyboxRenderer = { priority = 10, name = "SkyboxRenderSystem" },
+    SkydomeRenderer = { priority = 10, name = "SkydomeRenderSystem" },
     SunRenderer = { priority = 1, name = "SunRenderSystem" },
     GuiRenderer = { priority = 0, name = "GuiRenderSystem" }
 }

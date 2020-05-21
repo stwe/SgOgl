@@ -120,7 +120,6 @@ namespace sg::ogl::ecs::system
             OpenGl::DisableFaceCulling();
         }
 
-
     protected:
 
     private:

@@ -107,7 +107,9 @@ namespace sg::ogl::ecs::system
 
             auto view{ m_scene->GetApplicationContext()->registry.view<
                 component::ModelComponent,
-                math::Transform>()
+                math::Transform>(
+                    entt::exclude<component::SkydomeComponent>
+                )
             };
 
             for (auto entity : view)

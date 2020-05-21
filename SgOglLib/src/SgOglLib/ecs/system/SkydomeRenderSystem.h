@@ -12,9 +12,8 @@
 #include "RenderSystem.h"
 #include "resource/shaderprogram/DomeShaderProgram.h"
 #include "resource/ShaderManager.h"
-#include "resource/Model.h"
-#include "resource/Mesh.h"
 #include "ecs/component/Components.h"
+#include "math/Transform.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -27,7 +26,15 @@ namespace sg::ogl::ecs::system
 
         explicit SkydomeRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
-        {}
+        {
+            debugName = "SkydomeRenderer";
+        }
+
+        SkydomeRenderSystem(const int t_priority, scene::Scene* t_scene)
+            : RenderSystem(t_priority, t_scene)
+        {
+            debugName = "SkydomeRenderer";
+        }
 
         //-------------------------------------------------
         // Override
@@ -37,26 +44,18 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            /*
-            auto view{ m_scene->GetApplicationContext()->registry.view<
-                component::ModelComponent,
-                component::TransformComponent,
-                component::SkydomeComponent>()
-            };
-
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::DomeShaderProgram>() };
             shaderProgram.Bind();
 
-            for (auto entity : view)
+            m_scene->GetApplicationContext()->registry.view<component::ModelComponent, math::Transform, component::SkydomeComponent>().each(
+            [&](auto t_entity, auto& t_modelComponent, auto&)
             {
-                auto& modelComponent = view.get<component::ModelComponent>(entity);
+                t_modelComponent.model->GetMeshes()[0]->InitDraw();
+                shaderProgram.UpdateUniforms(*m_scene, t_entity, *t_modelComponent.model->GetMeshes()[0]);
+                t_modelComponent.model->GetMeshes()[0]->DrawPrimitives();
+                t_modelComponent.model->GetMeshes()[0]->EndDraw();
+            });
 
-                modelComponent.model->GetMeshes()[0]->InitDraw();
-                shaderProgram.UpdateUniforms(*m_scene, entity, *modelComponent.model->GetMeshes()[0]);
-                modelComponent.model->GetMeshes()[0]->DrawPrimitives();
-                modelComponent.model->GetMeshes()[0]->EndDraw();
-            }
-            */
             resource::ShaderProgram::Unbind();
         }
 

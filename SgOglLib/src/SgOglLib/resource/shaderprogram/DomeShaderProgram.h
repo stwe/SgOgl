@@ -15,7 +15,6 @@
 #include "scene/Scene.h"
 #include "camera/Camera.h"
 #include "resource/ShaderProgram.h"
-#include "ecs/component/Components.h"
 
 namespace sg::ogl::resource::shaderprogram
 {

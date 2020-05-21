@@ -49,21 +49,17 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            auto view{ m_scene->GetApplicationContext()->registry.view<
-                math::Transform,
-                component::GuiComponent>()
-            };
-
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::GuiShaderProgram>() };
             shaderProgram.Bind();
 
-            for (auto entity : view)
+            m_scene->GetApplicationContext()->registry.view<math::Transform, component::GuiComponent>().each(
+                [&](auto t_entity, auto&, auto&)
             {
                 m_guiMesh->InitDraw();
-                shaderProgram.UpdateUniforms(*m_scene, entity, *m_guiMesh);
+                shaderProgram.UpdateUniforms(*m_scene, t_entity, *m_guiMesh);
                 m_guiMesh->DrawPrimitives(GL_TRIANGLE_STRIP);
                 m_guiMesh->EndDraw();
-            }
+            });
 
             resource::ShaderProgram::Unbind();
         }

@@ -26,6 +26,7 @@
 #include "ecs/system/ForwardRenderSystem.h"
 #include "ecs/system/DeferredRenderSystem.h"
 #include "ecs/system/SkyboxRenderSystem.h"
+#include "ecs/system/SkydomeRenderSystem.h"
 #include "ecs/system/SunRenderSystem.h"
 #include "ecs/system/GuiRenderSystem.h"
 
@@ -239,10 +240,8 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
         {
             Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add ModelComponent to the entity {}.", t_entityName);
 
-            // get model component config
             const auto modelComponent{ entity["ModelComponent"] };
 
-            // add model component
             const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_FlipUVs };
             m_application->registry.emplace<ecs::component::ModelComponent>(
                 e,
@@ -256,10 +255,8 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
         {
             Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add TransformComponent to the entity {}.", t_entityName);
 
-            // get transform component config
             const auto transformComponent{ entity["TransformComponent"] };
 
-            // add transform component
             auto position{ transformComponent["position"] };
             auto rotation{ transformComponent["rotation"] };
             auto scale{ transformComponent["scale"] };
@@ -276,10 +273,8 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
         {
             Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add PointLightComponent to the entity {}.", t_entityName);
 
-            // get point light component config
             const auto pointLightComponent{ entity["PointLightComponent"] };
 
-            // add point light component
             auto position{ pointLightComponent["position"] };
             auto ambient{ pointLightComponent["ambientIntensity"] };
             auto diffuse{ pointLightComponent["diffuseIntensity"] };
@@ -301,7 +296,6 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
         {
             Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add CubemapComponent to the entity {}.", t_entityName);
 
-            // get cubemap component config
             const auto cubemapComponent{ entity["CubemapComponent"] };
 
             std::vector<std::string> files;
@@ -312,21 +306,24 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
             files.push_back(cubemapComponent["back"].cast<std::string>());
             files.push_back(cubemapComponent["front"].cast<std::string>());
 
-            // add cubemap component
             m_application->registry.emplace<ecs::component::CubemapComponent>(
                 e,
                 m_application->GetTextureManager().GetCubemapId(files)
             );
         }
 
+        if (componentKey == "SkydomeComponent")
+        {
+            Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add SkydomeComponent to the entity {}.", t_entityName);
+            m_application->registry.emplace<ecs::component::SkydomeComponent>(e);
+        }
+
         if (componentKey == "DirectionalLightComponent")
         {
             Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add DirectionalLightComponent to the entity {}.", t_entityName);
 
-            // get directional light component config
             const auto directionalLightComponent{ entity["DirectionalLightComponent"] };
 
-            // add directional light component
             auto position{ directionalLightComponent["direction"] };
             auto diffuse{ directionalLightComponent["diffuseIntensity"] };
             auto specular{ directionalLightComponent["specularIntensity"] };
@@ -343,10 +340,8 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
         {
             Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add SunComponent to the entity {}.", t_entityName);
 
-            // get sun component config
             const auto sunComponent{ entity["SunComponent"] };
 
-            // add sun component
             auto position{ sunComponent["direction"] };
             auto diffuse{ sunComponent["diffuseIntensity"] };
             auto specular{ sunComponent["specularIntensity"] };
@@ -366,10 +361,8 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
         {
             Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add GuiComponent to the entity {}.", t_entityName);
 
-            // get gui component config
             const auto guiComponent{ entity["GuiComponent"] };
 
-            // add gui component
             m_application->registry.emplace<ecs::component::GuiComponent>(
                 e,
                 m_application->GetTextureManager().GetTextureIdFromPath(guiComponent["guiTexturePath"].cast<std::string>())
@@ -396,6 +389,12 @@ void sg::ogl::scene::Scene::AddRenderer(const int t_priority, const std::string&
     {
         Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
         m_renderer.emplace_back(std::make_unique<ecs::system::SkyboxRenderSystem>(t_priority, this));
+    }
+
+    if (t_rendererName == "SkydomeRenderSystem")
+    {
+        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
+        m_renderer.emplace_back(std::make_unique<ecs::system::SkydomeRenderSystem>(t_priority, this));
     }
 
     if (t_rendererName == "SunRenderSystem")
