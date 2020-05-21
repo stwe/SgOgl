@@ -18,7 +18,7 @@
 2. [Installing](#2-installing)
 3. [Features](#3-features)
 4. [Getting started](#4-getting-started)
-5. [Code snippets](#6-code-snippets)
+5. [Create scene objects with Lua](#5-create-scene-objects-with-lua)
 
 ***
 
@@ -122,6 +122,8 @@ cmake
 
 ## 3. Features
 
+- Configuration of the scene and all entities with Lua
+- Entity component system from [EnTT](https://github.com/skypjack/entt)
 - Deferred rendering / Forward rendering
 - Advanced Terrain rendering (Quadtree and Tessellation, 16-bit Heightmaps)
 - Water rendering
@@ -135,7 +137,6 @@ cmake
 - Different camera types (Third person, First person)
 - Different light types (Ambient, Point, Directional)
 - Normal mapping
-- Entity component system from [EnTT](https://github.com/skypjack/entt)
 
 ## 4. Getting started
 
@@ -320,103 +321,227 @@ projection = {
 }
 ```
 
-## 5. Code snippets
+## 5. Create scene objects with Lua
+
+All game objects can be configured in a Lua script file.
 
 
-### Forward rendering with some Point Lights and the Sun as directional light source
-
-<img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/forward.png" alt="Forward" width="128" height="128" />
+Here is an example:
 
 
-[Forward rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/rendering/ForwardRenderingState.cpp)
+```lua
+-----------
+-- Scene --
+-----------
+
+scene = {
+    ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
+}
+
+-------------
+-- Cameras --
+-------------
+
+cameras = {
+    firstCamera = {
+        type = "first",
+        cameraVelocity = 148.0,
+        mouseSensitivity = 0.1,
+        position = { x = 2967.0, y = 2043.0, z = 994.0 },
+        yaw = -167.0,
+        pitch = -23.0,
+        current = true,
+    },
+    secondCamera = {
+        type = "third",
+        cameraVelocity = 4.0,
+        position = {},
+        playerPosition = { x = 0.0, y = 0.0, z = 0.0 },
+        playerRotationY = {},
+        yaw = 20.0,
+        pitch = 0.0,
+        current = false,
+    },
+}
+
+--------------
+-- Entities --
+--------------
+
+entities = {
+    playground = {
+        TransformComponent = {
+            position = { x = 0.0, y = 0.0, z = 0.0 },
+            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = 5000.0, y = 1.0, z = 5000.0 },
+        },
+        ModelComponent = {
+            path = "res/primitive/plane1/plane1.obj",
+            showTriangles = false,
+        },
+    },
+    rock = {
+        TransformComponent = {
+            position = { x = 0.0, y = 0.0, z = 380.0 },
+            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = 40.0, y = 40.0, z = 40.0 },
+        },
+        ModelComponent = {
+            path = "res/model/Rock/rock.obj",
+            showTriangles = false,
+        },
+    },
+    -- point lights
+    pointLight1 = {
+        PointLightComponent = {
+            position = { x = 100.0, y = 100.0, z = 1000.0 },
+            ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
+            diffuseIntensity = { x = 10.0, y = 1.0, z = 1.0 },
+            specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+            constant = 1.0,
+            linear = 0.0014,
+            quadratic = 0.000007,
+        },
+    },
+    pointLight2 = {
+        PointLightComponent = {
+            position = { x = 1300.0, y = 100.0, z = -370.0 },
+            ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
+            diffuseIntensity = { x = 1.0, y = 10.0, z = 1.0 },
+            specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+            constant = 1.0,
+            linear = 0.0014,
+            quadratic = 0.000007,
+        },
+    },
+    modelWithPointLight = {
+        TransformComponent = {
+            position = { x = 6.0, y = 0.0, z = 0.0 },
+            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = 40.0, y = 40.0, z = 40.0 },
+        },
+        ModelComponent = {
+            path = "res/model/Streetlamp/streetlamp.obj",
+            showTriangles = false,
+        },
+        PointLightComponent = {
+            position = { x = -60.0, y = 150.0, z = 17.0 },
+            ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
+            diffuseIntensity = { x = 1.0, y = 1.0, z = 10.0 },
+            specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+            constant = 1.0,
+            linear = 0.0014,
+            quadratic = 0.000007,
+        },
+    },
+    -- directional lights
+    --[[
+    directionalLight1 = {
+        DirectionalLightComponent = {
+            direction = { x = 0.5, y = -1.0, z = 0.0 },
+            diffuseIntensity = { x = 0.7, y = 0.7, z = 0.7 },
+            specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+        },
+    },
+    ]]
+    sun = {
+        SunComponent = {
+            sunTexturePath = "res/sun/sun.png",
+            scale = 10.0,
+            direction = { x = -0.5, y = -0.077, z = 0.0 },
+            diffuseIntensity = { x = 0.4, y = 0.4, z = 0.4 },
+            specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+        },
+    },
+    -- skybox/skydome, gui
+    --[[
+    skybox = {
+        CubemapComponent = {
+            right = "res/skybox/sky1/sRight.png",
+            left = "res/skybox/sky1/sLeft.png",
+            up = "res/skybox/sky1/sUp.png",
+            down = "res/skybox/sky1/sDown.png",
+            back = "res/skybox/sky1/sBack.png",
+            front = "res/skybox/sky1/sFront.png",
+        },
+    },
+    ]]
+    skydome = {
+        TransformComponent = {
+            position = { x = 0.0, y = 0.0, z = 0.0 },
+            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = 5000.0, y = 5000.0, z = 5000.0 },
+        },
+        ModelComponent = {
+            path = "res/model/Dome/dome.obj",
+            showTriangles = false,
+        },
+        SkydomeComponent = {},
+    },
+    gui1 = {
+        GuiComponent = {
+            guiTexturePath = "res/gui/foodIcon.png",
+        },
+        TransformComponent = {
+            position = { x = 0.9, y = 0.9, z = 0.0 },
+            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = 0.031, y = 0.031, z = 1.0 },
+        },
+    },
+    gui2 = {
+        GuiComponent = {
+            guiTexturePath = "res/gui/healthIcon.png",
+        },
+        TransformComponent = {
+            position = { x = 0.9, y = 0.8, z = 0.0 },
+            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = 0.031, y = 0.031, z = 1.0 },
+        },
+    },
+}
+
+--------------
+-- Renderer --
+--------------
+
+renderer = {
+    --ForwardRenderer = { priority = 0, name = "ForwardRenderSystem" },
+    DeferredRenderer = { priority = 999, name = "DeferredRenderSystem" },
+    --SkyboxRenderer = { priority = 10, name = "SkyboxRenderSystem" },
+    SkydomeRenderer = { priority = 10, name = "SkydomeRenderSystem" },
+    SunRenderer = { priority = 1, name = "SunRenderSystem" },
+    GuiRenderer = { priority = 0, name = "GuiRenderSystem" }
+}
+```
 
 
-### Deferred rendering with some Point Lights and the Sun as directional light source
+In our GameState now only one scene object has to be created.
 
-<img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/deferred.png" alt="Deferred" width="128" height="128" />
-
-
-[Deferred rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/rendering/DeferredRenderingState.cpp)
-
-
-### Forward Water rendering with the Sun as directional light source
-
-<img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/water.png" alt="Water" width="128" height="128" />
-
-
-[Water rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/water/WaterState.cpp)
-
-
-### Terrain rendering (Quadtree and Tessellation, 16-bit Heightmaps)
-
-<img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/terrain.png" alt="Terrain" width="128" height="128" />
-<img src="https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/terrainWithTrees.png" alt="Terrain_with_trees" width="128" height="128" />
-
-[Terrain rendering](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/example/terrain/TerrainState.cpp)
-
-
-### Other examples
-
-[Sponza playground](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/SponzaPlaygroundState.cpp)
-
-
-[Animations](https://github.com/stwe/SgOgl/blob/master/Sandbox/src/TestState.cpp)
 
 ```cpp
-    // create third person camera
-    m_thirdPersonCamera = std::make_shared<sg::ogl::camera::ThirdPersonCamera>(
-        GetApplicationContext(),
-        m_playerPosition
-    );
+bool GameState::Input()
+{
+    m_scene->Input();
 
-    // create a first person camera
-    m_firstPersonCamera = std::make_shared<sg::ogl::camera::FirstPersonCamera>(
-        GetApplicationContext(),
-        glm::vec3(308.0f, 176.0f, 268.0f),
-        -131.0f,
-        -6.0f
-    );
-    m_firstPersonCamera->SetCameraVelocity(24.0f);
+    return true;
+}
 
-    // create skybox entity
-    const std::vector<std::string> cubemapFileNames{
-        "res/texture/sky/sRight.png",
-        "res/texture/sky/sLeft.png",
-        "res/texture/sky/sUp.png",
-        "res/texture/sky/sDown.png",
-        "res/texture/sky/sBack.png",
-        "res/texture/sky/sFront.png"
-    };
-    GetApplicationContext()->GetEntityFactory().CreateSkyboxEntity(cubemapFileNames);
+bool GameState::Update(const double t_dt)
+{
+    m_scene->Update(t_dt);
 
-    // create a model entity
-    GetApplicationContext()->GetEntityFactory().CreateModelEntity(
-        "res/model/Plane/plane1.obj",
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f),
-        glm::vec3(100.0f, 1.0f, 100.0f),
-        false
-    );
+    return true;
+}
 
-    // create an animated character in the third person perspective - our player or game hero
-    m_player = GetApplicationContext()->GetEntityFactory().CreateTppCharacterEntity(
-        m_thirdPersonCamera,
-        "res/model/Player/drone.X",
-        m_playerPosition,
-        glm::vec3(0.0f),
-        glm::vec3(1.0f),
-        nullptr
-    );
+void GameState::Render()
+{
+    m_scene->Render();
+}
 
-    // an other skeletal model
-    m_castleGuardIdle = GetApplicationContext()->GetEntityFactory().CreateSkeletalModelEntity(
-        "res/model/CastleGuard01/Idle.dae",
-        glm::vec3(15.0f, 0.0f, 5.0f),
-        glm::vec3(0.0f),
-        glm::vec3(0.0625f * 0.5f),
-        false,
-        false,
-        true,
-        false
-    );
+void GameState::Init()
+{
+    sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::Black());
+
+    m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext(), "res/scene/rendererTest.lua");
+}
 ```
