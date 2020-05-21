@@ -50,10 +50,20 @@ namespace sg::ogl::ecs::system
             m_scene->GetApplicationContext()->registry.view<component::ModelComponent, math::Transform, component::SkydomeComponent>().each(
             [&](auto t_entity, auto& t_modelComponent, auto&)
             {
+                if (t_modelComponent.showTriangles)
+                {
+                    OpenGl::EnableWireframeMode();
+                }
+
                 t_modelComponent.model->GetMeshes()[0]->InitDraw();
                 shaderProgram.UpdateUniforms(*m_scene, t_entity, *t_modelComponent.model->GetMeshes()[0]);
                 t_modelComponent.model->GetMeshes()[0]->DrawPrimitives();
                 t_modelComponent.model->GetMeshes()[0]->EndDraw();
+
+                if (t_modelComponent.showTriangles)
+                {
+                    OpenGl::DisableWireframeMode();
+                }
             });
 
             resource::ShaderProgram::Unbind();

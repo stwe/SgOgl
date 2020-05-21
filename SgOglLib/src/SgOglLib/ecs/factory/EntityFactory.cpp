@@ -272,8 +272,8 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     m_application->registry.assign<component::ModelComponent>(
         entity,
         m_application->GetModelManager().GetModelByPath(t_fullModelFilePath, pFlags),
-        false, // showTriangles - todo
-        t_fakeNormals
+        false // showTriangles - todo
+        //t_fakeNormals
     );
 }
 

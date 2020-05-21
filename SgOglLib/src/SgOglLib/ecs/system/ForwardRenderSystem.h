@@ -88,7 +88,6 @@ namespace sg::ogl::ecs::system
 
                 for (auto& mesh : modelComponent.model->GetMeshes())
                 {
-                    // todo: set fakeNormals
                     mesh->InitDraw();
                     modelShaderProgram.UpdateUniforms(*m_scene, entity, *mesh, pointLights, directionalLights);
                     mesh->DrawPrimitives();

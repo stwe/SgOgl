@@ -94,7 +94,6 @@ namespace sg::ogl::ecs::component
     {
         std::shared_ptr<resource::Model> model;
         bool showTriangles{ false };
-        bool fakeNormals{ false };
     };
 
     struct SkeletalModelComponent

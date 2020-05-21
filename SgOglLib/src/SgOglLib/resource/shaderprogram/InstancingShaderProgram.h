@@ -55,7 +55,7 @@ namespace sg::ogl::resource::shaderprogram
             }
 
             SetUniform("shininess", t_currentMesh.GetDefaultMaterial()->ns);
-            SetUniform("fakeNormals", modelComponent.fakeNormals);
+            //SetUniform("fakeNormals", modelComponent.fakeNormals);
         }
 
         [[nodiscard]] std::string GetFolderName() const override

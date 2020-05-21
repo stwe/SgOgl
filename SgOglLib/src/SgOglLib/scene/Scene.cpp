@@ -246,8 +246,7 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
             m_application->registry.emplace<ecs::component::ModelComponent>(
                 e,
                 m_application->GetModelManager().GetModelByPath(modelComponent["path"].cast<std::string>(), pFlags),
-                modelComponent["showTriangles"].cast<bool>(),
-                modelComponent["fakeNormals"].cast<bool>()
+                modelComponent["showTriangles"].cast<bool>()
             );
         }
 

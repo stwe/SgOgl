@@ -46,7 +46,6 @@ entities = {
         ModelComponent = {
             path = "res/primitive/plane1/plane1.obj",
             showTriangles = false,
-            fakeNormals = false,
         },
     },
     rock = {
@@ -58,7 +57,6 @@ entities = {
         ModelComponent = {
             path = "res/model/Rock/rock.obj",
             showTriangles = false,
-            fakeNormals = false,
         },
     },
     -- point lights
@@ -88,12 +86,11 @@ entities = {
         TransformComponent = {
             position = { x = 6.0, y = 0.0, z = 0.0 },
             rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 1.0, y = 1.0, z = 1.0 },
+            scale = { x = 4.0, y = 4.0, z = 4.0 },
         },
         ModelComponent = {
             path = "res/model/Streetlamp/streetlamp.obj",
             showTriangles = false,
-            fakeNormals = false,
         },
         PointLightComponent = {
             position = { x = 4.0, y = 9.0, z = 0.0 },
@@ -145,8 +142,7 @@ entities = {
         },
         ModelComponent = {
             path = "res/model/Dome/dome.obj",
-            showTriangles = true,
-            fakeNormals = false,
+            showTriangles = false,
         },
         SkydomeComponent = {},
     },
