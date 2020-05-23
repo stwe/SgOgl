@@ -56,6 +56,9 @@ namespace sg::ogl::resource::shaderprogram
                 SetUniform("directionalLights", t_directionalLights);
             }
 
+            // set ambient intensity
+            SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
+
             // set camera position
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 

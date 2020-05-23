@@ -25,9 +25,7 @@ struct DirectionalLight
 
 uniform int numDirectionalLights;
 uniform DirectionalLight directionalLights[2]; // max 2 directional lights
-
-// todo: uniform vec3 ambientIntensity;
-
+uniform vec3 ambientIntensity;
 uniform vec3 cameraPosition;
 uniform sampler2D reflectionMap;
 uniform sampler2D refractionMap;
@@ -102,7 +100,7 @@ void main()
 
 
     float refractiveFactor = 0.5;
-    vec3 specularHighlights = vec3(0.5, 0.5, 0.5);
+    vec3 specularHighlights = ambientIntensity;
     vec3 viewDir = normalize(cameraPosition - vWorldPosition);
 
     for(int i = 0; i < numDirectionalLights; ++i)
@@ -110,7 +108,6 @@ void main()
         refractiveFactor += CalcRefractiveFactor(viewDir, normal);
         specularHighlights += CalcDirectionalLight(directionalLights[i], normal, viewDir, waterDepth);
     }
-
 
 
     fragColor = mix(reflectionColor, refractionColor + vec4(specularHighlights, 0.0), refractiveFactor);
