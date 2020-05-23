@@ -16,12 +16,15 @@
 #include "resource/shaderprogram/WaterShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "math/Transform.h"
+#include "light/DirectionalLight.h"
+#include "light/Sun.h"
 
 namespace sg::ogl::ecs::system
 {
     class WaterRenderSystem : public RenderSystem<resource::shaderprogram::WaterShaderProgram>
     {
     public:
+        using DirectionalLightContainer = std::vector<light::DirectionalLight>;
         using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
 
         //-------------------------------------------------
@@ -48,10 +51,14 @@ namespace sg::ogl::ecs::system
 
         void Update(const double t_dt) override
         {
-            for (auto entity : m_view)
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::WaterComponent, math::Transform>()
+            };
+
+            for (auto entity : view)
             {
-                auto& waterComponent{ m_view.get<component::WaterComponent>(entity) };
-                auto& transformComponent{ m_view.get<math::Transform>(entity) };
+                auto& waterComponent{ view.get<component::WaterComponent>(entity) };
+                auto& transformComponent{ view.get<math::Transform>(entity) };
 
                 waterComponent.water->moveFactor += waterComponent.water->GetWaveSpeed() * static_cast<float>(t_dt);
                 waterComponent.water->moveFactor = fmod(waterComponent.water->moveFactor, 1.0f);
@@ -68,9 +75,13 @@ namespace sg::ogl::ecs::system
         {
             OpenGl::EnableClipping();
 
-            for (auto entity : m_view)
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::WaterComponent, math::Transform>()
+            };
+
+            for (auto entity : view)
             {
-                auto& waterComponent{ m_view.get<component::WaterComponent>(entity) };
+                auto& waterComponent{ view.get<component::WaterComponent>(entity) };
                 waterComponent.water->GetWaterFbos().BindReflectionFboAsRenderTarget();
 
                 const auto distance{ 2.0f * (m_scene->GetCurrentCamera().GetPosition().y - waterComponent.water->GetHeight()) };
@@ -91,6 +102,7 @@ namespace sg::ogl::ecs::system
             }
 
             OpenGl::DisableClipping();
+
             m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f));
         }
 
@@ -99,9 +111,13 @@ namespace sg::ogl::ecs::system
         {
             OpenGl::EnableClipping();
 
-            for (auto entity : m_view)
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::WaterComponent, math::Transform>()
+            };
+
+            for (auto entity : view)
             {
-                auto& waterComponent{ m_view.get<component::WaterComponent>(entity) };
+                auto& waterComponent{ view.get<component::WaterComponent>(entity) };
                 waterComponent.water->GetWaterFbos().BindRefractionFboAsRenderTarget();
 
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -113,18 +129,34 @@ namespace sg::ogl::ecs::system
             }
 
             OpenGl::DisableClipping();
+
             m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f));
         }
 
         void Render() override
         {
+            DirectionalLightContainer directionalLights;
+            m_scene->GetApplicationContext()->registry.view<light::DirectionalLight>().each([&directionalLights](auto t_entity, auto& t_directionalLight)
+            {
+                directionalLights.push_back(t_directionalLight);
+            });
+
+            m_scene->GetApplicationContext()->registry.view<light::Sun>().each([&directionalLights](auto t_entity, auto& t_sunLight)
+            {
+                directionalLights.push_back(t_sunLight);
+            });
+
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::WaterShaderProgram>() };
             shaderProgram.Bind();
 
-            for (auto entity : m_view)
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::WaterComponent, math::Transform>()
+            };
+
+            for (auto entity : view)
             {
                 m_waterMesh->InitDraw();
-                shaderProgram.UpdateUniforms(*m_scene, entity, *m_waterMesh);
+                shaderProgram.UpdateUniforms(*m_scene, entity, *m_waterMesh, {}, directionalLights);
                 m_waterMesh->DrawPrimitives();
                 m_waterMesh->EndDraw();
             }
@@ -147,16 +179,6 @@ namespace sg::ogl::ecs::system
     protected:
 
     private:
-        const entt::basic_view<
-            entt::entity,
-            entt::exclude_t<>,
-            component::WaterComponent,
-            math::Transform> m_view{
-                m_scene->GetApplicationContext()->registry.view<
-                component::WaterComponent,
-                math::Transform>()
-            };
-
         MeshSharedPtr m_waterMesh;
     };
 }

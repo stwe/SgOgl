@@ -27,7 +27,13 @@ namespace sg::ogl::resource::shaderprogram
     class WaterShaderProgram : public ShaderProgram
     {
     public:
-        void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
+        void UpdateUniforms(
+            const scene::Scene& t_scene,
+            const entt::entity t_entity,
+            const Mesh& t_currentMesh,
+            const std::vector<light::PointLight>& t_pointLights,
+            const std::vector<light::DirectionalLight>& t_directionalLights
+        ) override
         {
             // get components
             auto& waterComponent = t_scene.GetApplicationContext()->registry.get<ecs::component::WaterComponent>(t_entity);
@@ -43,8 +49,12 @@ namespace sg::ogl::resource::shaderprogram
             const auto vp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() };
             SetUniform("vpMatrix", vp);
 
-            // set directional light
-            SetUniform("hasDirectionalLight", false);
+            // set directional lights
+            if (!t_directionalLights.empty())
+            {
+                SetUniform("numDirectionalLights", static_cast<int32_t>(t_directionalLights.size()));
+                SetUniform("directionalLights", t_directionalLights);
+            }
 
             // set camera position
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());

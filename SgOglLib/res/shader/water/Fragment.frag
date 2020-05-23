@@ -23,8 +23,11 @@ struct DirectionalLight
 
 // Uniforms
 
-uniform float hasDirectionalLight;
-uniform DirectionalLight directionalLight;
+uniform int numDirectionalLights;
+uniform DirectionalLight directionalLights[2]; // max 2 directional lights
+
+// todo: uniform vec3 ambientIntensity;
+
 uniform vec3 cameraPosition;
 uniform sampler2D reflectionMap;
 uniform sampler2D refractionMap;
@@ -38,6 +41,27 @@ uniform float waveStrength;
 uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 waterColor;
+
+// Function
+
+float CalcRefractiveFactor(vec3 t_viewDir, vec3 t_normal)
+{
+    float refractiveFactor = dot(t_viewDir, t_normal);
+    refractiveFactor = pow(refractiveFactor, 0.6);
+    refractiveFactor = clamp(refractiveFactor, 0.0, 1.0);
+
+    return refractiveFactor;
+}
+
+vec3 CalcDirectionalLight(DirectionalLight t_directionalLight, vec3 t_normal, vec3 t_viewDir, float t_waterDepth)
+{
+    vec3 reflectedLight = reflect(normalize(t_directionalLight.direction), t_normal);
+    float specular = max(dot(reflectedLight, t_viewDir), 0.0);
+    specular = pow(specular, shineDamper);
+    vec3 specularHighlights = t_directionalLight.specularIntensity * specular * reflectivity * clamp(t_waterDepth / 0.5, 0.0, 1.0);
+
+    return specularHighlights;
+}
 
 // Main
 
@@ -79,21 +103,12 @@ void main()
 
     float refractiveFactor = 0.5;
     vec3 specularHighlights = vec3(0.5, 0.5, 0.5);
-
-    // calc view direction
     vec3 viewDir = normalize(cameraPosition - vWorldPosition);
 
-    // calc directional light
-    if (hasDirectionalLight > 0.5)
+    for(int i = 0; i < numDirectionalLights; ++i)
     {
-        refractiveFactor = dot(viewDir, normal);
-        refractiveFactor = pow(refractiveFactor, 0.6);
-        refractiveFactor = clamp(refractiveFactor, 0.0, 1.0);
-
-        vec3 reflectedLight = reflect(normalize(-directionalLight.direction), normal);
-        float specular = max(dot(reflectedLight, viewDir), 0.0);
-        specular = pow(specular, shineDamper);
-        specularHighlights = directionalLight.specularIntensity * specular * reflectivity * clamp(waterDepth / 0.5, 0.0, 1.0);
+        refractiveFactor += CalcRefractiveFactor(viewDir, normal);
+        specularHighlights += CalcDirectionalLight(directionalLights[i], normal, viewDir, waterDepth);
     }
 
 

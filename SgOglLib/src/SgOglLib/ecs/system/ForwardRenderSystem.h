@@ -52,18 +52,18 @@ namespace sg::ogl::ecs::system
         void Render() override
         {
             PointLightContainer pointLights;
-            m_scene->GetApplicationContext()->registry.view<light::PointLight>().each([&pointLights](auto t_entity, auto& t_pointLight)
+            m_scene->GetApplicationContext()->registry.view<light::PointLight>().each([&pointLights](auto, auto& t_pointLight)
             {
                 pointLights.push_back(t_pointLight);
             });
 
             DirectionalLightContainer directionalLights;
-            m_scene->GetApplicationContext()->registry.view<light::DirectionalLight>().each([&directionalLights](auto t_entity, auto& t_directionalLight)
+            m_scene->GetApplicationContext()->registry.view<light::DirectionalLight>().each([&directionalLights](auto, auto& t_directionalLight)
             {
                 directionalLights.push_back(t_directionalLight);
             });
 
-            m_scene->GetApplicationContext()->registry.view<light::Sun>().each([&directionalLights](auto t_entity, auto& t_sunLight)
+            m_scene->GetApplicationContext()->registry.view<light::Sun>().each([&directionalLights](auto, auto& t_sunLight)
             {
                 directionalLights.push_back(t_sunLight);
             });

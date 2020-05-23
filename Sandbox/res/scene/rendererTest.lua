@@ -15,9 +15,9 @@ cameras = {
         type = "first",
         cameraVelocity = 256.0,
         mouseSensitivity = 0.1,
-        position = { x = 2132.0, y = 478.0, z = 809.0 },
-        yaw = -161.0,
-        pitch = -13.0,
+        position = { x = 2633.0, y = 923.0, z = 328.0 },
+        yaw = -178.0,
+        pitch = -10.0,
         current = true,
     },
     secondCamera = {
@@ -128,9 +128,9 @@ entities = {
         SunComponent = {
             sunTexturePath = "res/sun/sun.png",
             scale = 10.0,
-            direction = { x = -0.5, y = -0.077, z = 0.0 },
-            diffuseIntensity = { x = 0.4, y = 0.4, z = 0.4 },
-            specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+            direction = { x = 1.0, y = -0.2, z = -0.4 },
+            diffuseIntensity = { x = 1.0, y = 0.8, z = 0.6 },
+            specularIntensity = { x = 1.0, y = 0.8, z = 0.6 },
         },
     },
     ---------------------------
