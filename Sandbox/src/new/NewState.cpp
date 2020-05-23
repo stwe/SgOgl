@@ -30,7 +30,7 @@ bool NewState::Update(const double t_dt)
         entt::exclude<sg::ogl::ecs::component::ModelComponent>
         ).each([&](auto t_entity, auto& t_pointLight)
     {
-        t_pointLight.position.x += sinf(m_temp) * 4.0;
+        t_pointLight.position.x += sinf(m_temp) * 4.0f;
     });
 
     return true;

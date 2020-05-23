@@ -13,11 +13,11 @@ scene = {
 cameras = {
     firstCamera = {
         type = "first",
-        cameraVelocity = 148.0,
+        cameraVelocity = 256.0,
         mouseSensitivity = 0.1,
-        position = { x = 2967.0, y = 2043.0, z = 994.0 },
-        yaw = -167.0,
-        pitch = -23.0,
+        position = { x = 2132.0, y = 478.0, z = 809.0 },
+        yaw = -161.0,
+        pitch = -13.0,
         current = true,
     },
     secondCamera = {
@@ -36,12 +36,20 @@ cameras = {
 -- Entities --
 --------------
 
+local xWaterPos = 0.0
+local zWaterPos = 0.0
+local waterHeight = 0.0
+local waterTileSize = 5000.0
+
 entities = {
+    ------------
+    -- models --
+    ------------
     playground = {
         TransformComponent = {
-            position = { x = 0.0, y = 0.0, z = 0.0 },
-            rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 5000.0, y = 1.0, z = 5000.0 },
+            position = { x = 0.0, y = 150.0, z = 0.0 },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = 1000.0, y = 1.0, z = 1000.0 },
         },
         ModelComponent = {
             path = "res/primitive/plane1/plane1.obj",
@@ -50,8 +58,8 @@ entities = {
     },
     rock = {
         TransformComponent = {
-            position = { x = 0.0, y = 0.0, z = 380.0 },
-            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            position = { x = 0.0, y = 150.0, z = 380.0 },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
             scale = { x = 40.0, y = 40.0, z = 40.0 },
         },
         ModelComponent = {
@@ -59,10 +67,12 @@ entities = {
             showTriangles = false,
         },
     },
-    -- point lights
+    ------------------
+    -- point lights --
+    ------------------
     pointLight1 = {
         PointLightComponent = {
-            position = { x = 100.0, y = 100.0, z = 1000.0 },
+            position = { x = 30.0, y = 240.0, z = 657.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
             diffuseIntensity = { x = 10.0, y = 1.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
@@ -73,7 +83,7 @@ entities = {
     },
     pointLight2 = {
         PointLightComponent = {
-            position = { x = 1300.0, y = 100.0, z = -370.0 },
+            position = { x = 204.0, y = 240.0, z = -319.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
             diffuseIntensity = { x = 1.0, y = 10.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
@@ -84,8 +94,8 @@ entities = {
     },
     modelWithPointLight = {
         TransformComponent = {
-            position = { x = 6.0, y = 0.0, z = 0.0 },
-            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            position = { x = 6.0, y = 150.0, z = 0.0 },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
             scale = { x = 40.0, y = 40.0, z = 40.0 },
         },
         ModelComponent = {
@@ -93,7 +103,7 @@ entities = {
             showTriangles = false,
         },
         PointLightComponent = {
-            position = { x = -60.0, y = 150.0, z = 17.0 },
+            position = { x = -98.0, y = 400.0, z = 11.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
             diffuseIntensity = { x = 1.0, y = 1.0, z = 10.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
@@ -102,7 +112,9 @@ entities = {
             quadratic = 0.000007,
         },
     },
-    -- directional lights
+    ------------------------
+    -- directional lights --
+    ------------------------
     --[[
     directionalLight1 = {
         DirectionalLightComponent = {
@@ -121,8 +133,9 @@ entities = {
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
         },
     },
-    -- skybox/skydome, gui
-    --[[
+    ---------------------------
+    -- skybox, skydome, guis --
+    ---------------------------
     skybox = {
         CubemapComponent = {
             right = "res/skybox/sky1/sRight.png",
@@ -133,11 +146,10 @@ entities = {
             front = "res/skybox/sky1/sFront.png",
         },
     },
-    ]]
     skydome = {
         TransformComponent = {
             position = { x = 0.0, y = 0.0, z = 0.0 },
-            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
             scale = { x = 5000.0, y = 5000.0, z = 5000.0 },
         },
         ModelComponent = {
@@ -152,7 +164,7 @@ entities = {
         },
         TransformComponent = {
             position = { x = 0.9, y = 0.9, z = 0.0 },
-            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
             scale = { x = 0.031, y = 0.031, z = 1.0 },
         },
     },
@@ -162,8 +174,26 @@ entities = {
         },
         TransformComponent = {
             position = { x = 0.9, y = 0.8, z = 0.0 },
-            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
             scale = { x = 0.031, y = 0.031, z = 1.0 },
+        },
+    },
+    -----------
+    -- water --
+    -----------
+    ocean = {
+        WaterComponent = {
+            xPosition = xWaterPos,
+            zPosition = zWaterPos,
+            height = waterHeight,
+            tileSize = { x = waterTileSize, y = 1.0, z = waterTileSize },
+            dudvTexturePath = "res/water/waterDUDV.png",
+            normalMapTexturePath = "res/water/normal.png",
+        },
+        TransformComponent = {
+            position = { x = xWaterPos, y = waterHeight, z = zWaterPos },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = waterTileSize, y = 1.0, z = waterTileSize },
         },
     },
 }
@@ -173,10 +203,13 @@ entities = {
 --------------
 
 renderer = {
-    --ForwardRenderer = { priority = 0, name = "ForwardRenderSystem" },
-    DeferredRenderer = { priority = 999, name = "DeferredRenderSystem" },
-    --SkyboxRenderer = { priority = 10, name = "SkyboxRenderSystem" },
+
+    --DeferredRenderer = { priority = 99, name = "DeferredRenderSystem" },
+    --SkyboxRenderer = { priority = 0, name = "SkyboxRenderSystem" },
+
     SkydomeRenderer = { priority = 10, name = "SkydomeRenderSystem" },
-    SunRenderer = { priority = 1, name = "SunRenderSystem" },
-    GuiRenderer = { priority = 0, name = "GuiRenderSystem" }
+    WaterRenderer = { priority = 4, name = "WaterRenderSystem" },
+    SunRenderer = { priority = 2, name = "SunRenderSystem" },
+    ForwardRenderer = { priority = 1, name = "ForwardRenderSystem" },
+    GuiRenderer = { priority = 0, name = "GuiRenderSystem" },
 }

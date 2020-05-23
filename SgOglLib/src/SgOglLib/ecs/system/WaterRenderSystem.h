@@ -15,6 +15,7 @@
 #include "resource/Mesh.h"
 #include "resource/shaderprogram/WaterShaderProgram.h"
 #include "resource/ShaderManager.h"
+#include "math/Transform.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -31,6 +32,14 @@ namespace sg::ogl::ecs::system
             : RenderSystem(t_scene)
         {
             m_waterMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::WATER_MESH);
+            debugName = "WaterRenderer";
+        }
+
+        WaterRenderSystem(const int t_priority, scene::Scene* t_scene)
+            : RenderSystem(t_priority, t_scene)
+        {
+            m_waterMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::WATER_MESH);
+            debugName = "WaterRenderer";
         }
 
         //-------------------------------------------------
@@ -39,11 +48,10 @@ namespace sg::ogl::ecs::system
 
         void Update(const double t_dt) override
         {
-            /*
             for (auto entity : m_view)
             {
                 auto& waterComponent{ m_view.get<component::WaterComponent>(entity) };
-                auto& transformComponent{ m_view.get<component::TransformComponent>(entity) };
+                auto& transformComponent{ m_view.get<math::Transform>(entity) };
 
                 waterComponent.water->moveFactor += waterComponent.water->GetWaveSpeed() * static_cast<float>(t_dt);
                 waterComponent.water->moveFactor = fmod(waterComponent.water->moveFactor, 1.0f);
@@ -53,7 +61,6 @@ namespace sg::ogl::ecs::system
                 transformComponent.position.z = waterComponent.water->GetZPosition();
                 transformComponent.scale = waterComponent.water->GetTileSize();
             }
-            */
         }
 
         template <typename ...RenderSystem>
@@ -114,7 +121,6 @@ namespace sg::ogl::ecs::system
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::WaterShaderProgram>() };
             shaderProgram.Bind();
 
-            /*
             for (auto entity : m_view)
             {
                 m_waterMesh->InitDraw();
@@ -122,7 +128,6 @@ namespace sg::ogl::ecs::system
                 m_waterMesh->DrawPrimitives();
                 m_waterMesh->EndDraw();
             }
-            */
 
             resource::ShaderProgram::Unbind();
         }
@@ -142,16 +147,15 @@ namespace sg::ogl::ecs::system
     protected:
 
     private:
-        /*
         const entt::basic_view<
             entt::entity,
             entt::exclude_t<>,
             component::WaterComponent,
-            component::TransformComponent> m_view{
+            math::Transform> m_view{
                 m_scene->GetApplicationContext()->registry.view<
                 component::WaterComponent,
-                component::TransformComponent>()
-            };*/
+                math::Transform>()
+            };
 
         MeshSharedPtr m_waterMesh;
     };

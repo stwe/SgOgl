@@ -22,6 +22,7 @@
 #include "camera/FirstPersonCamera.h"
 #include "camera/ThirdPersonCamera.h"
 #include "lua/LuaHelper.h"
+#include "water/Water.h"
 #include "ecs/component/Components.h"
 #include "ecs/system/ForwardRenderSystem.h"
 #include "ecs/system/DeferredRenderSystem.h"
@@ -29,6 +30,7 @@
 #include "ecs/system/SkydomeRenderSystem.h"
 #include "ecs/system/SunRenderSystem.h"
 #include "ecs/system/GuiRenderSystem.h"
+#include "ecs/system/WaterRenderSystem.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -145,7 +147,7 @@ void sg::ogl::scene::Scene::Update(const double t_dt)
 {
     GetCurrentCamera().Update(t_dt);
 
-    for (auto& renderer : m_renderer)
+    for (auto& renderer : m_rendererArray)
     {
         renderer->Update(t_dt);
     }
@@ -153,7 +155,17 @@ void sg::ogl::scene::Scene::Update(const double t_dt)
 
 void sg::ogl::scene::Scene::Render()
 {
-    for (auto& renderer : m_renderer)
+    // todo
+
+    const auto it{ m_rendererMap.find("WaterRenderSystem") };
+    if (it != m_rendererMap.end())
+    {
+        auto* r = dynamic_cast<ecs::system::WaterRenderSystem*>(it->second.get());
+        r->RenderReflectionTexture(m_rendererMap.at("SkydomeRenderSystem"), m_rendererMap.at("ForwardRenderSystem"));
+        r->RenderRefractionTexture(m_rendererMap.at("SkydomeRenderSystem"), m_rendererMap.at("ForwardRenderSystem"));
+    }
+
+    for (auto& renderer : m_rendererArray)
     {
         renderer->PrepareRendering();
         renderer->Render();
@@ -221,7 +233,7 @@ void sg::ogl::scene::Scene::AddCamera(lua_State* t_luaState, const std::string& 
     }
 }
 
-void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& t_entityName) const
+void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& t_entityName)
 {
     Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add entity {} to the scene.", t_entityName);
 
@@ -257,14 +269,30 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
             const auto transformComponent{ entity["TransformComponent"] };
 
             auto position{ transformComponent["position"] };
-            auto rotation{ transformComponent["rotation"] };
-            auto scale{ transformComponent["scale"] };
+
+            auto rotation{ glm::vec3(0.0f) };
+            if (!transformComponent["rotation"].isNil())
+            {
+                auto r{ transformComponent["rotation"] };
+                rotation.x = r["x"].cast<float>();
+                rotation.y = r["y"].cast<float>();
+                rotation.z = r["z"].cast<float>();
+            }
+
+            auto scale{ glm::vec3(1.0f) };
+            if (!transformComponent["scale"].isNil())
+            {
+                auto s{ transformComponent["scale"] };
+                scale.x = s["x"].cast<float>();
+                scale.y = s["y"].cast<float>();
+                scale.z = s["z"].cast<float>();
+            }
 
             m_application->registry.emplace<math::Transform>(
                 e,
                 glm::vec3(position["x"].cast<float>(), position["y"].cast<float>(), position["z"].cast<float>()),
-                glm::vec3(rotation["x"].cast<float>(), rotation["y"].cast<float>(), rotation["z"].cast<float>()),
-                glm::vec3(scale["x"].cast<float>(), scale["y"].cast<float>(), scale["z"].cast<float>())
+                rotation,
+                scale
             );
         }
 
@@ -367,45 +395,86 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
                 m_application->GetTextureManager().GetTextureIdFromPath(guiComponent["guiTexturePath"].cast<std::string>())
             );
         }
+
+        if (componentKey == "WaterComponent")
+        {
+            Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add WaterComponent to the entity {}.", t_entityName);
+
+            const auto waterComponent{ entity["WaterComponent"] };
+            const auto tilesSize{ waterComponent["tileSize"] };
+
+            // create a Water asset
+            auto water{ std::make_unique<water::Water>(
+                GetApplicationContext(),
+                waterComponent["xPosition"].cast<float>(), waterComponent["zPosition"].cast<float>(),
+                waterComponent["height"].cast<float>(),
+                glm::vec3(tilesSize["x"].cast<float>(), tilesSize["y"].cast<float>(), tilesSize["z"].cast<float>()),
+                waterComponent["dudvTexturePath"].cast<std::string>(),
+                waterComponent["normalMapTexturePath"].cast<std::string>()
+            ) };
+
+            // store the Water asset
+            m_waterContainer.emplace(t_entityName, std::move(water));
+
+            // finally create an Entity
+            m_application->registry.emplace<ecs::component::WaterComponent>(
+                e,
+                m_waterContainer.at(t_entityName)
+            );
+        }
     }
 }
 
 void sg::ogl::scene::Scene::AddRenderer(const int t_priority, const std::string& t_rendererName)
 {
+    auto add{ false };
+
     if (t_rendererName == "ForwardRenderSystem")
     {
-        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
-        m_renderer.emplace_back(std::make_unique<ecs::system::ForwardRenderSystem>(t_priority, this));
+        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::ForwardRenderSystem>(t_priority, this));
+        add = true;
     }
 
     if (t_rendererName == "DeferredRenderSystem")
     {
-        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
-        m_renderer.emplace_back(std::make_unique<ecs::system::DeferredRenderSystem>(t_priority, this));
+        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::DeferredRenderSystem>(t_priority, this));
+        add = true;
     }
 
     if (t_rendererName == "SkyboxRenderSystem")
     {
-        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
-        m_renderer.emplace_back(std::make_unique<ecs::system::SkyboxRenderSystem>(t_priority, this));
+        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::SkyboxRenderSystem>(t_priority, this));
+        add = true;
     }
 
     if (t_rendererName == "SkydomeRenderSystem")
     {
-        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
-        m_renderer.emplace_back(std::make_unique<ecs::system::SkydomeRenderSystem>(t_priority, this));
+        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::SkydomeRenderSystem>(t_priority, this));
+        add = true;
     }
 
     if (t_rendererName == "SunRenderSystem")
     {
-        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
-        m_renderer.emplace_back(std::make_unique<ecs::system::SunRenderSystem>(t_priority, this));
+        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::SunRenderSystem>(t_priority, this));
+        add = true;
     }
 
     if (t_rendererName == "GuiRenderSystem")
     {
-        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Add renderer {} to the scene.", t_rendererName);
-        m_renderer.emplace_back(std::make_unique<ecs::system::GuiRenderSystem>(t_priority, this));
+        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::GuiRenderSystem>(t_priority, this));
+        add = true;
+    }
+
+    if (t_rendererName == "WaterRenderSystem")
+    {
+        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::WaterRenderSystem>(t_priority, this));
+        add = true;
+    }
+
+    if (add)
+    {
+        m_rendererArray.push_back(m_rendererMap.at(t_rendererName));
+        Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Added renderer {} to the scene.", t_rendererName);
     }
 }
 
@@ -460,7 +529,7 @@ void sg::ogl::scene::Scene::ConfigSceneFromFile()
     }
 
     // sort renderer by priority
-    std::sort(m_renderer.begin(), m_renderer.end(), [](const auto& t_lhs, const auto& t_rhs)
+    std::sort(m_rendererArray.begin(), m_rendererArray.end(), [](const auto& t_lhs, const auto& t_rhs)
     {
         return t_lhs->priority > t_rhs->priority;
     });
@@ -468,7 +537,7 @@ void sg::ogl::scene::Scene::ConfigSceneFromFile()
     Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] ---------------------------");
     Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] Renderer priority settings.");
     auto i{ 0 };
-    for (const auto& renderer : m_renderer)
+    for (const auto& renderer : m_rendererArray)
     {
         Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] {}. {}", i, renderer->debugName);
         i++;

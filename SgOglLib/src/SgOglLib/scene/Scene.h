@@ -15,7 +15,6 @@
 #include <unordered_map>
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
-#include "ecs/system/RenderSystemInterface.h"
 
 struct lua_State;
 
@@ -34,6 +33,16 @@ namespace sg::ogl::camera
     class Camera;
 }
 
+namespace sg::ogl::ecs::system
+{
+    class RenderSystemInterface;
+}
+
+namespace sg::ogl::water
+{
+    class Water;
+}
+
 namespace sg::ogl::scene
 {
     class Scene
@@ -42,10 +51,14 @@ namespace sg::ogl::scene
         using CameraSharedPtr = std::shared_ptr<camera::Camera>;
         using CameraContainer = std::unordered_map<std::string, CameraSharedPtr>;
 
-        using RenderSystemUniquePtr = std::unique_ptr<ecs::system::RenderSystemInterface>;
-        using RendererContainer = std::vector<RenderSystemUniquePtr>;
+        using RenderSystemSharedPtr = std::shared_ptr<ecs::system::RenderSystemInterface>;
+        using RendererMap = std::unordered_map<std::string, RenderSystemSharedPtr>;
+        using RendererArray = std::vector<RenderSystemSharedPtr>;
 
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
+
+        using WaterSharedPtr = std::shared_ptr<water::Water>;
+        using WaterContainer = std::unordered_map<std::string, WaterSharedPtr>;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -106,7 +119,9 @@ namespace sg::ogl::scene
 
         std::string m_configFileName;
         CameraContainer m_cameras;
-        RendererContainer m_renderer;
+        RendererMap m_rendererMap;
+        RendererArray m_rendererArray;
+        WaterContainer m_waterContainer;
 
         CameraSharedPtr m_currentCamera;
 
@@ -120,7 +135,7 @@ namespace sg::ogl::scene
         //-------------------------------------------------
 
         void AddCamera(lua_State* t_luaState, const std::string& t_cameraName);
-        void AddEntity(lua_State* t_luaState, const std::string& t_entityName) const;
+        void AddEntity(lua_State* t_luaState, const std::string& t_entityName);
         void AddRenderer(int t_priority, const std::string& t_rendererName);
 
         void ConfigSceneFromFile();

@@ -44,11 +44,7 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("vpMatrix", vp);
 
             // set directional light
-            SetUniform("hasDirectionalLight", t_scene.HasDirectionalLight());
-            if (t_scene.HasDirectionalLight())
-            {
-                SetUniform("directionalLight", t_scene.GetCurrentDirectionalLight());
-            }
+            SetUniform("hasDirectionalLight", false);
 
             // set camera position
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
