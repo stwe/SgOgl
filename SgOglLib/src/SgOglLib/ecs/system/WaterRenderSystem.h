@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include "RenderSystem.h"
 #include "OpenGl.h"
 #include "ecs/component/Components.h"
@@ -18,6 +19,7 @@
 #include "math/Transform.h"
 #include "light/DirectionalLight.h"
 #include "light/Sun.h"
+#include "scene/Scene.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -70,8 +72,7 @@ namespace sg::ogl::ecs::system
             }
         }
 
-        template <typename ...RenderSystem>
-        void RenderReflectionTexture(RenderSystem&&... t_renderSystem)
+        void RenderReflectionTexture()
         {
             OpenGl::EnableClipping();
 
@@ -92,7 +93,17 @@ namespace sg::ogl::ecs::system
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 m_scene->SetCurrentClipPlane(glm::vec4(0.0f, 1.0f, 0.0f, -waterComponent.water->GetHeight()));
 
-                (t_renderSystem->Render(), ...);
+                const auto begin{ waterComponent.water->toReflectionTexture.begin() };
+                const auto end{ waterComponent.water->toReflectionTexture.end() };
+
+                scene::SceneCache::rendererCache.each(
+                    [&](const entt::id_type t_id, entt::handle<RenderSystemInterface> t_renderer)
+                    {
+                        if (std::find(begin, end, t_id) != end)
+                        {
+                            t_renderer->Render();
+                        }
+                    });
 
                 m_scene->GetCurrentCamera().GetPosition().y += distance;
                 m_scene->GetCurrentCamera().InvertPitch();
@@ -106,8 +117,7 @@ namespace sg::ogl::ecs::system
             m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f));
         }
 
-        template <typename ...RenderSystem>
-        void RenderRefractionTexture(RenderSystem&&... t_renderSystem)
+        void RenderRefractionTexture()
         {
             OpenGl::EnableClipping();
 
@@ -123,7 +133,17 @@ namespace sg::ogl::ecs::system
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 m_scene->SetCurrentClipPlane(glm::vec4(0.0f, -1.0f, 0.0f, waterComponent.water->GetHeight()));
 
-                (t_renderSystem->Render(), ...);
+                const auto begin{ waterComponent.water->toRefractionTexture.begin() };
+                const auto end{ waterComponent.water->toRefractionTexture.end() };
+
+                scene::SceneCache::rendererCache.each(
+                    [&](const entt::id_type t_id, entt::handle<RenderSystemInterface> t_renderer)
+                    {
+                        if (std::find(begin, end, t_id) != end)
+                        {
+                            t_renderer->Render();
+                        }
+                    });
 
                 waterComponent.water->GetWaterFbos().UnbindRenderTarget();
             }

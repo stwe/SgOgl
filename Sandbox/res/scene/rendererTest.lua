@@ -189,10 +189,11 @@ entities = {
             tileSize = { x = waterTileSize, y = 1.0, z = waterTileSize },
             dudvTexturePath = "res/water/waterDUDV.png",
             normalMapTexturePath = "res/water/normal.png",
+            renderToReflectionTexture = { [0] = "SkydomeRenderSystem", [1] = "SunRenderSystem", [2] = "ForwardRenderSystem" },
+            renderToRefractionTexture = { [0] = "SkydomeRenderSystem", [1] = "SunRenderSystem", [2] = "ForwardRenderSystem" },
         },
         TransformComponent = {
             position = { x = xWaterPos, y = waterHeight, z = zWaterPos },
-            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
             scale = { x = waterTileSize, y = 1.0, z = waterTileSize },
         },
     },

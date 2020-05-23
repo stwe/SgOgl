@@ -13,6 +13,8 @@
 #include <string>
 #include <memory>
 #include <glm/vec3.hpp>
+#include <vector>
+#include <entt/entt.hpp>
 
 namespace sg::ogl
 {
@@ -36,6 +38,9 @@ namespace sg::ogl::water
         //-------------------------------------------------
 
         float moveFactor{ 0.0f };
+
+        std::vector<entt::id_type> toReflectionTexture;
+        std::vector<entt::id_type> toRefractionTexture;
 
         //-------------------------------------------------
         // Ctors. / Dtor.

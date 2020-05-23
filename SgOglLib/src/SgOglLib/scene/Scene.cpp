@@ -155,17 +155,16 @@ void sg::ogl::scene::Scene::Update(const double t_dt)
 
 void sg::ogl::scene::Scene::Render()
 {
-    // todo
-
-    const auto it{ m_rendererMap.find("WaterRenderSystem") };
-    if (it != m_rendererMap.end())
+    auto handle{ SceneCache::rendererCache.load<RenderSystemLoader<ecs::system::WaterRenderSystem>>("WaterRenderSystem"_hs,this) };
+    if (handle)
     {
-        auto* r = dynamic_cast<ecs::system::WaterRenderSystem*>(it->second.get());
-        r->RenderReflectionTexture(m_rendererMap.at("SkydomeRenderSystem"), m_rendererMap.at("ForwardRenderSystem"));
-        r->RenderRefractionTexture(m_rendererMap.at("SkydomeRenderSystem"), m_rendererMap.at("ForwardRenderSystem"));
+        auto* waterRenderSystem{ dynamic_cast<ecs::system::WaterRenderSystem*>(&handle.get()) };
+
+        waterRenderSystem->RenderReflectionTexture();
+        waterRenderSystem->RenderRefractionTexture();
     }
 
-    for (auto& renderer : m_rendererArray)
+    for (auto* renderer : m_rendererArray)
     {
         renderer->PrepareRendering();
         renderer->Render();
@@ -413,6 +412,24 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
                 waterComponent["normalMapTexturePath"].cast<std::string>()
             ) };
 
+            // get renderer ids
+            const auto renderToReflectionTexture{ waterComponent["renderToReflectionTexture"] };
+            const auto renderToRefractionTexture{ waterComponent["renderToRefractionTexture"] };
+
+            for (const auto& pair : pairs(renderToReflectionTexture))
+            {
+                auto identifier{ pair.second.cast<std::string>() };
+                auto hs{ entt::hashed_string{ identifier.c_str() } };
+                water->toReflectionTexture.push_back(hs);
+            }
+
+            for (const auto& pair : pairs(renderToRefractionTexture))
+            {
+                auto identifier{ pair.second.cast<std::string>() };
+                auto hs{ entt::hashed_string{ identifier.c_str() } };
+                water->toRefractionTexture.push_back(hs);
+            }
+
             // store the Water asset
             m_waterContainer.emplace(t_entityName, std::move(water));
 
@@ -431,49 +448,55 @@ void sg::ogl::scene::Scene::AddRenderer(const int t_priority, const std::string&
 
     if (t_rendererName == "ForwardRenderSystem")
     {
-        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::ForwardRenderSystem>(t_priority, this));
+        auto h{ SceneCache::rendererCache.load<RenderSystemLoader<ecs::system::ForwardRenderSystem>>("ForwardRenderSystem"_hs, t_priority, this) };
+        m_rendererArray.push_back(dynamic_cast<ecs::system::ForwardRenderSystem*>(&h.get()));
         add = true;
     }
 
     if (t_rendererName == "DeferredRenderSystem")
     {
-        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::DeferredRenderSystem>(t_priority, this));
+        auto h{ SceneCache::rendererCache.load<RenderSystemLoader<ecs::system::DeferredRenderSystem>>("DeferredRenderSystem"_hs, t_priority, this) };
+        m_rendererArray.push_back(dynamic_cast<ecs::system::DeferredRenderSystem*>(&h.get()));
         add = true;
     }
 
     if (t_rendererName == "SkyboxRenderSystem")
     {
-        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::SkyboxRenderSystem>(t_priority, this));
+        auto h{ SceneCache::rendererCache.load<RenderSystemLoader<ecs::system::SkyboxRenderSystem>>("SkyboxRenderSystem"_hs, t_priority, this) };
+        m_rendererArray.push_back(dynamic_cast<ecs::system::SkyboxRenderSystem*>(&h.get()));
         add = true;
     }
 
     if (t_rendererName == "SkydomeRenderSystem")
     {
-        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::SkydomeRenderSystem>(t_priority, this));
+        auto h{ SceneCache::rendererCache.load<RenderSystemLoader<ecs::system::SkydomeRenderSystem>>("SkydomeRenderSystem"_hs, t_priority, this) };
+        m_rendererArray.push_back(dynamic_cast<ecs::system::SkydomeRenderSystem*>(&h.get()));
         add = true;
     }
 
     if (t_rendererName == "SunRenderSystem")
     {
-        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::SunRenderSystem>(t_priority, this));
+        auto h{ SceneCache::rendererCache.load<RenderSystemLoader<ecs::system::SunRenderSystem>>("SunRenderSystem"_hs, t_priority, this) };
+        m_rendererArray.push_back(dynamic_cast<ecs::system::SunRenderSystem*>(&h.get()));
         add = true;
     }
 
     if (t_rendererName == "GuiRenderSystem")
     {
-        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::GuiRenderSystem>(t_priority, this));
+        auto h{ SceneCache::rendererCache.load<RenderSystemLoader<ecs::system::GuiRenderSystem>>("GuiRenderSystem"_hs, t_priority, this) };
+        m_rendererArray.push_back(dynamic_cast<ecs::system::GuiRenderSystem*>(&h.get()));
         add = true;
     }
 
     if (t_rendererName == "WaterRenderSystem")
     {
-        m_rendererMap.emplace(t_rendererName, std::make_unique<ecs::system::WaterRenderSystem>(t_priority, this));
+        auto h{ SceneCache::rendererCache.load<RenderSystemLoader<ecs::system::WaterRenderSystem>>("WaterRenderSystem"_hs, t_priority, this) };
+        m_rendererArray.push_back(dynamic_cast<ecs::system::WaterRenderSystem*>(&h.get()));
         add = true;
     }
 
     if (add)
     {
-        m_rendererArray.push_back(m_rendererMap.at(t_rendererName));
         Log::SG_OGL_CORE_LOG_INFO("[Scene::AddRenderer()] Added renderer {} to the scene.", t_rendererName);
     }
 }

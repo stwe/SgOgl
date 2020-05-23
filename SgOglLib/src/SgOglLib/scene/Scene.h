@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
+#include <entt/entt.hpp>
 
 struct lua_State;
 
@@ -51,9 +52,7 @@ namespace sg::ogl::scene
         using CameraSharedPtr = std::shared_ptr<camera::Camera>;
         using CameraContainer = std::unordered_map<std::string, CameraSharedPtr>;
 
-        using RenderSystemSharedPtr = std::shared_ptr<ecs::system::RenderSystemInterface>;
-        using RendererMap = std::unordered_map<std::string, RenderSystemSharedPtr>;
-        using RendererArray = std::vector<RenderSystemSharedPtr>;
+        using RendererArray = std::vector<ecs::system::RenderSystemInterface*>;
 
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
 
@@ -119,7 +118,6 @@ namespace sg::ogl::scene
 
         std::string m_configFileName;
         CameraContainer m_cameras;
-        RendererMap m_rendererMap;
         RendererArray m_rendererArray;
         WaterContainer m_waterContainer;
 
@@ -139,5 +137,24 @@ namespace sg::ogl::scene
         void AddRenderer(int t_priority, const std::string& t_rendererName);
 
         void ConfigSceneFromFile();
+    };
+
+    template <typename T>
+    struct RenderSystemLoader final : entt::loader<RenderSystemLoader<T>, ecs::system::RenderSystemInterface>
+    {
+        std::shared_ptr<ecs::system::RenderSystemInterface> load(Scene* t_scene) const
+        {
+            return std::make_shared<T>(t_scene);
+        }
+
+        std::shared_ptr<ecs::system::RenderSystemInterface> load(const int t_priority, Scene* t_scene) const
+        {
+            return std::make_shared<T>(t_priority, t_scene);
+        }
+    };
+
+    struct SceneCache
+    {
+        static inline entt::cache<ecs::system::RenderSystemInterface> rendererCache{};
     };
 }
