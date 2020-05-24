@@ -26,9 +26,12 @@
 
 A GameEngine library for OpenGL developed for educational purposes - a hobby project that I program in my free time.
 
-The original goal was only to create a large terrain with a kind of LOD technique. Over time, elements have been added that can be found in GameEngines. But of course there is still a lot missing to create a real game with this library. However, a scene with appealing lighting can be created in just a few steps. Models can be loaded and a beautiful water surface can be created. To keep it simple, this can be done using a Lua script.
+The original goal was only to create a large terrain with a kind of LOD technique. Over time, elements have been added that can be found in GameEngines. But of course there is still a lot missing to create a real game with this library. However, a scene with appealing lighting can be created in just a few steps. Models can be loaded and a beautiful water surface can be generated. To keep it simple, this can be done using a Lua script.
 
-You just have to: create an `Application` and a `State` class. A Lua file is used for the description of all the scene objects (Models, Cameras, Lights etc), which is then loaded with our `State` class. Finished.
+**You just have to:**
+
+* Create an `Application` and a `State` class. 
+* Use a Lua file for the description of all the scene objects (Models, Cameras, Lights etc), which is then loaded with our `State` class.
 
 ## 2. Installing
 
@@ -330,7 +333,7 @@ projection = {
 All game objects can be configured in a Lua script file.
 
 
-Here is an example:
+Here is an full example:
 
 
 ```lua
