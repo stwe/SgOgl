@@ -16,7 +16,6 @@ namespace sg::ogl::resource
 {
     class Mesh;
     class Model;
-    struct Material;
     class SkeletalModel;
 }
 
@@ -63,7 +62,7 @@ namespace sg::ogl::ecs::component
     };
 
     //-------------------------------------------------
-    // Texture / Material
+    // Texture
     //-------------------------------------------------
 
     struct CubemapComponent
@@ -74,11 +73,6 @@ namespace sg::ogl::ecs::component
     struct GuiComponent
     {
         uint32_t textureId{ 0 };
-    };
-
-    struct MaterialComponent
-    {
-        std::shared_ptr<resource::Material> material;
     };
 
     //-------------------------------------------------

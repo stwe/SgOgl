@@ -8,7 +8,6 @@
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
 #include "ModelManager.h"
-#include "Material.h"
 #include "Model.h"
 #include "SkeletalModel.h"
 #include "Mesh.h"
@@ -41,7 +40,7 @@ sg::ogl::resource::ModelManager::~ModelManager() noexcept
 // Getter
 //-------------------------------------------------
 
-sg::ogl::resource::ModelManager::MaterialSharedPtr sg::ogl::resource::ModelManager::GetMaterialByName(const std::string& t_name)
+sg::ogl::resource::Material sg::ogl::resource::ModelManager::GetMaterialByName(const std::string& t_name)
 {
     if (m_materials.count(t_name) == 0)
     {
@@ -105,14 +104,14 @@ sg::ogl::resource::ModelManager::VertexContainer sg::ogl::resource::ModelManager
 // Add
 //-------------------------------------------------
 
-void sg::ogl::resource::ModelManager::AddMaterial(const MaterialSharedPtr& t_material)
+void sg::ogl::resource::ModelManager::AddMaterial(const Material& t_material)
 {
-    if (m_materials.count(t_material->newmtl) > 0)
+    if (m_materials.count(t_material.newmtl) > 0)
     {
         throw SG_OGL_EXCEPTION("[ModelManager::AddMaterial()] The Material already exists.");
     }
 
-    m_materials.emplace(t_material->newmtl, t_material);
+    m_materials.emplace(t_material.newmtl, t_material);
 }
 
 void sg::ogl::resource::ModelManager::AddStaticMesh(const StaticMeshSharedPtr& t_staticMesh)
@@ -131,8 +130,6 @@ void sg::ogl::resource::ModelManager::AddStaticMesh(const StaticMeshSharedPtr& t
 
 void sg::ogl::resource::ModelManager::AddMaterials()
 {
-    // add some example materials
-
     Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add emerald material.");
 
     Material emerald;
@@ -141,7 +138,87 @@ void sg::ogl::resource::ModelManager::AddMaterials()
     emerald.kd = { glm::vec3(0.07568f, 0.61424f, 0.07568f) };
     emerald.ks = { glm::vec3(0.633f, 0.727811f, 0.633f) };
     emerald.ns = 0.6f;
-    m_materials.emplace(emerald.newmtl, std::make_shared<Material>(emerald));
+    m_materials.emplace(emerald.newmtl, emerald);
+
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add jade material.");
+
+    Material jade;
+    jade.newmtl = "jade";
+    jade.ka = { glm::vec3(0.135f, 0.2225f, 0.0215f) };
+    jade.kd = { glm::vec3(0.54f, 0.89f, 0.63f) };
+    jade.ks = { glm::vec3(0.316228f) };
+    jade.ns = 0.1f;
+    m_materials.emplace(jade.newmtl, jade);
+
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add obsidian material.");
+
+    Material obsidian;
+    obsidian.newmtl = "obsidian";
+    obsidian.ka = { glm::vec3(0.05375f, 0.05f, 0.06625f) };
+    obsidian.kd = { glm::vec3(0.18275f, 0.17f, 0.22525f) };
+    obsidian.ks = { glm::vec3(0.332741f, 0.328634f, 0.346435f) };
+    obsidian.ns = 0.3f;
+    m_materials.emplace(obsidian.newmtl, obsidian);
+
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add pearl material.");
+
+    Material pearl;
+    pearl.newmtl = "pearl";
+    pearl.ka = { glm::vec3(0.25f, 0.20725f, 0.20725f) };
+    pearl.kd = { glm::vec3(1.0f, 0.829f, 0.829f) };
+    pearl.ks = { glm::vec3(0.296648f) };
+    pearl.ns = 0.088f;
+    m_materials.emplace(pearl.newmtl, pearl);
+
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add gold material.");
+
+    Material gold;
+    gold.newmtl = "gold";
+    gold.ka = { glm::vec3(0.24725f, 0.1995f, 0.0745f) };
+    gold.kd = { glm::vec3(0.75164f, 0.60648f, 0.22648f) };
+    gold.ks = { glm::vec3(0.628281f, 0.555802f, 0.366065f) };
+    gold.ns = 0.4f;
+    m_materials.emplace(gold.newmtl, gold);
+
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add silver material.");
+
+    Material silver;
+    silver.newmtl = "silver";
+    silver.ka = { glm::vec3(0.19225f) };
+    silver.kd = { glm::vec3(0.50754f) };
+    silver.ks = { glm::vec3(0.508273f) };
+    silver.ns = 0.4f;
+    m_materials.emplace(silver.newmtl, silver);
+
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add bronze material.");
+
+    Material bronze;
+    bronze.newmtl = "bronze";
+    bronze.ka = { glm::vec3(0.2125f, 0.1275f, 0.054f) };
+    bronze.kd = { glm::vec3(0.714f, 0.4284f, 0.18144f) };
+    bronze.ks = { glm::vec3(0.393548f, 0.271906f, 0.166721f) };
+    bronze.ns = 0.2f;
+    m_materials.emplace(bronze.newmtl, bronze);
+
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add cyan plastic material.");
+
+    Material cyanPlastic;
+    cyanPlastic.newmtl = "cyan_plastic";
+    cyanPlastic.ka = { glm::vec3(0.0f, 0.1f, 0.06f) };
+    cyanPlastic.kd = { glm::vec3(0.0f, 0.50980392f, 0.50980392f) };
+    cyanPlastic.ks = { glm::vec3(0.50196078f) };
+    cyanPlastic.ns = 0.25f;
+    m_materials.emplace(cyanPlastic.newmtl, cyanPlastic);
+
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add red rubber material.");
+
+    Material redRubber;
+    redRubber.newmtl = "red_rubber";
+    redRubber.ka = { glm::vec3(0.05f, 0.0f, 0.0f) };
+    redRubber.kd = { glm::vec3(0.5f, 0.4f, 0.4f) };
+    redRubber.ks = { glm::vec3(0.7f, 0.04f, 0.04f) };
+    redRubber.ns = 0.078125f;
+    m_materials.emplace(redRubber.newmtl, redRubber);
 
     Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddMaterials()] Add chrome material.");
 
@@ -151,7 +228,7 @@ void sg::ogl::resource::ModelManager::AddMaterials()
     chrome.kd = { glm::vec3(0.4f) };
     chrome.ks = { glm::vec3(0.774597f) };
     chrome.ns = 0.6f;
-    m_materials.emplace(chrome.newmtl, std::make_shared<Material>(chrome));
+    m_materials.emplace(chrome.newmtl, chrome);
 }
 
 void sg::ogl::resource::ModelManager::AddStaticMeshes()

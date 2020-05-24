@@ -18,6 +18,7 @@
 #include "light/PointLight.h"
 #include "light/Sun.h"
 #include "resource/ModelManager.h"
+#include "resource/Material.h"
 #include "camera/Camera.h"
 #include "camera/FirstPersonCamera.h"
 #include "camera/ThirdPersonCamera.h"
@@ -433,10 +434,21 @@ void sg::ogl::scene::Scene::AddEntity(lua_State* t_luaState, const std::string& 
             // store the Water asset
             m_waterContainer.emplace(t_entityName, std::move(water));
 
-            // finally create an Entity
+            // finally add as component
             m_application->registry.emplace<ecs::component::WaterComponent>(
                 e,
                 m_waterContainer.at(t_entityName)
+            );
+        }
+
+        if (componentKey == "MaterialComponent")
+        {
+            Log::SG_OGL_CORE_LOG_INFO("[Scene::AddEntity()] Add MaterialComponent to the entity {}.", t_entityName);
+
+            const auto materialComponent{ entity["MaterialComponent"] };
+            m_application->registry.emplace<resource::Material>(
+                e,
+                m_application->GetModelManager().GetMaterialByName(materialComponent["name"].cast<std::string>())
             );
         }
     }

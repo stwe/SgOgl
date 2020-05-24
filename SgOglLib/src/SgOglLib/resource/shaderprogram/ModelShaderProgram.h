@@ -57,33 +57,16 @@ namespace sg::ogl::resource::shaderprogram
             }
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
-
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
-            SetUniform("diffuseColor", t_currentMesh.GetDefaultMaterial()->kd);
-            SetUniform("hasDiffuseMap", t_currentMesh.GetDefaultMaterial()->HasDiffuseMap());
-            if (t_currentMesh.GetDefaultMaterial()->HasDiffuseMap())
+            if (t_scene.GetApplicationContext()->registry.has<Material>(t_entity))
             {
-                SetUniform("diffuseMap", 0);
-                TextureManager::BindForReading(t_currentMesh.GetDefaultMaterial()->mapKd, GL_TEXTURE0);
+                UpdateMaterial(t_scene.GetApplicationContext()->registry.get<Material>(t_entity));
             }
-
-            SetUniform("specularColor", t_currentMesh.GetDefaultMaterial()->ks);
-            SetUniform("hasSpecularMap", t_currentMesh.GetDefaultMaterial()->HasSpecularMap());
-            if (t_currentMesh.GetDefaultMaterial()->HasSpecularMap())
+            else
             {
-                SetUniform("specularMap", 1);
-                TextureManager::BindForReading(t_currentMesh.GetDefaultMaterial()->mapKs, GL_TEXTURE1);
+                UpdateMaterial(*t_currentMesh.GetDefaultMaterial());
             }
-
-            SetUniform("hasNormalMap", t_currentMesh.GetDefaultMaterial()->HasNormalMap());
-            if (t_currentMesh.GetDefaultMaterial()->HasNormalMap())
-            {
-                SetUniform("normalMap", 2);
-                TextureManager::BindForReading(t_currentMesh.GetDefaultMaterial()->mapKn, GL_TEXTURE2);
-            }
-
-            SetUniform("shininess", t_currentMesh.GetDefaultMaterial()->ns);
         }
 
         [[nodiscard]] std::string GetFolderName() const override
@@ -99,6 +82,32 @@ namespace sg::ogl::resource::shaderprogram
     protected:
 
     private:
+        void UpdateMaterial(const Material& t_material)
+        {
+            SetUniform("diffuseColor", t_material.kd);
+            SetUniform("hasDiffuseMap", t_material.HasDiffuseMap());
+            if (t_material.HasDiffuseMap())
+            {
+                SetUniform("diffuseMap", 0);
+                TextureManager::BindForReading(t_material.mapKd, GL_TEXTURE0);
+            }
 
+            SetUniform("specularColor", t_material.ks);
+            SetUniform("hasSpecularMap", t_material.HasSpecularMap());
+            if (t_material.HasSpecularMap())
+            {
+                SetUniform("specularMap", 1);
+                TextureManager::BindForReading(t_material.mapKs, GL_TEXTURE1);
+            }
+
+            SetUniform("hasNormalMap", t_material.HasNormalMap());
+            if (t_material.HasNormalMap())
+            {
+                SetUniform("normalMap", 2);
+                TextureManager::BindForReading(t_material.mapKn, GL_TEXTURE2);
+            }
+
+            SetUniform("shininess", t_material.ns);
+        }
     };
 }

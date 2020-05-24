@@ -13,8 +13,10 @@
 #include <glm/vec3.hpp>
 #include <memory>
 #include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
+#include "Material.h"
 
 namespace sg::ogl
 {
@@ -23,7 +25,6 @@ namespace sg::ogl
 
 namespace sg::ogl::resource
 {
-    struct Material;
     class Mesh;
     class Model;
     class SkeletalModel;
@@ -31,9 +32,8 @@ namespace sg::ogl::resource
     class ModelManager
     {
     public:
-        using MaterialSharedPtr = std::shared_ptr<Material>;
         using MaterialKey = std::string;
-        using MaterialContainer = std::map<MaterialKey, MaterialSharedPtr>;
+        using MaterialContainer = std::unordered_map<MaterialKey, Material>;
 
         using StaticMeshSharedPtr = std::shared_ptr<Mesh>;
         using StaticMeshKey = std::string;
@@ -79,7 +79,7 @@ namespace sg::ogl::resource
         // Getter
         //-------------------------------------------------
 
-        MaterialSharedPtr GetMaterialByName(const std::string& t_name);
+        Material GetMaterialByName(const std::string& t_name);
         StaticMeshSharedPtr GetStaticMeshByName(const std::string& t_name);
         ModelSharedPtr GetModelByPath(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
         SkeletalModelSharedPtr GetSkeletalModelByPath(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
@@ -90,7 +90,7 @@ namespace sg::ogl::resource
         // Add
         //-------------------------------------------------
 
-        void AddMaterial(const MaterialSharedPtr& t_material);
+        void AddMaterial(const Material& t_material);
         void AddStaticMesh(const StaticMeshSharedPtr& t_staticMesh);
 
     protected:

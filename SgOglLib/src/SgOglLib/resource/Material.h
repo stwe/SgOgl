@@ -83,10 +83,10 @@ namespace sg::ogl::resource
          */
         uint32_t mapKn{ 0 };
 
-        bool HasAmbientMap() const;
-        bool HasDiffuseMap() const;
-        bool HasSpecularMap() const;
-        bool HasBumpMap() const;
-        bool HasNormalMap() const;
+        [[nodiscard]] bool HasAmbientMap() const;
+        [[nodiscard]] bool HasDiffuseMap() const;
+        [[nodiscard]] bool HasSpecularMap() const;
+        [[nodiscard]] bool HasBumpMap() const;
+        [[nodiscard]] bool HasNormalMap() const;
     };
 }
