@@ -30,10 +30,6 @@ struct PointLight
     float quadratic;
 };
 
-// Const
-
-const float shininess = 24.0;
-
 // Uniforms
 
 uniform int numPointLights;
@@ -49,6 +45,8 @@ uniform vec3 cameraPosition;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
+
+uniform float shininess;
 
 // Global
 

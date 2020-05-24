@@ -128,10 +128,10 @@ entities = {
 
 renderer = {
 
-    --DeferredRenderer = { priority = 99, name = "DeferredRenderSystem" },
+    DeferredRenderer = { priority = 99, name = "DeferredRenderSystem" },
     --SkyboxRenderer = { priority = 0, name = "SkyboxRenderSystem" },
 
     SkydomeRenderer = { priority = 10, name = "SkydomeRenderSystem" },
     SunRenderer = { priority = 2, name = "SunRenderSystem" },
-    ForwardRenderer = { priority = 1, name = "ForwardRenderSystem" },
+    --ForwardRenderer = { priority = 1, name = "ForwardRenderSystem" },
 }

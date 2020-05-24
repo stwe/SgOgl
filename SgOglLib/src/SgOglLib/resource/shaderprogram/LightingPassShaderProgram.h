@@ -13,7 +13,6 @@
 #include "buffer/GBufferFbo.h"
 #include "scene/Scene.h"
 #include "camera/Camera.h"
-#include "resource/Mesh.h"
 #include "resource/ShaderProgram.h"
 #include "resource/TextureManager.h"
 
@@ -42,7 +41,6 @@ namespace sg::ogl::resource::shaderprogram
             }
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
-
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
             SetUniform("gPosition", 0);
@@ -52,7 +50,21 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("gAlbedoSpec", 2);
             TextureManager::BindForReading(t_gbufferFbo.GetAlbedoSpecTextureId(), GL_TEXTURE2);
 
-            // todo: shininess?
+
+            // todo: SetUniform("shininess", t_material.ns);
+            /*
+            if (t_scene.GetApplicationContext()->registry.has<Material>(t_entity))
+            {
+                UpdateMaterial(t_scene.GetApplicationContext()->registry.get<Material>(t_entity));
+            }
+            else
+            {
+                UpdateMaterial(*t_currentMesh.GetDefaultMaterial());
+            }
+            */
+
+
+            SetUniform("shininess", 0.4f);
         }
 
         [[nodiscard]] std::string GetFolderName() const override
