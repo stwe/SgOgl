@@ -26,6 +26,10 @@
 
 A GameEngine library for OpenGL developed for educational purposes - a hobby project that I program in my free time.
 
+The original goal was only to create a large terrain with a kind of LOD technique. Over time, elements have been added that can be found in GameEngines. But of course there is still a lot missing to create a real game with this library. However, a scene with appealing lighting can be created in just a few steps. Models can be loaded and a beautiful water surface can be created. To keep it simple, this can be done using a Lua script.
+
+You just have to: create an `Application` and a `State` class. A Lua file is used for the description of all the scene objects (Models, Cameras, Lights etc), which is then loaded with our `State` class. Finished.
+
 ## 2. Installing
 
 #### Vs2019 && Premake
@@ -345,11 +349,11 @@ scene = {
 cameras = {
     firstCamera = {
         type = "first",
-        cameraVelocity = 148.0,
+        cameraVelocity = 256.0,
         mouseSensitivity = 0.1,
-        position = { x = 2967.0, y = 2043.0, z = 994.0 },
-        yaw = -167.0,
-        pitch = -23.0,
+        position = { x = 2633.0, y = 923.0, z = 328.0 },
+        yaw = -178.0,
+        pitch = -10.0,
         current = true,
     },
     secondCamera = {
@@ -368,12 +372,20 @@ cameras = {
 -- Entities --
 --------------
 
+local xWaterPos = 0.0
+local zWaterPos = 0.0
+local waterHeight = 0.0
+local waterTileSize = 5000.0
+
 entities = {
+    ------------
+    -- models --
+    ------------
     playground = {
         TransformComponent = {
-            position = { x = 0.0, y = 0.0, z = 0.0 },
-            rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 5000.0, y = 1.0, z = 5000.0 },
+            position = { x = 0.0, y = 150.0, z = 0.0 },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            scale = { x = 1000.0, y = 1.0, z = 1000.0 },
         },
         ModelComponent = {
             path = "res/primitive/plane1/plane1.obj",
@@ -382,8 +394,8 @@ entities = {
     },
     rock = {
         TransformComponent = {
-            position = { x = 0.0, y = 0.0, z = 380.0 },
-            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            position = { x = 0.0, y = 150.0, z = 380.0 },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
             scale = { x = 40.0, y = 40.0, z = 40.0 },
         },
         ModelComponent = {
@@ -391,10 +403,12 @@ entities = {
             showTriangles = false,
         },
     },
-    -- point lights
+    ------------------
+    -- point lights --
+    ------------------
     pointLight1 = {
         PointLightComponent = {
-            position = { x = 100.0, y = 100.0, z = 1000.0 },
+            position = { x = 30.0, y = 240.0, z = 657.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
             diffuseIntensity = { x = 10.0, y = 1.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
@@ -405,7 +419,7 @@ entities = {
     },
     pointLight2 = {
         PointLightComponent = {
-            position = { x = 1300.0, y = 100.0, z = -370.0 },
+            position = { x = 204.0, y = 240.0, z = -319.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
             diffuseIntensity = { x = 1.0, y = 10.0, z = 1.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
@@ -416,8 +430,8 @@ entities = {
     },
     modelWithPointLight = {
         TransformComponent = {
-            position = { x = 6.0, y = 0.0, z = 0.0 },
-            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            position = { x = 6.0, y = 150.0, z = 0.0 },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
             scale = { x = 40.0, y = 40.0, z = 40.0 },
         },
         ModelComponent = {
@@ -425,7 +439,7 @@ entities = {
             showTriangles = false,
         },
         PointLightComponent = {
-            position = { x = -60.0, y = 150.0, z = 17.0 },
+            position = { x = -98.0, y = 400.0, z = 11.0 },
             ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
             diffuseIntensity = { x = 1.0, y = 1.0, z = 10.0 },
             specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
@@ -434,7 +448,9 @@ entities = {
             quadratic = 0.000007,
         },
     },
-    -- directional lights
+    ------------------------
+    -- directional lights --
+    ------------------------
     --[[
     directionalLight1 = {
         DirectionalLightComponent = {
@@ -448,13 +464,14 @@ entities = {
         SunComponent = {
             sunTexturePath = "res/sun/sun.png",
             scale = 10.0,
-            direction = { x = -0.5, y = -0.077, z = 0.0 },
-            diffuseIntensity = { x = 0.4, y = 0.4, z = 0.4 },
-            specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
+            direction = { x = 1.0, y = -0.2, z = -0.4 },
+            diffuseIntensity = { x = 1.0, y = 0.8, z = 0.6 },
+            specularIntensity = { x = 1.0, y = 0.8, z = 0.6 },
         },
     },
-    -- skybox/skydome, gui
-    --[[
+    ---------------------------
+    -- skybox, skydome, guis --
+    ---------------------------
     skybox = {
         CubemapComponent = {
             right = "res/skybox/sky1/sRight.png",
@@ -465,11 +482,10 @@ entities = {
             front = "res/skybox/sky1/sFront.png",
         },
     },
-    ]]
     skydome = {
         TransformComponent = {
             position = { x = 0.0, y = 0.0, z = 0.0 },
-            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
             scale = { x = 5000.0, y = 5000.0, z = 5000.0 },
         },
         ModelComponent = {
@@ -484,7 +500,7 @@ entities = {
         },
         TransformComponent = {
             position = { x = 0.9, y = 0.9, z = 0.0 },
-            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
             scale = { x = 0.031, y = 0.031, z = 1.0 },
         },
     },
@@ -494,8 +510,27 @@ entities = {
         },
         TransformComponent = {
             position = { x = 0.9, y = 0.8, z = 0.0 },
-            rotation = { x = 0.0, y = 0.0, z = 0.0 },
+            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
             scale = { x = 0.031, y = 0.031, z = 1.0 },
+        },
+    },
+    -----------
+    -- water --
+    -----------
+    ocean = {
+        WaterComponent = {
+            xPosition = xWaterPos,
+            zPosition = zWaterPos,
+            height = waterHeight,
+            tileSize = { x = waterTileSize, y = 1.0, z = waterTileSize },
+            dudvTexturePath = "res/water/waterDUDV.png",
+            normalMapTexturePath = "res/water/normal.png",
+            renderToReflectionTexture = { [0] = "SkydomeRenderSystem", [1] = "SunRenderSystem", [2] = "ForwardRenderSystem" },
+            renderToRefractionTexture = { [0] = "SkydomeRenderSystem", [1] = "SunRenderSystem", [2] = "ForwardRenderSystem" },
+        },
+        TransformComponent = {
+            position = { x = xWaterPos, y = waterHeight, z = zWaterPos },
+            scale = { x = waterTileSize, y = 1.0, z = waterTileSize },
         },
     },
 }
@@ -505,12 +540,15 @@ entities = {
 --------------
 
 renderer = {
-    --ForwardRenderer = { priority = 0, name = "ForwardRenderSystem" },
-    DeferredRenderer = { priority = 999, name = "DeferredRenderSystem" },
-    --SkyboxRenderer = { priority = 10, name = "SkyboxRenderSystem" },
+
+    --DeferredRenderer = { priority = 99, name = "DeferredRenderSystem" },
+    --SkyboxRenderer = { priority = 0, name = "SkyboxRenderSystem" },
+
     SkydomeRenderer = { priority = 10, name = "SkydomeRenderSystem" },
-    SunRenderer = { priority = 1, name = "SunRenderSystem" },
-    GuiRenderer = { priority = 0, name = "GuiRenderSystem" }
+    WaterRenderer = { priority = 4, name = "WaterRenderSystem" },
+    SunRenderer = { priority = 2, name = "SunRenderSystem" },
+    ForwardRenderer = { priority = 1, name = "ForwardRenderSystem" },
+    GuiRenderer = { priority = 0, name = "GuiRenderSystem" },
 }
 ```
 
