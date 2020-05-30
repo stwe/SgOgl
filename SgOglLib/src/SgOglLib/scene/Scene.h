@@ -128,6 +128,8 @@ namespace sg::ogl::scene
         glm::vec4 m_currentClipPlane{ glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f) };
         glm::vec3 m_ambientIntensity{ glm::vec3(0.3f) };
 
+        lua_State* m_luaState{ nullptr };
+
         //-------------------------------------------------
         // Lua config file
         //-------------------------------------------------

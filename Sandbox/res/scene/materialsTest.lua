@@ -49,12 +49,12 @@ entities = {
     },
     sphere = {
         TransformComponent = {
-            position = { x = 0.0, y = 200.0, z = 380.0 },
+            position = { x = 0.0, y = 240.0, z = 380.0 },
             --rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 40.0, y = 40.0, z = 40.0 },
+            scale = { x = 4.0, y = 4.0, z = 4.0 },
         },
         ModelComponent = {
-            path = "res/model/Sphere/sphere.obj",
+            path = "res/primitive/sphere/sphere.obj",
             showTriangles = false,
         },
         -- emerald, jade, obsidian, pearl, gold, silver, bronze

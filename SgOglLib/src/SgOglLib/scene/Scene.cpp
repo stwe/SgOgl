@@ -518,42 +518,42 @@ void sg::ogl::scene::Scene::ConfigSceneFromFile()
     Log::SG_OGL_CORE_LOG_DEBUG("[Scene::ConfigSceneFromFile()] Loading scene from {}.", m_configFileName);
 
     // new lua state
-    auto* luaState{ luaL_newstate() };
-    luaopen_base(luaState);
-    luaL_openlibs(luaState);
+    m_luaState = luaL_newstate();
+    luaopen_base(m_luaState);
+    luaL_openlibs(m_luaState);
 
     // read scene config file
-    lua::LuaHelper::LoadScript(luaState, m_configFileName);
+    lua::LuaHelper::LoadScript(m_luaState, m_configFileName);
 
     {
         // scene
-        const auto sceneTable{ luabridge::getGlobal(luaState, "scene") };
+        const auto sceneTable{ luabridge::getGlobal(m_luaState, "scene") };
         for (const auto& pair : pairs(sceneTable))
         {
             if (pair.first.cast<std::string>() == "ambientIntensity")
             {
-                const auto scene{ luabridge::getGlobal(luaState, "scene") };
+                const auto scene{ luabridge::getGlobal(m_luaState, "scene") };
                 const auto ambientIntensity{ scene["ambientIntensity"] };
                 SetAmbientIntensity(glm::vec3(ambientIntensity["x"].cast<float>(), ambientIntensity["y"].cast<float>(), ambientIntensity["z"].cast<float>()));
             }
         }
 
         // add cameras
-        auto cameraKeys{ lua::LuaHelper::GetTableKeys(luaState, "cameras") };
+        auto cameraKeys{ lua::LuaHelper::GetTableKeys(m_luaState, "cameras") };
         for (const auto& cameraKey : cameraKeys)
         {
-            AddCamera(luaState, cameraKey);
+            AddCamera(m_luaState, cameraKey);
         }
 
         // add entities
-        auto entityKeys{ lua::LuaHelper::GetTableKeys(luaState, "entities") };
+        auto entityKeys{ lua::LuaHelper::GetTableKeys(m_luaState, "entities") };
         for (const auto& entityKey : entityKeys)
         {
-            AddEntity(luaState, entityKey);
+            AddEntity(m_luaState, entityKey);
         }
 
         // add renderer
-        const auto rendererTable{ luabridge::getGlobal(luaState, "renderer") };
+        const auto rendererTable{ luabridge::getGlobal(m_luaState, "renderer") };
         for (const auto& pair : pairs(rendererTable))
         {
             const auto priority{ rendererTable[pair.first.cast<std::string>()]["priority"].cast<int>() };
@@ -579,5 +579,5 @@ void sg::ogl::scene::Scene::ConfigSceneFromFile()
     }
     Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] ---------------------------");
 
-    lua_close(luaState);
+    //lua_close(luaState);
 }
