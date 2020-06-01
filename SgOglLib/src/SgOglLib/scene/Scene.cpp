@@ -242,7 +242,11 @@ void sg::ogl::scene::Scene::InitLua()
         "SetPlayerRotationY", &camera::ThirdPersonCamera::SetPlayerRotationY
     );
 
-    // SetCurrentCamera functions
+    // Set ambient intensity
+
+    m_lua.set_function("SetAmbientIntensity", &Scene::SetAmbientIntensity);
+
+    // Set current camera functions
 
     m_lua.set_function("SetFirstPersonCameraAsCurrent", &Scene::SetFirstPersonCameraAsCurrent);
     m_lua.set_function("SetThirdPersonCameraAsCurrent", &Scene::SetThirdPersonCameraAsCurrent);
