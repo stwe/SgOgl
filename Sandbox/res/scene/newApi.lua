@@ -18,8 +18,15 @@ SetFirstPersonCameraAsCurrent(scene, fpc)
 -- Entities --
 --------------
 
+e = Registry:create()
+
+plane = Model.new("res/primitive/plane1/plane1.obj", app)
+
+Registry:emplaceModel(e, plane, false)
+Registry:emplaceTransform(e, vec3.new(0.0, 150.0, 0.0), vec3.new(0.0, 0.0, 0.0), vec3.new(1000.0, 1.0, 1000.0))
 
 --------------
 -- Renderer --
 --------------
 
+forwardRenderer = ForwardRenderer.new(10, scene)

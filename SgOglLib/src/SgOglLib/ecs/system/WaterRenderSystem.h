@@ -96,6 +96,7 @@ namespace sg::ogl::ecs::system
                 const auto begin{ waterComponent.water->toReflectionTexture.begin() };
                 const auto end{ waterComponent.water->toReflectionTexture.end() };
 
+                /*
                 scene::SceneCache::rendererCache.each(
                     [&](const entt::id_type t_id, entt::handle<RenderSystemInterface> t_renderer)
                     {
@@ -104,6 +105,7 @@ namespace sg::ogl::ecs::system
                             t_renderer->Render();
                         }
                     });
+                */
 
                 m_scene->GetCurrentCamera().GetPosition().y += distance;
                 m_scene->GetCurrentCamera().InvertPitch();
@@ -136,6 +138,7 @@ namespace sg::ogl::ecs::system
                 const auto begin{ waterComponent.water->toRefractionTexture.begin() };
                 const auto end{ waterComponent.water->toRefractionTexture.end() };
 
+                /*
                 scene::SceneCache::rendererCache.each(
                     [&](const entt::id_type t_id, entt::handle<RenderSystemInterface> t_renderer)
                     {
@@ -144,6 +147,7 @@ namespace sg::ogl::ecs::system
                             t_renderer->Render();
                         }
                     });
+                */
 
                 waterComponent.water->GetWaterFbos().UnbindRenderTarget();
             }

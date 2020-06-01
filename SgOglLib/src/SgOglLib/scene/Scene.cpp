@@ -164,6 +164,7 @@ void sg::ogl::scene::Scene::Update(const double t_dt)
 
 void sg::ogl::scene::Scene::Render()
 {
+    /*
     auto handle{ SceneCache::rendererCache.load<RenderSystemLoader<ecs::system::WaterRenderSystem>>("WaterRenderSystem"_hs,this) };
     if (handle)
     {
@@ -172,8 +173,9 @@ void sg::ogl::scene::Scene::Render()
         waterRenderSystem->RenderReflectionTexture();
         waterRenderSystem->RenderRefractionTexture();
     }
+    */
 
-    for (auto* renderer : m_rendererArray)
+    for (auto& renderer : m_rendererArray)
     {
         renderer->PrepareRendering();
         renderer->Render();
@@ -191,6 +193,7 @@ void sg::ogl::scene::Scene::ConfigSceneFromFile()
 
     InitLua();
     RunLuaScript();
+    FinishLuaScript();
 }
 
 void sg::ogl::scene::Scene::InitLua()
@@ -254,11 +257,76 @@ void sg::ogl::scene::Scene::InitLua()
     // Scene
 
     m_lua["scene"] = std::ref(*this);
+
+    // Forward renderer
+
+    m_lua.new_usertype<ecs::system::ForwardRenderSystem>("ForwardRenderer",
+         sol::constructors<ecs::system::ForwardRenderSystem(Scene*), ecs::system::ForwardRenderSystem(int t_priority, Scene*)>(),
+        "new", sol::factories([&](int t_priority, Scene* t_scene) -> std::shared_ptr<ecs::system::ForwardRenderSystem>
+        {
+            auto renderer{ std::make_shared<ecs::system::ForwardRenderSystem>(t_priority, t_scene) };
+            m_rendererArray.push_back(renderer);
+            return renderer;
+        })
+    );
+
+    // EnTT registry
+
+    auto registry{ m_lua.new_usertype<entt::registry>("registry") };
+    registry.set_function("create", static_cast<entt::entity(entt::registry::*)()>(&entt::registry::create));
+
+    m_lua["Registry"] = &GetApplicationContext()->registry;
+
+    // Model component
+
+    auto modelType = m_lua.new_usertype<resource::Model>(
+        "Model",
+        sol::constructors<resource::Model(std::string, Application*)>(),
+        "new", sol::factories([&](std::string t_fullFilePath, Application* t_application)
+        {
+            return std::make_shared<resource::Model>(t_fullFilePath, t_application);
+        })
+    );
+
+    auto modelComponentType = m_lua.new_usertype<ecs::component::ModelComponent>(
+        "ModelComponent",
+        sol::constructors<ecs::component::ModelComponent()>()
+    );
+
+    registry.set_function("emplaceModel", &entt::registry::emplace<ecs::component::ModelComponent, std::shared_ptr<resource::Model>&, bool>);
+
+    // Transform component
+
+    auto transformComponentType = m_lua.new_usertype<math::Transform>(
+        "TransformComponent",
+        sol::constructors<math::Transform()>()
+    );
+
+    registry.set_function("emplaceTransform", &entt::registry::emplace<math::Transform, glm::vec3&, glm::vec3&, glm::vec3&>);
 }
 
 void sg::ogl::scene::Scene::RunLuaScript()
 {
     auto fx{ m_lua.script_file(m_configFileName) };
+}
 
-    Log::SG_OGL_CORE_LOG_DEBUG("");
+void sg::ogl::scene::Scene::FinishLuaScript()
+{
+    // sort renderer by priority
+    std::sort(m_rendererArray.begin(), m_rendererArray.end(), [](const auto& t_lhs, const auto& t_rhs)
+    {
+        return t_lhs->priority > t_rhs->priority;
+    });
+
+    Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] ---------------------------");
+    Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] Renderer priority settings.");
+
+    auto i{ 0 };
+    for (const auto& renderer : m_rendererArray)
+    {
+        Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] {}. {}", i, renderer->debugName);
+        i++;
+    }
+
+    Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] ---------------------------");
 }

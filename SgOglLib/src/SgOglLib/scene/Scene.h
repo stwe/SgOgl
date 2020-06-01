@@ -15,7 +15,6 @@
 #include <unordered_map>
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
-#include <entt/entt.hpp>
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
@@ -58,7 +57,7 @@ namespace sg::ogl::scene
         using FirstPersonCameraSharedPtr = std::shared_ptr<camera::FirstPersonCamera>;
         using ThirdPersonCameraSharedPtr = std::shared_ptr<camera::ThirdPersonCamera>;
 
-        using RendererArray = std::vector<ecs::system::RenderSystemInterface*>;
+        using RendererArray = std::vector<std::shared_ptr<ecs::system::RenderSystemInterface>>;
 
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
 
@@ -148,24 +147,6 @@ namespace sg::ogl::scene
         void ConfigSceneFromFile();
         void InitLua();
         void RunLuaScript();
-    };
-
-    template <typename T>
-    struct RenderSystemLoader final : entt::loader<RenderSystemLoader<T>, ecs::system::RenderSystemInterface>
-    {
-        std::shared_ptr<ecs::system::RenderSystemInterface> load(Scene* t_scene) const
-        {
-            return std::make_shared<T>(t_scene);
-        }
-
-        std::shared_ptr<ecs::system::RenderSystemInterface> load(const int t_priority, Scene* t_scene) const
-        {
-            return std::make_shared<T>(t_priority, t_scene);
-        }
-    };
-
-    struct SceneCache
-    {
-        static inline entt::cache<ecs::system::RenderSystemInterface> rendererCache{};
+        void FinishLuaScript();
     };
 }
