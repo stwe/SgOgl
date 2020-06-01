@@ -22,8 +22,8 @@ namespace sg::ogl::camera
 
         FirstPersonCamera() = delete;
 
-        explicit FirstPersonCamera(Application* t_application);
-        FirstPersonCamera(Application* t_application, const glm::vec3& t_position, float t_yaw, float t_pitch);
+        FirstPersonCamera(const std::string& t_name, Application* t_application);
+        FirstPersonCamera(const std::string& t_name, Application* t_application, const glm::vec3& t_position, float t_yaw, float t_pitch);
 
         FirstPersonCamera(const FirstPersonCamera& t_other) = delete;
         FirstPersonCamera(FirstPersonCamera&& t_other) noexcept = delete;

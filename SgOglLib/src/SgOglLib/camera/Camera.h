@@ -38,19 +38,13 @@ namespace sg::ogl::camera
         using FrustumPlaneContainer = std::vector<math::Plane>;
 
         //-------------------------------------------------
-        // Public member
-        //-------------------------------------------------
-
-        std::string name;
-
-        //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
 
         Camera() = delete;
 
-        explicit Camera(Application* t_application);
-        Camera(Application* t_application, const glm::vec3& t_position, float t_yaw, float t_pitch);
+        Camera(const std::string& t_name, Application* t_application);
+        Camera(const std::string& t_name, Application* t_application, const glm::vec3& t_position, float t_yaw, float t_pitch);
 
         Camera(const Camera& t_other) = delete;
         Camera(Camera&& t_other) noexcept = delete;
@@ -63,6 +57,7 @@ namespace sg::ogl::camera
         // Getter
         //-------------------------------------------------
 
+        [[nodiscard]] const std::string& GetName() const noexcept;
         [[nodiscard]] const glm::vec3& GetPosition() const noexcept;
         [[nodiscard]] glm::vec3& GetPosition() noexcept;
         [[nodiscard]] float GetYaw() const;
@@ -97,6 +92,8 @@ namespace sg::ogl::camera
         void UpdateFrustumPlanes();
 
     protected:
+        std::string m_name;
+
         Application* m_application{ nullptr };
 
         glm::vec3 m_position{ glm::vec3(0.0f) };

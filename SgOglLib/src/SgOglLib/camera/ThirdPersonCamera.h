@@ -27,7 +27,7 @@ namespace sg::ogl::camera
 
         ThirdPersonCamera() = delete;
 
-        ThirdPersonCamera(Application* t_application, glm::vec3& t_playerPosition);
+        ThirdPersonCamera(const std::string& t_name, Application* t_application, const glm::vec3& t_playerPosition);
 
         ThirdPersonCamera(const ThirdPersonCamera& t_other) = delete;
         ThirdPersonCamera(ThirdPersonCamera&& t_other) noexcept = delete;

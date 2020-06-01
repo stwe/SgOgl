@@ -45,8 +45,6 @@ project "SgOglLib"
         "%{prj.name}/src/SgOglLib",
         "%{prj.name}/vendor",
         "%{prj.name}/vendor/gli",
-        "%{prj.name}/vendor/LuaBridge",
-        "%{prj.name}/vendor/LuaBridge/detail"
     }
 
     linkoptions
@@ -97,8 +95,6 @@ project "Sandbox"
         "SgOglLib/src",
         "SgOglLib/src/SgOglLib",
         "SgOglLib/vendor",
-        "SgOglLib/vendor/LuaBridge",
-        "SgOglLib/vendor/LuaBridge/detail"
     }
 
     links

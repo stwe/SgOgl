@@ -20,23 +20,23 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::camera::FirstPersonCamera::FirstPersonCamera(Application* t_application)
-    : Camera(t_application)
+sg::ogl::camera::FirstPersonCamera::FirstPersonCamera(const std::string& t_name, Application* t_application)
+    : Camera(t_name, t_application)
 {
     SG_OGL_CORE_ASSERT(m_application, "[FirstPersonCamera::FirstPersonCamera()] Null pointer.");
-    Log::SG_OGL_CORE_LOG_DEBUG("[FirstPersonCamera::FirstPersonCamera()] Create FirstPersonCamera.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[FirstPersonCamera::FirstPersonCamera()] Create FirstPersonCamera {}.", m_name);
 }
 
-sg::ogl::camera::FirstPersonCamera::FirstPersonCamera(Application* t_application, const glm::vec3& t_position, float t_yaw, float t_pitch)
-    : Camera(t_application, t_position, t_yaw, t_pitch)
+sg::ogl::camera::FirstPersonCamera::FirstPersonCamera(const std::string& t_name, Application* t_application, const glm::vec3& t_position, const float t_yaw, const float t_pitch)
+    : Camera(t_name, t_application, t_position, t_yaw, t_pitch)
 {
     SG_OGL_CORE_ASSERT(m_application, "[FirstPersonCamera::FirstPersonCamera()] Null pointer.");
-    Log::SG_OGL_CORE_LOG_DEBUG("[FirstPersonCamera::FirstPersonCamera()] Create FirstPersonCamera.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[FirstPersonCamera::FirstPersonCamera()] Create FirstPersonCamera {}.", m_name);
 }
 
 sg::ogl::camera::FirstPersonCamera::~FirstPersonCamera() noexcept
 {
-    Log::SG_OGL_CORE_LOG_DEBUG("[FirstPersonCamera::FirstPersonCamera()] Destruct FirstPersonCamera.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[FirstPersonCamera::FirstPersonCamera()] Destruct FirstPersonCamera {}.", m_name);
 }
 
 //-------------------------------------------------
@@ -59,13 +59,11 @@ glm::mat4 sg::ogl::camera::FirstPersonCamera::GetViewMatrix() const
 
 void sg::ogl::camera::FirstPersonCamera::Input()
 {
-    // handle mouse input
     ProcessMouse();
 }
 
 void sg::ogl::camera::FirstPersonCamera::Update(const double t_dt)
 {
-    // handle keyboard input
     if (m_application->GetWindow().IsKeyPressed(GLFW_KEY_W))
     {
         ProcessKeyboard(CameraMovement::FORWARD, t_dt);

@@ -19,18 +19,18 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::camera::ThirdPersonCamera::ThirdPersonCamera(Application* t_application, glm::vec3& t_playerPosition)
-    : Camera(t_application)
+sg::ogl::camera::ThirdPersonCamera::ThirdPersonCamera(const std::string& t_name, Application* t_application, const glm::vec3& t_playerPosition)
+    : Camera(t_name, t_application)
     , m_playerPosition{ t_playerPosition }
 {
     SG_OGL_CORE_ASSERT(m_application, "[ThirdPersonCamera::ThirdPersonCamera()] Null pointer.");
 
-    Log::SG_OGL_CORE_LOG_DEBUG("[ThirdPersonCamera::ThirdPersonCamera()] Create ThirdPersonCamera.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ThirdPersonCamera::ThirdPersonCamera()] Create ThirdPersonCamera {}.", m_name);
 }
 
 sg::ogl::camera::ThirdPersonCamera::~ThirdPersonCamera() noexcept
 {
-    Log::SG_OGL_CORE_LOG_DEBUG("[ThirdPersonCamera::~ThirdPersonCamera()] Destruct ThirdPersonCamera.");
+    Log::SG_OGL_CORE_LOG_DEBUG("[ThirdPersonCamera::~ThirdPersonCamera()] Destruct ThirdPersonCamera {}.", m_name);
 }
 
 //-------------------------------------------------

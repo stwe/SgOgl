@@ -17,7 +17,8 @@
 #include <glm/vec3.hpp>
 #include <entt/entt.hpp>
 
-struct lua_State;
+#define SOL_ALL_SAFETIES_ON 1
+#include <sol/sol.hpp>
 
 namespace sg::ogl
 {
@@ -32,6 +33,8 @@ namespace sg::ogl::light
 namespace sg::ogl::camera
 {
     class Camera;
+    class FirstPersonCamera;
+    class ThirdPersonCamera;
 }
 
 namespace sg::ogl::ecs::system
@@ -51,6 +54,9 @@ namespace sg::ogl::scene
     public:
         using CameraSharedPtr = std::shared_ptr<camera::Camera>;
         using CameraContainer = std::unordered_map<std::string, CameraSharedPtr>;
+
+        using FirstPersonCameraSharedPtr = std::shared_ptr<camera::FirstPersonCamera>;
+        using ThirdPersonCameraSharedPtr = std::shared_ptr<camera::ThirdPersonCamera>;
 
         using RendererArray = std::vector<ecs::system::RenderSystemInterface*>;
 
@@ -99,7 +105,12 @@ namespace sg::ogl::scene
         //-------------------------------------------------
 
         void SetAmbientIntensity(const glm::vec3& t_ambientIntensity);
+
+        // todo: overloads for Sol2
+        void SetFirstPersonCameraAsCurrent(const FirstPersonCameraSharedPtr& t_fpCamera);
+        void SetThirdPersonCameraAsCurrent(const ThirdPersonCameraSharedPtr& t_tpCamera);
         void SetCurrentCamera(const CameraSharedPtr& t_camera);
+
         void SetCurrentDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
         void SetCurrentClipPlane(const glm::vec4& t_currentClipPlane);
 
@@ -128,17 +139,15 @@ namespace sg::ogl::scene
         glm::vec4 m_currentClipPlane{ glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f) };
         glm::vec3 m_ambientIntensity{ glm::vec3(0.3f) };
 
-        lua_State* m_luaState{ nullptr };
+        sol::state m_lua;
 
         //-------------------------------------------------
-        // Lua config file
+        // Lua config
         //-------------------------------------------------
-
-        void AddCamera(lua_State* t_luaState, const std::string& t_cameraName);
-        void AddEntity(lua_State* t_luaState, const std::string& t_entityName);
-        void AddRenderer(int t_priority, const std::string& t_rendererName);
 
         void ConfigSceneFromFile();
+        void InitLua();
+        void RunLuaScript();
     };
 
     template <typename T>

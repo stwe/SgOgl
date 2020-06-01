@@ -16,14 +16,16 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::camera::Camera::Camera(Application* t_application)
-    : m_application{ t_application }
+sg::ogl::camera::Camera::Camera(const std::string& t_name, Application* t_application)
+    : m_name{ t_name }
+    , m_application{ t_application }
 {
     SG_OGL_CORE_ASSERT(m_application, "[Camera::Camera()] Null pointer.");
 }
 
-sg::ogl::camera::Camera::Camera(Application* t_application, const glm::vec3& t_position, float t_yaw, float t_pitch)
-    : m_application{ t_application }
+sg::ogl::camera::Camera::Camera(const std::string& t_name, Application* t_application, const glm::vec3& t_position, float t_yaw, float t_pitch)
+    : m_name{ t_name }
+    , m_application{ t_application }
     , m_position{ t_position }
     , m_yaw{ t_yaw }
     , m_pitch{ t_pitch }
@@ -34,6 +36,11 @@ sg::ogl::camera::Camera::Camera(Application* t_application, const glm::vec3& t_p
 //-------------------------------------------------
 // Getter
 //-------------------------------------------------
+
+const std::string& sg::ogl::camera::Camera::GetName() const noexcept
+{
+    return m_name;
+}
 
 const glm::vec3& sg::ogl::camera::Camera::GetPosition() const noexcept
 {
