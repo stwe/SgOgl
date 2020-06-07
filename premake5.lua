@@ -66,6 +66,10 @@ project "SgOglLib"
         defines "SG_OGL_DEBUG_BUILD"
         runtime "Debug"
         symbols "on"
+        buildoptions
+        {
+            "/bigobj"
+        }
 
     filter "configurations:Release"
         runtime "Release"

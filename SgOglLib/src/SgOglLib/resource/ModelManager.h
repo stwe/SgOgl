@@ -81,8 +81,11 @@ namespace sg::ogl::resource
 
         Material GetMaterialByName(const std::string& t_name);
         StaticMeshSharedPtr GetStaticMeshByName(const std::string& t_name);
-        ModelSharedPtr GetModelByPath(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
-        SkeletalModelSharedPtr GetSkeletalModelByPath(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
+
+        ModelSharedPtr GetModel(const std::string& t_fullFilePath);
+        ModelSharedPtr GetModelWithFlags(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
+
+        SkeletalModelSharedPtr GetSkeletalModel(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
 
         static VertexContainer GetParticleVertices();
 

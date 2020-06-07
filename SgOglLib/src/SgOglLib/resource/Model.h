@@ -40,7 +40,7 @@ namespace sg::ogl::resource
 
         Model() = delete;
 
-        Model(std::string t_fullFilePath, Application* t_application, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
+        Model(const std::string& t_fullFilePath, Application* t_application, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
 
         Model(const Model& t_other) = delete;
         Model(Model&& t_other) noexcept = delete;

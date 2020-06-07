@@ -16,9 +16,6 @@
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 
-#define SOL_ALL_SAFETIES_ON 1
-#include <sol/sol.hpp>
-
 namespace sg::ogl
 {
     class Application;
@@ -32,8 +29,6 @@ namespace sg::ogl::light
 namespace sg::ogl::camera
 {
     class Camera;
-    class FirstPersonCamera;
-    class ThirdPersonCamera;
 }
 
 namespace sg::ogl::ecs::system
@@ -51,18 +46,19 @@ namespace sg::ogl::scene
     class Scene
     {
     public:
-        using CameraSharedPtr = std::shared_ptr<camera::Camera>;
-        using CameraContainer = std::unordered_map<std::string, CameraSharedPtr>;
-
-        using FirstPersonCameraSharedPtr = std::shared_ptr<camera::FirstPersonCamera>;
-        using ThirdPersonCameraSharedPtr = std::shared_ptr<camera::ThirdPersonCamera>;
-
-        using RendererArray = std::vector<std::shared_ptr<ecs::system::RenderSystemInterface>>;
+        using CameraContainer = std::unordered_map<std::string, std::unique_ptr<camera::Camera>>;
+        using RendererContainer = std::vector<std::unique_ptr<ecs::system::RenderSystemInterface>>;
 
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
-
         using WaterSharedPtr = std::shared_ptr<water::Water>;
         using WaterContainer = std::unordered_map<std::string, WaterSharedPtr>;
+
+        //-------------------------------------------------
+        // Public member
+        //-------------------------------------------------
+
+        CameraContainer cameras;
+        RendererContainer renderer;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -71,8 +67,6 @@ namespace sg::ogl::scene
         Scene() = delete;
 
         explicit Scene(Application* t_application);
-
-        Scene(Application* t_application, const std::string& t_configFileName);
 
         Scene(const Scene& t_other) = delete;
         Scene(Scene&& t_other) noexcept = delete;
@@ -92,11 +86,9 @@ namespace sg::ogl::scene
 
         [[nodiscard]] [[deprecated]] light::DirectionalLight& GetCurrentDirectionalLight() noexcept;
         [[nodiscard]] [[deprecated]] const light::DirectionalLight& GetCurrentDirectionalLight() const noexcept;
-
         [[nodiscard]] [[deprecated]] bool HasDirectionalLight() const;
 
         [[nodiscard]] glm::vec4 GetCurrentClipPlane() const;
-
         [[nodiscard]] glm::vec3 GetAmbientIntensity() const;
 
         //-------------------------------------------------
@@ -105,10 +97,8 @@ namespace sg::ogl::scene
 
         void SetAmbientIntensity(const glm::vec3& t_ambientIntensity);
 
-        // todo: overloads for Sol2
-        void SetFirstPersonCameraAsCurrent(const FirstPersonCameraSharedPtr& t_fpCamera);
-        void SetThirdPersonCameraAsCurrent(const ThirdPersonCameraSharedPtr& t_tpCamera);
-        void SetCurrentCamera(const CameraSharedPtr& t_camera);
+        void SetCurrentCameraByName(const std::string& t_name);
+        void SetCurrentCamera(camera::Camera* t_camera);
 
         void SetCurrentDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
         void SetCurrentClipPlane(const glm::vec4& t_currentClipPlane);
@@ -125,28 +115,13 @@ namespace sg::ogl::scene
 
     private:
         Application* m_application{ nullptr };
+        camera::Camera* m_currentCamera{ nullptr };
 
-        std::string m_configFileName;
-        CameraContainer m_cameras;
-        RendererArray m_rendererArray;
         WaterContainer m_waterContainer;
-
-        CameraSharedPtr m_currentCamera;
 
         DirectionalLightSharedPtr m_currentDirectionalLight;
 
         glm::vec4 m_currentClipPlane{ glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f) };
         glm::vec3 m_ambientIntensity{ glm::vec3(0.3f) };
-
-        sol::state m_lua;
-
-        //-------------------------------------------------
-        // Lua config
-        //-------------------------------------------------
-
-        void ConfigSceneFromFile();
-        void InitLua();
-        void RunLuaScript();
-        void FinishLuaScript();
     };
 }

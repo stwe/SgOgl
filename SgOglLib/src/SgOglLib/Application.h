@@ -41,6 +41,11 @@ namespace sg::ogl::ecs::factory
     class EntityFactory;
 }
 
+namespace sg::ogl::scene
+{
+    class Scene;
+}
+
 namespace sg::ogl
 {
     class Window;
@@ -102,6 +107,8 @@ namespace sg::ogl
          *        components on a per request basis.
          */
         entt::registry registry;
+
+        scene::Scene* currentScene{ nullptr };
 
         //-------------------------------------------------
         // Ctors. / Dtor.

@@ -197,11 +197,14 @@ Next, a game state must be created. The class is named `GameState` and inherits 
 class GameState : public sg::ogl::state::State
 {
 public:
+    using LuaScriptUniquePtr = std::unique_ptr<sg::ogl::LuaScript>;
+
     GameState() = delete;
 
     explicit GameState(sg::ogl::state::StateStack* t_stateStack)
         : State{ t_stateStack, "GameState" }
     {
+        Init();
     }
 
     bool Input() override;
@@ -211,12 +214,14 @@ public:
 protected:
 
 private:
+    LuaScriptUniquePtr m_luaScript;
 
+    void Init();
 };
 
 ```
 
-The cpp file contains nothing special.
+The cpp file contains nothing special so far.
 
 ```cpp
 // File: GameState.cpp
@@ -236,6 +241,10 @@ bool GameState::Update(const double t_dt)
 void GameState::Render()
 {
 }
+
+void GameState::Init()
+{
+}
 ```
 
 The newly created game state must be registered. This is done by the `Sandbox` class in the `RegisterStates()` function.
@@ -243,7 +252,7 @@ In addition, the game state must be pushed to the state stack. We do this in the
 The `RegisterStates()` and `Init()` functions are called later before the game loop.
 
 ```cpp
-// Sandbox.cpp
+// File: Sandbox.cpp
 
 #include "SgOgl.h"
 #include "GameState.h"
@@ -275,7 +284,7 @@ In our case, an instance of the `Sandbox` class should be created.
 In the `Sandbox` class, the header `SgOglEntryPoint.h` must be included as well.
 
 ```cpp
-// Sandbox.cpp
+// File: Sandbox.cpp
 
 #include "SgOgl.h"
 #include "SgOglEntryPoint.h"
@@ -306,6 +315,8 @@ The config file can look like this.
 The `libResFolder` option contains the full path to the library's built-in assets.
 
 ```lua
+-- File: Config.lua
+
 libResFolder = "E:/Dev/SgOgl/SgOglLib/res"
 
 window = {
@@ -335,68 +346,106 @@ Here is an example:
 
 
 ```lua
------------
--- Scene --
------------
+-- File: newApi.lua
 
-SetAmbientIntensity(scene, vec3.new(0.4, 0.4, 0.4))
+------------------
+-- Create Scene --
+------------------
 
--------------
--- Cameras --
--------------
+scene = Scene.new(applicationContext)
 
-fpc = FirstPersonCamera.new("first_person_camera1", app, vec3.new(1334.0, 820.0, 227.0), -178.0, -22.0)
-tpc = ThirdPersonCamera.new("third_person_camera1", app, vec3.new(1334.0, 820.0, 227.0))
 
-SetFirstPersonCameraAsCurrent(scene, fpc)
---SetThirdPersonCameraAsCurrent(scene, tpc)
+-----------------------------
+-- Create and add Renderer --
+-----------------------------
 
---------------
--- Entities --
---------------
+ForwardRenderer.new(10, scene)
 
-e = Registry:create()
 
-plane = Model.new("res/primitive/plane1/plane1.obj", app)
+----------------------------
+-- Create and add Cameras --
+----------------------------
 
-Registry:emplaceModel(e, plane, false)
-Registry:emplaceTransform(e, vec3.new(0.0, 150.0, 0.0), vec3.new(0.0, 0.0, 0.0), vec3.new(1000.0, 1.0, 1000.0))
+firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(1334.0, 820.0, 227.0), -178.0, -22.0, scene)
+firstPersonCamera:SetCameraVelocity(128.0)
+firstPersonCamera:SetMouseSensitivity(0.025)
+--print(firstPersonCamera:GetCameraVelocity())
+--print(firstPersonCamera:GetMouseSensitivity())
 
---------------
--- Renderer --
---------------
+thirdPersonCamera = ThirdPersonCamera.new("third_person_camera1", applicationContext, Vec3.new(1334.0, 820.0, 227.0), scene)
+thirdPersonCamera:SetPlayerRotationY(45.0)
+--print(thirdPersonCamera:GetPlayerRotationY())
 
-forwardRenderer = ForwardRenderer.new(10, scene)
+
+------------------
+-- Config Scene --
+------------------
+
+scene:SetCurrentCamera("first_person_camera1")
+--scene:SetCurrentCamera("third_person_camera1")
+
+scene:SetAmbientIntensity(Vec3.new(1.4, 1.4, 1.4))
+
+
+---------------------
+-- Create Entities --
+---------------------
+
+plane = modelManager:GetModel("res/primitive/plane1/plane1.obj")
+sphere = modelManager:GetModel("res/primitive/sphere/sphere.obj")
+jade = modelManager:GetMaterialByName("jade")
+
+e0 = ecs:CreateEntity()
+ecs:AddModelComponent(e0, plane, false)
+ecs:AddTransformComponent(e0, Vec3.new(0.0, 150.0, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(1000.0, 1.0, 1000.0))
+
+e1 = ecs:CreateEntity()
+ecs:AddModelComponent(e1, sphere, false)
+ecs:AddTransformComponent(e1, Vec3.new(0.0, 240.0, 380.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(4.0, 4.0, 4.0))
+ecs:AddMaterialComponent(e1, jade)
 ```
 
 
-In our GameState now only one scene object has to be created.
+In our GameState now a `LuaScript` object has to be created. The script creates a Scene object that can be reached via `GetApplicationContext()->currentScene`.
 
 
 ```cpp
+// File: GameState.cpp
+
 bool GameState::Input()
 {
-    m_scene->Input();
+    if (GetApplicationContext()->currentScene)
+    {
+        GetApplicationContext()->currentScene->Input();
+    }
 
     return true;
 }
 
 bool GameState::Update(const double t_dt)
 {
-    m_scene->Update(t_dt);
+    if (GetApplicationContext()->currentScene)
+    {
+        GetApplicationContext()->currentScene->Update(t_dt);
+    }
 
     return true;
 }
 
 void GameState::Render()
 {
-    m_scene->Render();
+    if (GetApplicationContext()->currentScene)
+    {
+        GetApplicationContext()->currentScene->Render();
+    }
+
+    RenderImGui();
 }
 
 void GameState::Init()
 {
-    sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::Black());
+    // ...
 
-    m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext(), "res/scene/newApi.lua");
+    m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/newApi.lua");
 }
 ```

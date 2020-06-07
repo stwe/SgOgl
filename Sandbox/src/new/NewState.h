@@ -15,7 +15,7 @@
 class NewState : public sg::ogl::state::State
 {
 public:
-    using SceneUniquePtr = std::unique_ptr<sg::ogl::scene::Scene>;
+    using LuaScriptUniquePtr = std::unique_ptr<sg::ogl::LuaScript>;
 
     //-------------------------------------------------
     // Ctors. / Dtor.
@@ -51,7 +51,7 @@ public:
 protected:
 
 private:
-    SceneUniquePtr m_scene;
+    LuaScriptUniquePtr m_luaScript;
 
     float m_temp{ 0.0f };
 

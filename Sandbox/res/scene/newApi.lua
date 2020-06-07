@@ -1,32 +1,55 @@
------------
--- Scene --
------------
+------------------
+-- Create Scene --
+------------------
 
-SetAmbientIntensity(scene, vec3.new(0.4, 0.4, 0.4))
+scene = Scene.new(applicationContext)
 
--------------
--- Cameras --
--------------
 
-fpc = FirstPersonCamera.new("first_person_camera1", app, vec3.new(1334.0, 820.0, 227.0), -178.0, -22.0)
-tpc = ThirdPersonCamera.new("third_person_camera1", app, vec3.new(1334.0, 820.0, 227.0))
+-----------------------------
+-- Create and add Renderer --
+-----------------------------
 
-SetFirstPersonCameraAsCurrent(scene, fpc)
---SetThirdPersonCameraAsCurrent(scene, tpc)
+ForwardRenderer.new(10, scene)
 
---------------
--- Entities --
---------------
 
-e = Registry:create()
+----------------------------
+-- Create and add Cameras --
+----------------------------
 
-plane = Model.new("res/primitive/plane1/plane1.obj", app)
+firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(1334.0, 820.0, 227.0), -178.0, -22.0, scene)
+firstPersonCamera:SetCameraVelocity(128.0)
+firstPersonCamera:SetMouseSensitivity(0.025)
+--print(firstPersonCamera:GetCameraVelocity())
+--print(firstPersonCamera:GetMouseSensitivity())
 
-Registry:emplaceModel(e, plane, false)
-Registry:emplaceTransform(e, vec3.new(0.0, 150.0, 0.0), vec3.new(0.0, 0.0, 0.0), vec3.new(1000.0, 1.0, 1000.0))
+thirdPersonCamera = ThirdPersonCamera.new("third_person_camera1", applicationContext, Vec3.new(1334.0, 820.0, 227.0), scene)
+thirdPersonCamera:SetPlayerRotationY(45.0)
+--print(thirdPersonCamera:GetPlayerRotationY())
 
---------------
--- Renderer --
---------------
 
-forwardRenderer = ForwardRenderer.new(10, scene)
+------------------
+-- Config Scene --
+------------------
+
+scene:SetCurrentCamera("first_person_camera1")
+--scene:SetCurrentCamera("third_person_camera1")
+
+scene:SetAmbientIntensity(Vec3.new(1.4, 1.4, 1.4))
+
+
+---------------------
+-- Create Entities --
+---------------------
+
+plane = modelManager:GetModel("res/primitive/plane1/plane1.obj")
+sphere = modelManager:GetModel("res/primitive/sphere/sphere.obj")
+jade = modelManager:GetMaterialByName("jade")
+
+e0 = ecs:CreateEntity()
+ecs:AddModelComponent(e0, plane, false)
+ecs:AddTransformComponent(e0, Vec3.new(0.0, 150.0, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(1000.0, 1.0, 1000.0))
+
+e1 = ecs:CreateEntity()
+ecs:AddModelComponent(e1, sphere, false)
+ecs:AddTransformComponent(e1, Vec3.new(0.0, 240.0, 380.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(4.0, 4.0, 4.0))
+ecs:AddMaterialComponent(e1, jade)

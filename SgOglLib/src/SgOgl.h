@@ -14,6 +14,7 @@
 #include "SgOglLib/OpenGl.h"
 #include "SgOglLib/Color.h"
 #include "SgOglLib/Window.h"
+#include "SgOglLib/LuaScript.h"
 
 // buffer
 #include "SgOglLib/buffer/BufferLayout.h"

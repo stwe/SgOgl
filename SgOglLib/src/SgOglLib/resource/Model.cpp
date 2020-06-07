@@ -22,9 +22,9 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::resource::Model::Model(std::string t_fullFilePath, Application* t_application, const unsigned int t_pFlags)
+sg::ogl::resource::Model::Model(const std::string& t_fullFilePath, Application* t_application, const unsigned int t_pFlags)
     : m_application{ t_application }
-    , m_fullFilePath{ std::move(t_fullFilePath) }
+    , m_fullFilePath{ t_fullFilePath }
 {
     SG_OGL_CORE_ASSERT(m_application, "[Model::Model()] Null pointer.");
     Log::SG_OGL_CORE_LOG_DEBUG("[Model::Model()] Create Model.");

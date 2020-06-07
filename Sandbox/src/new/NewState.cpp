@@ -15,15 +15,22 @@
 
 bool NewState::Input()
 {
-    m_scene->Input();
+    if (GetApplicationContext()->currentScene)
+    {
+        GetApplicationContext()->currentScene->Input();
+    }
 
     return true;
 }
 
 bool NewState::Update(const double t_dt)
 {
-    m_scene->Update(t_dt);
+    if (GetApplicationContext()->currentScene)
+    {
+        GetApplicationContext()->currentScene->Update(t_dt);
+    }
 
+    /*
     m_temp += static_cast<float>(t_dt);
 
     m_scene->GetApplicationContext()->registry.view<sg::ogl::light::PointLight>(
@@ -32,13 +39,17 @@ bool NewState::Update(const double t_dt)
     {
         t_pointLight.position.x += sinf(m_temp) * 4.0f;
     });
+    */
 
     return true;
 }
 
 void NewState::Render()
 {
-    m_scene->Render();
+    if (GetApplicationContext()->currentScene)
+    {
+        GetApplicationContext()->currentScene->Render();
+    }
 
     RenderImGui();
 }
@@ -53,7 +64,7 @@ void NewState::Init()
 
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::Black());
 
-    m_scene = std::make_unique<sg::ogl::scene::Scene>(GetApplicationContext(), "res/scene/newApi.lua");
+    m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/newApi.lua");
 }
 
 //-------------------------------------------------
@@ -81,10 +92,12 @@ void NewState::RenderImGui() const
 
     ImGui::Begin("Debug");
 
+    /*
     m_scene->GetApplicationContext()->registry.view<sg::ogl::light::Sun>().each([&](auto t_entity, auto& t_sunLight)
     {
         ImGui::SliderFloat3("Sun direction", reinterpret_cast<float*>(&t_sunLight.direction), -1.0f, 1.0f);
     });
+    */
 
     ImGui::End();
 

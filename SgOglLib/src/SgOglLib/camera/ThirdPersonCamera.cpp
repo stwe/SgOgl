@@ -34,6 +34,15 @@ sg::ogl::camera::ThirdPersonCamera::~ThirdPersonCamera() noexcept
 }
 
 //-------------------------------------------------
+// Getter
+//-------------------------------------------------
+
+float sg::ogl::camera::ThirdPersonCamera::GetPlayerRotationY() const
+{
+    return m_playerRotY;
+}
+
+//-------------------------------------------------
 // Setter
 //-------------------------------------------------
 

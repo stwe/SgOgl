@@ -40,6 +40,15 @@ sg::ogl::camera::FirstPersonCamera::~FirstPersonCamera() noexcept
 }
 
 //-------------------------------------------------
+// Getter
+//-------------------------------------------------
+
+float sg::ogl::camera::FirstPersonCamera::GetMouseSensitivity() const
+{
+    return m_mouseSensitivity;
+}
+
+//-------------------------------------------------
 // Setter
 //-------------------------------------------------
 

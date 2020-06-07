@@ -41,17 +41,6 @@ sg::ogl::scene::Scene::Scene(Application* t_application)
     Log::SG_OGL_CORE_LOG_DEBUG("[Scene::Scene()] Create Scene.");
 }
 
-sg::ogl::scene::Scene::Scene(Application* t_application, const std::string& t_configFileName)
-    : m_application{ t_application }
-    , m_configFileName{ t_configFileName }
-{
-    SG_OGL_CORE_ASSERT(m_application, "[Scene::Scene()] Null pointer.");
-
-    Log::SG_OGL_CORE_LOG_DEBUG("[Scene::Scene()] Create Scene.");
-
-    ConfigSceneFromFile();
-}
-
 sg::ogl::scene::Scene::~Scene() noexcept
 {
     Log::SG_OGL_CORE_LOG_DEBUG("[Scene::~Scene()] Destruct Scene.");
@@ -114,21 +103,24 @@ void sg::ogl::scene::Scene::SetAmbientIntensity(const glm::vec3& t_ambientIntens
     m_ambientIntensity = t_ambientIntensity;
 }
 
-void sg::ogl::scene::Scene::SetFirstPersonCameraAsCurrent(const FirstPersonCameraSharedPtr& t_fpCamera)
+void sg::ogl::scene::Scene::SetCurrentCameraByName(const std::string& t_name)
 {
-    m_currentCamera.reset();
-    m_currentCamera = t_fpCamera;
+    SG_OGL_CORE_ASSERT(!cameras.empty(), "[Scene::SetCurrentCameraByName()] No cameras available.");
+
+    if (cameras.count(t_name) != 0)
+    {
+        Log::SG_OGL_CORE_LOG_DEBUG("[SetCurrentCameraByName()] Set Camera {} as current.", t_name);
+        SetCurrentCamera(cameras.at(t_name).get());
+    }
+    else
+    {
+        Log::SG_OGL_CORE_LOG_WARN("[SetCurrentCameraByName()] Camera {} not found.", t_name);
+    }
 }
 
-void sg::ogl::scene::Scene::SetThirdPersonCameraAsCurrent(const ThirdPersonCameraSharedPtr& t_tpCamera)
+void sg::ogl::scene::Scene::SetCurrentCamera(camera::Camera* t_camera)
 {
-    m_currentCamera.reset();
-    m_currentCamera = t_tpCamera;
-}
-
-void sg::ogl::scene::Scene::SetCurrentCamera(const CameraSharedPtr& t_camera)
-{
-    m_currentCamera.reset();
+    SG_OGL_CORE_ASSERT(t_camera, "[Scene::SetCurrentCamera()] Null pointer.");
     m_currentCamera = t_camera;
 }
 
@@ -156,9 +148,9 @@ void sg::ogl::scene::Scene::Update(const double t_dt)
 {
     GetCurrentCamera().Update(t_dt);
 
-    for (auto& renderer : m_rendererArray)
+    for (auto& r : renderer)
     {
-        renderer->Update(t_dt);
+        r->Update(t_dt);
     }
 }
 
@@ -175,158 +167,10 @@ void sg::ogl::scene::Scene::Render()
     }
     */
 
-    for (auto& renderer : m_rendererArray)
+    for (auto& r : renderer)
     {
-        renderer->PrepareRendering();
-        renderer->Render();
-        renderer->FinishRendering();
+        r->PrepareRendering();
+        r->Render();
+        r->FinishRendering();
     }
-}
-
-//-------------------------------------------------
-// Lua config
-//-------------------------------------------------
-
-void sg::ogl::scene::Scene::ConfigSceneFromFile()
-{
-    Log::SG_OGL_CORE_LOG_DEBUG("[Scene::ConfigSceneFromFile()] Loading scene from {}.", m_configFileName);
-
-    InitLua();
-    RunLuaScript();
-    FinishLuaScript();
-}
-
-void sg::ogl::scene::Scene::InitLua()
-{
-    m_lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::math);
-
-    // vec3
-
-    m_lua.new_usertype<glm::vec3>(
-        "vec3",
-        sol::constructors<glm::vec3(), glm::vec3(float), glm::vec3(float, float, float)>(),
-        "x", &glm::vec3::x,
-        "y", &glm::vec3::y,
-        "z", &glm::vec3::z,
-        sol::meta_function::addition, sol::resolve<glm::vec3(const glm::vec3&, const glm::vec3&)>(glm::operator+),
-        sol::meta_function::subtraction, sol::resolve<glm::vec3(const glm::vec3&, const glm::vec3&)>(glm::operator-),
-        sol::meta_function::multiplication, sol::resolve<glm::vec3(const glm::vec3&, const glm::vec3&)>(glm::operator*),
-        sol::meta_function::division, sol::resolve<glm::vec3(const glm::vec3&, const glm::vec3&)>(glm::operator/)
-    );
-
-    // Application
-
-    m_lua["app"] = GetApplicationContext();
-
-    // FirstPersonCamera
-
-    m_lua.new_usertype<camera::FirstPersonCamera>("FirstPersonCamera",
-        sol::constructors<camera::FirstPersonCamera(const std::string&, Application*), camera::FirstPersonCamera(const std::string&, Application*, const glm::vec3&, float, float)>(),
-        "new", sol::factories([&](const std::string& t_name, Application* t_app, const glm::vec3& t_pos, float t_yaw, float t_pitch) -> std::shared_ptr<camera::FirstPersonCamera>
-        {
-            auto camera{ std::make_shared<camera::FirstPersonCamera>(t_name, t_app, t_pos, t_yaw, t_pitch) };
-            m_cameras.emplace(t_name, camera);
-            return camera;
-        }),
-        "SetMouseSensitivity", &camera::FirstPersonCamera::SetMouseSensitivity
-    );
-
-    // ThirdPersonCamera
-
-    m_lua.new_usertype<camera::ThirdPersonCamera>("ThirdPersonCamera",
-        sol::constructors<camera::ThirdPersonCamera(const std::string&, Application*, const glm::vec3&)>(),
-        "new", sol::factories([&](const std::string& t_name, Application* t_app, const glm::vec3& t_pos) -> std::shared_ptr<camera::ThirdPersonCamera>
-        {
-            auto camera{ std::make_shared<camera::ThirdPersonCamera>(t_name, t_app, t_pos) };
-            m_cameras.emplace(t_name, camera);
-            return camera;
-        }),
-        "SetPlayerPosition", &camera::ThirdPersonCamera::SetPlayerPosition,
-        "SetPlayerRotationY", &camera::ThirdPersonCamera::SetPlayerRotationY
-    );
-
-    // Set ambient intensity
-
-    m_lua.set_function("SetAmbientIntensity", &Scene::SetAmbientIntensity);
-
-    // Set current camera functions
-
-    m_lua.set_function("SetFirstPersonCameraAsCurrent", &Scene::SetFirstPersonCameraAsCurrent);
-    m_lua.set_function("SetThirdPersonCameraAsCurrent", &Scene::SetThirdPersonCameraAsCurrent);
-
-    // Scene
-
-    m_lua["scene"] = std::ref(*this);
-
-    // Forward renderer
-
-    m_lua.new_usertype<ecs::system::ForwardRenderSystem>("ForwardRenderer",
-         sol::constructors<ecs::system::ForwardRenderSystem(Scene*), ecs::system::ForwardRenderSystem(int t_priority, Scene*)>(),
-        "new", sol::factories([&](int t_priority, Scene* t_scene) -> std::shared_ptr<ecs::system::ForwardRenderSystem>
-        {
-            auto renderer{ std::make_shared<ecs::system::ForwardRenderSystem>(t_priority, t_scene) };
-            m_rendererArray.push_back(renderer);
-            return renderer;
-        })
-    );
-
-    // EnTT registry
-
-    auto registry{ m_lua.new_usertype<entt::registry>("registry") };
-    registry.set_function("create", static_cast<entt::entity(entt::registry::*)()>(&entt::registry::create));
-
-    m_lua["Registry"] = &GetApplicationContext()->registry;
-
-    // Model component
-
-    auto modelType = m_lua.new_usertype<resource::Model>(
-        "Model",
-        sol::constructors<resource::Model(std::string, Application*)>(),
-        "new", sol::factories([&](std::string t_fullFilePath, Application* t_application)
-        {
-            return std::make_shared<resource::Model>(t_fullFilePath, t_application);
-        })
-    );
-
-    auto modelComponentType = m_lua.new_usertype<ecs::component::ModelComponent>(
-        "ModelComponent",
-        sol::constructors<ecs::component::ModelComponent()>()
-    );
-
-    registry.set_function("emplaceModel", &entt::registry::emplace<ecs::component::ModelComponent, std::shared_ptr<resource::Model>&, bool>);
-
-    // Transform component
-
-    auto transformComponentType = m_lua.new_usertype<math::Transform>(
-        "TransformComponent",
-        sol::constructors<math::Transform()>()
-    );
-
-    registry.set_function("emplaceTransform", &entt::registry::emplace<math::Transform, glm::vec3&, glm::vec3&, glm::vec3&>);
-}
-
-void sg::ogl::scene::Scene::RunLuaScript()
-{
-    auto fx{ m_lua.script_file(m_configFileName) };
-}
-
-void sg::ogl::scene::Scene::FinishLuaScript()
-{
-    // sort renderer by priority
-    std::sort(m_rendererArray.begin(), m_rendererArray.end(), [](const auto& t_lhs, const auto& t_rhs)
-    {
-        return t_lhs->priority > t_rhs->priority;
-    });
-
-    Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] ---------------------------");
-    Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] Renderer priority settings.");
-
-    auto i{ 0 };
-    for (const auto& renderer : m_rendererArray)
-    {
-        Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] {}. {}", i, renderer->debugName);
-        i++;
-    }
-
-    Log::SG_OGL_CORE_LOG_INFO("[Scene::ConfigSceneFromFile()] ---------------------------");
 }

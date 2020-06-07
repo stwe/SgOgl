@@ -58,7 +58,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_FlipUVs };
     m_application->registry.assign<component::ModelComponent>(
         entity,
-        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath, pFlags),
+        m_application->GetModelManager().GetModelWithFlags(t_fullModelFilePath, pFlags),
         t_showTriangles
     );
 
@@ -167,7 +167,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkydomeEntity(const std
     // add model component
     m_application->registry.assign<component::ModelComponent>(
         entity,
-        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath)
+        m_application->GetModelManager().GetModel(t_fullModelFilePath)
     );
 
     // add transform component
@@ -243,7 +243,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     // bind Vbo to each mesh
     // todo
     const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals };
-    for (auto& mesh : m_application->GetModelManager().GetModelByPath(t_fullModelFilePath, pFlags)->GetMeshes())
+    for (auto& mesh : m_application->GetModelManager().GetModelWithFlags(t_fullModelFilePath, pFlags)->GetMeshes())
     {
         // get Vao of the mesh
         auto& vao{ mesh->GetVao() };
@@ -271,7 +271,7 @@ void sg::ogl::ecs::factory::EntityFactory::CreateModelEntity(
     // add model component
     m_application->registry.assign<component::ModelComponent>(
         entity,
-        m_application->GetModelManager().GetModelByPath(t_fullModelFilePath, pFlags),
+        m_application->GetModelManager().GetModelWithFlags(t_fullModelFilePath, pFlags),
         false // showTriangles - todo
         //t_fakeNormals
     );
@@ -295,7 +295,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
     const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_FlipUVs };
     m_application->registry.assign<component::SkeletalModelComponent>(
         entity,
-        m_application->GetModelManager().GetSkeletalModelByPath(t_fullModelFilePath, pFlags),
+        m_application->GetModelManager().GetSkeletalModel(t_fullModelFilePath, pFlags),
         t_showTriangles,
         t_fakeNormals,
         t_useExistingNormalmaps

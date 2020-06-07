@@ -34,7 +34,10 @@ namespace sg::ogl::ecs::system
         RenderSystemInterface& operator=(const RenderSystemInterface& t_other) = delete;
         RenderSystemInterface& operator=(RenderSystemInterface&& t_other) noexcept = delete;
 
-        virtual ~RenderSystemInterface() = default;
+        virtual ~RenderSystemInterface()
+        {
+            Log::SG_OGL_CORE_LOG_DEBUG("[RenderSystemInterface::~RenderSystemInterface()] Destruct RenderSystem {}.", debugName);
+        }
 
         //-------------------------------------------------
         // Interface
