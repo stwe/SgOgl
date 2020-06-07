@@ -14,6 +14,9 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
 
+#include "Log.h"
+#include "scene/Scene.h"
+
 namespace sg::ogl
 {
     class Application;
@@ -63,7 +66,31 @@ namespace sg::ogl
         void RegisterFunctions();
         void CreateGlmUsertypes();
         void CreateSceneUsertype();
-        void CreateRendererUsertypes();
+
+        template <typename T>
+        void CreateRendererUsertype(const std::string& t_name)
+        {
+            Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateRendererUsertype()] Add {} to the current Scene.", t_name);
+
+            m_lua.new_usertype<T>(
+                t_name,
+                sol::constructors<
+                    T(scene::Scene*),
+                    T(int t_priority, scene::Scene*)
+                >(),
+                "new", sol::factories(
+                    [&](scene::Scene* t_currentScene)
+                    {
+                        t_currentScene->renderer.push_back(std::make_unique<T>(t_currentScene));
+                    },
+                    [&](int t_priority, scene::Scene* t_currentScene)
+                    {
+                        t_currentScene->renderer.push_back(std::make_unique<T>(t_priority, t_currentScene));
+                    }
+                )
+            );
+        }
+
         void CreateCameraUsertypes();
         void CreateResourceUsertypes();
         void CreateComponentUsertypes();

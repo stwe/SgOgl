@@ -10,12 +10,13 @@
 #include <glm/vec3.hpp>
 #include "LuaScript.h"
 #include "Application.h"
-#include "Core.h"
 #include "SgOglException.h"
+#include "Core.h"
 #include "camera/FirstPersonCamera.h"
 #include "camera/ThirdPersonCamera.h"
 #include "resource/ModelManager.h"
 #include "ecs/system/ForwardRenderSystem.h"
+#include "ecs/system/SkydomeRenderSystem.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -52,7 +53,10 @@ void sg::ogl::LuaScript::InitLua()
     RegisterFunctions();
     CreateGlmUsertypes();
     CreateSceneUsertype();
-    CreateRendererUsertypes();
+
+    CreateRendererUsertype<ecs::system::ForwardRenderSystem>("ForwardRenderer");
+    CreateRendererUsertype<ecs::system::SkydomeRenderSystem>("SkydomeRenderer");
+
     CreateCameraUsertypes();
     CreateResourceUsertypes();
     CreateComponentUsertypes();
@@ -148,30 +152,6 @@ void sg::ogl::LuaScript::CreateSceneUsertype()
     );
 }
 
-void sg::ogl::LuaScript::CreateRendererUsertypes()
-{
-    // Forward renderer
-    m_lua.new_usertype<ecs::system::ForwardRenderSystem>(
-        "ForwardRenderer",
-        sol::constructors<
-        ecs::system::ForwardRenderSystem(scene::Scene*),
-        ecs::system::ForwardRenderSystem(int t_priority, scene::Scene*)
-        >(),
-        "new", sol::factories(
-            [](scene::Scene* t_currentScene)
-            {
-                Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateRendererUsertypes()] Add ForwardRenderer to the current Scene.");
-                t_currentScene->renderer.push_back(std::make_unique<ecs::system::ForwardRenderSystem>(t_currentScene));
-            },
-            [](int t_priority, scene::Scene* t_currentScene)
-            {
-                Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateRendererUsertypes()] Add ForwardRenderer to the current Scene.");
-                t_currentScene->renderer.push_back(std::make_unique<ecs::system::ForwardRenderSystem>(t_priority, t_currentScene));
-            }
-        )
-    );
-}
-
 void sg::ogl::LuaScript::CreateCameraUsertypes()
 {
     // FirstPersonCamera
@@ -248,6 +228,11 @@ void sg::ogl::LuaScript::CreateComponentUsertypes()
     m_lua.new_usertype<resource::Material>(
         "MaterialComponent"
     );
+
+    // Sykdome component
+    m_lua.new_usertype<ecs::component::SkydomeComponent>(
+        "SkydomeComponent"
+    );
 }
 
 void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
@@ -259,6 +244,7 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
         "CreateEntity", static_cast<entt::entity(entt::registry::*)()>(&entt::registry::create),
         "AddModelComponent", &entt::registry::emplace<ecs::component::ModelComponent, std::shared_ptr<resource::Model>&, bool>,
         "AddTransformComponent", &entt::registry::emplace<math::Transform, glm::vec3&, glm::vec3&, glm::vec3&>,
-        "AddMaterialComponent", &entt::registry::emplace<std::shared_ptr<resource::Material>>
+        "AddMaterialComponent", &entt::registry::emplace<std::shared_ptr<resource::Material>>,
+        "AddSkydomeComponent", &entt::registry::emplace<ecs::component::SkydomeComponent>
     );
 }

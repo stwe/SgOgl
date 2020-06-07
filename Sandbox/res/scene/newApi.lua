@@ -9,8 +9,8 @@ scene = Scene.new(applicationContext)
 -- Create and add Renderer --
 -----------------------------
 
-ForwardRenderer.new(10, scene)
-
+ForwardRenderer.new(1, scene)
+SkydomeRenderer.new(10, scene)
 
 ----------------------------
 -- Create and add Cameras --
@@ -43,6 +43,7 @@ scene:SetAmbientIntensity(Vec3.new(1.4, 1.4, 1.4))
 
 plane = modelManager:GetModel("res/primitive/plane1/plane1.obj")
 sphere = modelManager:GetModel("res/primitive/sphere/sphere.obj")
+dome = modelManager:GetModel("res/model/Dome/dome.obj")
 jade = modelManager:GetMaterialByName("jade")
 
 e0 = ecs:CreateEntity()
@@ -53,3 +54,8 @@ e1 = ecs:CreateEntity()
 ecs:AddModelComponent(e1, sphere, false)
 ecs:AddTransformComponent(e1, Vec3.new(0.0, 240.0, 380.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(4.0, 4.0, 4.0))
 ecs:AddMaterialComponent(e1, jade)
+
+e2 = ecs:CreateEntity()
+ecs:AddModelComponent(e2, dome, false)
+ecs:AddTransformComponent(e2, Vec3.new(0.0, 0.0, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(5000.0, 5000.0, 5000.0))
+ecs:AddSkydomeComponent(e2)
