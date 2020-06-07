@@ -244,7 +244,7 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
         "CreateEntity", static_cast<entt::entity(entt::registry::*)()>(&entt::registry::create),
         "AddModelComponent", &entt::registry::emplace<ecs::component::ModelComponent, std::shared_ptr<resource::Model>&, bool>,
         "AddTransformComponent", &entt::registry::emplace<math::Transform, glm::vec3&, glm::vec3&, glm::vec3&>,
-        "AddMaterialComponent", &entt::registry::emplace<std::shared_ptr<resource::Material>>,
+        "AddMaterialComponent", &entt::registry::emplace<resource::Material, resource::Material&>,
         "AddSkydomeComponent", &entt::registry::emplace<ecs::component::SkydomeComponent>
     );
 }
