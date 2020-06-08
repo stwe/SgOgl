@@ -33,6 +33,16 @@ sg::ogl::resource::TextureManager::~TextureManager() noexcept
 // Load && Create
 //-------------------------------------------------
 
+uint32_t sg::ogl::resource::TextureManager::LoadTexture(const std::string& t_path)
+{
+    return GetTextureIdFromPath(t_path, false);
+}
+
+uint32_t sg::ogl::resource::TextureManager::LoadTextureVerticalFlipped(const std::string& t_path)
+{
+    return GetTextureIdFromPath(t_path, true);
+}
+
 uint32_t sg::ogl::resource::TextureManager::GetTextureIdFromPath(const std::string& t_path, const bool t_flipVertically)
 {
     uint32_t textureId;

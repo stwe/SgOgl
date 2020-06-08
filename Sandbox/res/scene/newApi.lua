@@ -10,6 +10,7 @@ scene = Scene.new(applicationContext)
 -----------------------------
 
 ForwardRenderer.new(1, scene)
+SunRenderer.new(2, scene)
 SkydomeRenderer.new(10, scene)
 
 ----------------------------
@@ -34,18 +35,24 @@ thirdPersonCamera:SetPlayerRotationY(45.0)
 scene:SetCurrentCamera("first_person_camera1")
 --scene:SetCurrentCamera("third_person_camera1")
 
-scene:SetAmbientIntensity(Vec3.new(1.4, 1.4, 1.4))
+scene:SetAmbientIntensity(Vec3.new(0.3, 0.3, 0.3))
 
 
----------------------
--- Create Entities --
----------------------
+--------------------
+-- Load resources --
+--------------------
 
 plane = modelManager:GetModel("res/primitive/plane1/plane1.obj")
 sphere = modelManager:GetModel("res/primitive/sphere/sphere.obj")
 dome = modelManager:GetModel("res/model/Dome/dome.obj")
 jade = modelManager:GetMaterialByName("jade")
 gold = modelManager:GetMaterialByName("gold")
+sunTextureId = textureManager:LoadTexture("res/sun/sun.png")
+
+
+---------------------
+-- Create Entities --
+---------------------
 
 e0 = ecs:CreateEntity()
 ecs:AddModelComponent(e0, plane, false)
@@ -60,3 +67,39 @@ e2 = ecs:CreateEntity()
 ecs:AddModelComponent(e2, dome, false)
 ecs:AddTransformComponent(e2, Vec3.new(0.0, 0.0, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(5000.0, 5000.0, 5000.0))
 ecs:AddSkydomeComponent(e2)
+
+e3 = ecs:CreateEntity()
+ecs:AddPointLightComponent(e3,
+    Vec3.new(30.0, 240.0, 657.0), -- position
+    Vec3.new(0.2, 0.2, 0.2),      -- ambientIntensity
+    Vec3.new(10.0, 1.0, 1.0),     -- diffuseIntensity
+    Vec3.new(1.0, 1.0, 1.0),      -- specularIntensity
+    1.0, 0.0014, 0.000007         -- constant, linear, quadratic
+)
+
+e4 = ecs:CreateEntity()
+ecs:AddPointLightComponent(e4,
+    Vec3.new(204.0, 240.0, -319.0), -- position
+    Vec3.new(0.2, 0.2, 0.2),        -- ambientIntensity
+    Vec3.new(1.0, 1.0, 10.0),       -- diffuseIntensity
+    Vec3.new(1.0, 1.0, 1.0),        -- specularIntensity
+    1.0, 0.0014, 0.000007           -- constant, linear, quadratic
+)
+
+--[[
+e5 = ecs:CreateEntity()
+ecs:AddDirectionalLightComponent(e5,
+    Vec3.new(1.0, -0.2, -0.4), -- direction
+    Vec3.new(1.0, 0.8, 0.6),   -- diffuseIntensity
+    Vec3.new(1.0, 0.8, 0.6)    -- specularIntensity
+)
+]]
+
+e6 = ecs:CreateEntity()
+ecs:AddSunComponent(e6,
+    Vec3.new(1.0, -0.2, -0.4), -- direction
+    Vec3.new(1.0, 0.8, 0.6),   -- diffuseIntensity
+    Vec3.new(1.0, 0.8, 0.6),   -- specularIntensity
+    sunTextureId,
+    10.0
+)

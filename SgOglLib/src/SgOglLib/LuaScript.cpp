@@ -15,8 +15,11 @@
 #include "camera/FirstPersonCamera.h"
 #include "camera/ThirdPersonCamera.h"
 #include "resource/ModelManager.h"
+#include "resource/TextureManager.h"
 #include "ecs/system/ForwardRenderSystem.h"
+#include "ecs/system/DeferredRenderSystem.h"
 #include "ecs/system/SkydomeRenderSystem.h"
+#include "ecs/system/SunRenderSystem.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -55,7 +58,9 @@ void sg::ogl::LuaScript::InitLua()
     CreateSceneUsertype();
 
     CreateRendererUsertype<ecs::system::ForwardRenderSystem>("ForwardRenderer");
+    CreateRendererUsertype<ecs::system::DeferredRenderSystem>("DeferredRenderer");
     CreateRendererUsertype<ecs::system::SkydomeRenderSystem>("SkydomeRenderer");
+    CreateRendererUsertype<ecs::system::SunRenderSystem>("SunRenderer");
 
     CreateCameraUsertypes();
     CreateResourceUsertypes();
@@ -103,6 +108,7 @@ void sg::ogl::LuaScript::RegisterFunctions()
 {
     m_lua["applicationContext"] = m_application;
     m_lua["modelManager"] = &m_application->GetModelManager();
+    m_lua["textureManager"] = &m_application->GetTextureManager();
     m_lua["ecs"] = &m_application->registry;
 }
 
@@ -210,6 +216,14 @@ void sg::ogl::LuaScript::CreateResourceUsertypes()
         "GetMaterialByName", &resource::ModelManager::GetMaterialByName,
         "GetModel", &resource::ModelManager::GetModel
     );
+
+    // TextureManager
+    m_lua.new_usertype<resource::TextureManager>(
+        "TextureManager",
+        sol::no_constructor,
+        "LoadTexture", &resource::TextureManager::LoadTexture,
+        "LoadTextureVerticalFlipped", &resource::TextureManager::LoadTextureVerticalFlipped
+    );
 }
 
 void sg::ogl::LuaScript::CreateComponentUsertypes()
@@ -233,6 +247,21 @@ void sg::ogl::LuaScript::CreateComponentUsertypes()
     m_lua.new_usertype<ecs::component::SkydomeComponent>(
         "SkydomeComponent"
     );
+
+    // PointLight component
+    m_lua.new_usertype<light::PointLight>(
+        "PointLightComponent"
+    );
+
+    // DirectionalLight component
+    m_lua.new_usertype<light::DirectionalLight>(
+        "DirectionalLightComponent"
+    );
+
+    // PointLight component
+    m_lua.new_usertype<light::Sun>(
+        "SunComponent"
+    );
 }
 
 void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
@@ -245,6 +274,11 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
         "AddModelComponent", &entt::registry::emplace<ecs::component::ModelComponent, std::shared_ptr<resource::Model>&, bool>,
         "AddTransformComponent", &entt::registry::emplace<math::Transform, glm::vec3&, glm::vec3&, glm::vec3&>,
         "AddMaterialComponent", &entt::registry::emplace<resource::Material, resource::Material&>,
-        "AddSkydomeComponent", &entt::registry::emplace<ecs::component::SkydomeComponent>
+        "AddSkydomeComponent", &entt::registry::emplace<ecs::component::SkydomeComponent>,
+        "AddPointLightComponent", &entt::registry::emplace<
+            light::PointLight, glm::vec3&, glm::vec3&, glm::vec3&, glm::vec3&, float, float, float
+        >,
+        "AddDirectionalLightComponent", &entt::registry::emplace<light::DirectionalLight, glm::vec3&, glm::vec3&, glm::vec3&>,
+        "AddSunComponent", &entt::registry::emplace<light::Sun, glm::vec3&, glm::vec3&, glm::vec3&, uint32_t, float>
     );
 }

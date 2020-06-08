@@ -51,6 +51,23 @@ namespace sg::ogl::resource
         // Load && Create
         //-------------------------------------------------
 
+        // todo: Revise the naming of the functions
+
+        /**
+         * @brief Get the texture handle for the given file path.
+         * @param t_path The file path of the texture.
+         * @return The texture handle.
+         */
+        [[nodiscard]] uint32_t LoadTexture(const std::string& t_path);
+
+        /**
+         * @brief Get the texture handle for the given file path.
+         *        The texture is flipped vertical.
+         * @param t_path The file path of the texture.
+         * @return The texture handle.
+         */
+        [[nodiscard]] uint32_t LoadTextureVerticalFlipped(const std::string& t_path);
+
         /**
          * @brief Get the texture handle for the given file path.
          * @param t_path The file path of the texture.
