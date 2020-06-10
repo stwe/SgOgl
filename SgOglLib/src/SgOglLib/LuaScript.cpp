@@ -146,10 +146,11 @@ void sg::ogl::LuaScript::CreateSceneUsertype()
         "Scene",
         sol::constructors<scene::Scene(Application*)>(),
         "new", sol::factories(
-            [](Application* t_application)-> std::shared_ptr<scene::Scene>
+            [&](Application* t_application)-> std::shared_ptr<scene::Scene>
             {
                 auto scene{ std::make_unique<scene::Scene>(t_application) };
                 t_application->currentScene = scene.get();
+                scene->SetParentLuaState(m_lua);
                 return scene;
             }
         ),
@@ -250,7 +251,8 @@ void sg::ogl::LuaScript::CreateComponentUsertypes()
 
     // PointLight component
     m_lua.new_usertype<light::PointLight>(
-        "PointLightComponent"
+        "PointLightComponent",
+        "position", &light::PointLight::position
     );
 
     // DirectionalLight component
@@ -258,9 +260,14 @@ void sg::ogl::LuaScript::CreateComponentUsertypes()
         "DirectionalLightComponent"
     );
 
-    // PointLight component
+    // SunComponent component
     m_lua.new_usertype<light::Sun>(
         "SunComponent"
+    );
+
+    // Update component
+    m_lua.new_usertype<ecs::component::UpdateComponent>(
+        "UpdateComponent"
     );
 }
 
@@ -279,6 +286,8 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
             light::PointLight, glm::vec3&, glm::vec3&, glm::vec3&, glm::vec3&, float, float, float
         >,
         "AddDirectionalLightComponent", &entt::registry::emplace<light::DirectionalLight, glm::vec3&, glm::vec3&, glm::vec3&>,
-        "AddSunComponent", &entt::registry::emplace<light::Sun, glm::vec3&, glm::vec3&, glm::vec3&, uint32_t, float>
+        "AddSunComponent", &entt::registry::emplace<light::Sun, glm::vec3&, glm::vec3&, glm::vec3&, uint32_t, float>,
+        "AddUpdateComponent", &entt::registry::emplace<ecs::component::UpdateComponent, std::string&>,
+        "GetPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity)>(&entt::registry::get<light::PointLight>)
     );
 }

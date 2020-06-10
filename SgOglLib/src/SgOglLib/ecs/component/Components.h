@@ -11,6 +11,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 
 namespace sg::ogl::resource
 {
@@ -124,5 +125,14 @@ namespace sg::ogl::ecs::component
     struct WaterComponent
     {
         std::shared_ptr<water::Water> water;
+    };
+
+    //-------------------------------------------------
+    // Logic
+    //-------------------------------------------------
+
+    struct UpdateComponent
+    {
+        std::string luaFunction;
     };
 }

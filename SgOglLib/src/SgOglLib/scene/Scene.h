@@ -16,6 +16,8 @@
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 
+struct lua_State;
+
 namespace sg::ogl
 {
     class Application;
@@ -95,6 +97,8 @@ namespace sg::ogl::scene
         // Setter
         //-------------------------------------------------
 
+        void SetParentLuaState(lua_State* t_luaState);
+
         void SetAmbientIntensity(const glm::vec3& t_ambientIntensity);
 
         void SetCurrentCameraByName(const std::string& t_name);
@@ -116,6 +120,9 @@ namespace sg::ogl::scene
     private:
         Application* m_application{ nullptr };
         camera::Camera* m_currentCamera{ nullptr };
+        lua_State* m_parentLuaState{ nullptr };
+
+
 
         WaterContainer m_waterContainer;
 

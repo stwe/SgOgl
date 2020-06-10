@@ -7,6 +7,9 @@
 // 
 // 2019 (c) stwe <https://github.com/stwe/SgOgl>
 
+#define SOL_ALL_SAFETIES_ON 1
+#include <sol/sol.hpp>
+
 #include <assimp/postprocess.h>
 #include "Scene.h"
 #include "Core.h"
@@ -98,6 +101,12 @@ glm::vec3 sg::ogl::scene::Scene::GetAmbientIntensity() const
 // Setter
 //-------------------------------------------------
 
+void sg::ogl::scene::Scene::SetParentLuaState(lua_State* t_luaState)
+{
+    SG_OGL_CORE_ASSERT(t_luaState, "[Scene::SetParentLuaState()] Null pointer.");
+    m_parentLuaState = t_luaState;
+}
+
 void sg::ogl::scene::Scene::SetAmbientIntensity(const glm::vec3& t_ambientIntensity)
 {
     m_ambientIntensity = t_ambientIntensity;
@@ -148,9 +157,22 @@ void sg::ogl::scene::Scene::Update(const double t_dt)
 {
     GetCurrentCamera().Update(t_dt);
 
+    // run the update function of all renderers
     for (auto& r : renderer)
     {
         r->Update(t_dt);
+    }
+
+    // run the update components
+    if (m_parentLuaState)
+    {
+        sol::state_view lua{ m_parentLuaState }; // todo
+        m_application->registry.view<ecs::component::UpdateComponent>().each(
+            [&](entt::entity t_entity, auto& t_updateComponent)
+            {
+                lua[t_updateComponent.luaFunction](t_entity, t_dt);
+            }
+        );
     }
 }
 
