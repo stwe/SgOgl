@@ -50,10 +50,9 @@ namespace sg::ogl::scene
     public:
         using CameraContainer = std::unordered_map<std::string, std::unique_ptr<camera::Camera>>;
         using RendererContainer = std::vector<std::unique_ptr<ecs::system::RenderSystemInterface>>;
+        using WaterContainer = std::unordered_map<std::string, std::unique_ptr<water::Water>>;
 
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
-        using WaterSharedPtr = std::shared_ptr<water::Water>;
-        using WaterContainer = std::unordered_map<std::string, WaterSharedPtr>;
 
         //-------------------------------------------------
         // Public member
@@ -61,6 +60,7 @@ namespace sg::ogl::scene
 
         CameraContainer cameras;
         RendererContainer renderer;
+        WaterContainer waterSurfaces;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -123,8 +123,6 @@ namespace sg::ogl::scene
         lua_State* m_parentLuaState{ nullptr };
 
 
-
-        WaterContainer m_waterContainer;
 
         DirectionalLightSharedPtr m_currentDirectionalLight;
 

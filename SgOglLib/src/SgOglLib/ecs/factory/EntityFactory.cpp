@@ -189,19 +189,19 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateWaterEntity(const Water
     // create an entity
     const auto entity{ m_application->registry.create() };
 
-    // add water component
+    /*
     m_application->registry.assign<component::WaterComponent>(
         entity,
         t_water
     );
 
-    // add transform component
     m_application->registry.assign<math::Transform>(
         entity,
         glm::vec3(t_water->GetXPosition(), t_water->GetHeight(), t_water->GetZPosition()),
         glm::vec3(0.0f),
         t_water->GetTileSize()
     );
+    */
 
     return entity;
 }

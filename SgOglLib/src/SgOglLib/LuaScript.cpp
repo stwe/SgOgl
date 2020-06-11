@@ -16,12 +16,14 @@
 #include "camera/ThirdPersonCamera.h"
 #include "resource/ModelManager.h"
 #include "resource/TextureManager.h"
+#include "water/Water.h"
 #include "ecs/system/ForwardRenderSystem.h"
 #include "ecs/system/DeferredRenderSystem.h"
 #include "ecs/system/SkydomeRenderSystem.h"
 #include "ecs/system/SunRenderSystem.h"
 #include "ecs/system/SkyboxRenderSystem.h"
 #include "ecs/system/GuiRenderSystem.h"
+#include "ecs/system/WaterRenderSystem.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -65,6 +67,7 @@ void sg::ogl::LuaScript::InitLua()
     CreateRendererUsertype<ecs::system::SunRenderSystem>("SunRenderer");
     CreateRendererUsertype<ecs::system::SkyboxRenderSystem>("SkyboxRenderer");
     CreateRendererUsertype<ecs::system::GuiRenderSystem>("GuiRenderer");
+    CreateRendererUsertype<ecs::system::WaterRenderSystem>("WaterRenderer");
 
     CreateCameraUsertypes();
     CreateResourceUsertypes();
@@ -150,10 +153,10 @@ void sg::ogl::LuaScript::CreateSceneUsertype()
         "Scene",
         sol::constructors<scene::Scene(Application*)>(),
         "new", sol::factories(
-            [&](Application* t_application)-> std::shared_ptr<scene::Scene>
+            [&](Application* t_app)-> std::shared_ptr<scene::Scene>
             {
-                auto scene{ std::make_unique<scene::Scene>(t_application) };
-                t_application->currentScene = scene.get();
+                auto scene{ std::make_unique<scene::Scene>(t_app) };
+                t_app->currentScene = scene.get();
                 scene->SetParentLuaState(m_lua);
                 return scene;
             }
@@ -233,6 +236,34 @@ void sg::ogl::LuaScript::CreateResourceUsertypes()
             return t_textureManager.GetCubemapId(t_table.value());
         }
     );
+
+    // Water
+    m_lua.new_usertype<water::Water>(
+        "Water",
+        sol::constructors<water::Water(Application*, float ,float, float, const glm::vec3&, const std::string&, const std::string&)>(),
+        "new", sol::factories(
+            [](const std::string& t_name,
+                Application* t_app,
+                float t_xPos, float t_zPos,
+                float t_height,
+                const glm::vec3& t_tileSize,
+                const std::string& t_dudvMapFilePath, const std::string& t_normalMapFilePath,
+                scene::Scene* t_currentScene
+            )
+            {
+                Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateResourceUsertypes()] Add {} Water to the current Scene.", t_name);
+                t_currentScene->waterSurfaces.emplace(
+                    t_name,
+                    std::make_unique<water::Water>(
+                        t_app, t_xPos, t_zPos, t_height, t_tileSize, t_dudvMapFilePath, t_normalMapFilePath
+                    )
+                );
+                return t_currentScene->waterSurfaces.at(t_name).get();
+            }
+        ),
+        "AddRendererToReflectionTexture", &water::Water::AddRendererToReflectionTexture,
+        "AddRendererToRefractionTexture", &water::Water::AddRendererToRefractionTexture
+    );
 }
 
 void sg::ogl::LuaScript::CreateComponentUsertypes()
@@ -287,6 +318,11 @@ void sg::ogl::LuaScript::CreateComponentUsertypes()
     m_lua.new_usertype<ecs::component::GuiComponent>(
         "GuiComponent"
     );
+
+    // Water component
+    m_lua.new_usertype<ecs::component::WaterComponent>(
+        "WaterComponent"
+    );
 }
 
 void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
@@ -308,6 +344,7 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
         "AddUpdateComponent", &entt::registry::emplace<ecs::component::UpdateComponent, std::string&>,
         "AddCubemapComponent", &entt::registry::emplace<ecs::component::CubemapComponent, uint32_t>,
         "AddGuiComponent", &entt::registry::emplace<ecs::component::GuiComponent, uint32_t>,
+        "AddWaterComponent", &entt::registry::emplace<ecs::component::WaterComponent, water::Water*>,
         "GetPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity)>(&entt::registry::get<light::PointLight>)
     );
 }

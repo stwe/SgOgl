@@ -12,9 +12,8 @@
 #include <cstdint>
 #include <string>
 #include <memory>
-#include <glm/vec3.hpp>
 #include <vector>
-#include <entt/entt.hpp>
+#include <glm/vec3.hpp>
 
 namespace sg::ogl
 {
@@ -26,12 +25,18 @@ namespace sg::ogl::buffer
     class WaterFbos;
 }
 
+namespace sg::ogl::ecs::system
+{
+    class RenderSystemInterface;
+}
+
 namespace sg::ogl::water
 {
     class Water
     {
     public:
         using WaterFbosUniquePtr = std::unique_ptr<buffer::WaterFbos>;
+        using RendererContainer = std::vector<ecs::system::RenderSystemInterface*>;
 
         //-------------------------------------------------
         // Public member
@@ -39,8 +44,8 @@ namespace sg::ogl::water
 
         float moveFactor{ 0.0f };
 
-        std::vector<entt::id_type> toReflectionTexture;
-        std::vector<entt::id_type> toRefractionTexture;
+        RendererContainer toReflectionTexture;
+        RendererContainer toRefractionTexture;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -91,6 +96,9 @@ namespace sg::ogl::water
         //-------------------------------------------------
 
         void SetWaveSpeed(float t_waveSpeed);
+
+        void AddRendererToReflectionTexture(ecs::system::RenderSystemInterface* t_renderer);
+        void AddRendererToRefractionTexture(ecs::system::RenderSystemInterface* t_renderer);
 
     protected:
 

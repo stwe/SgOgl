@@ -82,10 +82,12 @@ namespace sg::ogl
                     [&](scene::Scene* t_currentScene)
                     {
                         t_currentScene->renderer.push_back(std::make_unique<T>(t_currentScene));
+                        return t_currentScene->renderer.back().get();
                     },
                     [&](int t_priority, scene::Scene* t_currentScene)
                     {
                         t_currentScene->renderer.push_back(std::make_unique<T>(t_priority, t_currentScene));
+                        return t_currentScene->renderer.back().get();
                     }
                 )
             );

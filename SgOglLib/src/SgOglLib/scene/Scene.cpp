@@ -10,6 +10,7 @@
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
 
+#include <algorithm>
 #include <assimp/postprocess.h>
 #include "Scene.h"
 #include "Core.h"
@@ -178,16 +179,19 @@ void sg::ogl::scene::Scene::Update(const double t_dt)
 
 void sg::ogl::scene::Scene::Render()
 {
-    /*
-    auto handle{ SceneCache::rendererCache.load<RenderSystemLoader<ecs::system::WaterRenderSystem>>("WaterRenderSystem"_hs,this) };
-    if (handle)
+    // todo search
+    if (!waterSurfaces.empty())
     {
-        auto* waterRenderSystem{ dynamic_cast<ecs::system::WaterRenderSystem*>(&handle.get()) };
+        const auto& it = std::find_if(renderer.begin(), renderer.end(),
+            [](std::unique_ptr<ecs::system::RenderSystemInterface>& t_renderSystem) {return t_renderSystem->debugName == "WaterRenderer"; });
 
-        waterRenderSystem->RenderReflectionTexture();
-        waterRenderSystem->RenderRefractionTexture();
+        if (it != renderer.end())
+        {
+            auto* waterRenderSystem{ dynamic_cast<ecs::system::WaterRenderSystem*>(it->get()) };
+            waterRenderSystem->RenderReflectionTexture();
+            waterRenderSystem->RenderRefractionTexture();
+        }
     }
-    */
 
     for (auto& r : renderer)
     {

@@ -12,6 +12,7 @@
 #include "Core.h"
 #include "buffer/WaterFbos.h"
 #include "resource/TextureManager.h"
+#include "ecs/system/RenderSystemInterface.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -118,4 +119,16 @@ const sg::ogl::buffer::WaterFbos& sg::ogl::water::Water::GetWaterFbos() const
 void sg::ogl::water::Water::SetWaveSpeed(const float t_waveSpeed)
 {
     m_waveSpeed = t_waveSpeed;
+}
+
+void sg::ogl::water::Water::AddRendererToReflectionTexture(ecs::system::RenderSystemInterface* t_renderer)
+{
+    SG_OGL_CORE_ASSERT(t_renderer, "[Water::AddRendererToReflectionTexture()] Null pointer.");
+    toReflectionTexture.push_back(t_renderer);
+}
+
+void sg::ogl::water::Water::AddRendererToRefractionTexture(ecs::system::RenderSystemInterface* t_renderer)
+{
+    SG_OGL_CORE_ASSERT(t_renderer, "[Water::AddRendererToRefractionTexture()] Null pointer.");
+    toRefractionTexture.push_back(t_renderer);
 }

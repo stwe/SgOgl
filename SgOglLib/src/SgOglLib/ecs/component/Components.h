@@ -124,7 +124,7 @@ namespace sg::ogl::ecs::component
 
     struct WaterComponent
     {
-        std::shared_ptr<water::Water> water;
+        water::Water* water;
     };
 
     //-------------------------------------------------
