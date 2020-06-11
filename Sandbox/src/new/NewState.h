@@ -53,8 +53,6 @@ protected:
 private:
     LuaScriptUniquePtr m_luaScript;
 
-    float m_temp{ 0.0f };
-
     //-------------------------------------------------
     // Helper
     //-------------------------------------------------

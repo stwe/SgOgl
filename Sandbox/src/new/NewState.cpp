@@ -30,17 +30,6 @@ bool NewState::Update(const double t_dt)
         GetApplicationContext()->currentScene->Update(t_dt);
     }
 
-    /*
-    m_temp += static_cast<float>(t_dt);
-
-    m_scene->GetApplicationContext()->registry.view<sg::ogl::light::PointLight>(
-        entt::exclude<sg::ogl::ecs::component::ModelComponent>
-        ).each([&](auto t_entity, auto& t_pointLight)
-    {
-        t_pointLight.position.x += sinf(m_temp) * 4.0f;
-    });
-    */
-
     return true;
 }
 
@@ -64,7 +53,7 @@ void NewState::Init()
 
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::Black());
 
-    m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/newApi.lua");
+    m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/start.lua");
 }
 
 //-------------------------------------------------

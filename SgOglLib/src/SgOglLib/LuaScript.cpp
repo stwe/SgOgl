@@ -20,6 +20,7 @@
 #include "ecs/system/DeferredRenderSystem.h"
 #include "ecs/system/SkydomeRenderSystem.h"
 #include "ecs/system/SunRenderSystem.h"
+#include "ecs/system/SkyboxRenderSystem.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -61,6 +62,7 @@ void sg::ogl::LuaScript::InitLua()
     CreateRendererUsertype<ecs::system::DeferredRenderSystem>("DeferredRenderer");
     CreateRendererUsertype<ecs::system::SkydomeRenderSystem>("SkydomeRenderer");
     CreateRendererUsertype<ecs::system::SunRenderSystem>("SunRenderer");
+    CreateRendererUsertype<ecs::system::SkyboxRenderSystem>("SkyboxRenderer");
 
     CreateCameraUsertypes();
     CreateResourceUsertypes();
@@ -223,7 +225,11 @@ void sg::ogl::LuaScript::CreateResourceUsertypes()
         "TextureManager",
         sol::no_constructor,
         "LoadTexture", &resource::TextureManager::LoadTexture,
-        "LoadTextureVerticalFlipped", &resource::TextureManager::LoadTextureVerticalFlipped
+        "LoadTextureVerticalFlipped", &resource::TextureManager::LoadTextureVerticalFlipped,
+        "GetCubemapId", [](resource::TextureManager& t_textureManager, sol::as_table_t<std::vector<std::string>> t_table)
+        {
+            return t_textureManager.GetCubemapId(t_table.value());
+        }
     );
 }
 
@@ -269,6 +275,11 @@ void sg::ogl::LuaScript::CreateComponentUsertypes()
     m_lua.new_usertype<ecs::component::UpdateComponent>(
         "UpdateComponent"
     );
+
+    // Cubemap component
+    m_lua.new_usertype<ecs::component::CubemapComponent>(
+        "CubemapComponent"
+    );
 }
 
 void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
@@ -288,6 +299,7 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
         "AddDirectionalLightComponent", &entt::registry::emplace<light::DirectionalLight, glm::vec3&, glm::vec3&, glm::vec3&>,
         "AddSunComponent", &entt::registry::emplace<light::Sun, glm::vec3&, glm::vec3&, glm::vec3&, uint32_t, float>,
         "AddUpdateComponent", &entt::registry::emplace<ecs::component::UpdateComponent, std::string&>,
+        "AddCubemapComponent", &entt::registry::emplace<ecs::component::CubemapComponent, uint32_t>,
         "GetPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity)>(&entt::registry::get<light::PointLight>)
     );
 }
