@@ -346,6 +346,8 @@ Here is an example:
 
 
 ```lua
+-- File: start.lua
+
 ------------------
 -- Create Scene --
 ------------------
@@ -362,6 +364,7 @@ scene = Scene.new(applicationContext)
 SkyboxRenderer.new(3, scene)
 SunRenderer.new(2, scene)
 ForwardRenderer.new(1, scene)
+GuiRenderer.new(0, scene)
 ]]
 
 -- deferred with skybox
@@ -370,21 +373,24 @@ ForwardRenderer.new(1, scene)
 DeferredRenderer.new(3, scene)
 SkyboxRenderer.new(2, scene)
 SunRenderer.new(1, scene)
+GuiRenderer.new(0, scene)
 ]]
 
 -- forward with skydome
 
---[[
 SkydomeRenderer.new(3, scene)
 SunRenderer.new(2, scene)
 ForwardRenderer.new(1, scene)
-]]
+GuiRenderer.new(0, scene)
 
 -- deferred with skydome
 
+--[[
 DeferredRenderer.new(3, scene)
 SkydomeRenderer.new(2, scene)
 SunRenderer.new(1, scene)
+GuiRenderer.new(0, scene)
+]]
 
 ----------------------------
 -- Create and add Cameras --
@@ -416,9 +422,12 @@ scene:SetAmbientIntensity(Vec3.new(0.2, 0.2, 0.2))
 plane = modelManager:GetModel("res/primitive/plane1/plane1.obj")
 sphere = modelManager:GetModel("res/primitive/sphere/sphere.obj")
 dome = modelManager:GetModel("res/model/Dome/dome.obj")
+lamp = modelManager:GetModel("res/model/Streetlamp/streetlamp.obj")
 jade = modelManager:GetMaterialByName("jade")
 gold = modelManager:GetMaterialByName("gold")
 sunTextureId = textureManager:LoadTexture("res/sun/sun.png")
+foodGuiId = textureManager:LoadTexture("res/gui/foodIcon.png")
+healthGuiId = textureManager:LoadTexture("res/gui/healthIcon.png")
 
 a = {}
 a[1] = "res/skybox/sky1/sRight.png"
@@ -503,6 +512,31 @@ ecs:AddSunComponent(e6,
 e7 = ecs:CreateEntity()
 ecs:AddCubemapComponent(e7, skyboxCubemapId)
 
+-- gui
+
+e8 = ecs:CreateEntity()
+ecs:AddGuiComponent(e8, foodGuiId)
+ecs:AddTransformComponent(e8, Vec3.new(0.9, 0.9, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(0.031, 0.031, 1.0))
+
+-- another gui
+
+e9 = ecs:CreateEntity()
+ecs:AddGuiComponent(e9, healthGuiId)
+ecs:AddTransformComponent(e9, Vec3.new(0.9, 0.8, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(0.031, 0.031, 1.0))
+
+-- point light with model
+
+e10 = ecs:CreateEntity()
+ecs:AddModelComponent(e10, lamp, false)
+ecs:AddTransformComponent(e10, Vec3.new(-1400.0, 150.0, 11.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(40.0, 40.0, 40.0))
+ecs:AddPointLightComponent(e10,
+    Vec3.new(-1400.0, 400.0, 11.0), -- position
+    Vec3.new(0.2, 0.2, 0.2),        -- ambientIntensity
+    Vec3.new(1.0, 1.0, 10.0),       -- diffuseIntensity
+    Vec3.new(1.0, 1.0, 1.0),        -- specularIntensity
+    1.0, 0.0014, 0.000007           -- constant, linear, quadratic
+)
+
 ---------------
 -- Functions --
 ---------------
@@ -556,6 +590,6 @@ void GameState::Init()
 {
     // ...
 
-    m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/newApi.lua");
+    m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/start.lua");
 }
 ```

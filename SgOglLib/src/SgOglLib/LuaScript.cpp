@@ -21,6 +21,7 @@
 #include "ecs/system/SkydomeRenderSystem.h"
 #include "ecs/system/SunRenderSystem.h"
 #include "ecs/system/SkyboxRenderSystem.h"
+#include "ecs/system/GuiRenderSystem.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -63,6 +64,7 @@ void sg::ogl::LuaScript::InitLua()
     CreateRendererUsertype<ecs::system::SkydomeRenderSystem>("SkydomeRenderer");
     CreateRendererUsertype<ecs::system::SunRenderSystem>("SunRenderer");
     CreateRendererUsertype<ecs::system::SkyboxRenderSystem>("SkyboxRenderer");
+    CreateRendererUsertype<ecs::system::GuiRenderSystem>("GuiRenderer");
 
     CreateCameraUsertypes();
     CreateResourceUsertypes();
@@ -280,6 +282,11 @@ void sg::ogl::LuaScript::CreateComponentUsertypes()
     m_lua.new_usertype<ecs::component::CubemapComponent>(
         "CubemapComponent"
     );
+
+    // Gui component
+    m_lua.new_usertype<ecs::component::GuiComponent>(
+        "GuiComponent"
+    );
 }
 
 void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
@@ -300,6 +307,7 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
         "AddSunComponent", &entt::registry::emplace<light::Sun, glm::vec3&, glm::vec3&, glm::vec3&, uint32_t, float>,
         "AddUpdateComponent", &entt::registry::emplace<ecs::component::UpdateComponent, std::string&>,
         "AddCubemapComponent", &entt::registry::emplace<ecs::component::CubemapComponent, uint32_t>,
+        "AddGuiComponent", &entt::registry::emplace<ecs::component::GuiComponent, uint32_t>,
         "GetPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity)>(&entt::registry::get<light::PointLight>)
     );
 }
