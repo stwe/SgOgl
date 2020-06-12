@@ -74,6 +74,10 @@ project "SgOglLib"
     filter "configurations:Release"
         runtime "Release"
         optimize "on"
+        buildoptions
+        {
+            "/bigobj"
+        }
 
 project "Sandbox"
     location "Sandbox"

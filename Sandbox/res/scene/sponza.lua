@@ -1,114 +1,125 @@
------------
--- Scene --
------------
+------------------
+-- Create Scene --
+------------------
 
-scene = {
-    ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
-}
+scene = Scene.new(applicationContext)
 
--------------
--- Cameras --
--------------
+-----------------------------
+-- Create and add Renderer --
+-----------------------------
 
-cameras = {
-    firstCamera = {
-        type = "first",
-        cameraVelocity = 200.0,
-        mouseSensitivity = 0.1,
-        position = { x = 1197.0, y = 171.0, z = -23.0 },
-        yaw = -179.0,
-        pitch = 1.0,
-        current = true,
-    },
-}
+-- forward with skybox
 
---------------
--- Entities --
---------------
+--[[
+SkyboxRenderer.new(3, scene)
+SunRenderer.new(2, scene)
+ForwardRenderer.new(1, scene)
+]]
 
-entities = {
+-- deferred with skybox
 
-    ------------
-    -- models --
-    ------------
-    sphere = {
-        TransformComponent = {
-            position = { x = 0.0, y = 0.0, z = 0.0 },
-            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 1.0, y = 1.0, z = 1.0 },
-        },
-        ModelComponent = {
-            path = "res/model/Sponza/sponza.obj",
-            showTriangles = false,
-        },
-    },
+--[[
+DeferredRenderer.new(3, scene)
+SkyboxRenderer.new(2, scene)
+SunRenderer.new(1, scene)
+]]
 
-    ------------------
-    -- point lights --
-    ------------------
-    pointLight1 = {
-        PointLightComponent = {
-            position = { x = -945.0, y = 20.0, z = -89.0 },
-            ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
-            diffuseIntensity = { x = 10.0, y = 1.0, z = 1.0 },
-            specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
-            constant = 1.0,
-            linear = 0.007,
-            quadratic = 0.002,
-        },
-    },
-    pointLight2 = {
-        PointLightComponent = {
-            position = { x = -64.0, y = 20.0, z = -89.0 },
-            ambientIntensity = { x = 0.2, y = 0.2, z = 0.2 },
-            diffuseIntensity = { x = 1.0, y = 1.0, z = 10.0 },
-            specularIntensity = { x = 1.0, y = 1.0, z = 1.0 },
-            constant = 1.0,
-            linear = 0.007,
-            quadratic = 0.002,
-        },
-    },
+-- forward with skydome
 
-    ------------------------
-    -- directional lights --
-    ------------------------
-    sun = {
-        SunComponent = {
-            sunTexturePath = "res/sun/sun.png",
-            scale = 10.0,
-            direction = { x = 1.0, y = -0.2, z = -0.4 },
-            diffuseIntensity = { x = 1.0, y = 0.8, z = 0.6 },
-            specularIntensity = { x = 0.6, y = 0.6, z = 0.6 },
-        },
-    },
+SkydomeRenderer.new(3, scene)
+SunRenderer.new(2, scene)
+ForwardRenderer.new(1, scene)
 
-    ---------------------------
-    -- skybox, skydome, guis --
-    ---------------------------
-    skydome = {
-        TransformComponent = {
-            position = { x = 0.0, y = 0.0, z = 0.0 },
-            --rotation = { x = 0.0, y = 0.0, z = 0.0 },
-            scale = { x = 5000.0, y = 5000.0, z = 5000.0 },
-        },
-        ModelComponent = {
-            path = "res/model/Dome/dome.obj",
-            showTriangles = false,
-        },
-        SkydomeComponent = {},
-    },
-}
+-- deferred with skydome
 
---------------
--- Renderer --
---------------
+--[[
+DeferredRenderer.new(3, scene)
+SkydomeRenderer.new(2, scene)
+SunRenderer.new(1, scene)
+]]
 
-renderer = {
+----------------------------
+-- Create and add Cameras --
+----------------------------
 
-    DeferredRenderer = { priority = 99, name = "DeferredRenderSystem" },
-    --SkyboxRenderer = { priority = 0, name = "SkyboxRenderSystem" },
+firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(1197.0, 171.0, -23.0), -179.0, 1.0, scene)
+firstPersonCamera:SetCameraVelocity(200.0)
+firstPersonCamera:SetMouseSensitivity(0.1)
 
-    SkydomeRenderer = { priority = 10, name = "SkydomeRenderSystem" },
-    SunRenderer = { priority = 2, name = "SunRenderSystem" },
-    --ForwardRenderer = { priority = 1, name = "ForwardRenderSystem" },
-}
+------------------
+-- Config Scene --
+------------------
+
+scene:SetCurrentCamera("first_person_camera1")
+scene:SetAmbientIntensity(Vec3.new(0.2, 0.2, 0.2))
+
+--------------------
+-- Load resources --
+--------------------
+
+sponza = modelManager:GetModel("res/model/Sponza/sponza.obj")
+dome = modelManager:GetModel("res/model/Dome/dome.obj")
+sunTextureId = textureManager:LoadTexture("res/sun/sun.png")
+
+a = {}
+a[1] = "res/skybox/sky1/sRight.png"
+a[2] = "res/skybox/sky1/sLeft.png"
+a[3] = "res/skybox/sky1/sUp.png"
+a[4] = "res/skybox/sky1/sDown.png"
+a[5] = "res/skybox/sky1/sBack.png"
+a[6] = "res/skybox/sky1/sFront.png"
+
+skyboxCubemapId = textureManager:GetCubemapId(a)
+
+---------------------
+-- Create Entities --
+---------------------
+
+-- sponza
+
+sponzaEntity = ecs:CreateEntity()
+ecs:AddModelComponent(sponzaEntity, sponza, false)
+ecs:AddTransformComponent(sponzaEntity, Vec3.new(0.0, 0.0, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(1.0, 1.0, 1.0))
+
+-- sun
+
+sunEntity = ecs:CreateEntity()
+ecs:AddSunComponent(sunEntity,
+    Vec3.new(1.0, -0.2, -0.4), -- direction
+    Vec3.new(1.0, 0.8, 0.6),   -- diffuseIntensity
+    Vec3.new(0.6, 0.6, 0.6),   -- specularIntensity
+    sunTextureId,
+    10.0
+)
+
+-- point lights
+
+p1 = ecs:CreateEntity()
+ecs:AddPointLightComponent(p1,
+    Vec3.new(-945.0, 20.0, -89.0), -- position
+    Vec3.new(0.2, 0.2, 0.2),       -- ambientIntensity
+    Vec3.new(10.0, 1.0, 1.0),      -- diffuseIntensity
+    Vec3.new(1.0, 1.0, 1.0),       -- specularIntensity
+    1.0, 0.007, 0.002              -- constant, linear, quadratic
+)
+
+p2 = ecs:CreateEntity()
+ecs:AddPointLightComponent(p2,
+    Vec3.new(-64.0, 20.0, -89.0), -- position
+    Vec3.new(0.2, 0.2, 0.2),      -- ambientIntensity
+    Vec3.new(1.0, 1.0, 10.0),     -- diffuseIntensity
+    Vec3.new(1.0, 1.0, 1.0),      -- specularIntensity
+    1.0, 0.007, 0.002             -- constant, linear, quadratic
+)
+
+-- skybox
+
+skyboxEntity = ecs:CreateEntity()
+ecs:AddCubemapComponent(skyboxEntity, skyboxCubemapId)
+
+-- skydome
+
+skydomeEntity = ecs:CreateEntity()
+ecs:AddModelComponent(skydomeEntity, dome, false)
+ecs:AddTransformComponent(skydomeEntity, Vec3.new(0.0, 0.0, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(5000.0, 5000.0, 5000.0))
+ecs:AddSkydomeComponent(skydomeEntity)

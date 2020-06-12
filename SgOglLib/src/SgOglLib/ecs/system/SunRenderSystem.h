@@ -67,11 +67,13 @@ namespace sg::ogl::ecs::system
         void PrepareRendering() override
         {
             OpenGl::EnableAlphaBlending();
+            OpenGl::DisableDepthTesting();
         }
 
         void FinishRendering() override
         {
             OpenGl::DisableBlending();
+            OpenGl::EnableDepthTesting();
         }
 
     protected:
