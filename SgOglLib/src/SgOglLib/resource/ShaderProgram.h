@@ -154,6 +154,8 @@ namespace sg::ogl::resource
             const Mesh& t_currentMesh
         ) {}
 
+        virtual void UpdateUniforms(const scene::Scene& t_scene, entt::entity t_entity, void* t_object) {}
+
         virtual void UpdateUniforms(
             const scene::Scene& t_scene,
             entt::entity t_entity,

@@ -21,7 +21,6 @@
 #include "resource/TextureManager.h"
 #include "light/PointLight.h"
 #include "water/Water.h"
-#include "particle/ParticleEmitter.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -367,6 +366,7 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateTppCharacterEntity(
 
 void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(ParticleEmitterSharedPtr& t_particleEmitter) const
 {
+    /*
     // create an empty Vbo for instanced data
     const auto vbo{ buffer::Vbo::GenerateVbo() };
 
@@ -419,4 +419,5 @@ void sg::ogl::ecs::factory::EntityFactory::CreateParticleEntity(ParticleEmitterS
         entity,
         meshSharedPtr
     );
+    */
 }

@@ -15,6 +15,7 @@
 #include "Scene.h"
 #include "Core.h"
 #include "Application.h"
+#include "input/MouseInput.h"
 #include "math/Transform.h"
 #include "light/DirectionalLight.h"
 #include "light/PointLight.h"
@@ -24,6 +25,7 @@
 #include "camera/FirstPersonCamera.h"
 #include "camera/ThirdPersonCamera.h"
 #include "water/Water.h"
+#include "particle/ParticleSystem.h"
 #include "ecs/component/Components.h"
 #include "ecs/system/ForwardRenderSystem.h"
 #include "ecs/system/DeferredRenderSystem.h"
@@ -152,6 +154,31 @@ void sg::ogl::scene::Scene::SetCurrentClipPlane(const glm::vec4& t_currentClipPl
 void sg::ogl::scene::Scene::Input()
 {
     GetCurrentCamera().Input();
+
+    // todo: tmp code
+
+    // run the input components
+    if (m_parentLuaState)
+    {
+        // todo in lua abfragen
+        if (GetApplicationContext()->GetMouseInput().IsLeftButtonPressed())
+        {
+            auto mousePosition = GetApplicationContext()->GetMouseInput().GetCurrentPos();
+
+            // ndc
+            const auto x{ (2.0f * mousePosition.x) / static_cast<float>(GetApplicationContext()->GetProjectionOptions().width) - 1.0f };
+            const auto y{ 1.0f - (2.0f * mousePosition.y) / static_cast<float>(GetApplicationContext()->GetProjectionOptions().height) };
+
+            sol::state_view lua{ m_parentLuaState };
+            m_application->registry.view<ecs::component::InputComponent>().each(
+                [&](entt::entity t_entity, auto& t_inputComponent)
+                {
+                    lua[t_inputComponent.luaFunction](t_entity, x, y);
+                    //lua[t_inputComponent.luaFunction](t_entity, 0.5f * x + 0.5f, 0.5f * y + 0.5f);
+                }
+            );
+        }
+    }
 }
 
 void sg::ogl::scene::Scene::Update(const double t_dt)
@@ -167,7 +194,7 @@ void sg::ogl::scene::Scene::Update(const double t_dt)
     // run the update components
     if (m_parentLuaState)
     {
-        sol::state_view lua{ m_parentLuaState }; // todo
+        sol::state_view lua{ m_parentLuaState };
         m_application->registry.view<ecs::component::UpdateComponent>().each(
             [&](entt::entity t_entity, auto& t_updateComponent)
             {
@@ -179,7 +206,7 @@ void sg::ogl::scene::Scene::Update(const double t_dt)
 
 void sg::ogl::scene::Scene::Render()
 {
-    // todo search
+    // todo: do not search for the debug name
     if (!waterSurfaces.empty())
     {
         const auto& it = std::find_if(renderer.begin(), renderer.end(),

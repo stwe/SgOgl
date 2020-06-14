@@ -20,11 +20,6 @@ namespace sg::ogl::resource
     class SkeletalModel;
 }
 
-namespace sg::ogl::particle
-{
-    class ParticleEmitter;
-}
-
 namespace sg::ogl::terrain
 {
     class TerrainQuadtree;
@@ -33,6 +28,11 @@ namespace sg::ogl::terrain
 namespace sg::ogl::water
 {
     class Water;
+}
+
+namespace sg::ogl::particle
+{
+    class ParticleSystem;
 }
 
 namespace sg::ogl::ecs::component
@@ -99,11 +99,6 @@ namespace sg::ogl::ecs::component
         bool useExistingNormalmaps{ false };
     };
 
-    struct ParticleEmitterComponent
-    {
-        std::shared_ptr<particle::ParticleEmitter> particleEmitter;
-    };
-
     struct InstancesComponent
     {
         uint32_t instances{ 0 };
@@ -127,11 +122,21 @@ namespace sg::ogl::ecs::component
         water::Water* water;
     };
 
+    struct ParticleSystemComponent
+    {
+        particle::ParticleSystem* particleSystem;
+    };
+
     //-------------------------------------------------
     // Logic
     //-------------------------------------------------
 
     struct UpdateComponent
+    {
+        std::string luaFunction;
+    };
+
+    struct InputComponent
     {
         std::string luaFunction;
     };

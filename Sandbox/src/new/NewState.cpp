@@ -55,7 +55,8 @@ void NewState::Init()
 
     //m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/start.lua");
     //m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/water.lua");
-    m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/sponza.lua");
+    //m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/sponza.lua");
+    m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/particles.lua");
 }
 
 //-------------------------------------------------

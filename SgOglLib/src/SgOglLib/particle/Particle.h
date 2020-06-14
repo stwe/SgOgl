@@ -1,42 +1,36 @@
-// This file is part of the SgOgl package.
-// 
-// Filename: Particle.h
-// Author:   stwe
-// 
-// License:  MIT
-// 
-// 2019 (c) stwe <https://github.com/stwe/SgOgl>
-
 #pragma once
 
-#include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <glm/vec3.hpp>
 
 namespace sg::ogl::particle
 {
+    struct ParticleProperties
+    {
+        glm::vec3 position{ glm::vec3(0.0f) };
+        glm::vec3 velocity{ glm::vec3(0.0f) };
+        glm::vec3 velocityVariation{ glm::vec3(0.0f) };
+        glm::vec4 colorBegin{ glm::vec4(1.0f) };
+        glm::vec4 colorEnd{ glm::vec4(0.0f, 0.0f, 0.0f, 1.0f) };
+        float sizeBegin{ 1.0f };
+        float sizeEnd{ 0.0f };
+        float sizeVariation{ 0.0f };
+        float lifeTime{ 1.0f };
+    };
+
     struct Particle
     {
         glm::vec3 position{ glm::vec3(0.0f) };
         glm::vec3 velocity{ glm::vec3(0.0f) };
-        glm::vec4 color{ glm::vec4(1.0f) };
-
+        glm::vec4 colorBegin{ glm::vec4(1.0f) };
+        glm::vec4 colorEnd{ glm::vec4(0.0f, 0.0f, 0.0f, 1.0f) };
         float rotation{ 0.0f };
-        float scale{ 1.0f };
+        float sizeBegin{ 1.0f };
+        float sizeEnd{ 0.0f };
 
-        float lifetime{ 5.0f };
-        float remainingLifetime{ 5.0f };
-        bool life{ true };
+        float lifeTime{ 1.0f };
+        float lifeRemaining{ 0.0f };
 
-        int textureIndex{ 0 };
-        int nextTextureIndex{ 0 };
-        float blendFactor{ 0.0f };
-
-        float cameraDistance{ 0.0f };
-
-        bool operator<(const Particle& t_particle) const
-        {
-            // Sort in reverse order, far particles drawn first.
-            return cameraDistance > t_particle.cameraDistance;
-        }
+        bool active{ false };
     };
 }

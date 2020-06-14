@@ -7,7 +7,6 @@
 // 
 // 2020 (c) stwe <https://github.com/stwe/SgOgl>
 
-#include <glm/vec3.hpp>
 #include "LuaScript.h"
 #include "Application.h"
 #include "SgOglException.h"
@@ -17,6 +16,7 @@
 #include "resource/ModelManager.h"
 #include "resource/TextureManager.h"
 #include "water/Water.h"
+#include "particle/ParticleSystem.h"
 #include "ecs/system/ForwardRenderSystem.h"
 #include "ecs/system/DeferredRenderSystem.h"
 #include "ecs/system/SkydomeRenderSystem.h"
@@ -24,6 +24,7 @@
 #include "ecs/system/SkyboxRenderSystem.h"
 #include "ecs/system/GuiRenderSystem.h"
 #include "ecs/system/WaterRenderSystem.h"
+#include "ecs/system/ParticleSystemRenderer.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -68,6 +69,7 @@ void sg::ogl::LuaScript::InitLua()
     CreateRendererUsertype<ecs::system::SkyboxRenderSystem>("SkyboxRenderer");
     CreateRendererUsertype<ecs::system::GuiRenderSystem>("GuiRenderer");
     CreateRendererUsertype<ecs::system::WaterRenderSystem>("WaterRenderer");
+    CreateRendererUsertype<ecs::system::ParticleSystemRenderer>("ParticleSystemRenderer");
 
     CreateCameraUsertypes();
     CreateResourceUsertypes();
@@ -144,6 +146,20 @@ void sg::ogl::LuaScript::CreateGlmUsertypes()
         sol::meta_function::subtraction, sol::resolve<glm::vec3(const glm::vec3&, const glm::vec3&)>(glm::operator-),
         sol::meta_function::multiplication, sol::resolve<glm::vec3(const glm::vec3&, const glm::vec3&)>(glm::operator*),
         sol::meta_function::division, sol::resolve<glm::vec3(const glm::vec3&, const glm::vec3&)>(glm::operator/)
+    );
+
+    // glm::vec4
+    m_lua.new_usertype<glm::vec4>(
+        "Vec4",
+        sol::constructors<glm::vec4(), glm::vec4(float), glm::vec4(float, float, float, float)>(),
+        "x", &glm::vec4::x,
+        "y", &glm::vec4::y,
+        "z", &glm::vec4::z,
+        "w", &glm::vec4::w,
+        sol::meta_function::addition, sol::resolve<glm::vec4(const glm::vec4&, const glm::vec4&)>(glm::operator+),
+        sol::meta_function::subtraction, sol::resolve<glm::vec4(const glm::vec4&, const glm::vec4&)>(glm::operator-),
+        sol::meta_function::multiplication, sol::resolve<glm::vec4(const glm::vec4&, const glm::vec4&)>(glm::operator*),
+        sol::meta_function::division, sol::resolve<glm::vec4(const glm::vec4&, const glm::vec4&)>(glm::operator/)
     );
 }
 
@@ -264,6 +280,33 @@ void sg::ogl::LuaScript::CreateResourceUsertypes()
         "AddRendererToReflectionTexture", &water::Water::AddRendererToReflectionTexture,
         "AddRendererToRefractionTexture", &water::Water::AddRendererToRefractionTexture
     );
+
+    // ParticleSystem
+    m_lua.new_usertype<particle::ParticleProperties>(
+        "ParticleProperties",
+        "position", &particle::ParticleProperties::position,
+        "velocity", &particle::ParticleProperties::velocity,
+        "velocityVariation", &particle::ParticleProperties::velocityVariation,
+        "colorBegin", &particle::ParticleProperties::colorBegin,
+        "colorEnd", &particle::ParticleProperties::colorEnd,
+        "sizeBegin", &particle::ParticleProperties::sizeBegin,
+        "sizeEnd", &particle::ParticleProperties::sizeEnd,
+        "sizeVariation", &particle::ParticleProperties::sizeVariation,
+        "lifeTime", &particle::ParticleProperties::lifeTime
+    );
+
+    m_lua.new_usertype<particle::ParticleSystem>(
+        "ParticleSystem",
+        "new", sol::factories(
+            [](const std::string& t_name, scene::Scene* t_currentScene)
+            {
+                Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateResourceUsertypes()] Add {} ParticleSystem to the current Scene.", t_name);
+                t_currentScene->particleSystems.emplace(t_name, std::make_unique<particle::ParticleSystem>());
+                return t_currentScene->particleSystems.at(t_name).get();
+            }
+        ),
+        "Emit", &particle::ParticleSystem::Emit
+    );
 }
 
 void sg::ogl::LuaScript::CreateComponentUsertypes()
@@ -309,6 +352,11 @@ void sg::ogl::LuaScript::CreateComponentUsertypes()
         "UpdateComponent"
     );
 
+    // Input component
+    m_lua.new_usertype<ecs::component::InputComponent>(
+        "InputComponent"
+    );
+
     // Cubemap component
     m_lua.new_usertype<ecs::component::CubemapComponent>(
         "CubemapComponent"
@@ -322,6 +370,11 @@ void sg::ogl::LuaScript::CreateComponentUsertypes()
     // Water component
     m_lua.new_usertype<ecs::component::WaterComponent>(
         "WaterComponent"
+    );
+
+    // ParticleSystem component
+    m_lua.new_usertype<ecs::component::ParticleSystemComponent>(
+        "ParticleSystemComponent"
     );
 }
 
@@ -342,9 +395,11 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
         "AddDirectionalLightComponent", &entt::registry::emplace<light::DirectionalLight, glm::vec3&, glm::vec3&, glm::vec3&>,
         "AddSunComponent", &entt::registry::emplace<light::Sun, glm::vec3&, glm::vec3&, glm::vec3&, uint32_t, float>,
         "AddUpdateComponent", &entt::registry::emplace<ecs::component::UpdateComponent, std::string&>,
+        "AddInputComponent", &entt::registry::emplace<ecs::component::InputComponent, std::string&>,
         "AddCubemapComponent", &entt::registry::emplace<ecs::component::CubemapComponent, uint32_t>,
         "AddGuiComponent", &entt::registry::emplace<ecs::component::GuiComponent, uint32_t>,
         "AddWaterComponent", &entt::registry::emplace<ecs::component::WaterComponent, water::Water*>,
+        "AddParticleSystemComponent", &entt::registry::emplace<ecs::component::ParticleSystemComponent, particle::ParticleSystem*>,
         "GetPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity)>(&entt::registry::get<light::PointLight>)
     );
 }

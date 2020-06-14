@@ -43,6 +43,11 @@ namespace sg::ogl::water
     class Water;
 }
 
+namespace sg::ogl::particle
+{
+    class ParticleSystem;
+}
+
 namespace sg::ogl::scene
 {
     class Scene
@@ -51,6 +56,7 @@ namespace sg::ogl::scene
         using CameraContainer = std::unordered_map<std::string, std::unique_ptr<camera::Camera>>;
         using RendererContainer = std::vector<std::unique_ptr<ecs::system::RenderSystemInterface>>;
         using WaterContainer = std::unordered_map<std::string, std::unique_ptr<water::Water>>;
+        using ParticleSystemContainer = std::unordered_map<std::string, std::unique_ptr<particle::ParticleSystem>>;
 
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
 
@@ -61,6 +67,7 @@ namespace sg::ogl::scene
         CameraContainer cameras;
         RendererContainer renderer;
         WaterContainer waterSurfaces;
+        ParticleSystemContainer particleSystems;
 
         //-------------------------------------------------
         // Ctors. / Dtor.

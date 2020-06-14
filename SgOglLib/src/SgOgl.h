@@ -35,7 +35,7 @@
 #include "SgOglLib/ecs/system/ForwardRenderSystem.h"
 #include "SgOglLib/ecs/system/GuiRenderSystem.h"
 #include "SgOglLib/ecs/system/InstancingRenderSystem.h"
-#include "SgOglLib/ecs/system/ParticleRenderSystem.h"
+#include "SgOglLib/ecs/system/ParticleSystemRenderer.h"
 #include "SgOglLib/ecs/system/PlayerRenderSystem.h"
 #include "SgOglLib/ecs/system/RenderSystem.h"
 #include "SgOglLib/ecs/system/SkeletalModelRenderSystem.h"
@@ -61,8 +61,7 @@
 #include "SgOglLib/light/Sun.h"
 
 // particle
-#include "SgOglLib/particle/Particle.h"
-#include "SgOglLib/particle/ParticleEmitter.h"
+#include "SgOglLib/particle/ParticleSystem.h"
 
 // resource
 #include "SgOglLib/resource/Material.h"
@@ -81,7 +80,6 @@
 #include "SgOglLib/resource/shaderprogram/InstancingShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/LightingPassShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/ModelShaderProgram.h"
-#include "SgOglLib/resource/shaderprogram/ParticleShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/SkeletalModelShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/SkyboxShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/SunShaderProgram.h"
