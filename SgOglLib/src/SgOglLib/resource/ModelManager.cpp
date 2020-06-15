@@ -243,6 +243,7 @@ void sg::ogl::resource::ModelManager::AddStaticMeshes()
     AddWaterStaticMesh();
     AddQuadStaticMesh();
     AddSunQuadStaticMesh();
+    AddParticleStaticMesh(),
     AddTerrainPatchStaticMesh();
 }
 
@@ -383,6 +384,33 @@ void sg::ogl::resource::ModelManager::AddSunQuadStaticMesh()
 
     // store Mesh
     m_staticMeshes.emplace(SUN_QUAD_MESH, meshSharedPtr);
+}
+
+void sg::ogl::resource::ModelManager::AddParticleStaticMesh()
+{
+    Log::SG_OGL_CORE_LOG_DEBUG("[ModelManager::AddParticleStaticMesh()] Add Particle quad mesh.");
+
+    // create Mesh
+    auto meshSharedPtr{ std::make_shared<Mesh>() };
+
+    // create BufferLayout
+    const buffer::BufferLayout bufferLayout{
+        { buffer::VertexAttributeType::POSITION_2D, "aPosition" },
+    };
+
+    // to render with GL_TRIANGLE_STRIP
+    std::vector<float> vertices{
+        -0.5f,  0.5f,
+        -0.5f, -0.5f,
+         0.5f,  0.5f,
+         0.5f, -0.5f
+    };
+
+    // add Vbo
+    meshSharedPtr->GetVao().AddVertexDataVbo(vertices.data(), static_cast<int32_t>(vertices.size()) / 2, bufferLayout);
+
+    // store Mesh
+    m_staticMeshes.emplace(PARTICLE_QUAD_MESH, meshSharedPtr);
 }
 
 void sg::ogl::resource::ModelManager::AddTerrainPatchStaticMesh()

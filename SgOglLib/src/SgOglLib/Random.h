@@ -1,26 +1,24 @@
-#pragma once
+// This file is part of the SgOgl package.
+// 
+// Filename: Random.h
+// Author:   stwe
+// 
+// License:  MIT
+// 
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
 
-#include <random>
+#pragma once
 
 namespace sg::ogl
 {
     class Random
     {
     public:
-        static void Init()
-        {
-            m_generator.seed(std::random_device()());
-        }
-
-        static float Float()
-        {
-            return static_cast<float>(m_distribution(m_generator)) / static_cast<float>(std::numeric_limits<uint32_t>::max());
-        }
+        static float Float(float t_min = 0.0f, float t_max = 1.0f);
+        static int Int(int t_min = 0, int t_max = std::numeric_limits<int32_t>::max());
 
     protected:
 
     private:
-        inline static std::mt19937 m_generator;
-        inline static std::uniform_int_distribution<std::mt19937::result_type> m_distribution;
     };
 }

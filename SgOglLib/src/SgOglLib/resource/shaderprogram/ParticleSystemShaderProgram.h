@@ -22,10 +22,7 @@ namespace sg::ogl::resource::shaderprogram
         {
             auto* p{ static_cast<particle::Particle*>(t_object) };
 
-            const auto life{ p->lifeRemaining / p->lifeTime };
-            const auto color{ lerp(p->colorEnd, p->colorBegin, life) };
-            SetUniform("color", color);
-
+            SetUniform("color", glm::vec4(1.0f));
             SetUniform("projectionMatrix", t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix());
 
             const auto viewMatrix{ t_scene.GetCurrentCamera().GetViewMatrix() };
@@ -41,18 +38,15 @@ namespace sg::ogl::resource::shaderprogram
             modelMatrix[2][1] = viewMatrix[1][2];
             modelMatrix[2][2] = viewMatrix[2][2];
 
-            // todo rotation
-            //modelMatrix = glm::rotate(modelMatrix, glm::radians(p->rotation), glm::vec3(0.0f, 0.0f, 1.0f));
-
-            const auto size{ glm::lerp(p->sizeEnd, p->sizeBegin, life) };
-            modelMatrix = scale(modelMatrix, glm::vec3(size));
+            modelMatrix = rotate(modelMatrix, glm::radians(p->rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+            modelMatrix = scale(modelMatrix, glm::vec3(p->scale));
 
             SetUniform("modelViewMatrix", viewMatrix * modelMatrix);
         }
 
         [[nodiscard]] std::string GetFolderName() const override
         {
-            return "particle_system";
+            return "particle";
         }
 
         [[nodiscard]] bool IsBuiltIn() const override

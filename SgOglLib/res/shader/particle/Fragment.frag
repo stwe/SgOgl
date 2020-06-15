@@ -1,6 +1,6 @@
 #version 330
 
-// particle_system/Fragment.frag
+// particle/Fragment.frag
 
 // In
 

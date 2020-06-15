@@ -282,17 +282,14 @@ void sg::ogl::LuaScript::CreateResourceUsertypes()
     );
 
     // ParticleSystem
-    m_lua.new_usertype<particle::ParticleProperties>(
-        "ParticleProperties",
-        "position", &particle::ParticleProperties::position,
-        "velocity", &particle::ParticleProperties::velocity,
-        "velocityVariation", &particle::ParticleProperties::velocityVariation,
-        "colorBegin", &particle::ParticleProperties::colorBegin,
-        "colorEnd", &particle::ParticleProperties::colorEnd,
-        "sizeBegin", &particle::ParticleProperties::sizeBegin,
-        "sizeEnd", &particle::ParticleProperties::sizeEnd,
-        "sizeVariation", &particle::ParticleProperties::sizeVariation,
-        "lifeTime", &particle::ParticleProperties::lifeTime
+    m_lua.new_usertype<particle::ParticleRoot>(
+        "ParticleRoot",
+        "position", &particle::ParticleRoot::position,
+        "velocity", &particle::ParticleRoot::velocity,
+        "gravityEffect", &particle::ParticleRoot::gravityEffect,
+        "lifeTime", &particle::ParticleRoot::lifeTime,
+        "rotation", &particle::ParticleRoot::rotation,
+        "scale", &particle::ParticleRoot::scale
     );
 
     m_lua.new_usertype<particle::ParticleSystem>(
