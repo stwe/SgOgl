@@ -8,6 +8,8 @@ layout (location = 0) in vec2 aPosition;
 
 // Out
 
+out vec2 vUv;
+
 // Uniforms
 
 uniform mat4 projectionMatrix;
@@ -17,5 +19,8 @@ uniform mat4 modelViewMatrix;
 
 void main()
 {
+    vUv = aPosition + vec2(0.5, 0.5);
+    vUv.y = 1.0 - vUv.y;
+
     gl_Position = projectionMatrix * modelViewMatrix * vec4(aPosition, 0.0, 1.0);
 }

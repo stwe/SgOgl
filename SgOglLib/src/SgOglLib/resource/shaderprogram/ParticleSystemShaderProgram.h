@@ -12,6 +12,7 @@
 #include <glm/gtx/compatibility.hpp>
 #include "resource/ShaderProgram.h"
 #include "particle/Particle.h"
+#include "particle/ParticleSystem.h"
 
 namespace sg::ogl::resource::shaderprogram
 {
@@ -20,12 +21,15 @@ namespace sg::ogl::resource::shaderprogram
     public:
         void UpdateUniforms(const scene::Scene& t_scene, entt::entity t_entity, void* t_object) override
         {
-            auto* p{ static_cast<particle::Particle*>(t_object) };
+            auto& particleSystemComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::ParticleSystemComponent>(t_entity) };
+            SetUniform("particleTexture", 0);
+            TextureManager::BindForReading(particleSystemComponent.particleSystem->GetTextureId(), GL_TEXTURE0);
 
-            SetUniform("color", glm::vec4(1.0f));
             SetUniform("projectionMatrix", t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix());
 
             const auto viewMatrix{ t_scene.GetCurrentCamera().GetViewMatrix() };
+
+            auto* p{ static_cast<particle::Particle*>(t_object) };
 
             auto modelMatrix = translate(glm::mat4(1.0f), p->position);
             modelMatrix[0][0] = viewMatrix[0][0];

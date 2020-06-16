@@ -10,6 +10,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include "Particle.h"
 
 namespace sg::ogl::particle
@@ -36,8 +37,22 @@ namespace sg::ogl::particle
         // Ctors. / Dtor.
         //-------------------------------------------------
 
-        ParticleSystem();
-        ParticleSystem(float t_particlesPerSecond, float t_speed, float t_gravityEffect, float t_lifeTime, float t_maxScale);
+        explicit ParticleSystem(uint32_t t_textureId);
+
+        ParticleSystem(
+            uint32_t t_textureId,
+            float t_particlesPerSecond,
+            float t_speed,
+            float t_gravityEffect,
+            float t_lifeTime,
+            float t_maxScale
+        );
+
+        //-------------------------------------------------
+        // Getter
+        //-------------------------------------------------
+
+        [[nodiscard]] uint32_t GetTextureId() const;
 
         //-------------------------------------------------
         // Setter
@@ -62,11 +77,18 @@ namespace sg::ogl::particle
     private:
         uint32_t m_containerIndex{ NR_OF_ELEMENTS - 1 };
 
+        uint32_t m_textureId{ 0 };
         float m_particlesPerSecond{ 25.0f };
         float m_speed{ 25.0f };
         float m_gravityEffect{ 0.5f };
         float m_lifeTime{ 4.0f };
         float m_maxScale{ 1.0f };
+
+        //-------------------------------------------------
+        // Init
+        //-------------------------------------------------
+
+        void Init();
 
         //-------------------------------------------------
         // Emit

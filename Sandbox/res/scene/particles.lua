@@ -28,14 +28,18 @@ scene:SetCurrentCamera("first_person_camera1")
 -- Create ParticleSystem --
 ---------------------------
 
-particleSystem = ParticleSystem.new("quads", scene)
+textureId = textureManager:LoadTexture("res/particle/particleStar.png")
+
+--[[
+particleSystem = ParticleSystem.new("quads", textureId, scene)
 particleSystem:SetParticlesPerSecond(100.0)
 particleSystem:SetSpeed(5.0)
 particleSystem:SetGravityEffect(1.0)
 particleSystem:SetLifeTime(3.0)
 particleSystem:SetMaxScale(1.0)
+]]
 
---particleSystem = ParticleSystem.new("quads", 100.0, 5.0, 1.0, 3.0, 1.0, scene)
+particleSystem = ParticleSystem.new("quads", textureId, 100.0, 5.0, 1.0, 3.0, 1.0, scene)
 
 ---------------------
 -- Create Entities --

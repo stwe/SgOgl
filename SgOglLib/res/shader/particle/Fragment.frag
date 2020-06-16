@@ -4,17 +4,19 @@
 
 // In
 
+in vec2 vUv;
+
 // Out
 
 out vec4 fragColor;
 
 // Uniforms
 
-uniform vec4 color;
+uniform sampler2D particleTexture;
 
 // Main
 
 void main()
 {
-    fragColor = color;
+    fragColor = texture(particleTexture, vUv);
 }

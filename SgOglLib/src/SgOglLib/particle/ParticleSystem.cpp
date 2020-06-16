@@ -16,25 +16,37 @@
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::particle::ParticleSystem::ParticleSystem()
+sg::ogl::particle::ParticleSystem::ParticleSystem(const uint32_t t_textureId)
+    : m_textureId{ t_textureId }
 {
-    particles.resize(NR_OF_ELEMENTS);
+    Init();
 }
 
 sg::ogl::particle::ParticleSystem::ParticleSystem(
+    const uint32_t t_textureId,
     const float t_particlesPerSecond,
     const float t_speed,
     const float t_gravityEffect,
     const float t_lifeTime,
     const float t_maxScale
 )
-    : m_particlesPerSecond{ t_particlesPerSecond }
+    : m_textureId{ t_textureId }
+    , m_particlesPerSecond{ t_particlesPerSecond }
     , m_speed{ t_speed }
     , m_gravityEffect{ t_gravityEffect }
     , m_lifeTime{ t_lifeTime }
     , m_maxScale{ t_maxScale }
 {
-    particles.resize(NR_OF_ELEMENTS);
+    Init();
+}
+
+//-------------------------------------------------
+// Getter
+//-------------------------------------------------
+
+uint32_t sg::ogl::particle::ParticleSystem::GetTextureId() const
+{
+    return m_textureId;
 }
 
 //-------------------------------------------------
@@ -115,6 +127,15 @@ void sg::ogl::particle::ParticleSystem::Update(const double t_dt)
         const auto life{ particle.lifeRemaining / particle.lifeTime };
         particle.scale = glm::lerp(0.0f, m_maxScale, life);
     }
+}
+
+//-------------------------------------------------
+// Init
+//-------------------------------------------------
+
+void sg::ogl::particle::ParticleSystem::Init()
+{
+    particles.resize(NR_OF_ELEMENTS);
 }
 
 //-------------------------------------------------

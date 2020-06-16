@@ -284,18 +284,21 @@ void sg::ogl::LuaScript::CreateResourceUsertypes()
     // ParticleSystem
     m_lua.new_usertype<particle::ParticleSystem>(
         "ParticleSystem",
-        sol::constructors<particle::ParticleSystem(), particle::ParticleSystem(float, float, float, float, float)>(),
+        sol::constructors<
+            particle::ParticleSystem(uint32_t),
+            particle::ParticleSystem(uint32_t, float, float, float, float, float)
+        >(),
         "new", sol::factories(
-            [](const std::string& t_name, scene::Scene* t_currentScene)
+            [](const std::string& t_name, uint32_t t_textureId, scene::Scene* t_currentScene)
             {
                 Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateResourceUsertypes()] Add {} ParticleSystem to the current Scene.", t_name);
-                t_currentScene->particleSystems.emplace(t_name, std::make_unique<particle::ParticleSystem>());
+                t_currentScene->particleSystems.emplace(t_name, std::make_unique<particle::ParticleSystem>(t_textureId));
                 return t_currentScene->particleSystems.at(t_name).get();
             },
-            [](const std::string& t_name, float t_particlesPerSecond, float t_speed, float t_gravityEffect, float t_lifeTime, float t_maxScale, scene::Scene* t_currentScene)
+            [](const std::string& t_name, uint32_t t_textureId, float t_particlesPerSecond, float t_speed, float t_gravityEffect, float t_lifeTime, float t_maxScale, scene::Scene* t_currentScene)
             {
                 Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateResourceUsertypes()] Add {} ParticleSystem to the current Scene.", t_name);
-                t_currentScene->particleSystems.emplace(t_name, std::make_unique<particle::ParticleSystem>(t_particlesPerSecond, t_speed, t_gravityEffect, t_lifeTime, t_maxScale));
+                t_currentScene->particleSystems.emplace(t_name, std::make_unique<particle::ParticleSystem>(t_textureId, t_particlesPerSecond, t_speed, t_gravityEffect, t_lifeTime, t_maxScale));
                 return t_currentScene->particleSystems.at(t_name).get();
             }
         ),
