@@ -282,27 +282,29 @@ void sg::ogl::LuaScript::CreateResourceUsertypes()
     );
 
     // ParticleSystem
-    m_lua.new_usertype<particle::ParticleRoot>(
-        "ParticleRoot",
-        "position", &particle::ParticleRoot::position,
-        "velocity", &particle::ParticleRoot::velocity,
-        "gravityEffect", &particle::ParticleRoot::gravityEffect,
-        "lifeTime", &particle::ParticleRoot::lifeTime,
-        "rotation", &particle::ParticleRoot::rotation,
-        "scale", &particle::ParticleRoot::scale
-    );
-
     m_lua.new_usertype<particle::ParticleSystem>(
         "ParticleSystem",
+        sol::constructors<particle::ParticleSystem(), particle::ParticleSystem(float, float, float, float, float)>(),
         "new", sol::factories(
             [](const std::string& t_name, scene::Scene* t_currentScene)
             {
                 Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateResourceUsertypes()] Add {} ParticleSystem to the current Scene.", t_name);
                 t_currentScene->particleSystems.emplace(t_name, std::make_unique<particle::ParticleSystem>());
                 return t_currentScene->particleSystems.at(t_name).get();
+            },
+            [](const std::string& t_name, float t_particlesPerSecond, float t_speed, float t_gravityEffect, float t_lifeTime, float t_maxScale, scene::Scene* t_currentScene)
+            {
+                Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateResourceUsertypes()] Add {} ParticleSystem to the current Scene.", t_name);
+                t_currentScene->particleSystems.emplace(t_name, std::make_unique<particle::ParticleSystem>(t_particlesPerSecond, t_speed, t_gravityEffect, t_lifeTime, t_maxScale));
+                return t_currentScene->particleSystems.at(t_name).get();
             }
         ),
-        "Emit", &particle::ParticleSystem::Emit
+        "SetParticlesPerSecond", &particle::ParticleSystem::SetParticlesPerSecond,
+        "SetSpeed", &particle::ParticleSystem::SetSpeed,
+        "SetGravityEffect", &particle::ParticleSystem::SetGravityEffect,
+        "SetLifeTime", &particle::ParticleSystem::SetLifeTime,
+        "SetMaxScale", &particle::ParticleSystem::SetMaxScale,
+        "GenerateParticles", &particle::ParticleSystem::GenerateParticles
     );
 }
 

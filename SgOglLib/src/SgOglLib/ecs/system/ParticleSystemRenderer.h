@@ -65,7 +65,7 @@ namespace sg::ogl::ecs::system
                 {
                     m_quadMesh->InitDraw();
 
-                    for (auto& particle : t_particleSystemComponent.particleSystem->particlePool)
+                    for (auto& particle : t_particleSystemComponent.particleSystem->particles)
                     {
                         // skip inactive particles
                         if (!particle.active)

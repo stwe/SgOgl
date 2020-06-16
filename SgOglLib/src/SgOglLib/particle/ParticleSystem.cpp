@@ -7,7 +7,10 @@
 // 
 // 2020 (c) stwe <https://github.com/stwe/SgOgl>
 
+#include <glm/glm.hpp>
+#include <glm/gtx/compatibility.hpp>
 #include "ParticleSystem.h"
+#include "Random.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -15,18 +18,81 @@
 
 sg::ogl::particle::ParticleSystem::ParticleSystem()
 {
-    particlePool.resize(1000);
+    particles.resize(NR_OF_ELEMENTS);
+}
+
+sg::ogl::particle::ParticleSystem::ParticleSystem(
+    const float t_particlesPerSecond,
+    const float t_speed,
+    const float t_gravityEffect,
+    const float t_lifeTime,
+    const float t_maxScale
+)
+    : m_particlesPerSecond{ t_particlesPerSecond }
+    , m_speed{ t_speed }
+    , m_gravityEffect{ t_gravityEffect }
+    , m_lifeTime{ t_lifeTime }
+    , m_maxScale{ t_maxScale }
+{
+    particles.resize(NR_OF_ELEMENTS);
+}
+
+//-------------------------------------------------
+// Setter
+//-------------------------------------------------
+
+void sg::ogl::particle::ParticleSystem::SetParticlesPerSecond(const float t_particlesPerSecond)
+{
+    m_particlesPerSecond = t_particlesPerSecond;
+}
+
+void sg::ogl::particle::ParticleSystem::SetSpeed(const float t_speed)
+{
+    m_speed = t_speed;
+}
+
+void sg::ogl::particle::ParticleSystem::SetGravityEffect(const float t_gravityEffect)
+{
+    m_gravityEffect = t_gravityEffect;
+}
+
+void sg::ogl::particle::ParticleSystem::SetLifeTime(const float t_lifeTime)
+{
+    m_lifeTime = t_lifeTime;
+}
+
+void sg::ogl::particle::ParticleSystem::SetMaxScale(const float t_maxScale)
+{
+    m_maxScale = t_maxScale;
 }
 
 //-------------------------------------------------
 // Logic
 //-------------------------------------------------
 
+void sg::ogl::particle::ParticleSystem::GenerateParticles(const double t_dt, const glm::vec3& t_systemCenter)
+{
+    const auto dt{ static_cast<float>(t_dt) };
+    const auto particlesToCreate{ m_particlesPerSecond * dt };
+    const auto count{ static_cast<int>(floorf(particlesToCreate)) };
+    const auto partialParticle{ fmod(particlesToCreate, 1.0f) };
+
+    for (auto i{ 0 }; i < count; ++i)
+    {
+        Emit(t_systemCenter);
+    }
+
+    if (Random::Float() < partialParticle)
+    {
+        Emit(t_systemCenter);
+    }
+}
+
 void sg::ogl::particle::ParticleSystem::Update(const double t_dt)
 {
     const auto dt{ static_cast<float>(t_dt) };
 
-    for (auto& particle : particlePool)
+    for (auto& particle : particles)
     {
         // skip inactive particles
         if (!particle.active)
@@ -45,35 +111,36 @@ void sg::ogl::particle::ParticleSystem::Update(const double t_dt)
         particle.lifeRemaining -= dt;
         particle.velocity.y += GRAVITY * particle.gravityEffect * dt;
         particle.position += particle.velocity * dt;
+
+        const auto life{ particle.lifeRemaining / particle.lifeTime };
+        particle.scale = glm::lerp(0.0f, m_maxScale, life);
     }
 }
 
 //-------------------------------------------------
-// Emitter
+// Emit
 //-------------------------------------------------
 
-void sg::ogl::particle::ParticleSystem::Emit(const ParticleRoot& t_particleRoot)
+void sg::ogl::particle::ParticleSystem::Emit(const glm::vec3& t_systemCenter)
 {
-    auto& particle{ particlePool[m_poolIndex] };
+    auto& particle{ particles[m_containerIndex] };
 
-    particle.position = t_particleRoot.position;
-    particle.velocity = t_particleRoot.velocity;
-    particle.gravityEffect = t_particleRoot.gravityEffect;
-    particle.lifeTime = t_particleRoot.lifeTime;
-    particle.rotation = t_particleRoot.rotation;
-    particle.scale = t_particleRoot.scale;
+    particle.position = t_systemCenter;
 
-    particle.lifeRemaining = t_particleRoot.lifeTime;
+    const auto dirX{ Random::Float() * 2.0f - 1.0f };
+    const auto dirZ{ Random::Float() * 2.0f - 1.0f };
+
+    particle.velocity = glm::vec3(dirX, 1.0f, dirZ);
+    particle.velocity = normalize(particle.velocity);
+    particle.velocity *= m_speed;
+
+    particle.gravityEffect = m_gravityEffect;
+    particle.lifeTime = m_lifeTime;
+    particle.rotation = 0.0f;
+    particle.scale = m_maxScale;
+
+    particle.lifeRemaining = particle.lifeTime;
     particle.active = true;
 
-    /*
-    particle.rotation = Random::Float() * 2.0f * glm::pi<float>();
-
-    particle.velocity = t_particleProperties.velocity;
-    particle.velocity.x += t_particleProperties.velocityVariation.x * (Random::Float() - 0.5f);
-    particle.velocity.y += t_particleProperties.velocityVariation.y * (Random::Float() - 0.5f);
-    particle.velocity.z += t_particleProperties.velocityVariation.z * (Random::Float() - 0.5f);
-    */
-
-    m_poolIndex = --m_poolIndex % particlePool.size();
+    m_containerIndex = --m_containerIndex % particles.size();
 }

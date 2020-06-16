@@ -25,18 +25,17 @@ firstPersonCamera:SetMouseSensitivity(0.0125)
 scene:SetCurrentCamera("first_person_camera1")
 
 ---------------------------
--- Config ParticleSystem --
+-- Create ParticleSystem --
 ---------------------------
 
 particleSystem = ParticleSystem.new("quads", scene)
+particleSystem:SetParticlesPerSecond(100.0)
+particleSystem:SetSpeed(5.0)
+particleSystem:SetGravityEffect(1.0)
+particleSystem:SetLifeTime(3.0)
+particleSystem:SetMaxScale(1.0)
 
-particleRoot = ParticleRoot.new()
-particleRoot.position = Vec3.new(0.0, 0.0, 0.0)
-particleRoot.velocity = Vec3.new(0.0, 30.0, 0.0)
-particleRoot.gravityEffect = 1.0
-particleRoot.lifeTime = 4.0
-particleRoot.rotation = 45.0
-particleRoot.scale = 4.0
+--particleSystem = ParticleSystem.new("quads", 100.0, 5.0, 1.0, 3.0, 1.0, scene)
 
 ---------------------
 -- Create Entities --
@@ -44,13 +43,13 @@ particleRoot.scale = 4.0
 
 particleSystemEntity = ecs:CreateEntity()
 ecs:AddParticleSystemComponent(particleSystemEntity, particleSystem)
-ecs:AddInputComponent(particleSystemEntity, "LeftMouseButtonPressed")
+ecs:AddUpdateComponent(particleSystemEntity, "GenerateParticles")
 
 ---------------
 -- Functions --
 ---------------
 
-function LeftMouseButtonPressed(entity, mouseX, mouseY)
-    print("Emit Particle")
-    particleSystem:Emit(particleRoot)
+function GenerateParticles(entity, dt)
+    particleSystem:GenerateParticles(dt, Vec3.new(0.0, 0.0, 0.0))
+    particleSystem:GenerateParticles(dt, Vec3.new(50.0, 0.0, 0.0))
 end
