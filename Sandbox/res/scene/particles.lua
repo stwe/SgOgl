@@ -8,21 +8,28 @@ scene = Scene.new(applicationContext)
 -- Create and add Renderer --
 -----------------------------
 
-ParticleSystemRenderer.new(1, scene)
+ForwardRenderer.new(1, scene)
+ParticleSystemRenderer.new(0, scene)
 
 ----------------------------
 -- Create and add Cameras --
 ----------------------------
 
-firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(0.0, -35.0, -90.0), 90.0, 20.0, scene)
-firstPersonCamera:SetCameraVelocity(10.0)
-firstPersonCamera:SetMouseSensitivity(0.0125)
+firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(6.0, 20.0, -27.0), 102.0, -16.0, scene)
+firstPersonCamera:SetCameraVelocity(128.0)
+firstPersonCamera:SetMouseSensitivity(0.025)
 
 ------------------
 -- Config Scene --
 ------------------
 
 scene:SetCurrentCamera("first_person_camera1")
+
+--------------------
+-- Load resources --
+--------------------
+
+plane = modelManager:GetModel("res/primitive/plane1/plane1.obj")
 
 ---------------------------
 -- Create ParticleSystem --
@@ -49,11 +56,14 @@ particleSystemEntity = ecs:CreateEntity()
 ecs:AddParticleSystemComponent(particleSystemEntity, particleSystem)
 ecs:AddUpdateComponent(particleSystemEntity, "GenerateParticles")
 
+planeEntity = ecs:CreateEntity()
+ecs:AddModelComponent(planeEntity, plane, false)
+ecs:AddTransformComponent(planeEntity, Vec3.new(0.0, 0.0, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(250.0, 1.0, 250.0))
+
 ---------------
 -- Functions --
 ---------------
 
 function GenerateParticles(entity, dt)
-    particleSystem:GenerateParticles(dt, Vec3.new(0.0, 0.0, 0.0))
-    particleSystem:GenerateParticles(dt, Vec3.new(50.0, 0.0, 0.0))
+    particleSystem:GenerateParticles(dt, Vec3.new(0.0, 20.0, 0.0))
 end

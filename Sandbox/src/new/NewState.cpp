@@ -20,7 +20,8 @@ bool NewState::Input()
         GetApplicationContext()->currentScene->Input();
     }
 
-    sg::ogl::input::MouseInput::ClearMouseStates();
+    // todo
+    //sg::ogl::input::MouseInput::ClearMouseStates();
 
     return true;
 }
