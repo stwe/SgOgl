@@ -35,18 +35,16 @@ plane = modelManager:GetModel("res/primitive/plane1/plane1.obj")
 -- Create ParticleSystem --
 ---------------------------
 
-textureId = textureManager:LoadTexture("res/particle/particleAtlas.png")
+textureId = textureManager:LoadTexture("res/particle/fire.png")
 
---[[
-particleSystem = ParticleSystem.new("quads", textureId, 4, scene)
-particleSystem:SetParticlesPerSecond(100.0)
-particleSystem:SetSpeed(2.0)
-particleSystem:SetGravityEffect(0.2)
-particleSystem:SetLifeTime(3.0)
-particleSystem:SetMaxScale(1.0)
-]]
+particleSystem = ParticleSystem.new("fire", textureId, 8, scene)
+particleSystem:SetParticlesPerSecond(24.0)
+particleSystem:SetSpeed(1.0)
+particleSystem:SetGravityEffect(-0.1)
+particleSystem:SetLifeTime(2.0)
+particleSystem:SetMaxScale(10.0)
 
-particleSystem = ParticleSystem.new("quads", textureId, 4, 100.0, 2.0, 0.2, 2.0, 1.0, scene)
+--particleSystem = ParticleSystem.new("quads", textureId, 8, 8.0, 1.0, -0.1, 6.0, 8.0, scene)
 
 ---------------------
 -- Create Entities --
