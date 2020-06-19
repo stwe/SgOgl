@@ -11,19 +11,25 @@
 #include <glm/gtx/compatibility.hpp>
 #include "ParticleSystem.h"
 #include "Random.h"
+#include "Core.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
 //-------------------------------------------------
 
-sg::ogl::particle::ParticleSystem::ParticleSystem(const uint32_t t_textureId)
+sg::ogl::particle::ParticleSystem::ParticleSystem(const uint32_t t_textureId, const int t_textureRows)
     : m_textureId{ t_textureId }
+    , m_textureRows{ t_textureRows }
 {
+    SG_OGL_CORE_ASSERT(t_textureId, "[ParticleSystem::ParticleSystem()] Invalid value.");
+    SG_OGL_CORE_ASSERT(t_textureRows, "[ParticleSystem::ParticleSystem()] Invalid value.");
+
     Init();
 }
 
 sg::ogl::particle::ParticleSystem::ParticleSystem(
     const uint32_t t_textureId,
+    const int t_textureRows,
     const float t_particlesPerSecond,
     const float t_speed,
     const float t_gravityEffect,
@@ -31,12 +37,16 @@ sg::ogl::particle::ParticleSystem::ParticleSystem(
     const float t_maxScale
 )
     : m_textureId{ t_textureId }
+    , m_textureRows{ t_textureRows }
     , m_particlesPerSecond{ t_particlesPerSecond }
     , m_speed{ t_speed }
     , m_gravityEffect{ t_gravityEffect }
     , m_lifeTime{ t_lifeTime }
     , m_maxScale{ t_maxScale }
 {
+    SG_OGL_CORE_ASSERT(t_textureId, "[ParticleSystem::ParticleSystem()] Invalid value.");
+    SG_OGL_CORE_ASSERT(t_textureRows, "[ParticleSystem::ParticleSystem()] Invalid value.");
+
     Init();
 }
 
@@ -47,6 +57,11 @@ sg::ogl::particle::ParticleSystem::ParticleSystem(
 uint32_t sg::ogl::particle::ParticleSystem::GetTextureId() const
 {
     return m_textureId;
+}
+
+int sg::ogl::particle::ParticleSystem::GetTextureRows() const
+{
+    return m_textureRows;
 }
 
 //-------------------------------------------------
@@ -113,7 +128,7 @@ void sg::ogl::particle::ParticleSystem::Update(const double t_dt)
         }
 
         // if there is no lifetime left, set the particle to inactive
-        if (particle.lifeRemaining <= 0.0f)
+        if (particle.lifeRemaining <= t_dt)
         {
             particle.active = false;
             continue;
@@ -125,8 +140,30 @@ void sg::ogl::particle::ParticleSystem::Update(const double t_dt)
         particle.position += particle.velocity * dt;
 
         const auto life{ particle.lifeRemaining / particle.lifeTime };
+
+        SG_OGL_CORE_ASSERT(life >= 0.0f && life <= 1.0f, "[ParticleEmitter::ParticleSystem::Update()] Invalid value:." + std::to_string(life));
+
         particle.scale = glm::lerp(0.0f, m_maxScale, life);
+
+        const auto atlasProgression{ life * static_cast<float>(m_nrTextures) };
+
+        particle.currentTextureIndex = static_cast<int>(floor(atlasProgression));
+        particle.nextTextureIndex = particle.currentTextureIndex < m_nrTextures - 1 ? particle.currentTextureIndex + 1 : particle.currentTextureIndex;
+        particle.blendFactor = fmod(atlasProgression, 1.0f);
     }
+}
+
+//-------------------------------------------------
+// Helper
+//-------------------------------------------------
+
+glm::vec2 sg::ogl::particle::ParticleSystem::GetTextureOffset(const int t_textureIndex) const
+{
+    const auto col{ t_textureIndex % m_textureRows };
+    const auto row{ t_textureIndex / m_textureRows };
+    const auto rows{ static_cast<float>(m_textureRows) };
+
+    return glm::vec2(col / rows, row / rows);
 }
 
 //-------------------------------------------------
@@ -136,6 +173,7 @@ void sg::ogl::particle::ParticleSystem::Update(const double t_dt)
 void sg::ogl::particle::ParticleSystem::Init()
 {
     particles.resize(NR_OF_ELEMENTS);
+    m_nrTextures = m_textureRows * m_textureRows;
 }
 
 //-------------------------------------------------

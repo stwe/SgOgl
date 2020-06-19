@@ -72,6 +72,7 @@ namespace sg::ogl
         static void DisableFaceCulling();
 
         static void EnableAlphaBlending();
+        static void EnableAdditiveBlending();
         static void DisableBlending();
 
         static void EnableClipping(uint32_t t_nrOfClipDistances = 0);

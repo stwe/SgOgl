@@ -37,10 +37,11 @@ namespace sg::ogl::particle
         // Ctors. / Dtor.
         //-------------------------------------------------
 
-        explicit ParticleSystem(uint32_t t_textureId);
+        ParticleSystem(uint32_t t_textureId, int t_textureRows);
 
         ParticleSystem(
             uint32_t t_textureId,
+            int t_textureRows,
             float t_particlesPerSecond,
             float t_speed,
             float t_gravityEffect,
@@ -53,6 +54,7 @@ namespace sg::ogl::particle
         //-------------------------------------------------
 
         [[nodiscard]] uint32_t GetTextureId() const;
+        [[nodiscard]] int GetTextureRows() const;
 
         //-------------------------------------------------
         // Setter
@@ -72,12 +74,21 @@ namespace sg::ogl::particle
 
         void Update(double t_dt);
 
+        //-------------------------------------------------
+        // Helper
+        //-------------------------------------------------
+
+        [[nodiscard]] glm::vec2 GetTextureOffset(int t_textureIndex) const;
+
     protected:
 
     private:
         uint32_t m_containerIndex{ NR_OF_ELEMENTS - 1 };
 
         uint32_t m_textureId{ 0 };
+        int m_textureRows{ 1 };
+        int m_nrTextures{ 1 };
+
         float m_particlesPerSecond{ 25.0f };
         float m_speed{ 25.0f };
         float m_gravityEffect{ 0.5f };

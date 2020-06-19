@@ -4,7 +4,9 @@
 
 // In
 
-in vec2 vUv;
+in vec2 vUvCurrent;
+in vec2 vUvNext;
+in float vBlend;
 
 // Out
 
@@ -18,5 +20,8 @@ uniform sampler2D particleTexture;
 
 void main()
 {
-    fragColor = texture(particleTexture, vUv);
+    vec4 col0 = texture(particleTexture, vUvCurrent);
+    vec4 col1 = texture(particleTexture, vUvNext);
+
+    fragColor = mix(col0, col1, vBlend);
 }

@@ -56,5 +56,20 @@ namespace sg::ogl::particle
          * @brief Indicates whether the Particle is still alive.
          */
         bool active{ false };
+
+        /**
+         * @brief The current texture stage in the texture atlas.
+         */
+        int currentTextureIndex{ 0 };
+
+        /**
+         * @brief The next texture stage in the texture atlas.
+         */
+        int nextTextureIndex{ 0 };
+
+        /**
+         * @brief The blend factor between textures.
+         */
+        float blendFactor{ 0.0f };
     };
 }

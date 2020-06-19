@@ -87,7 +87,9 @@ namespace sg::ogl::ecs::system
 
         void PrepareRendering() override
         {
-            OpenGl::EnableAlphaBlending();
+            //OpenGl::EnableAlphaBlending();
+            OpenGl::EnableAdditiveBlending();
+
             OpenGl::DisableWritingIntoDepthBuffer();
         }
 

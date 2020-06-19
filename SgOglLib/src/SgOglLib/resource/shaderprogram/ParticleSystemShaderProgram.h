@@ -46,6 +46,11 @@ namespace sg::ogl::resource::shaderprogram
             modelMatrix = scale(modelMatrix, glm::vec3(p->scale));
 
             SetUniform("modelViewMatrix", viewMatrix * modelMatrix);
+
+            SetUniform("texOffsetCurrent", particleSystemComponent.particleSystem->GetTextureOffset(p->currentTextureIndex));
+            SetUniform("texOffsetNext", particleSystemComponent.particleSystem->GetTextureOffset(p->nextTextureIndex));
+            SetUniform("textureRows", particleSystemComponent.particleSystem->GetTextureRows());
+            SetUniform("blendFactor", p->blendFactor);
         }
 
         [[nodiscard]] std::string GetFolderName() const override

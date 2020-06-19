@@ -16,8 +16,8 @@ ParticleSystemRenderer.new(0, scene)
 ----------------------------
 
 firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(6.0, 20.0, -27.0), 102.0, -16.0, scene)
-firstPersonCamera:SetCameraVelocity(128.0)
-firstPersonCamera:SetMouseSensitivity(0.025)
+firstPersonCamera:SetCameraVelocity(48.0)
+firstPersonCamera:SetMouseSensitivity(0.1)
 
 ------------------
 -- Config Scene --
@@ -35,18 +35,18 @@ plane = modelManager:GetModel("res/primitive/plane1/plane1.obj")
 -- Create ParticleSystem --
 ---------------------------
 
-textureId = textureManager:LoadTexture("res/particle/particleStar.png")
+textureId = textureManager:LoadTexture("res/particle/particleAtlas.png")
 
 --[[
-particleSystem = ParticleSystem.new("quads", textureId, scene)
+particleSystem = ParticleSystem.new("quads", textureId, 4, scene)
 particleSystem:SetParticlesPerSecond(100.0)
-particleSystem:SetSpeed(5.0)
-particleSystem:SetGravityEffect(1.0)
+particleSystem:SetSpeed(2.0)
+particleSystem:SetGravityEffect(0.2)
 particleSystem:SetLifeTime(3.0)
 particleSystem:SetMaxScale(1.0)
 ]]
 
-particleSystem = ParticleSystem.new("quads", textureId, 100.0, 5.0, 1.0, 3.0, 1.0, scene)
+particleSystem = ParticleSystem.new("quads", textureId, 4, 100.0, 2.0, 0.2, 2.0, 1.0, scene)
 
 ---------------------
 -- Create Entities --
