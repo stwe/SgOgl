@@ -9,6 +9,7 @@ freetype/2.10.1
 imgui/1.75
 fmt/6.2.0
 lua/5.3.5
+sol2/3.2.1
 
 [generators]
-premake
+cmake

@@ -14,4 +14,6 @@ conan_basic_setup()
 
 add_executable(${PROJECT_NAME} ${SANDBOX_SRC_FILES})
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/src)
+
 target_link_libraries(${PROJECT_NAME} SgOglLib)

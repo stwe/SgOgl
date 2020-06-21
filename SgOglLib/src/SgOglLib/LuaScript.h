@@ -70,7 +70,7 @@ namespace sg::ogl
         template <typename T>
         void CreateRendererUsertype(const std::string& t_name)
         {
-            Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateRendererUsertype()] Add {} to the current Scene.", t_name);
+            Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateRendererUsertype()] Make {} available.", t_name);
 
             m_lua.new_usertype<T>(
                 t_name,

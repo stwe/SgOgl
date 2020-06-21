@@ -11,8 +11,13 @@
 
 #include "Log.h"
 
-#ifndef _WIN64
-    #error Unsupported platform.
+#if defined(_WIN64) && defined(_MSC_VER)
+    #define SG_OGL_DEBUG_BREAK __debugbreak()
+#elif defined(__linux__) && defined(__GNUC__) && (__GNUC__ >= 7)
+    #include <signal.h>
+    #define SG_OGL_DEBUG_BREAK raise(SIGTRAP)
+#else
+    #error Unsupported platform or compiler!
 #endif
 
 #ifdef SG_OGL_DEBUG_BUILD
@@ -26,7 +31,7 @@
         if (!(t_expr))
         {
             sg::ogl::Log::SG_OGL_CORE_LOG_ERROR("Assertion Failed: {}", t_str);
-            __debugbreak();
+            SG_OGL_DEBUG_BREAK;
         }
     };
 

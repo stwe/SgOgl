@@ -387,6 +387,31 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
         "Registry",
         sol::no_constructor,
         "CreateEntity", static_cast<entt::entity(entt::registry::*)()>(&entt::registry::create),
+        "AddModelComponent", static_cast<ecs::component::ModelComponent&(entt::registry::*)(const entt::entity, std::shared_ptr<resource::Model>&, bool&&)>(&entt::registry::emplace<ecs::component::ModelComponent, std::shared_ptr<resource::Model>&, bool>),
+        "AddTransformComponent", static_cast<math::Transform&(entt::registry::*)(const entt::entity, glm::vec3&, glm::vec3&, glm::vec3&)>(&entt::registry::emplace<math::Transform, glm::vec3&, glm::vec3&, glm::vec3&>),
+        "AddMaterialComponent", static_cast<resource::Material&(entt::registry::*)(const entt::entity, resource::Material&)>(&entt::registry::emplace<resource::Material, resource::Material&>),
+        //"AddSkydomeComponent", static_cast<ecs::component::SkydomeComponent&(entt::registry::*)(const entt::entity)>(&entt::registry::emplace<ecs::component::SkydomeComponent>),
+        "AddPointLightComponent", static_cast<light::PointLight&(entt::registry::*)(const entt::entity, glm::vec3&, glm::vec3&, glm::vec3&, glm::vec3&, float&&, float&&, float&&)>(&entt::registry::emplace<
+            light::PointLight, glm::vec3&, glm::vec3&, glm::vec3&, glm::vec3&, float, float, float
+        >),
+        "AddDirectionalLightComponent", static_cast<light::DirectionalLight&(entt::registry::*)(const entt::entity, glm::vec3&, glm::vec3&, glm::vec3&)>(&entt::registry::emplace<light::DirectionalLight, glm::vec3&, glm::vec3&, glm::vec3&>),
+        "AddSunComponent", static_cast<light::Sun&(entt::registry::*)(const entt::entity, glm::vec3&, glm::vec3&, glm::vec3&, uint32_t&&, float&&)>(&entt::registry::emplace<light::Sun, glm::vec3&, glm::vec3&, glm::vec3&, uint32_t, float>),
+        "AddUpdateComponent", static_cast<ecs::component::UpdateComponent&(entt::registry::*)(const entt::entity, std::string&&)>(&entt::registry::emplace<ecs::component::UpdateComponent, std::string>),
+        "AddInputComponent", static_cast<ecs::component::InputComponent&(entt::registry::*)(const entt::entity, std::string&&)>(&entt::registry::emplace<ecs::component::InputComponent, std::string>),
+        "AddCubemapComponent", static_cast<ecs::component::CubemapComponent&(entt::registry::*)(const entt::entity, uint32_t&&)>(&entt::registry::emplace<ecs::component::CubemapComponent, uint32_t>),
+        "AddGuiComponent", static_cast<ecs::component::GuiComponent&(entt::registry::*)(const entt::entity, uint32_t&&)>(&entt::registry::emplace<ecs::component::GuiComponent, uint32_t>),
+        "AddWaterComponent", static_cast<ecs::component::WaterComponent&(entt::registry::*)(const entt::entity, water::Water*&&)>(&entt::registry::emplace<ecs::component::WaterComponent, water::Water*>),
+        "AddParticleSystemComponent", static_cast<ecs::component::ParticleSystemComponent&(entt::registry::*)(const entt::entity, particle::ParticleSystem*&&)>(&entt::registry::emplace<ecs::component::ParticleSystemComponent, particle::ParticleSystem*>),
+        "GetPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity)>(&entt::registry::get<light::PointLight>)
+    );
+
+
+    // EnTT registry
+    /*
+    m_lua.new_usertype<entt::registry>(
+        "Registry",
+        sol::no_constructor,
+        "CreateEntity", static_cast<entt::entity(entt::registry::*)()>(&entt::registry::create),
         "AddModelComponent", &entt::registry::emplace<ecs::component::ModelComponent, std::shared_ptr<resource::Model>&, bool>,
         "AddTransformComponent", &entt::registry::emplace<math::Transform, glm::vec3&, glm::vec3&, glm::vec3&>,
         "AddMaterialComponent", &entt::registry::emplace<resource::Material, resource::Material&>,
@@ -404,4 +429,5 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
         "AddParticleSystemComponent", &entt::registry::emplace<ecs::component::ParticleSystemComponent, particle::ParticleSystem*>,
         "GetPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity)>(&entt::registry::get<light::PointLight>)
     );
+    */
 }
