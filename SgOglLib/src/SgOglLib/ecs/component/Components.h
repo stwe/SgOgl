@@ -110,7 +110,10 @@ namespace sg::ogl::ecs::component
     // Environment
     //-------------------------------------------------
 
-    struct SkydomeComponent {};
+    struct SkydomeComponent
+    {
+        std::string name;
+    };
 
     struct TerrainQuadtreeComponent
     {

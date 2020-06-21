@@ -48,7 +48,7 @@ namespace sg::ogl::ecs::system
             shaderProgram.Bind();
 
             m_scene->GetApplicationContext()->registry.view<component::ModelComponent, math::Transform, component::SkydomeComponent>().each(
-            [&](auto t_entity, auto& t_modelComponent, auto&)
+            [&](auto t_entity, auto& t_modelComponent, auto&, auto&)
             {
                 if (t_modelComponent.showTriangles)
                 {

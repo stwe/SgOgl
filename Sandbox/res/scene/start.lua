@@ -111,7 +111,7 @@ ecs:AddMaterialComponent(e1, gold)
 e2 = ecs:CreateEntity()
 ecs:AddModelComponent(e2, dome, false)
 ecs:AddTransformComponent(e2, Vec3.new(0.0, 0.0, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(5000.0, 5000.0, 5000.0))
-ecs:AddSkydomeComponent(e2)
+ecs:AddSkydomeComponent(e2, "skydome")
 
 -- a point light
 
