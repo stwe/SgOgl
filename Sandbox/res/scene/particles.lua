@@ -43,8 +43,9 @@ particleSystem:SetSpeed(1.0)
 particleSystem:SetGravityEffect(-0.1)
 particleSystem:SetLifeTime(2.0)
 particleSystem:SetMaxScale(10.0)
+particleSystem.instancing = true
 
---particleSystem = ParticleSystem.new("quads", textureId, 8, 8.0, 1.0, -0.1, 6.0, 8.0, scene)
+--particleSystem = ParticleSystem.new("fire", textureId, 8, 24.0, 1.0, -0.1, 2.0, 10.0, scene)
 
 ---------------------
 -- Create Entities --

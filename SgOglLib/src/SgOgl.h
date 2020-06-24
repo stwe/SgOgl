@@ -80,6 +80,8 @@
 #include "SgOglLib/resource/shaderprogram/InstancingShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/LightingPassShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/ModelShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/ParticleSystemInstShaderProgram.h"
+#include "SgOglLib/resource/shaderprogram/ParticleSystemShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/SkeletalModelShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/SkyboxShaderProgram.h"
 #include "SgOglLib/resource/shaderprogram/SunShaderProgram.h"
