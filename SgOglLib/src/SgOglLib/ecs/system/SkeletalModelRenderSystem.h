@@ -20,9 +20,25 @@ namespace sg::ogl::ecs::system
     class SkeletalModelRenderSystem : public RenderSystem<resource::shaderprogram::SkeletalModelShaderProgram>
     {
     public:
+        //-------------------------------------------------
+        // Ctors. / Dtor.
+        //-------------------------------------------------
+
         explicit SkeletalModelRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
-        {}
+        {
+            debugName = "SkeletalModelRenderer";
+        }
+
+        SkeletalModelRenderSystem(const int t_priority, scene::Scene* t_scene)
+            : RenderSystem(t_priority, t_scene)
+        {
+            debugName = "SkeletalModelRenderer";
+        }
+
+        //-------------------------------------------------
+        // Override
+        //-------------------------------------------------
 
         void UpdateEntity(const double t_dt, const entt::entity t_entity, const uint32_t t_currentAnimation, const float t_ticksPerSecond)
         {
@@ -36,45 +52,54 @@ namespace sg::ogl::ecs::system
 
         void Update(const double t_dt) override
         {
-        }
-
-        void RenderEntity(const entt::entity t_entity) const
-        {
-            auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::SkeletalModelShaderProgram>() };
-            shaderProgram.Bind();
-
             /*
-            auto& skeletalModelComponent{ m_view.get<component::SkeletalModelComponent>(t_entity) };
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::SkeletalModelComponent, math::Transform>()
+            };
 
-            if (skeletalModelComponent.showTriangles)
+            for (auto entity : view)
             {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            }
+                auto& skeletalModelComponent{ view.get<component::SkeletalModelComponent>(entity) };
 
-            for (auto& mesh : skeletalModelComponent.model->GetMeshes())
-            {
-                mesh->InitDraw();
-                shaderProgram.UpdateUniforms(*m_scene, t_entity, *mesh);
-                mesh->DrawPrimitives();
-                mesh->EndDraw();
-            }
-
-            if (skeletalModelComponent.showTriangles)
-            {
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                skeletalModelComponent.model->SetCurrentAnimation(0);
+                skeletalModelComponent.model->SetDefaultTicksPerSecond(1200.0f);
             }
             */
-            resource::ShaderProgram::Unbind();
         }
 
         void Render() override
         {
-            /*
-            for (auto entity : m_view)
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::SkeletalModelComponent, math::Transform>()
+            };
+
+            auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::SkeletalModelShaderProgram>() };
+            shaderProgram.Bind();
+
+            for (auto entity : view)
             {
-                RenderEntity(entity);
+                auto& skeletalModelComponent{ view.get<component::SkeletalModelComponent>(entity) };
+
+                if (skeletalModelComponent.showTriangles)
+                {
+                    OpenGl::EnableWireframeMode();
+                }
+
+                for (auto& mesh : skeletalModelComponent.model->GetMeshes())
+                {
+                    mesh->InitDraw();
+                    shaderProgram.UpdateUniforms(*m_scene, entity, *mesh);
+                    mesh->DrawPrimitives();
+                    mesh->EndDraw();
+                }
+
+                if (skeletalModelComponent.showTriangles)
+                {
+                    OpenGl::DisableWireframeMode();
+                }
             }
-            */
+
+            resource::ShaderProgram::Unbind();
         }
 
         void PrepareRendering() override
@@ -92,15 +117,6 @@ namespace sg::ogl::ecs::system
     protected:
 
     private:
-        /*
-        const entt::basic_view<
-            entt::entity,
-            entt::exclude_t<component::PlayerComponent>,
-            component::SkeletalModelComponent,
-            component::TransformComponent> m_view{
-                m_scene->GetApplicationContext()->registry.view<
-                component::SkeletalModelComponent,
-                component::TransformComponent>(entt::exclude<component::PlayerComponent>)
-            };*/
+
     };
 }

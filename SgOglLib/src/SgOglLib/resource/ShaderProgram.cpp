@@ -360,7 +360,7 @@ void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformNa
 {
     const auto& m{ m_arrayUniformNames[t_uniformName] };
 
-    auto c{ 0 };
+    auto c{ 0 }; // todo
     for (auto& value : m)
     {
         glUniform1f(m_uniforms.at(value), t_container[c]);
@@ -372,7 +372,7 @@ void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformNa
 {
     const auto& m{ m_arrayUniformNames[t_uniformName] };
 
-    auto c{ 0 };
+    auto c{ 0 }; // todo
     for (auto& value : m)
     {
         glUniform1i(m_uniforms.at(value), t_container[c]);
@@ -383,12 +383,17 @@ void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformNa
 void sg::ogl::resource::ShaderProgram::SetUniform(const std::string& t_uniformName, const std::vector<glm::mat4>& t_container)
 {
     const auto& m{ m_arrayUniformNames[t_uniformName] };
+    const auto size{ t_container.size() };
 
-    auto c{ 0 };
+    auto c{ 0u };
     for (auto& value : m)
     {
-        glUniformMatrix4fv(m_uniforms.at(value), 1, GL_FALSE, glm::value_ptr(t_container[c]));
+        glUniformMatrix4fv(m_uniforms.at(value), 1, GL_FALSE, value_ptr(t_container[c]));
         c++;
+        if (c == size) // todo
+        {
+            break;
+        }
     }
 }
 

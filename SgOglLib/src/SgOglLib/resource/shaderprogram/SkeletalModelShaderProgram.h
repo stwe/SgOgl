@@ -44,7 +44,7 @@ namespace sg::ogl::resource::shaderprogram
             SetUniform("mvpMatrix", mvp);
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
-            SetUniform("directionalLight", t_scene.GetCurrentDirectionalLight());
+            //SetUniform("directionalLight", t_scene.GetCurrentDirectionalLight());
             //SetUniform("pointLight", *t_scene.GetScenePointLights()[0]);
 
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());

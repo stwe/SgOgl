@@ -79,7 +79,12 @@ sg::ogl::resource::ModelManager::ModelSharedPtr sg::ogl::resource::ModelManager:
     return m_models.at(t_fullFilePath);
 }
 
-sg::ogl::resource::ModelManager::SkeletalModelSharedPtr sg::ogl::resource::ModelManager::GetSkeletalModel(const std::string& t_fullFilePath, unsigned int t_pFlags)
+sg::ogl::resource::ModelManager::SkeletalModelSharedPtr sg::ogl::resource::ModelManager::GetSkeletalModel(const std::string& t_fullFilePath)
+{
+    return GetSkeletalModelWithFlags(t_fullFilePath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
+}
+
+sg::ogl::resource::ModelManager::SkeletalModelSharedPtr sg::ogl::resource::ModelManager::GetSkeletalModelWithFlags(const std::string& t_fullFilePath, unsigned int t_pFlags)
 {
     // load the skeletal model if it does not already exist
     if (m_skeletalModels.count(t_fullFilePath) == 0)

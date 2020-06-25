@@ -294,10 +294,8 @@ entt::entity sg::ogl::ecs::factory::EntityFactory::CreateSkeletalModelEntity(
     const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_FlipUVs };
     m_application->registry.assign<component::SkeletalModelComponent>(
         entity,
-        m_application->GetModelManager().GetSkeletalModel(t_fullModelFilePath, pFlags),
-        t_showTriangles,
-        t_fakeNormals,
-        t_useExistingNormalmaps
+        m_application->GetModelManager().GetSkeletalModelWithFlags(t_fullModelFilePath, pFlags),
+        t_showTriangles
     );
 
     // add transform component

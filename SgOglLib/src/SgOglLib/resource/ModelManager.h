@@ -86,7 +86,8 @@ namespace sg::ogl::resource
         ModelSharedPtr GetModel(const std::string& t_fullFilePath);
         ModelSharedPtr GetModelWithFlags(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
 
-        SkeletalModelSharedPtr GetSkeletalModel(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
+        SkeletalModelSharedPtr GetSkeletalModel(const std::string& t_fullFilePath);
+        SkeletalModelSharedPtr GetSkeletalModelWithFlags(const std::string& t_fullFilePath, unsigned int t_pFlags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals);
 
         static VertexContainer GetParticleVertices();
 
