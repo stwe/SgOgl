@@ -14,12 +14,18 @@
 #include "resource/ShaderManager.h"
 #include "resource/SkeletalModel.h"
 #include "ecs/component/Components.h"
+#include "light/PointLight.h"
+#include "light/DirectionalLight.h"
+#include "light/Sun.h"
 
 namespace sg::ogl::ecs::system
 {
     class SkeletalModelRenderSystem : public RenderSystem<resource::shaderprogram::SkeletalModelShaderProgram>
     {
     public:
+        using PointLightContainer = std::vector<light::PointLight>;
+        using DirectionalLightContainer = std::vector<light::DirectionalLight>;
+
         //-------------------------------------------------
         // Ctors. / Dtor.
         //-------------------------------------------------
@@ -69,6 +75,23 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
+            PointLightContainer pointLights;
+            m_scene->GetApplicationContext()->registry.view<light::PointLight>().each([&pointLights](auto, auto& t_pointLight)
+            {
+                pointLights.push_back(t_pointLight);
+            });
+
+            DirectionalLightContainer directionalLights;
+            m_scene->GetApplicationContext()->registry.view<light::DirectionalLight>().each([&directionalLights](auto, auto& t_directionalLight)
+            {
+                directionalLights.push_back(t_directionalLight);
+            });
+
+            m_scene->GetApplicationContext()->registry.view<light::Sun>().each([&directionalLights](auto, auto& t_sunLight)
+            {
+                directionalLights.push_back(t_sunLight);
+            });
+
             auto view{ m_scene->GetApplicationContext()->registry.view<
                 component::SkeletalModelComponent, math::Transform>()
             };
@@ -88,7 +111,7 @@ namespace sg::ogl::ecs::system
                 for (auto& mesh : skeletalModelComponent.model->GetMeshes())
                 {
                     mesh->InitDraw();
-                    shaderProgram.UpdateUniforms(*m_scene, entity, *mesh);
+                    shaderProgram.UpdateUniforms(*m_scene, entity, *mesh, pointLights, directionalLights);
                     mesh->DrawPrimitives();
                     mesh->EndDraw();
                 }

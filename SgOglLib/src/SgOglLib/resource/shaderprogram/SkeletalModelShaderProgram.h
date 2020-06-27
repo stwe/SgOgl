@@ -27,7 +27,13 @@ namespace sg::ogl::resource::shaderprogram
     class SkeletalModelShaderProgram : public ShaderProgram
     {
     public:
-        void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
+        void UpdateUniforms(
+                const scene::Scene& t_scene,
+                const entt::entity t_entity,
+                const Mesh& t_currentMesh,
+                const std::vector<light::PointLight>& t_pointLights,
+                const std::vector<light::DirectionalLight>& t_directionalLights
+        ) override
         {
             auto& transformComponent{ t_scene.GetApplicationContext()->registry.get<math::Transform>(t_entity) };
             auto& skeletalModelComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::SkeletalModelComponent>(t_entity) };
@@ -43,10 +49,19 @@ namespace sg::ogl::resource::shaderprogram
             const auto mvp{ projectionMatrix * t_scene.GetCurrentCamera().GetViewMatrix() * static_cast<glm::mat4>(transformComponent) };
             SetUniform("mvpMatrix", mvp);
 
-            SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
-            //SetUniform("directionalLight", t_scene.GetCurrentDirectionalLight());
-            //SetUniform("pointLight", *t_scene.GetScenePointLights()[0]);
+            if (!t_pointLights.empty())
+            {
+                SetUniform("numPointLights", static_cast<int32_t>(t_pointLights.size()));
+                SetUniform("pointLights", t_pointLights);
+            }
 
+            if (!t_directionalLights.empty())
+            {
+                SetUniform("numDirectionalLights", static_cast<int32_t>(t_directionalLights.size()));
+                SetUniform("directionalLights", t_directionalLights);
+            }
+
+            SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
             SetUniform("diffuseColor", t_currentMesh.GetDefaultMaterial()->kd);
