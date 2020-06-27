@@ -10,12 +10,11 @@ scene = Scene.new(applicationContext)
 
 -- forward with skybox
 
---[[
-SkyboxRenderer.new(3, scene)
-SunRenderer.new(2, scene)
-ForwardRenderer.new(1, scene)
+SkyboxRenderer.new(4, scene)
+SunRenderer.new(3, scene)
+ForwardRenderer.new(2, scene)
+SkeletalModelRenderer.new(1, scene)
 GuiRenderer.new(0, scene)
-]]
 
 -- deferred with skybox
 
@@ -28,11 +27,13 @@ GuiRenderer.new(0, scene)
 
 -- forward with skydome
 
+--[[
 SkydomeRenderer.new(4, scene)
 SunRenderer.new(3, scene)
 ForwardRenderer.new(2, scene)
 SkeletalModelRenderer.new(1, scene)
 GuiRenderer.new(0, scene)
+]]
 
 -- deferred with skydome
 
