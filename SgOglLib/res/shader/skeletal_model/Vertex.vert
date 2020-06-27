@@ -17,13 +17,27 @@ layout (location = 6) in vec4 aWeights;
 out vec3 vPosition;
 out vec3 vNormal;
 out vec2 vUv;
+out mat3 vTbnMatrix;
 
 // Uniforms
 
 uniform mat4 modelMatrix;
 uniform mat4 mvpMatrix;
 uniform vec4 plane;
-uniform mat4 bones[100];
+uniform mat4 bones[200];
+
+// Function
+
+mat3 GetTbnMatrix()
+{
+    mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
+    vec3 T = normalize(normalMatrix * aTangent);
+    vec3 N = normalize(normalMatrix * aNormal);
+    T = normalize(T - dot(T, N) * N);
+    vec3 B = cross(N, T);
+    
+    return transpose(mat3(T, B, N));
+}
 
 // Main
 
@@ -40,4 +54,5 @@ void main()
     vPosition = vec3(modelMatrix * bonedPosition);
     vNormal = mat3(transpose(inverse(modelMatrix))) * aNormal;
     vUv = aUv;
+    vTbnMatrix = GetTbnMatrix();
 }

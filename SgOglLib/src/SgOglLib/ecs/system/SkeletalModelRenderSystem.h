@@ -46,16 +46,6 @@ namespace sg::ogl::ecs::system
         // Override
         //-------------------------------------------------
 
-        void UpdateEntity(const double t_dt, const entt::entity t_entity, const uint32_t t_currentAnimation, const float t_ticksPerSecond)
-        {
-            /*
-            auto& skeletalModelComponent{ m_view.get<component::SkeletalModelComponent>(t_entity) };
-
-            skeletalModelComponent.model->SetCurrentAnimation(t_currentAnimation);
-            skeletalModelComponent.model->SetDefaultTicksPerSecond(t_ticksPerSecond);
-            */
-        }
-
         void Update(const double t_dt) override
         {
             /*
@@ -92,12 +82,12 @@ namespace sg::ogl::ecs::system
                 directionalLights.push_back(t_sunLight);
             });
 
+            auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::SkeletalModelShaderProgram>() };
+            shaderProgram.Bind();
+
             auto view{ m_scene->GetApplicationContext()->registry.view<
                 component::SkeletalModelComponent, math::Transform>()
             };
-
-            auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::SkeletalModelShaderProgram>() };
-            shaderProgram.Bind();
 
             for (auto entity : view)
             {

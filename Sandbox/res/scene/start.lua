@@ -47,7 +47,7 @@ GuiRenderer.new(0, scene)
 -- Create and add Cameras --
 ----------------------------
 
-firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(1334.0, 820.0, 227.0), -178.0, -22.0, scene)
+firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(-375.0, 313.0, -417.0), -147.0, -16.0, scene)
 firstPersonCamera:SetCameraVelocity(128.0)
 firstPersonCamera:SetMouseSensitivity(0.025)
 --print(firstPersonCamera:GetCameraVelocity())
