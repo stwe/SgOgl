@@ -16,6 +16,7 @@
 
 #include "Log.h"
 #include "scene/Scene.h"
+#include "ecs/system/TextRenderSystem.h"
 
 namespace sg::ogl
 {
@@ -87,6 +88,32 @@ namespace sg::ogl
                     [&](int t_priority, scene::Scene* t_currentScene)
                     {
                         t_currentScene->renderer.push_back(std::make_unique<T>(t_priority, t_currentScene));
+                        return t_currentScene->renderer.back().get();
+                    }
+                )
+            );
+        }
+
+        template <>
+        void CreateRendererUsertype<ecs::system::TextRenderSystem>(const std::string& t_name)
+        {
+            Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateRendererUsertype()] Make {} available.", t_name);
+
+            m_lua.new_usertype<ecs::system::TextRenderSystem>(
+                t_name,
+                sol::constructors<
+                    ecs::system::TextRenderSystem(scene::Scene*, std::string),
+                    ecs::system::TextRenderSystem(int t_priority, scene::Scene*, std::string)
+                >(),
+                "new", sol::factories(
+                    [&](scene::Scene* t_currentScene, std::string t_fontPath)
+                    {
+                        t_currentScene->renderer.push_back(std::make_unique<ecs::system::TextRenderSystem>(t_currentScene, t_fontPath));
+                        return t_currentScene->renderer.back().get();
+                    },
+                    [&](int t_priority, scene::Scene* t_currentScene, std::string t_fontPath)
+                    {
+                        t_currentScene->renderer.push_back(std::make_unique<ecs::system::TextRenderSystem>(t_priority, t_currentScene, t_fontPath));
                         return t_currentScene->renderer.back().get();
                     }
                 )

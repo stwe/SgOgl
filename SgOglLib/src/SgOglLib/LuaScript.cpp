@@ -73,6 +73,7 @@ void sg::ogl::LuaScript::InitLua()
     CreateRendererUsertype<ecs::system::GuiRenderSystem>("GuiRenderer");
     CreateRendererUsertype<ecs::system::WaterRenderSystem>("WaterRenderer");
     CreateRendererUsertype<ecs::system::ParticleSystemRenderer>("ParticleSystemRenderer");
+    CreateRendererUsertype<ecs::system::TextRenderSystem>("TextRenderer");
 
     CreateCameraUsertypes();
     CreateResourceUsertypes();
@@ -388,6 +389,11 @@ void sg::ogl::LuaScript::CreateComponentUsertypes()
     m_lua.new_usertype<ecs::component::ParticleSystemComponent>(
         "ParticleSystemComponent"
     );
+
+    // Text component
+    m_lua.new_usertype<ecs::component::TextComponent>(
+        "TextComponent"
+    );
 }
 
 void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
@@ -413,6 +419,7 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
         "AddGuiComponent", static_cast<ecs::component::GuiComponent&(entt::registry::*)(entt::entity, uint32_t&&)>(&entt::registry::emplace<ecs::component::GuiComponent, uint32_t>),
         "AddWaterComponent", static_cast<ecs::component::WaterComponent&(entt::registry::*)(entt::entity, water::Water*&&)>(&entt::registry::emplace<ecs::component::WaterComponent, water::Water*>),
         "AddParticleSystemComponent", static_cast<ecs::component::ParticleSystemComponent&(entt::registry::*)(entt::entity, particle::ParticleSystem*&&)>(&entt::registry::emplace<ecs::component::ParticleSystemComponent, particle::ParticleSystem*>),
+        "AddTextComponent", static_cast<ecs::component::TextComponent& (entt::registry::*)(entt::entity, std::string&&, float&&, float&&, float&&, glm::vec3&)>(&entt::registry::emplace<ecs::component::TextComponent, std::string, float, float, float, glm::vec3&>),
         "GetPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity)>(&entt::registry::get<light::PointLight>)
     );
 }

@@ -17,6 +17,7 @@
 #include "resource/ShaderManager.h"
 #include "resource/TextureManager.h"
 #include "resource/Mesh.h"
+#include "ecs/component/Components.h"
 
 namespace sg::ogl::ecs::system
 {
@@ -35,6 +36,18 @@ namespace sg::ogl::ecs::system
         {
             InitFreeType();
             CreateMesh();
+
+            debugName = "TextRenderer";
+        }
+
+        TextRenderSystem(const int t_priority, scene::Scene* t_scene, std::string t_fontPath)
+            : RenderSystem(t_priority, t_scene)
+            , m_fontPath{ std::move(t_fontPath) }
+        {
+            InitFreeType();
+            CreateMesh();
+
+            debugName = "TextRenderer";
         }
 
         //-------------------------------------------------
@@ -43,69 +56,13 @@ namespace sg::ogl::ecs::system
 
         void Update(double t_dt) override {}
 
-        void Render() override {}
-
-        //-------------------------------------------------
-        // Custom
-        //-------------------------------------------------
-
-        void RenderText(const std::string& t_text, float t_xPos, const float t_yPos, const float t_scale, const glm::vec3& t_color)
+        void Render() override
         {
-            // bind shader program
-            auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::TextShaderProgram>() };
-            shaderProgram.Bind();
-
-            // update uniforms
-            shaderProgram.UpdateUniforms(*m_scene, t_color);
-
-            // bind Vao
-            m_textMesh->GetVao().BindVao();
-
-            // iterate through all characters
-            for (auto c = t_text.begin(); c != t_text.end(); ++c)
+            m_scene->GetApplicationContext()->registry.view<component::TextComponent>().each(
+            [&](auto t_entity, auto& t_textComponent)
             {
-                const auto ch{ m_characters[*c] };
-
-                const auto xpos{ t_xPos + ch.bearing.x * t_scale };
-                const auto ypos{ t_yPos - (ch.size.y - ch.bearing.y) * t_scale };
-
-                const auto w{ ch.size.x * t_scale };
-                const auto h{ ch.size.y * t_scale };
-
-                // update Vbo for each character
-                float vertices[6][4] {
-                    { xpos,     ypos + h,   0.0, 0.0 },
-                    { xpos,     ypos,       0.0, 1.0 },
-                    { xpos + w, ypos,       1.0, 1.0 },
-
-                    { xpos,     ypos + h,   0.0, 0.0 },
-                    { xpos + w, ypos,       1.0, 1.0 },
-                    { xpos + w, ypos + h,   1.0, 0.0 }
-                };
-
-                // bind a texture
-                resource::TextureManager::BindForReading(ch.textureId, GL_TEXTURE0);
-
-                // update content of Vbo memory
-                buffer::Vbo::BindVbo(m_vboId);
-                glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-                buffer::Vbo::UnbindVbo();
-
-                // render
-                m_textMesh->DrawPrimitives();
-
-                // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-                t_xPos += static_cast<float>(ch.advance >> 6) * t_scale;
-            }
-
-            // unbind Vao
-            buffer::Vao::UnbindVao();
-
-            // unbind texture
-            resource::TextureManager::Unbind();
-
-            // undbind shader program
-            resource::ShaderProgram::Unbind();
+                    RenderText(t_textComponent.text, t_textComponent.xPos, t_textComponent.yPos, t_textComponent.scale, t_textComponent.color);
+            });
         }
 
         void PrepareRendering() override
@@ -226,6 +183,69 @@ namespace sg::ogl::ecs::system
 
             // set draw count
             m_textMesh->GetVao().SetDrawCount(6);
+        }
+
+        //-------------------------------------------------
+        // Helper
+        //-------------------------------------------------
+
+        void RenderText(const std::string& t_text, float t_xPos, const float t_yPos, const float t_scale, const glm::vec3& t_color)
+        {
+            // bind shader program
+            auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::TextShaderProgram>() };
+            shaderProgram.Bind();
+
+            // update uniforms
+            shaderProgram.UpdateUniforms(*m_scene, t_color);
+
+            // bind Vao
+            m_textMesh->GetVao().BindVao();
+
+            // iterate through all characters
+            for (auto c = t_text.begin(); c != t_text.end(); ++c)
+            {
+                const auto ch{ m_characters[*c] };
+
+                const auto xpos{ t_xPos + ch.bearing.x * t_scale };
+                const auto ypos{ t_yPos - (ch.size.y - ch.bearing.y) * t_scale };
+
+                const auto w{ ch.size.x * t_scale };
+                const auto h{ ch.size.y * t_scale };
+
+                // update Vbo for each character
+                float vertices[6][4]{
+                    { xpos,     ypos + h,   0.0, 0.0 },
+                    { xpos,     ypos,       0.0, 1.0 },
+                    { xpos + w, ypos,       1.0, 1.0 },
+
+                    { xpos,     ypos + h,   0.0, 0.0 },
+                    { xpos + w, ypos,       1.0, 1.0 },
+                    { xpos + w, ypos + h,   1.0, 0.0 }
+                };
+
+                // bind a texture
+                resource::TextureManager::BindForReading(ch.textureId, GL_TEXTURE0);
+
+                // update content of Vbo memory
+                buffer::Vbo::BindVbo(m_vboId);
+                glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+                buffer::Vbo::UnbindVbo();
+
+                // render
+                m_textMesh->DrawPrimitives();
+
+                // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+                t_xPos += static_cast<float>(ch.advance >> 6) * t_scale;
+            }
+
+            // unbind Vao
+            buffer::Vao::UnbindVao();
+
+            // unbind texture
+            resource::TextureManager::Unbind();
+
+            // undbind shader program
+            resource::ShaderProgram::Unbind();
         }
     };
 }

@@ -363,6 +363,7 @@ SunRenderer.new(3, scene)
 ForwardRenderer.new(2, scene)
 SkeletalModelRenderer.new(1, scene)
 GuiRenderer.new(0, scene)
+TextRenderer.new(0, scene, "res/font/calibri.ttf")
 
 -- deferred with skybox
 
@@ -390,6 +391,7 @@ DeferredRenderer.new(3, scene)
 SkydomeRenderer.new(2, scene)
 SunRenderer.new(1, scene)
 GuiRenderer.new(0, scene)
+TextRenderer.new(0, scene, "res/font/calibri.ttf")
 ]]
 
 ----------------------------
@@ -543,6 +545,14 @@ ecs:AddPointLightComponent(plightModelEntity,
     Vec3.new(1.0, 1.0, 1.0),        -- specularIntensity
     1.0, 0.0014, 0.000007           -- constant, linear, quadratic
 )
+
+-- text
+
+textEntity0 = ecs:CreateEntity()
+ecs:AddTextComponent(textEntity0, "SgOgl Test", 40.0, 750.0, 0.35, Vec3.new(0.1, 0.2, 0.2))
+
+textEntity1 = ecs:CreateEntity()
+ecs:AddTextComponent(textEntity1, "Version: dev-master", 40.0, 730.0, 0.35, Vec3.new(0.1, 0.2, 0.2))
 
 ---------------
 -- Functions --

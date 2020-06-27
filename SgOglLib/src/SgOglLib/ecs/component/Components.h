@@ -63,20 +63,6 @@ namespace sg::ogl::ecs::component
     };
 
     //-------------------------------------------------
-    // Texture
-    //-------------------------------------------------
-
-    struct CubemapComponent
-    {
-        uint32_t cubemapId{ 0 };
-    };
-
-    struct GuiComponent
-    {
-        uint32_t textureId{ 0 };
-    };
-
-    //-------------------------------------------------
     // Mesh / Model
     //-------------------------------------------------
 
@@ -108,6 +94,16 @@ namespace sg::ogl::ecs::component
     // Environment
     //-------------------------------------------------
 
+    struct GuiComponent
+    {
+        uint32_t textureId{ 0 };
+    };
+
+    struct CubemapComponent
+    {
+        uint32_t cubemapId{ 0 };
+    };
+
     struct SkydomeComponent
     {
         std::string name;
@@ -126,6 +122,15 @@ namespace sg::ogl::ecs::component
     struct ParticleSystemComponent
     {
         particle::ParticleSystem* particleSystem;
+    };
+
+    struct TextComponent
+    {
+        std::string text;
+        float xPos;
+        float yPos;
+        float scale;
+        glm::vec3 color;
     };
 
     //-------------------------------------------------
