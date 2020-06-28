@@ -21,6 +21,7 @@ namespace sg::ogl::ecs::system
     class TerrainQuadtreeRenderSystem : public RenderSystem<resource::shaderprogram::TerrainQuadtreeShaderProgram>
     {
     public:
+        using DirectionalLightContainer = std::vector<light::DirectionalLight>;
         using MeshSharedPtr = std::shared_ptr<resource::Mesh>;
 
         //-------------------------------------------------
@@ -31,6 +32,14 @@ namespace sg::ogl::ecs::system
             : RenderSystem(t_scene)
         {
             m_patchMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::TERRAIN_PATCH_MESH);
+            debugName = "TerrainQuadtreeRenderer";
+        }
+
+        TerrainQuadtreeRenderSystem(const int t_priority, scene::Scene* t_scene)
+            : RenderSystem(t_priority, t_scene)
+        {
+            m_patchMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::TERRAIN_PATCH_MESH);
+            debugName = "TerrainQuadtreeRenderer";
         }
 
         //-------------------------------------------------
@@ -52,19 +61,30 @@ namespace sg::ogl::ecs::system
 
         void Render() override
         {
-            auto view{ m_scene->GetApplicationContext()->registry.view<
-                component::TerrainQuadtreeComponent>()
-            };
+            DirectionalLightContainer directionalLights;
+            m_scene->GetApplicationContext()->registry.view<light::DirectionalLight>().each([&directionalLights](auto, auto& t_directionalLight)
+            {
+                directionalLights.push_back(t_directionalLight);
+            });
+
+            m_scene->GetApplicationContext()->registry.view<light::Sun>().each([&directionalLights](auto, auto& t_sunLight)
+            {
+                directionalLights.push_back(t_sunLight);
+            });
 
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::TerrainQuadtreeShaderProgram>() };
             shaderProgram.Bind();
+
+            auto view{ m_scene->GetApplicationContext()->registry.view<
+                component::TerrainQuadtreeComponent>()
+            };
 
             for (auto entity : view)
             {
                 m_patchMesh->InitDraw();
 
                 auto& terrainQuadtreeComponent{ m_scene->GetApplicationContext()->registry.get<component::TerrainQuadtreeComponent>(entity) };
-                terrainQuadtreeComponent.terrainQuadtree->Render(shaderProgram, m_patchMesh);
+                terrainQuadtreeComponent.terrainQuadtree->Render(shaderProgram, m_patchMesh, directionalLights);
 
                 m_patchMesh->EndDraw();
             }

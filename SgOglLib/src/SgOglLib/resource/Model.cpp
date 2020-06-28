@@ -62,7 +62,7 @@ void sg::ogl::resource::Model::AddTransformVbo(const std::vector<math::Transform
         matrices.push_back(static_cast<glm::mat4>(transform));
     }
 
-    const auto instances{ matrices.size() };
+    const auto instances{ static_cast<uint32_t>(matrices.size()) };
     const auto floatCount{ NUMBER_OF_FLOATS_PER_INSTANCE * instances };
 
     // create an empty Vbo for instanced data

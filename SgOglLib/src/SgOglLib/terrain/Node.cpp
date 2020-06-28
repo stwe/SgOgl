@@ -102,7 +102,11 @@ float sg::ogl::terrain::Node::GetHeightAt(const float t_x, const float t_z) cons
 // Logic
 //-------------------------------------------------
 
-void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, const MeshSharedPtr& t_patchMesh)
+void sg::ogl::terrain::Node::Render(
+    resource::ShaderProgram& t_shaderProgram,
+    const MeshSharedPtr& t_patchMesh,
+    const std::vector<light::DirectionalLight>& t_directionalLights
+)
 {
     if (m_isLeaf)
     {
@@ -154,14 +158,15 @@ void sg::ogl::terrain::Node::Render(resource::ShaderProgram& t_shaderProgram, co
         resource::TextureManager::BindForReading(m_terrainConfig->GetSnowTextureId(), GL_TEXTURE6);
 
         t_shaderProgram.SetUniform("ambientIntensity", m_scene->GetAmbientIntensity());
-        t_shaderProgram.SetUniform("directionalLight", m_scene->GetCurrentDirectionalLight());
+        t_shaderProgram.SetUniform("numDirectionalLights", static_cast<int32_t>(t_directionalLights.size()));
+        t_shaderProgram.SetUniform("directionalLights", t_directionalLights);
 
         t_patchMesh->DrawPrimitives(GL_PATCHES);
     }
 
     for (const auto& child : m_children)
     {
-        child->Render(t_shaderProgram, t_patchMesh);
+        child->Render(t_shaderProgram, t_patchMesh, t_directionalLights);
     }
 }
 

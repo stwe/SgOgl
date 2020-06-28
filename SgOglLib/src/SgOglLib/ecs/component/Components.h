@@ -113,7 +113,7 @@ namespace sg::ogl::ecs::component
 
     struct TerrainQuadtreeComponent
     {
-        std::shared_ptr<terrain::TerrainQuadtree> terrainQuadtree;
+        terrain::TerrainQuadtree* terrainQuadtree;
     };
 
     struct WaterComponent

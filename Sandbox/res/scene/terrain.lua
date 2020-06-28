@@ -35,8 +35,10 @@ scene = Scene.new(applicationContext)
 -- Create and add Renderer --
 -----------------------------
 
-SkyboxRenderer.new(3, scene)
-SunRenderer.new(2, scene)
+SkyboxRenderer.new(4, scene)
+SunRenderer.new(3, scene)
+TerrainQuadtreeRenderer.new(2, scene)
+--TerrainQuadtreeWfRenderer.new(2, scene)
 ForwardRenderer.new(1, scene)
 InstancingRenderer.new(0, scene)
 
@@ -44,7 +46,7 @@ InstancingRenderer.new(0, scene)
 -- Create and add Cameras --
 ----------------------------
 
-firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(-65.0, 44.0, -18.0), 20.0, -16.0, scene)
+firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(-15.0, 227.0, -0.05), 24.0, -4.0, scene)
 firstPersonCamera:SetCameraVelocity(48.0)
 firstPersonCamera:SetMouseSensitivity(0.1)
 
@@ -59,7 +61,6 @@ scene:SetAmbientIntensity(Vec3.new(0.3, 0.3, 0.3))
 -- Load resources --
 --------------------
 
-plane = modelManager:GetModel("res/primitive/plane1/plane1.obj")
 plant = modelManager:GetModel("res/model/Plant_01/billboardmodel.obj")
 sunTextureId = textureManager:LoadTexture("res/sun/sun.png")
 
@@ -73,15 +74,31 @@ a[6] = "res/skybox/sky1/sFront.png"
 
 skyboxCubemapId = textureManager:GetCubemapId(a)
 
+terrainConfig = TerrainConfig.new(applicationContext, scene)
+terrainConfig.scaleXz = 8000.0
+terrainConfig.scaleY = 1700.0
+terrainConfig.rootNodes = 12
+terrainConfig.normalStrength = 60.0
+terrainConfig.lodRanges = { 1750, 874, 386, 192, 100, 50, 0, 0 }
+terrainConfig.use16BitHeightmap = true
+terrainConfig:InitMapsAndMorphing("res/heightmap/ruhpolding/Ruhpolding8km.png")
+terrainConfig:InitTextures(
+    "res/terrain/terrain0/Grass (Hill).jpg",
+    "res/terrain/terrain1/Grass.jpg",
+    "res/terrain/terrain1/moss.jpg",
+    "res/terrain/terrain0/Cliff (Layered Rock).jpg"
+);
+
+terrain = TerrainQuadtree.new(scene, terrainConfig)
+
 ---------------------
 -- Create Entities --
 ---------------------
 
--- plane
+-- terrain
 
-planeEntity = ecs:CreateEntity()
-ecs:AddModelComponent(planeEntity, plane, false)
-ecs:AddTransformComponent(planeEntity, Vec3.new(0.0, 0.0, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(250.0, 1.0, 250.0))
+terrainEntity = ecs:CreateEntity()
+ecs:AddTerrainQuadtreeComponent(terrainEntity, terrain)
 
 -- plant instances
 

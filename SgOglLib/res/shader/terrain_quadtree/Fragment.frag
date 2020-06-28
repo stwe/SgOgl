@@ -32,16 +32,17 @@ uniform sampler2D rock;
 uniform sampler2D snow;
 
 uniform vec3 ambientIntensity;
-uniform DirectionalLight directionalLight;
+uniform int numDirectionalLights;
+uniform DirectionalLight directionalLights[2]; // max 2 directional lights
 
 // Function
 
-vec4 CalcDirectionalLight(vec3 t_normal)
+vec3 CalcDirectionalLight(DirectionalLight t_directionalLight, vec3 t_normal)
 {
-    vec3 lightDir = normalize(-directionalLight.direction);
+    vec3 lightDir = normalize(-t_directionalLight.direction);
     float diffuseFactor = max(0.0, dot(t_normal, lightDir));
 
-    return diffuseFactor * vec4(directionalLight.diffuseIntensity, 1.0);
+    return diffuseFactor * t_directionalLight.diffuseIntensity;
 }
 
 // Fog
@@ -87,8 +88,14 @@ void main()
     color += blendValues.a * snow;
 
     vec4 ambient = vec4(ambientIntensity, 1.0) * color;
-    vec4 diffuse = CalcDirectionalLight(normal) * color;
-    vec4 lightColor = ambient + diffuse;
+
+    vec3 diffuse = vec3(0.0, 0.0, 0.0);
+    for(int i = 0; i < numDirectionalLights; ++i)
+    {
+        diffuse += CalcDirectionalLight(directionalLights[i], normal);
+    }
+
+    vec4 lightColor = ambient + vec4(diffuse, 1.0);
 
     fragColor = Fog(lightColor);
 }

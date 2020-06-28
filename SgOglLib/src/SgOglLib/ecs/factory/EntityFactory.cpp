@@ -31,18 +31,6 @@ sg::ogl::ecs::factory::EntityFactory::~EntityFactory() noexcept
 // Factories
 //-------------------------------------------------
 
-void sg::ogl::ecs::factory::EntityFactory::CreateTerrainQuadtreeEntity(const TerrainQuadtreeSharedPtr& t_terrainQuadtree) const
-{
-    // create an entity
-    const auto entity{ m_application->registry.create() };
-
-    // add terrain quadtree component
-    m_application->registry.assign<component::TerrainQuadtreeComponent>(
-        entity,
-        t_terrainQuadtree
-    );
-}
-
 /*
 entt::entity sg::ogl::ecs::factory::EntityFactory::CreateTppCharacterEntity(
     const ThirdPersonCameraSharedPtr& t_thirdPersonCamera,

@@ -26,6 +26,8 @@
 #include "camera/ThirdPersonCamera.h"
 #include "water/Water.h"
 #include "particle/ParticleSystem.h"
+#include "terrain/TerrainQuadtree.h"
+#include "terrain/TerrainConfig.h"
 #include "ecs/component/Components.h"
 #include "ecs/system/ForwardRenderSystem.h"
 #include "ecs/system/DeferredRenderSystem.h"

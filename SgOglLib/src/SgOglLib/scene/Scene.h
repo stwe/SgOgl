@@ -48,6 +48,12 @@ namespace sg::ogl::particle
     class ParticleSystem;
 }
 
+namespace sg::ogl::terrain
+{
+    class TerrainQuadtree;
+    class TerrainConfig;
+}
+
 namespace sg::ogl::scene
 {
     class Scene
@@ -57,6 +63,8 @@ namespace sg::ogl::scene
         using RendererContainer = std::vector<std::unique_ptr<ecs::system::RenderSystemInterface>>;
         using WaterContainer = std::unordered_map<std::string, std::unique_ptr<water::Water>>;
         using ParticleSystemContainer = std::unordered_map<std::string, std::unique_ptr<particle::ParticleSystem>>;
+        using TerrainSharedPtr = std::shared_ptr<terrain::TerrainQuadtree>;
+        using TerrainConfigSharedPtr = std::shared_ptr<terrain::TerrainConfig>;
 
         using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
 
@@ -68,6 +76,8 @@ namespace sg::ogl::scene
         RendererContainer renderer;
         WaterContainer waterSurfaces;
         ParticleSystemContainer particleSystems;
+        TerrainSharedPtr terrain;
+        TerrainConfigSharedPtr terrainConfig;
 
         //-------------------------------------------------
         // Ctors. / Dtor.

@@ -31,6 +31,14 @@ namespace sg::ogl::ecs::system
             : RenderSystem(t_scene)
         {
             m_patchMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::TERRAIN_PATCH_MESH);
+            debugName = "TerrainQuadtreeWfRenderer";
+        }
+
+        TerrainQuadtreeWfRenderSystem(const int t_priority, scene::Scene* t_scene)
+            : RenderSystem(t_priority, t_scene)
+        {
+            m_patchMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::TERRAIN_PATCH_MESH);
+            debugName = "TerrainQuadtreeWfRenderer";
         }
 
         //-------------------------------------------------

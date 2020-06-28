@@ -12,4 +12,4 @@ lua/5.3.5
 sol2/3.2.1
 
 [generators]
-cmake
+premake

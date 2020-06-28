@@ -12,6 +12,7 @@
 #include <vector>
 #include <memory>
 #include "math/Transform.h"
+#include "light/DirectionalLight.h"
 
 namespace sg::ogl::resource
 {
@@ -64,7 +65,7 @@ namespace sg::ogl::terrain
         // Logic
         //-------------------------------------------------
 
-        void Render(resource::ShaderProgram& t_shaderProgram, const MeshSharedPtr& t_patchMesh);
+        void Render(resource::ShaderProgram& t_shaderProgram, const MeshSharedPtr& t_patchMesh, const std::vector<light::DirectionalLight>& t_directionalLights);
         void RenderWireframe(resource::ShaderProgram& t_shaderProgram, const MeshSharedPtr& t_patchMesh);
         void Update();
 

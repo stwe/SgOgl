@@ -75,12 +75,6 @@ namespace sg::ogl::ecs::factory
         //-------------------------------------------------
 
         /**
-         * @brief Creates a Terrain Quadtree Entity.
-         * @param t_terrainQuadtree A Terrain Quadtree instance.
-         */
-        void CreateTerrainQuadtreeEntity(const TerrainQuadtreeSharedPtr& t_terrainQuadtree) const;
-
-        /**
          * @brief Creates a character from a SkeletalModel file in the third person perspective.
          * @param t_thirdPersonCamera The camera that follows the character.
          * @param t_fullModelFilePath The file path to the skeletal model.

@@ -18,6 +18,8 @@
 #include "resource/SkeletalModel.h"
 #include "water/Water.h"
 #include "particle/ParticleSystem.h"
+#include "terrain/TerrainConfig.h"
+#include "terrain/TerrainQuadtree.h"
 #include "ecs/system/ForwardRenderSystem.h"
 #include "ecs/system/DeferredRenderSystem.h"
 #include "ecs/system/SkeletalModelRenderSystem.h"
@@ -28,6 +30,8 @@
 #include "ecs/system/WaterRenderSystem.h"
 #include "ecs/system/ParticleSystemRenderer.h"
 #include "ecs/system/InstancingRenderSystem.h"
+#include "ecs/system/TerrainQuadtreeRenderSystem.h"
+#include "ecs/system/TerrainQuadtreeWfRenderSystem.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -76,6 +80,8 @@ void sg::ogl::LuaScript::InitLua()
     CreateRendererUsertype<ecs::system::ParticleSystemRenderer>("ParticleSystemRenderer");
     CreateRendererUsertype<ecs::system::TextRenderSystem>("TextRenderer");
     CreateRendererUsertype<ecs::system::InstancingRenderSystem>("InstancingRenderer");
+    CreateRendererUsertype<ecs::system::TerrainQuadtreeRenderSystem>("TerrainQuadtreeRenderer");
+    CreateRendererUsertype<ecs::system::TerrainQuadtreeWfRenderSystem>("TerrainQuadtreeWfRenderer");
 
     CreateCameraUsertypes();
     CreateResourceUsertypes();
@@ -317,6 +323,44 @@ void sg::ogl::LuaScript::CreateResourceUsertypes()
         "GenerateParticles", &particle::ParticleSystem::GenerateParticles,
         "instancing", &particle::ParticleSystem::instancing
     );
+
+    m_lua.new_usertype<terrain::TerrainConfig>(
+        "TerrainConfig",
+        sol::constructors<
+            terrain::TerrainConfig(Application*)
+        >(),
+        "new", sol::factories(
+            [](Application* t_app, scene::Scene* t_currentScene)
+            {
+                Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateResourceUsertypes()] Add a TerrainConfig to the current Scene.");
+                t_currentScene->terrainConfig = std::make_unique<terrain::TerrainConfig>(t_app);
+                return t_currentScene->terrainConfig;
+            }
+        ),
+        "InitMapsAndMorphing", &terrain::TerrainConfig::InitMapsAndMorphing,
+        "InitTextures", &terrain::TerrainConfig::InitTextures,
+        "scaleXz", &terrain::TerrainConfig::scaleXz,
+        "scaleY", &terrain::TerrainConfig::scaleY,
+        "rootNodes", &terrain::TerrainConfig::rootNodes,
+        "normalStrength", &terrain::TerrainConfig::normalStrength,
+        "lodRanges", &terrain::TerrainConfig::lodRanges,
+        "use16BitHeightmap", &terrain::TerrainConfig::use16BitHeightmap
+    );
+
+    m_lua.new_usertype<terrain::TerrainQuadtree>(
+        "TerrainQuadtree",
+        sol::constructors<
+            terrain::TerrainQuadtree(scene::Scene*, const std::shared_ptr<terrain::TerrainConfig>&)
+        >(),
+        "new", sol::factories(
+            [](scene::Scene* t_currentScene, const std::shared_ptr<terrain::TerrainConfig>& t_terrainConfig)
+            {
+                Log::SG_OGL_CORE_LOG_DEBUG("[LuaScript::CreateResourceUsertypes()] Add a Terrain to the current Scene.");
+                t_currentScene->terrain = std::make_unique<terrain::TerrainQuadtree>(t_currentScene, t_terrainConfig);
+                return t_currentScene->terrain;
+            }
+        )
+    );
 }
 
 void sg::ogl::LuaScript::CreateComponentUsertypes()
@@ -388,6 +432,10 @@ void sg::ogl::LuaScript::CreateComponentUsertypes()
     m_lua.new_usertype<ecs::component::TextComponent>(
         "TextComponent"
     );
+
+    m_lua.new_usertype<ecs::component::TerrainQuadtreeComponent>(
+        "TerrainQuadtreeComponent"
+    );
 }
 
 void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
@@ -421,6 +469,7 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
             auto instances{ static_cast<uint32_t>(t_transforms.value().size()) };
             t_reg.emplace<ecs::component::ModelInstancesComponent>(t_entity, t_model, t_showTriangles, t_fakeNormals, instances);
         },
+        "AddTerrainQuadtreeComponent", static_cast<ecs::component::TerrainQuadtreeComponent& (entt::registry::*)(entt::entity, terrain::TerrainQuadtree*&&)>(&entt::registry::emplace<ecs::component::TerrainQuadtreeComponent, terrain::TerrainQuadtree*>),
         "GetPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity)>(&entt::registry::get<light::PointLight>)
     );
 }
