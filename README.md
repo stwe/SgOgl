@@ -26,12 +26,25 @@
 
 A GameEngine library for OpenGL developed for educational purposes - a hobby project that I program in my free time.
 
-The original goal was only to create a large terrain with a kind of LOD technique. Over time, elements have been added that can be found in GameEngines. But of course there is still a lot missing to create a real game with this library. However, a scene with appealing lighting can be created in just a few steps. Models can be loaded and a beautiful water surface can be generated. To keep things as simple as possible, I'm working on being able to configure all game objects with Lua.
+The original goal was only to create a large terrain with a kind of LOD technique. Over time, elements have been added that can be found in GameEngines. But of course there is still a lot missing to create a real game with this library. However, a scene with appealing lighting can be created in just a few steps. Models can be loaded and a beautiful water surface can be generated. To keep things as simple as possible, all game objects can be configured with Lua.
 
 **You just have to:**
 
 * Create an `Application` and a `State` class. 
-* Use a Lua file for the description of all the scene objects (Models, Cameras, Lights etc), which is then loaded with our `State` class (**this is currently under heavy development**).
+* Use a Lua file for the description of all the scene objects (Models, Cameras, Lights etc), which is then loaded with our `State` class. 
+
+There are some examples in the Sandbox:
+
+[Start example](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/scene/start.lua)
+
+[Sponza Scene](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/scene/sponza.lua)
+
+[Water](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/scene/water.lua)
+
+[Terrain](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/scene/terrain.lua)
+
+[Particles](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/scene/particles.lua)
+
 
 ## 2. Installing
 
@@ -147,7 +160,7 @@ cmake
 
 ## 4. Getting started
 
-The project already contains a sandbox and it is a good idea to start with it.
+The project already contains a Sandbox and it is a good idea to start with it.
 
 If you want to create it yourself, do this as follows:
 
