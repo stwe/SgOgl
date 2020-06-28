@@ -15,9 +15,9 @@ function CreatePlantInstancesData()
     for i = 0, 9, 1 do
         t = Transform.new()
 
-        t.position = Vec3.new(0.0 + i * 4, 10.0, 0.0)
+        t.position = Vec3.new(0.0 + i * 4, terrainConfig:GetHeightAt(0.0 + i * 4, 0.0, 0.0, 1.0) + 8.0, 0.0)
         t.rotation = Vec3.new(180.0, 0.0, 0.0)
-        t.scale = Vec3.new(10.0)
+        t.scale = Vec3.new(8.0)
 
         PlantInstancesData[i] = t
     end
@@ -46,7 +46,7 @@ InstancingRenderer.new(0, scene)
 -- Create and add Cameras --
 ----------------------------
 
-firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(-15.0, 227.0, -0.05), 24.0, -4.0, scene)
+firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(-40.0, 140.0, -33.0), 24.0, -2.0, scene)
 firstPersonCamera:SetCameraVelocity(48.0)
 firstPersonCamera:SetMouseSensitivity(0.1)
 
@@ -61,7 +61,7 @@ scene:SetAmbientIntensity(Vec3.new(0.3, 0.3, 0.3))
 -- Load resources --
 --------------------
 
-plant = modelManager:GetModel("res/model/Plant_01/billboardmodel.obj")
+plant = modelManager:GetModel("res/model/Grass/grassmodel.obj")
 sunTextureId = textureManager:LoadTexture("res/sun/sun.png")
 
 a = {}

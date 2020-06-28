@@ -92,6 +92,8 @@ namespace sg::ogl::terrain
         [[nodiscard]] HeightmapHeightContainer& GetHeightmapData();
         [[nodiscard]] const HeightmapHeightContainer& GetHeightmapData() const;
 
+        [[nodiscard]] float GetHeightAt(float t_x, float t_z, float t_min, float t_max) const;
+
         //-------------------------------------------------
         // Init
         //-------------------------------------------------

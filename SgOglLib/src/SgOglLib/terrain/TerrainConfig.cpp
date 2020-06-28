@@ -91,6 +91,53 @@ const sg::ogl::terrain::TerrainConfig::HeightmapHeightContainer& sg::ogl::terrai
     return m_heightmapData;
 }
 
+float sg::ogl::terrain::TerrainConfig::GetHeightAt(float t_x, float t_z, float t_min, float t_max) const
+{
+    auto pos{ glm::vec2(t_x, t_z) };
+    pos -= scaleXz * 0.5f;
+    pos /= scaleXz;
+
+    const auto floorVec{ glm::vec2(static_cast<int>(floor(pos.x)), static_cast<int>(floor(pos.y))) };
+    pos -= floorVec;
+    pos *= m_heightmapWidth;
+
+    const auto x0{ static_cast<int>(floor(pos.x)) };
+    const auto x1{ x0 + 1 };
+    const auto z0{ static_cast<int>(floor(pos.y)) };
+    const auto z1{ z0 + 1 };
+
+    const auto h0{ m_heightmapData[m_heightmapWidth * z0 + x0] };
+    const auto h1{ m_heightmapData[m_heightmapWidth * z0 + x1] };
+    const auto h2{ m_heightmapData[m_heightmapWidth * z1 + x0] };
+    const auto h3{ m_heightmapData[m_heightmapWidth * z1 + x1] };
+
+    const auto percentU{ pos.x - x0 };
+    const auto percentV{ pos.y - z0 };
+
+    float dU, dV;
+    if (percentU > percentV)
+    {   // bottom triangle
+        dU = h1 - h0;
+        dV = h3 - h1;
+    }
+    else
+    {   // top triangle
+        dU = h3 - h2;
+        dV = h2 - h0;
+    }
+
+    auto h{ h0 + (dU * percentU) + (dV * percentV) };
+
+    if (h < t_min || h > t_max)
+    {
+        return -900.0f;
+    }
+
+    h *= scaleY;
+
+    return h;
+}
+
 //-------------------------------------------------
 // Init
 //-------------------------------------------------

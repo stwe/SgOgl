@@ -339,6 +339,7 @@ void sg::ogl::LuaScript::CreateResourceUsertypes()
         ),
         "InitMapsAndMorphing", &terrain::TerrainConfig::InitMapsAndMorphing,
         "InitTextures", &terrain::TerrainConfig::InitTextures,
+        "GetHeightAt", &terrain::TerrainConfig::GetHeightAt,
         "scaleXz", &terrain::TerrainConfig::scaleXz,
         "scaleY", &terrain::TerrainConfig::scaleY,
         "rootNodes", &terrain::TerrainConfig::rootNodes,
