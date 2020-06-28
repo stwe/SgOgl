@@ -2,27 +2,66 @@
 -- Functions --
 ---------------
 
-val = 0.0
-
-function UpdatePointLight(entity, dt)
-    val = val + dt
-    p = ecs:GetPointLightComponent(entity)
-    p.position.x = p.position.x + (math.sin(val) * 4.0)
+function RandomFloat(lower, greater)
+    return lower + math.random()  * (greater - lower);
 end
 
-function CreatePlantInstancesData()
-    PlantInstancesData = {}
-    for i = 0, 9, 1 do
-        t = Transform.new()
+function CreateGrassInstancesData()
+    instancesData = {}
 
-        t.position = Vec3.new(0.0 + i * 4, terrainConfig:GetHeightAt(0.0 + i * 4, 0.0, 0.0, 1.0) + 8.0, 0.0)
-        t.rotation = Vec3.new(180.0, 0.0, 0.0)
-        t.scale = Vec3.new(8.0)
+    plantHeight = 8.0
 
-        PlantInstancesData[i] = t
+    i = 1000000
+    c = 0
+
+    while (c < i)
+    do
+        x = RandomFloat(-3980.0, 3980.0)
+        z = RandomFloat(-3980.0, 3980.0)
+        height = terrainConfig:GetHeightAt(x, z, RandomFloat(0.01, 0.02), RandomFloat(0.3, 0.5))
+
+        if (height > 0.0) then
+            t = Transform.new()
+            t.position = Vec3.new(x, height + plantHeight, z)
+            t.rotation = Vec3.new(180.0, 0.0, 0.0)
+            t.scale = Vec3.new(plantHeight)
+
+            instancesData[c] = t
+
+            c = c + 1
+        end
     end
 
-    return PlantInstancesData
+    return instancesData
+end
+
+function CreateTreeInstancesData()
+    instancesData = {}
+
+    plantHeight = 36.0
+
+    i = 250000
+    c = 0
+
+    while (c < i)
+    do
+        x = RandomFloat(-3980.0, 3980.0)
+        z = RandomFloat(-3980.0, 3980.0)
+        height = terrainConfig:GetHeightAt(x, z, RandomFloat(0.07, 0.08), 0.9)
+
+        if (height > 0.0) then
+            t = Transform.new()
+            t.position = Vec3.new(x, height + plantHeight, z)
+            t.rotation = Vec3.new(180.0, 0.0, 0.0)
+            t.scale = Vec3.new(plantHeight)
+
+            instancesData[c] = t
+
+            c = c + 1
+        end
+    end
+
+    return instancesData
 end
 
 ------------------
@@ -35,11 +74,10 @@ scene = Scene.new(applicationContext)
 -- Create and add Renderer --
 -----------------------------
 
-SkyboxRenderer.new(4, scene)
-SunRenderer.new(3, scene)
-TerrainQuadtreeRenderer.new(2, scene)
---TerrainQuadtreeWfRenderer.new(2, scene)
-ForwardRenderer.new(1, scene)
+SkyboxRenderer.new(3, scene)
+SunRenderer.new(2, scene)
+TerrainQuadtreeRenderer.new(1, scene)
+--TerrainQuadtreeWfRenderer.new(1, scene)
 InstancingRenderer.new(0, scene)
 
 ----------------------------
@@ -61,7 +99,8 @@ scene:SetAmbientIntensity(Vec3.new(0.3, 0.3, 0.3))
 -- Load resources --
 --------------------
 
-plant = modelManager:GetModel("res/model/Grass/grassmodel.obj")
+grass = modelManager:GetModel("res/model/Grass/grassmodel.obj")
+tree = modelManager:GetModel("res/model/Tree_02/billboardmodel.obj")
 sunTextureId = textureManager:LoadTexture("res/sun/sun.png")
 
 a = {}
@@ -100,22 +139,15 @@ terrain = TerrainQuadtree.new(scene, terrainConfig)
 terrainEntity = ecs:CreateEntity()
 ecs:AddTerrainQuadtreeComponent(terrainEntity, terrain)
 
--- plant instances
+-- grass instances
 
-plantEntity = ecs:CreateEntity()
-ecs:AddModelInstancesComponent(plantEntity, plant, false, true, CreatePlantInstancesData())
+grassEntity = ecs:CreateEntity()
+ecs:AddModelInstancesComponent(grassEntity, grass, false, true, CreateGrassInstancesData())
 
--- a point light
+-- tree instances
 
-plightEntity0 = ecs:CreateEntity()
-ecs:AddPointLightComponent(plightEntity0,
-    Vec3.new(0.0, 40.0, 0.0), -- position
-    Vec3.new(0.2, 0.2, 0.2),  -- ambientIntensity
-    Vec3.new(0.2, 0.2, 10.0), -- diffuseIntensity
-    Vec3.new(1.0, 1.0, 1.0),  -- specularIntensity
-    1.0, 0.0022, 0.0019       -- constant, linear, quadratic
-)
-ecs:AddUpdateComponent(plightEntity0, "UpdatePointLight")
+treeEntity = ecs:CreateEntity()
+ecs:AddModelInstancesComponent(treeEntity, tree, false, true, CreateTreeInstancesData())
 
 -- sun
 
