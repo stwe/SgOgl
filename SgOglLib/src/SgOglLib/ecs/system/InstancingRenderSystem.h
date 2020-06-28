@@ -73,12 +73,22 @@ namespace sg::ogl::ecs::system
             {
                 auto& modelInstancesComponent{ view.get<component::ModelInstancesComponent>(entity) };
 
+                if (modelInstancesComponent.showTriangles)
+                {
+                    OpenGl::EnableWireframeMode();
+                }
+
                 for (auto& mesh : modelInstancesComponent.model->GetMeshes())
                 {
                     mesh->InitDraw();
                     shaderProgram.UpdateUniforms(*m_scene, entity, *mesh, pointLights, directionalLights);
                     mesh->DrawInstanced(modelInstancesComponent.instances);
                     mesh->EndDraw();
+                }
+
+                if (modelInstancesComponent.showTriangles)
+                {
+                    OpenGl::DisableWireframeMode();
                 }
             }
 

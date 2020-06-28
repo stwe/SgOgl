@@ -1,3 +1,30 @@
+---------------
+-- Functions --
+---------------
+
+val = 0.0
+
+function UpdatePointLight(entity, dt)
+    val = val + dt
+    p = ecs:GetPointLightComponent(entity)
+    p.position.x = p.position.x + (math.sin(val) * 4.0)
+end
+
+function CreatePlantInstancesData()
+    PlantInstancesData = {}
+    for i = 0, 9, 1 do
+        t = Transform.new()
+
+        t.position = Vec3.new(0.0 + i * 4, 10.0, 0.0)
+        t.rotation = Vec3.new(180.0, 0.0, 0.0)
+        t.scale = Vec3.new(10.0)
+
+        PlantInstancesData[i] = t
+    end
+
+    return PlantInstancesData
+end
+
 ------------------
 -- Create Scene --
 ------------------
@@ -56,21 +83,10 @@ planeEntity = ecs:CreateEntity()
 ecs:AddModelComponent(planeEntity, plane, false)
 ecs:AddTransformComponent(planeEntity, Vec3.new(0.0, 0.0, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(250.0, 1.0, 250.0))
 
--- plants
-
-PlantInstances = {}
-for i = 0, 9, 1 do
-    t = Transform.new()
-
-    t.position = Vec3.new(0.0 + i * 4, 10.0, 0.0)
-    t.rotation = Vec3.new(180.0, 0.0, 0.0)
-    t.scale = Vec3.new(10.0)
-
-    PlantInstances[i] = t
-end
+-- plant instances
 
 plantEntity = ecs:CreateEntity()
-ecs:AddModelInstancesComponent(plantEntity, plant, false, true, PlantInstances)
+ecs:AddModelInstancesComponent(plantEntity, plant, false, true, CreatePlantInstancesData())
 
 -- a point light
 
@@ -99,15 +115,3 @@ ecs:AddSunComponent(sunEntity,
 
 skyboxEntity = ecs:CreateEntity()
 ecs:AddCubemapComponent(skyboxEntity, skyboxCubemapId)
-
----------------
--- Functions --
----------------
-
-val = 0.0
-
-function UpdatePointLight(entity, dt)
-    val = val + dt
-    p = ecs:GetPointLightComponent(entity)
-    p.position.x = p.position.x + (math.sin(val) * 4.0)
-end
