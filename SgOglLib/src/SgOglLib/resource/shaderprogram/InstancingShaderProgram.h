@@ -25,17 +25,33 @@ namespace sg::ogl::resource::shaderprogram
     class InstancingShaderProgram : public ShaderProgram
     {
     public:
-        void UpdateUniforms(const scene::Scene& t_scene, const entt::entity t_entity, const Mesh& t_currentMesh) override
+        void UpdateUniforms(
+            const scene::Scene& t_scene,
+            const entt::entity t_entity,
+            const Mesh& t_currentMesh,
+            const std::vector<light::PointLight>& t_pointLights,
+            const std::vector<light::DirectionalLight>& t_directionalLights
+        ) override
         {
-            auto& modelComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::ModelComponent>(t_entity) };
+            auto& modelInstancesComponent{ t_scene.GetApplicationContext()->registry.get<ecs::component::ModelInstancesComponent>(t_entity) };
 
             SetUniform("projectionMatrix", t_scene.GetApplicationContext()->GetWindow().GetProjectionMatrix());
             SetUniform("viewMatrix", t_scene.GetCurrentCamera().GetViewMatrix());
+            SetUniform("fakeNormals", modelInstancesComponent.fakeNormals);
+
+            if (!t_pointLights.empty())
+            {
+                SetUniform("numPointLights", static_cast<int32_t>(t_pointLights.size()));
+                SetUniform("pointLights", t_pointLights);
+            }
+
+            if (!t_directionalLights.empty())
+            {
+                SetUniform("numDirectionalLights", static_cast<int32_t>(t_directionalLights.size()));
+                SetUniform("directionalLights", t_directionalLights);
+            }
 
             SetUniform("ambientIntensity", t_scene.GetAmbientIntensity());
-            SetUniform("directionalLight", t_scene.GetCurrentDirectionalLight());
-            //SetUniform("pointLight", *t_scene.GetScenePointLights()[0]);
-
             SetUniform("cameraPosition", t_scene.GetCurrentCamera().GetPosition());
 
             SetUniform("diffuseColor", t_currentMesh.GetDefaultMaterial()->kd);
@@ -55,7 +71,6 @@ namespace sg::ogl::resource::shaderprogram
             }
 
             SetUniform("shininess", t_currentMesh.GetDefaultMaterial()->ns);
-            //SetUniform("fakeNormals", modelComponent.fakeNormals);
         }
 
         [[nodiscard]] std::string GetFolderName() const override

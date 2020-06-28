@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <glm/vec3.hpp>
 
 namespace sg::ogl::resource
 {
@@ -77,18 +78,19 @@ namespace sg::ogl::ecs::component
         bool showTriangles{ false };
     };
 
+    struct ModelInstancesComponent
+    {
+        std::shared_ptr<resource::Model> model;
+        bool showTriangles{ false };
+        bool fakeNormals{ false };
+        uint32_t instances{ 0 };
+    };
+
     struct SkeletalModelComponent
     {
         std::shared_ptr<resource::SkeletalModel> model;
         bool showTriangles{ false };
     };
-
-    struct InstancesComponent
-    {
-        uint32_t instances{ 0 };
-    };
-
-    struct MoveableComponent {};
 
     //-------------------------------------------------
     // Environment

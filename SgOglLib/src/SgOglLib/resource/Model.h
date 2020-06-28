@@ -14,6 +14,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include "math/Transform.h"
 
 namespace sg::ogl
 {
@@ -54,6 +55,12 @@ namespace sg::ogl::resource
         //-------------------------------------------------
 
         [[nodiscard]] const MeshContainer& GetMeshes() const noexcept;
+
+        //-------------------------------------------------
+        // Instancing
+        //-------------------------------------------------
+
+        void AddTransformVbo(const std::vector<math::Transform>& t_transforms);
 
     protected:
 

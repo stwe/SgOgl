@@ -56,10 +56,11 @@ void NewState::Init()
 
     sg::ogl::OpenGl::SetClearColor(sg::ogl::Color::Black());
 
-    m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/start.lua");
+    //m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/start.lua");
     //m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/water.lua");
     //m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/sponza.lua");
     //m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/particles.lua");
+    m_luaScript = std::make_unique<sg::ogl::LuaScript>(GetApplicationContext(), "res/scene/terrain.lua");
 }
 
 //-------------------------------------------------
@@ -87,12 +88,10 @@ void NewState::RenderImGui() const
 
     ImGui::Begin("Debug");
 
-    /*
-    m_scene->GetApplicationContext()->registry.view<sg::ogl::light::Sun>().each([&](auto t_entity, auto& t_sunLight)
+    GetApplicationContext()->registry.view<sg::ogl::light::Sun>().each([&](auto t_entity, auto& t_sunLight)
     {
         ImGui::SliderFloat3("Sun direction", reinterpret_cast<float*>(&t_sunLight.direction), -1.0f, 1.0f);
     });
-    */
 
     ImGui::End();
 

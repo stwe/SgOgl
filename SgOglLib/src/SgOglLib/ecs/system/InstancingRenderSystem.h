@@ -20,32 +20,64 @@ namespace sg::ogl::ecs::system
     class InstancingRenderSystem : public RenderSystem<resource::shaderprogram::InstancingShaderProgram>
     {
     public:
+        using PointLightContainer = std::vector<light::PointLight>;
+        using DirectionalLightContainer = std::vector<light::DirectionalLight>;
+
+        //-------------------------------------------------
+        // Ctors. / Dtor.
+        //-------------------------------------------------
+
         explicit InstancingRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
-        {}
+        {
+            debugName = "InstancingRenderer";
+        }
+
+        InstancingRenderSystem(const int t_priority, scene::Scene* t_scene)
+            : RenderSystem(t_priority, t_scene)
+        {
+            debugName = "InstancingRenderer";
+        }
+
+        //-------------------------------------------------
+        // Override
+        //-------------------------------------------------
 
         void Update(double t_dt) override {}
 
         void Render() override
         {
-            auto view = m_scene->GetApplicationContext()->registry.view<
-                component::InstancesComponent,
-                component::ModelComponent>();
+            PointLightContainer pointLights;
+            m_scene->GetApplicationContext()->registry.view<light::PointLight>().each([&pointLights](auto, auto& t_pointLight)
+            {
+                pointLights.push_back(t_pointLight);
+            });
+
+            DirectionalLightContainer directionalLights;
+            m_scene->GetApplicationContext()->registry.view<light::DirectionalLight>().each([&directionalLights](auto, auto& t_directionalLight)
+            {
+                directionalLights.push_back(t_directionalLight);
+            });
+
+            m_scene->GetApplicationContext()->registry.view<light::Sun>().each([&directionalLights](auto, auto& t_sunLight)
+            {
+                directionalLights.push_back(t_sunLight);
+            });
 
             auto& shaderProgram{ m_scene->GetApplicationContext()->GetShaderManager().GetShaderProgram<resource::shaderprogram::InstancingShaderProgram>() };
-
             shaderProgram.Bind();
+
+            auto view{ m_scene->GetApplicationContext()->registry.view<component::ModelInstancesComponent>() };
 
             for (auto entity : view)
             {
-                auto& instancesComponent = view.get<component::InstancesComponent>(entity);
-                auto& modelComponent = view.get<component::ModelComponent>(entity);
+                auto& modelInstancesComponent{ view.get<component::ModelInstancesComponent>(entity) };
 
-                for (auto& mesh : modelComponent.model->GetMeshes())
+                for (auto& mesh : modelInstancesComponent.model->GetMeshes())
                 {
                     mesh->InitDraw();
-                    shaderProgram.UpdateUniforms(*m_scene, entity, *mesh);
-                    mesh->DrawInstanced(instancesComponent.instances);
+                    shaderProgram.UpdateUniforms(*m_scene, entity, *mesh, pointLights, directionalLights);
+                    mesh->DrawInstanced(modelInstancesComponent.instances);
                     mesh->EndDraw();
                 }
             }

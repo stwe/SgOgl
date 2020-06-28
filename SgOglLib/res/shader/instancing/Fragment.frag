@@ -34,9 +34,13 @@ struct PointLight
 
 // Uniforms
 
+uniform int numPointLights;
+uniform int numDirectionalLights;
+
 uniform vec3 ambientIntensity;
-uniform DirectionalLight directionalLight;
-//uniform PointLight pointLight;
+
+uniform PointLight pointLights[12];            // max 12 point lights
+uniform DirectionalLight directionalLights[2]; // max 2 directional lights
 
 uniform vec3 cameraPosition;
 
@@ -52,67 +56,72 @@ uniform float shininess;
 
 // Global
 
-vec4 diffuseCol;
-vec4 specularCol;
+vec4 diffuse;
+vec4 specular;
 
 // Function
 
-void SetupColors()
+vec4 GetDiffuseColor()
 {
-    // get diffuse color
-    diffuseCol = vec4(diffuseColor, 1.0);
-
+    vec4 diffuse = vec4(diffuseColor, 1.0);
     if (hasDiffuseMap > 0.5)
     {
-        diffuseCol = texture(diffuseMap, vUv);
+        diffuse = texture(diffuseMap, vUv);
     }
 
-    // get specular color
-    specularCol = vec4(specularColor, 1.0);
-
-    if (hasSpecularMap > 0.5)
-    {
-        specularCol = texture(specularMap, vUv);
-    }
+    return diffuse;
 }
 
-vec3 CalcDirectionalLight(vec3 normal, vec3 viewDir)
+vec4 GetSpecularColor()
 {
+    vec4 specular = vec4(specularColor, 1.0);
+    if (hasSpecularMap > 0.5)
+    {
+        specular = texture(specularMap, vUv);
+    }
+
+    return specular;
+}
+
+vec3 CalcDirectionalLight(DirectionalLight directionalLight, vec3 normal, vec3 viewDir)
+{
+    // negate the global light direction vector to switch its direction
+    // it's now a direction vector pointing towards the light source
     vec3 lightDir = normalize(-directionalLight.direction);
 
     // diffuse
     float diffuseFactor = max(dot(normal, lightDir), 0.0);
-    vec3 diffuse = directionalLight.diffuseIntensity * diffuseFactor * diffuseCol.rgb;
+    vec3 diff = directionalLight.diffuseIntensity * diffuseFactor * diffuse.rgb;
 
     // specular
     vec3 reflectDir = reflect(-lightDir, normal);
     float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-    vec3 specular = directionalLight.specularIntensity * specularFactor * specularCol.rgb;
+    vec3 spec = directionalLight.specularIntensity * specularFactor * specular.rgb;
 
     // result
-    return diffuse + specular;
+    return diff + spec;
 }
 
-/*
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
-    vec3 lightDir = normalize(pointLight.position - fragPos);
+    // light direction
+    vec3 lightDir = normalize(light.position - fragPos);
 
     // ambient
-    vec3 ambient = pointLight.ambientIntensity * diffuseCol.rgb;
+    vec3 ambient = light.ambientIntensity * diffuse.rgb;
 
     // diffuse
     float diffuseFactor = max(dot(normal, lightDir), 0.0);
-    vec3 diffuse = pointLight.diffuseIntensity * diffuseFactor * diffuseCol.rgb;
+    vec3 diffuse = light.diffuseIntensity * diffuseFactor * diffuse.rgb;
 
     // specular
     vec3 reflectDir = reflect(-lightDir, normal);
     float specularFactor = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-    vec3 specular = pointLight.specularIntensity * specularFactor * specularCol.rgb;
+    vec3 specular = light.specularIntensity * specularFactor * specular.rgb;
 
     // attenuation
-    float distance = length(pointLight.position - fragPos);
-    float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * (distance * distance));
+    float distance = length(light.position - fragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
     ambient *= attenuation;
     diffuse *= attenuation;
@@ -121,15 +130,15 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     // result
     return ambient + diffuse + specular;
 }
-*/
 
 // Main
 
 void main()
 {
-    SetupColors();
+    diffuse = GetDiffuseColor();
+    specular = GetSpecularColor();
 
-    if (diffuseCol.a < 0.5)
+    if (diffuse.a < 0.5)
     {
         discard;
     }
@@ -137,10 +146,19 @@ void main()
     vec3 normal = normalize(vNormal);
     vec3 viewDir = normalize(cameraPosition - vPosition);
 
-    vec3 ambient = ambientIntensity * diffuseCol.rgb;
+    vec3 ambient = ambientIntensity * diffuse.rgb;
 
-    vec3 result = CalcDirectionalLight(normal, viewDir);
-    //result += CalcPointLight(pointLight, normal, vPosition, viewDir);
+    vec3 result = vec3(0.0, 0.0, 0.0);
+
+    for(int i = 0; i < numDirectionalLights; ++i)
+    {
+        result += CalcDirectionalLight(directionalLights[i], normal, viewDir);
+    }
+
+    for(int i = 0; i < numPointLights; ++i)
+    {
+        result += CalcPointLight(pointLights[i], normal, vPosition, viewDir);
+    }
 
     fragColor = vec4(ambient + result, 1.0);
 }

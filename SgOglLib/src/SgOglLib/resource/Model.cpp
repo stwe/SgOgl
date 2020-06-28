@@ -49,6 +49,52 @@ const sg::ogl::resource::Model::MeshContainer& sg::ogl::resource::Model::GetMesh
 }
 
 //-------------------------------------------------
+// Instancing
+//-------------------------------------------------
+
+void sg::ogl::resource::Model::AddTransformVbo(const std::vector<math::Transform>& t_transforms)
+{
+    static constexpr uint32_t NUMBER_OF_FLOATS_PER_INSTANCE{ 16 };
+
+    std::vector<glm::mat4> matrices;
+    for (auto& transform : t_transforms)
+    {
+        matrices.push_back(static_cast<glm::mat4>(transform));
+    }
+
+    const auto instances{ matrices.size() };
+    const auto floatCount{ NUMBER_OF_FLOATS_PER_INSTANCE * instances };
+
+    // create an empty Vbo for instanced data
+    const auto vbo{ buffer::Vbo::GenerateVbo() };
+
+    // init empty
+    buffer::Vbo::InitEmpty(vbo, floatCount, GL_STATIC_DRAW);
+
+    // store data
+    buffer::Vbo::StoreTransformationMatrices(vbo, floatCount, matrices);
+
+    // bind Vbo to each mesh
+    const unsigned int pFlags{ aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals };
+    for (auto& mesh : m_meshes)
+    {
+        // get Vao of the mesh
+        auto& vao{ mesh->GetVao() };
+        vao.BindVao();
+
+        // set Vbo attributes
+        buffer::Vbo::AddInstancedAttribute(vbo, 5, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 0);
+        buffer::Vbo::AddInstancedAttribute(vbo, 6, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 4);
+        buffer::Vbo::AddInstancedAttribute(vbo, 7, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 8);
+        buffer::Vbo::AddInstancedAttribute(vbo, 8, 4, NUMBER_OF_FLOATS_PER_INSTANCE, 12);
+
+        buffer::Vao::UnbindVao();
+    }
+
+    Log::SG_OGL_CORE_LOG_WARN("[Model::AddPositionsVbo()] The Vao for the model {} has been changed for instancing.", m_fullFilePath);
+}
+
+//-------------------------------------------------
 // Load Model
 //-------------------------------------------------
 

@@ -27,6 +27,7 @@
 #include "ecs/system/GuiRenderSystem.h"
 #include "ecs/system/WaterRenderSystem.h"
 #include "ecs/system/ParticleSystemRenderer.h"
+#include "ecs/system/InstancingRenderSystem.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -74,6 +75,7 @@ void sg::ogl::LuaScript::InitLua()
     CreateRendererUsertype<ecs::system::WaterRenderSystem>("WaterRenderer");
     CreateRendererUsertype<ecs::system::ParticleSystemRenderer>("ParticleSystemRenderer");
     CreateRendererUsertype<ecs::system::TextRenderSystem>("TextRenderer");
+    CreateRendererUsertype<ecs::system::InstancingRenderSystem>("InstancingRenderer");
 
     CreateCameraUsertypes();
     CreateResourceUsertypes();
@@ -319,78 +321,70 @@ void sg::ogl::LuaScript::CreateResourceUsertypes()
 
 void sg::ogl::LuaScript::CreateComponentUsertypes()
 {
-    // Model component
     m_lua.new_usertype<ecs::component::ModelComponent>(
         "ModelComponent"
     );
 
-    // SkeletalModel component
+    m_lua.new_usertype<ecs::component::ModelInstancesComponent>(
+        "ModelInstancesComponent"
+    );
+
     m_lua.new_usertype<ecs::component::SkeletalModelComponent>(
         "SkeletalModelComponent"
     );
 
-    // Transform component
     m_lua.new_usertype<math::Transform>(
-        "TransformComponent"
+        "Transform",
+        "position", &math::Transform::position,
+        "rotation", &math::Transform::rotation,
+        "scale", &math::Transform::scale
     );
 
-    // Material component
     m_lua.new_usertype<resource::Material>(
-        "MaterialComponent"
+        "Material"
     );
 
-    // Sykdome component
     m_lua.new_usertype<ecs::component::SkydomeComponent>(
         "SkydomeComponent"
     );
 
-    // PointLight component
     m_lua.new_usertype<light::PointLight>(
-        "PointLightComponent",
+        "PointLight",
         "position", &light::PointLight::position
     );
 
-    // DirectionalLight component
     m_lua.new_usertype<light::DirectionalLight>(
-        "DirectionalLightComponent"
+        "DirectionalLight"
     );
 
-    // SunComponent component
     m_lua.new_usertype<light::Sun>(
-        "SunComponent"
+        "Sun"
     );
 
-    // Update component
     m_lua.new_usertype<ecs::component::UpdateComponent>(
         "UpdateComponent"
     );
 
-    // Input component
     m_lua.new_usertype<ecs::component::InputComponent>(
         "InputComponent"
     );
 
-    // Cubemap component
     m_lua.new_usertype<ecs::component::CubemapComponent>(
         "CubemapComponent"
     );
 
-    // Gui component
     m_lua.new_usertype<ecs::component::GuiComponent>(
         "GuiComponent"
     );
 
-    // Water component
     m_lua.new_usertype<ecs::component::WaterComponent>(
         "WaterComponent"
     );
 
-    // ParticleSystem component
     m_lua.new_usertype<ecs::component::ParticleSystemComponent>(
         "ParticleSystemComponent"
     );
 
-    // Text component
     m_lua.new_usertype<ecs::component::TextComponent>(
         "TextComponent"
     );
@@ -403,23 +397,30 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
         "Registry",
         sol::no_constructor,
         "CreateEntity", static_cast<entt::entity(entt::registry::*)()>(&entt::registry::create),
-        "AddModelComponent", static_cast<ecs::component::ModelComponent&(entt::registry::*)(entt::entity, std::shared_ptr<resource::Model>&, bool&&)>(&entt::registry::emplace<ecs::component::ModelComponent, std::shared_ptr<resource::Model>&, bool>),
+        "AddModelComponent", static_cast<ecs::component::ModelComponent& (entt::registry::*)(entt::entity, std::shared_ptr<resource::Model>&, bool&&)>(&entt::registry::emplace<ecs::component::ModelComponent, std::shared_ptr<resource::Model>&, bool>),
         "AddSkeletalModelComponent", static_cast<ecs::component::SkeletalModelComponent& (entt::registry::*)(entt::entity, std::shared_ptr<resource::SkeletalModel>&, bool&&)>(&entt::registry::emplace<ecs::component::SkeletalModelComponent, std::shared_ptr<resource::SkeletalModel>&, bool>),
-        "AddTransformComponent", static_cast<math::Transform&(entt::registry::*)(entt::entity, glm::vec3&, glm::vec3&, glm::vec3&)>(&entt::registry::emplace<math::Transform, glm::vec3&, glm::vec3&, glm::vec3&>),
-        "AddMaterialComponent", static_cast<resource::Material&(entt::registry::*)(entt::entity, resource::Material&)>(&entt::registry::emplace<resource::Material, resource::Material&>),
-        "AddSkydomeComponent", static_cast<ecs::component::SkydomeComponent&(entt::registry::*)(entt::entity, std::string&&)>(&entt::registry::emplace<ecs::component::SkydomeComponent, std::string>),
-        "AddPointLightComponent", static_cast<light::PointLight&(entt::registry::*)(entt::entity, glm::vec3&, glm::vec3&, glm::vec3&, glm::vec3&, float&&, float&&, float&&)>(&entt::registry::emplace<
+        "AddTransformComponent", static_cast<math::Transform& (entt::registry::*)(entt::entity, glm::vec3&, glm::vec3&, glm::vec3&)>(&entt::registry::emplace<math::Transform, glm::vec3&, glm::vec3&, glm::vec3&>),
+        "AddMaterialComponent", static_cast<resource::Material& (entt::registry::*)(entt::entity, resource::Material&)>(&entt::registry::emplace<resource::Material, resource::Material&>),
+        "AddSkydomeComponent", static_cast<ecs::component::SkydomeComponent& (entt::registry::*)(entt::entity, std::string&&)>(&entt::registry::emplace<ecs::component::SkydomeComponent, std::string>),
+        "AddPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity, glm::vec3&, glm::vec3&, glm::vec3&, glm::vec3&, float&&, float&&, float&&)>(&entt::registry::emplace<
             light::PointLight, glm::vec3&, glm::vec3&, glm::vec3&, glm::vec3&, float, float, float
         >),
-        "AddDirectionalLightComponent", static_cast<light::DirectionalLight&(entt::registry::*)(entt::entity, glm::vec3&, glm::vec3&, glm::vec3&)>(&entt::registry::emplace<light::DirectionalLight, glm::vec3&, glm::vec3&, glm::vec3&>),
-        "AddSunComponent", static_cast<light::Sun&(entt::registry::*)(entt::entity, glm::vec3&, glm::vec3&, glm::vec3&, uint32_t&&, float&&)>(&entt::registry::emplace<light::Sun, glm::vec3&, glm::vec3&, glm::vec3&, uint32_t, float>),
-        "AddUpdateComponent", static_cast<ecs::component::UpdateComponent&(entt::registry::*)(entt::entity, std::string&&)>(&entt::registry::emplace<ecs::component::UpdateComponent, std::string>),
-        "AddInputComponent", static_cast<ecs::component::InputComponent&(entt::registry::*)(entt::entity, std::string&&)>(&entt::registry::emplace<ecs::component::InputComponent, std::string>),
-        "AddCubemapComponent", static_cast<ecs::component::CubemapComponent&(entt::registry::*)(entt::entity, uint32_t&&)>(&entt::registry::emplace<ecs::component::CubemapComponent, uint32_t>),
-        "AddGuiComponent", static_cast<ecs::component::GuiComponent&(entt::registry::*)(entt::entity, uint32_t&&)>(&entt::registry::emplace<ecs::component::GuiComponent, uint32_t>),
-        "AddWaterComponent", static_cast<ecs::component::WaterComponent&(entt::registry::*)(entt::entity, water::Water*&&)>(&entt::registry::emplace<ecs::component::WaterComponent, water::Water*>),
-        "AddParticleSystemComponent", static_cast<ecs::component::ParticleSystemComponent&(entt::registry::*)(entt::entity, particle::ParticleSystem*&&)>(&entt::registry::emplace<ecs::component::ParticleSystemComponent, particle::ParticleSystem*>),
+        "AddDirectionalLightComponent", static_cast<light::DirectionalLight& (entt::registry::*)(entt::entity, glm::vec3&, glm::vec3&, glm::vec3&)>(&entt::registry::emplace<light::DirectionalLight, glm::vec3&, glm::vec3&, glm::vec3&>),
+        "AddSunComponent", static_cast<light::Sun& (entt::registry::*)(entt::entity, glm::vec3&, glm::vec3&, glm::vec3&, uint32_t&&, float&&)>(&entt::registry::emplace<light::Sun, glm::vec3&, glm::vec3&, glm::vec3&, uint32_t, float>),
+        "AddUpdateComponent", static_cast<ecs::component::UpdateComponent& (entt::registry::*)(entt::entity, std::string&&)>(&entt::registry::emplace<ecs::component::UpdateComponent, std::string>),
+        "AddInputComponent", static_cast<ecs::component::InputComponent& (entt::registry::*)(entt::entity, std::string&&)>(&entt::registry::emplace<ecs::component::InputComponent, std::string>),
+        "AddCubemapComponent", static_cast<ecs::component::CubemapComponent& (entt::registry::*)(entt::entity, uint32_t&&)>(&entt::registry::emplace<ecs::component::CubemapComponent, uint32_t>),
+        "AddGuiComponent", static_cast<ecs::component::GuiComponent& (entt::registry::*)(entt::entity, uint32_t&&)>(&entt::registry::emplace<ecs::component::GuiComponent, uint32_t>),
+        "AddWaterComponent", static_cast<ecs::component::WaterComponent& (entt::registry::*)(entt::entity, water::Water*&&)>(&entt::registry::emplace<ecs::component::WaterComponent, water::Water*>),
+        "AddParticleSystemComponent", static_cast<ecs::component::ParticleSystemComponent& (entt::registry::*)(entt::entity, particle::ParticleSystem*&&)>(&entt::registry::emplace<ecs::component::ParticleSystemComponent, particle::ParticleSystem*>),
         "AddTextComponent", static_cast<ecs::component::TextComponent& (entt::registry::*)(entt::entity, std::string&&, float&&, float&&, float&&, glm::vec3&)>(&entt::registry::emplace<ecs::component::TextComponent, std::string, float, float, float, glm::vec3&>),
+        "AddModelInstancesComponent",
+        [](entt::registry& t_reg, entt::entity t_entity, std::shared_ptr<resource::Model>& t_model, bool t_showTriangles, bool t_fakeNormals, const sol::as_table_t<std::vector<math::Transform>>& t_transforms)
+        {
+            t_model->AddTransformVbo(t_transforms.value());
+            auto instances{ static_cast<uint32_t>(t_transforms.value().size()) };
+            t_reg.emplace<ecs::component::ModelInstancesComponent>(t_entity, t_model, t_showTriangles, t_fakeNormals, instances);
+        },
         "GetPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity)>(&entt::registry::get<light::PointLight>)
     );
 }
