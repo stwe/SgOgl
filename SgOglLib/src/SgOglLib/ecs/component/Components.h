@@ -5,7 +5,7 @@
 // 
 // License:  MIT
 // 
-// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
 
 #pragma once
 
@@ -49,18 +49,21 @@ namespace sg::ogl::ecs::component
 
     struct PlayerComponent
     {
-        static constexpr auto RUN_SPEED{ 40.0f };
+        static constexpr auto RUN_SPEED{ 80.0f };
         static constexpr auto TURN_SPEED{ 160.0f };
-        static constexpr auto GRAVITY{ -50.0f };
-        static constexpr auto JUMP_POWER{ 18.0f };
+        static constexpr auto GRAVITY{ -356.0f };
+        static constexpr auto JUMP_POWER{ 256.0f };
 
-        // todo terrain to get the current height
+        std::string name;
 
         float currentSpeed{ 0.0f };
         float currentTurnSpeed{ 0.0f };
         float upSpeed{ 0.0f };
 
         bool isInAir{ false };
+
+        uint32_t currentAnimation{ 0 };
+        float defaultTicksPerSecond{ 1200.0f };
     };
 
     //-------------------------------------------------
@@ -113,26 +116,26 @@ namespace sg::ogl::ecs::component
 
     struct TerrainQuadtreeComponent
     {
-        terrain::TerrainQuadtree* terrainQuadtree;
+        terrain::TerrainQuadtree* terrainQuadtree{ nullptr };
     };
 
     struct WaterComponent
     {
-        water::Water* water;
+        water::Water* water{ nullptr };
     };
 
     struct ParticleSystemComponent
     {
-        particle::ParticleSystem* particleSystem;
+        particle::ParticleSystem* particleSystem{ nullptr };
     };
 
     struct TextComponent
     {
         std::string text;
-        float xPos;
-        float yPos;
-        float scale;
-        glm::vec3 color;
+        float xPos{ 0.0f };
+        float yPos{ 0.0f };
+        float scale{ 1.0f };
+        glm::vec3 color{ glm::vec3(1.0) };
     };
 
     //-------------------------------------------------

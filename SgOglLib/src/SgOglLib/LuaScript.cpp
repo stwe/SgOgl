@@ -437,6 +437,10 @@ void sg::ogl::LuaScript::CreateComponentUsertypes()
     m_lua.new_usertype<ecs::component::TerrainQuadtreeComponent>(
         "TerrainQuadtreeComponent"
     );
+
+    m_lua.new_usertype<ecs::component::PlayerComponent>(
+        "PlayerComponent"
+    );
 }
 
 void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
@@ -471,6 +475,7 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
             t_reg.emplace<ecs::component::ModelInstancesComponent>(t_entity, t_model, t_showTriangles, t_fakeNormals, instances);
         },
         "AddTerrainQuadtreeComponent", static_cast<ecs::component::TerrainQuadtreeComponent& (entt::registry::*)(entt::entity, terrain::TerrainQuadtree*&&)>(&entt::registry::emplace<ecs::component::TerrainQuadtreeComponent, terrain::TerrainQuadtree*>),
+        "AddPlayerComponent", static_cast<ecs::component::PlayerComponent& (entt::registry::*)(entt::entity, std::string&&)>(&entt::registry::emplace<ecs::component::PlayerComponent, std::string>),
         "GetPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity)>(&entt::registry::get<light::PointLight>)
     );
 }

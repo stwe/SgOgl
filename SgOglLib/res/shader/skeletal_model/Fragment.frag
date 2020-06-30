@@ -201,10 +201,10 @@ void main()
     specular = GetSpecularColor();
 
     // discard if transparent
-    if (diffuse.a < 0.5)
-    {
-        discard;
-    }
+//    if (diffuse.a < 0.5)
+//    {
+//        discard;
+//    }
 
     // get normal in tangent or world space
     vec3 normal = GetNormal();

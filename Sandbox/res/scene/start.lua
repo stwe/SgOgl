@@ -50,7 +50,7 @@ TextRenderer.new(0, scene, "res/font/calibri.ttf")
 -- Create and add Cameras --
 ----------------------------
 
-firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(-375.0, 313.0, -417.0), -147.0, -16.0, scene)
+firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(883.0, 1055.0, -853.0), -205.0, -16.0, scene)
 firstPersonCamera:SetCameraVelocity(128.0)
 firstPersonCamera:SetMouseSensitivity(0.025)
 --print(firstPersonCamera:GetCameraVelocity())
@@ -82,7 +82,7 @@ gold = modelManager:GetMaterialByName("gold")
 sunTextureId = textureManager:LoadTexture("res/sun/sun.png")
 foodGuiId = textureManager:LoadTexture("res/gui/foodIcon.png")
 healthGuiId = textureManager:LoadTexture("res/gui/healthIcon.png")
-hero = modelManager:GetSkeletalModel("res/model/CastleGuard01/Idle.dae")
+hero = modelManager:GetSkeletalModel("res/model/Player/drone.X")
 
 a = {}
 a[1] = "res/skybox/sky1/sRight.png"
@@ -108,7 +108,8 @@ ecs:AddTransformComponent(planeEntity, Vec3.new(0.0, 150.0, 0.0), Vec3.new(0.0, 
 
 heroEntity = ecs:CreateEntity()
 ecs:AddSkeletalModelComponent(heroEntity, hero, false)
-ecs:AddTransformComponent(heroEntity, Vec3.new(-500.0, 150.0, -500.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(1.0, 1.0, 1.0))
+ecs:AddTransformComponent(heroEntity, Vec3.new(-500.0, 200.0, -500.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(64.0))
+ecs:AddPlayerComponent(heroEntity, "Hero")
 
 -- sphere
 

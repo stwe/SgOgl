@@ -180,22 +180,6 @@ namespace sg::ogl::ecs::system
     protected:
 
     private:
-        /*
-        const entt::basic_view<
-            entt::entity,
-            entt::exclude_t<>,
-            component::ThirdPersonCameraComponent,
-            component::SkeletalModelComponent,
-            component::TransformComponent,
-            component::HealthComponent,
-            component::PlayerComponent> m_view{
-                m_scene->GetApplicationContext()->registry.view<
-                component::ThirdPersonCameraComponent,
-                component::SkeletalModelComponent,
-                component::TransformComponent,
-                component::HealthComponent,
-                component::PlayerComponent>()
-            };
-            */
+
     };
 }

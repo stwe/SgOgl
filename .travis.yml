@@ -18,6 +18,7 @@ before_install:
   - sudo apt-get install python3
   - sudo apt-get install python3-pip
   - sudo apt-get install python3-setuptools
+  - pip3 install wheel
   - pip3 install conan
 
 script:
