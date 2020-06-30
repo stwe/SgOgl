@@ -5,7 +5,7 @@
 // 
 // License:  MIT
 // 
-// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
 
 #pragma once
 
@@ -21,11 +21,6 @@ struct lua_State;
 namespace sg::ogl
 {
     class Application;
-}
-
-namespace sg::ogl::light
-{
-    struct DirectionalLight;
 }
 
 namespace sg::ogl::camera
@@ -66,8 +61,6 @@ namespace sg::ogl::scene
         using TerrainSharedPtr = std::shared_ptr<terrain::TerrainQuadtree>;
         using TerrainConfigSharedPtr = std::shared_ptr<terrain::TerrainConfig>;
 
-        using DirectionalLightSharedPtr = std::shared_ptr<light::DirectionalLight>;
-
         //-------------------------------------------------
         // Public member
         //-------------------------------------------------
@@ -103,10 +96,6 @@ namespace sg::ogl::scene
         [[nodiscard]] camera::Camera& GetCurrentCamera() noexcept;
         [[nodiscard]] const camera::Camera& GetCurrentCamera() const noexcept;
 
-        [[nodiscard]] [[deprecated]] light::DirectionalLight& GetCurrentDirectionalLight() noexcept;
-        [[nodiscard]] [[deprecated]] const light::DirectionalLight& GetCurrentDirectionalLight() const noexcept;
-        [[nodiscard]] [[deprecated]] bool HasDirectionalLight() const;
-
         [[nodiscard]] glm::vec4 GetCurrentClipPlane() const;
         [[nodiscard]] glm::vec3 GetAmbientIntensity() const;
 
@@ -114,15 +103,12 @@ namespace sg::ogl::scene
         // Setter
         //-------------------------------------------------
 
-        void SetParentLuaState(lua_State* t_luaState);
-
-        void SetAmbientIntensity(const glm::vec3& t_ambientIntensity);
-
         void SetCurrentCameraByName(const std::string& t_name);
         void SetCurrentCamera(camera::Camera* t_camera);
 
-        void SetCurrentDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight);
+        void SetParentLuaState(lua_State* t_luaState);
         void SetCurrentClipPlane(const glm::vec4& t_currentClipPlane);
+        void SetAmbientIntensity(const glm::vec3& t_ambientIntensity);
 
         //-------------------------------------------------
         // Logic
@@ -136,12 +122,10 @@ namespace sg::ogl::scene
 
     private:
         Application* m_application{ nullptr };
+
         camera::Camera* m_currentCamera{ nullptr };
+
         lua_State* m_parentLuaState{ nullptr };
-
-
-
-        DirectionalLightSharedPtr m_currentDirectionalLight;
 
         glm::vec4 m_currentClipPlane{ glm::vec4(0.0f, -1.0f, 0.0f, 100000.0f) };
         glm::vec3 m_ambientIntensity{ glm::vec3(0.3f) };

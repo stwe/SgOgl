@@ -5,37 +5,19 @@
 // 
 // License:  MIT
 // 
-// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
 
 #define SOL_ALL_SAFETIES_ON 1
 #include <sol/sol.hpp>
 
-#include <algorithm>
-#include <assimp/postprocess.h>
 #include "Scene.h"
 #include "Core.h"
 #include "Application.h"
 #include "input/MouseInput.h"
-#include "math/Transform.h"
-#include "light/DirectionalLight.h"
-#include "light/PointLight.h"
-#include "light/Sun.h"
-#include "resource/ModelManager.h"
-#include "resource/Material.h"
-#include "camera/FirstPersonCamera.h"
-#include "camera/ThirdPersonCamera.h"
-#include "water/Water.h"
-#include "particle/ParticleSystem.h"
-#include "terrain/TerrainQuadtree.h"
-#include "terrain/TerrainConfig.h"
+#include "camera/Camera.h"
 #include "ecs/component/Components.h"
-#include "ecs/system/ForwardRenderSystem.h"
-#include "ecs/system/DeferredRenderSystem.h"
-#include "ecs/system/SkyboxRenderSystem.h"
-#include "ecs/system/SkydomeRenderSystem.h"
-#include "ecs/system/SunRenderSystem.h"
-#include "ecs/system/GuiRenderSystem.h"
 #include "ecs/system/WaterRenderSystem.h"
+#include "particle/ParticleSystem.h"
 
 //-------------------------------------------------
 // Ctors. / Dtor.
@@ -75,23 +57,6 @@ const sg::ogl::camera::Camera& sg::ogl::scene::Scene::GetCurrentCamera() const n
     return *m_currentCamera;
 }
 
-sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetCurrentDirectionalLight() noexcept
-{
-    SG_OGL_CORE_ASSERT(m_currentDirectionalLight, "[Scene::GetCurrentDirectionalLight()] Null pointer.");
-    return *m_currentDirectionalLight;
-}
-
-const sg::ogl::light::DirectionalLight& sg::ogl::scene::Scene::GetCurrentDirectionalLight() const noexcept
-{
-    SG_OGL_CORE_ASSERT(m_currentDirectionalLight, "[Scene::GetCurrentDirectionalLight()] Null pointer.");
-    return *m_currentDirectionalLight;
-}
-
-bool sg::ogl::scene::Scene::HasDirectionalLight() const
-{
-    return m_currentDirectionalLight != nullptr;
-}
-
 glm::vec4 sg::ogl::scene::Scene::GetCurrentClipPlane() const
 {
     return m_currentClipPlane;
@@ -105,17 +70,6 @@ glm::vec3 sg::ogl::scene::Scene::GetAmbientIntensity() const
 //-------------------------------------------------
 // Setter
 //-------------------------------------------------
-
-void sg::ogl::scene::Scene::SetParentLuaState(lua_State* t_luaState)
-{
-    SG_OGL_CORE_ASSERT(t_luaState, "[Scene::SetParentLuaState()] Null pointer.");
-    m_parentLuaState = t_luaState;
-}
-
-void sg::ogl::scene::Scene::SetAmbientIntensity(const glm::vec3& t_ambientIntensity)
-{
-    m_ambientIntensity = t_ambientIntensity;
-}
 
 void sg::ogl::scene::Scene::SetCurrentCameraByName(const std::string& t_name)
 {
@@ -138,15 +92,20 @@ void sg::ogl::scene::Scene::SetCurrentCamera(camera::Camera* t_camera)
     m_currentCamera = t_camera;
 }
 
-void sg::ogl::scene::Scene::SetCurrentDirectionalLight(const DirectionalLightSharedPtr& t_directionalLight)
+void sg::ogl::scene::Scene::SetParentLuaState(lua_State* t_luaState)
 {
-    m_currentDirectionalLight.reset();
-    m_currentDirectionalLight = t_directionalLight;
+    SG_OGL_CORE_ASSERT(t_luaState, "[Scene::SetParentLuaState()] Null pointer.");
+    m_parentLuaState = t_luaState;
 }
 
 void sg::ogl::scene::Scene::SetCurrentClipPlane(const glm::vec4& t_currentClipPlane)
 {
     m_currentClipPlane = t_currentClipPlane;
+}
+
+void sg::ogl::scene::Scene::SetAmbientIntensity(const glm::vec3& t_ambientIntensity)
+{
+    m_ambientIntensity = t_ambientIntensity;
 }
 
 //-------------------------------------------------

@@ -13,6 +13,7 @@
 #include "OpenGl.h"
 #include "ecs/component/Components.h"
 #include "resource/Mesh.h"
+#include "resource/ModelManager.h"
 #include "resource/shaderprogram/WaterShaderProgram.h"
 #include "resource/ShaderManager.h"
 #include "math/Transform.h"

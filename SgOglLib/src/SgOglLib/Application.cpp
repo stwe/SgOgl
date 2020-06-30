@@ -19,7 +19,6 @@
 #include "resource/ModelManager.h"
 #include "input/MouseInput.h"
 #include "event/CircularEventQueue.h"
-#include "ecs/factory/EntityFactory.h"
 
 //-------------------------------------------------
 // Custom Deleter
@@ -147,11 +146,6 @@ sg::ogl::input::MouseInput& sg::ogl::Application::GetMouseInput() noexcept
     return *m_mouseInput;
 }
 
-sg::ogl::ecs::factory::EntityFactory& sg::ogl::Application::GetEntityFactory() noexcept
-{
-    return *m_entityFactory;
-}
-
 //-------------------------------------------------
 // Run
 //-------------------------------------------------
@@ -204,9 +198,6 @@ void sg::ogl::Application::CoreInit()
 
     m_mouseInput.reset(new input::MouseInput);
     SG_OGL_CORE_ASSERT(m_mouseInput, "[Application::CoreInit()] Null pointer.");
-
-    m_entityFactory = std::make_unique<ecs::factory::EntityFactory>(this);
-    SG_OGL_CORE_ASSERT(m_entityFactory, "[Application::CoreInit()] Null pointer.");
 
     // replace all callbacks
     m_circularEventQueue->SetCallbacks();

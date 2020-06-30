@@ -17,7 +17,8 @@ matrix:
 before_install:
   - sudo apt-get install python3
   - sudo apt-get install python3-pip
-  - sudo pip3 install conan
+  - sudo apt-get install python3-setuptools
+  - pip3 install conan
 
 script:
   - conan install .

@@ -30,7 +30,6 @@
 
 // ecs
 #include "SgOglLib/ecs/component/Components.h"
-#include "SgOglLib/ecs/factory/EntityFactory.h"
 #include "SgOglLib/ecs/system/DeferredRenderSystem.h"
 #include "SgOglLib/ecs/system/ForwardRenderSystem.h"
 #include "SgOglLib/ecs/system/GuiRenderSystem.h"

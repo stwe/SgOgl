@@ -11,6 +11,9 @@
 
 #include "RenderSystem.h"
 #include "buffer/GBufferFbo.h"
+#include "light/PointLight.h"
+#include "light/DirectionalLight.h"
+#include "light/Sun.h"
 #include "resource/shaderprogram/GBufferPassShaderProgram.h"
 #include "resource/shaderprogram/LightingPassShaderProgram.h"
 #include "resource/ShaderManager.h"

@@ -36,11 +36,6 @@ namespace sg::ogl::input
     class MouseInput;
 }
 
-namespace sg::ogl::ecs::factory
-{
-    class EntityFactory;
-}
-
 namespace sg::ogl::scene
 {
     class Scene;
@@ -95,7 +90,6 @@ namespace sg::ogl
         using StateStackUniquePtr = std::unique_ptr<state::StateStack, DeleteStateStack>;
         using CircularEventQueueUniquePtr = std::unique_ptr<event::CircularEventQueue, DeleteCircularEventQueue>;
         using MouseInputUniquePtr = std::unique_ptr<input::MouseInput, DeleteMouseInput>;
-        using EntityFactoryUniquePtr = std::unique_ptr<ecs::factory::EntityFactory>;
 
         //-------------------------------------------------
         // Public member
@@ -144,7 +138,6 @@ namespace sg::ogl
         state::StateStack& GetStateStack() noexcept;
         event::CircularEventQueue& GetCircularEventQueue() noexcept;
         input::MouseInput& GetMouseInput() noexcept;
-        ecs::factory::EntityFactory& GetEntityFactory() noexcept;
 
         //-------------------------------------------------
         // Run
@@ -172,7 +165,6 @@ namespace sg::ogl
         StateStackUniquePtr m_stateStack;
         CircularEventQueueUniquePtr m_circularEventQueue;
         MouseInputUniquePtr m_mouseInput;
-        EntityFactoryUniquePtr m_entityFactory;
 
         //-------------------------------------------------
         // Init && GameLoop
