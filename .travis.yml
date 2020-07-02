@@ -20,9 +20,10 @@ before_install:
   - sudo apt-get install python3-setuptools
   - pip3 install wheel
   - pip3 install conan
-  - conan profile update settings.compiler.version=9 /home/travis/.conan/profiles/default
-  - conan profile update settings.compiler.libcxx=libstdc++11 /home/travis/.conan/profiles/default
+  - conan profile new default --detect
+  - conan profile update settings.compiler.version=9 default
+  - conan profile update settings.compiler.libcxx=libstdc++11 default
 
 script:
-  - conan install .
+  - conan install . --build missing
   - cmake --build .
