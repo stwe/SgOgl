@@ -1,6 +1,6 @@
 [requires]
 glm/0.9.9.7
-glfw/3.3.2@bincrafters/stable
+glfw/3.3.2
 glew/2.1.0@bincrafters/stable
 spdlog/1.5.0
 entt/3.4.0
