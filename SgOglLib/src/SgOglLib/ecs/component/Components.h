@@ -55,15 +55,15 @@ namespace sg::ogl::ecs::component
         static constexpr auto JUMP_POWER{ 256.0f };
 
         std::string name;
+        uint32_t currentAnimation{ 0 };
+        float defaultTicksPerSecond{ 25.0f };
+        float lowestY{ 0.0f };
 
         float currentSpeed{ 0.0f };
         float currentTurnSpeed{ 0.0f };
         float upSpeed{ 0.0f };
 
         bool isInAir{ false };
-
-        uint32_t currentAnimation{ 0 };
-        float defaultTicksPerSecond{ 1200.0f };
     };
 
     //-------------------------------------------------

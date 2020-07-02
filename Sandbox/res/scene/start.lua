@@ -10,39 +10,41 @@ scene = Scene.new(applicationContext)
 
 -- forward with skybox
 
-SkyboxRenderer.new(4, scene)
-SunRenderer.new(3, scene)
-ForwardRenderer.new(2, scene)
-SkeletalModelRenderer.new(1, scene)
-GuiRenderer.new(0, scene)
+--[[
+SkyboxRenderer.new(5, scene)
+SunRenderer.new(4, scene)
+ForwardRenderer.new(3, scene)
+SkeletalModelRenderer.new(2, scene)
+GuiRenderer.new(1, scene)
 TextRenderer.new(0, scene, "res/font/calibri.ttf")
+]]
 
 -- deferred with skybox
 
 --[[
-DeferredRenderer.new(3, scene)
-SkyboxRenderer.new(2, scene)
-SunRenderer.new(1, scene)
-GuiRenderer.new(0, scene)
+DeferredRenderer.new(4, scene)
+SkyboxRenderer.new(3, scene)
+SunRenderer.new(2, scene)
+GuiRenderer.new(1, scene)
+TextRenderer.new(0, scene, "res/font/calibri.ttf")
 ]]
 
 -- forward with skydome
 
---[[
-SkydomeRenderer.new(4, scene)
-SunRenderer.new(3, scene)
-ForwardRenderer.new(2, scene)
-SkeletalModelRenderer.new(1, scene)
-GuiRenderer.new(0, scene)
-]]
+SkydomeRenderer.new(5, scene)
+SunRenderer.new(4, scene)
+ForwardRenderer.new(3, scene)
+SkeletalModelRenderer.new(2, scene)
+GuiRenderer.new(1, scene)
+TextRenderer.new(0, scene, "res/font/calibri.ttf")
 
 -- deferred with skydome
 
 --[[
-DeferredRenderer.new(3, scene)
-SkydomeRenderer.new(2, scene)
-SunRenderer.new(1, scene)
-GuiRenderer.new(0, scene)
+DeferredRenderer.new(4, scene)
+SkydomeRenderer.new(3, scene)
+SunRenderer.new(2, scene)
+GuiRenderer.new(1, scene)
 TextRenderer.new(0, scene, "res/font/calibri.ttf")
 ]]
 
@@ -53,19 +55,17 @@ TextRenderer.new(0, scene, "res/font/calibri.ttf")
 firstPersonCamera = FirstPersonCamera.new("first_person_camera1", applicationContext, Vec3.new(883.0, 1055.0, -853.0), -205.0, -16.0, scene)
 firstPersonCamera:SetCameraVelocity(128.0)
 firstPersonCamera:SetMouseSensitivity(0.025)
---print(firstPersonCamera:GetCameraVelocity())
---print(firstPersonCamera:GetMouseSensitivity())
 
-thirdPersonCamera = ThirdPersonCamera.new("third_person_camera1", applicationContext, Vec3.new(1334.0, 820.0, 227.0), scene)
+thirdPersonCamera = ThirdPersonCamera.new("third_person_camera1", applicationContext, Vec3.new(-500.0, 200.0, -500.0), scene)
 thirdPersonCamera:SetPlayerRotationY(45.0)
---print(thirdPersonCamera:GetPlayerRotationY())
+thirdPersonCamera:SetPitch(35.0)
 
 ------------------
 -- Config Scene --
 ------------------
 
-scene:SetCurrentCamera("first_person_camera1")
---scene:SetCurrentCamera("third_person_camera1")
+--scene:SetCurrentCamera("first_person_camera1")
+scene:SetCurrentCamera("third_person_camera1")
 
 scene:SetAmbientIntensity(Vec3.new(0.2, 0.2, 0.2))
 
@@ -109,7 +109,7 @@ ecs:AddTransformComponent(planeEntity, Vec3.new(0.0, 150.0, 0.0), Vec3.new(0.0, 
 heroEntity = ecs:CreateEntity()
 ecs:AddSkeletalModelComponent(heroEntity, hero, false)
 ecs:AddTransformComponent(heroEntity, Vec3.new(-500.0, 200.0, -500.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(64.0))
-ecs:AddPlayerComponent(heroEntity, "Hero")
+ecs:AddPlayerComponent(heroEntity, "Hero", 2, 1200.0, 200.0)
 
 -- sphere
 

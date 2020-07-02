@@ -5,7 +5,7 @@
 // 
 // License:  MIT
 // 
-// 2019 (c) stwe <https://github.com/stwe/SgOgl>
+// 2020 (c) stwe <https://github.com/stwe/SgOgl>
 
 #pragma once
 
@@ -35,7 +35,6 @@
 #include "SgOglLib/ecs/system/GuiRenderSystem.h"
 #include "SgOglLib/ecs/system/InstancingRenderSystem.h"
 #include "SgOglLib/ecs/system/ParticleSystemRenderer.h"
-#include "SgOglLib/ecs/system/PlayerRenderSystem.h"
 #include "SgOglLib/ecs/system/RenderSystem.h"
 #include "SgOglLib/ecs/system/SkeletalModelRenderSystem.h"
 #include "SgOglLib/ecs/system/SkyboxRenderSystem.h"

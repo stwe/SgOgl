@@ -17,9 +17,9 @@ namespace sg::ogl::camera
     {
     public:
         static constexpr auto SPEED{ 0.7f };
-        static constexpr auto DEFAULT_DISTANCE{ 20.0f };
-        static constexpr auto MIN_DISTANCE{ 5.0f };
-        static constexpr auto MAX_DISTANCE{ 100.0f };
+        static constexpr auto DEFAULT_DISTANCE{ 900.0f };
+        static constexpr auto MIN_DISTANCE{ 300.0f };
+        static constexpr auto MAX_DISTANCE{ 4000.0f };
 
         //-------------------------------------------------
         // Ctors. / Dtor.

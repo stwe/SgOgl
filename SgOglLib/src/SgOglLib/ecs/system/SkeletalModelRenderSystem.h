@@ -63,61 +63,132 @@ namespace sg::ogl::ecs::system
                 skeletalModelComponent.model->SetCurrentAnimation(playerComponent.currentAnimation);
                 skeletalModelComponent.model->SetDefaultTicksPerSecond(playerComponent.defaultTicksPerSecond);
 
-                if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_UP))
+                // FirstPersonCamera
+                auto* firstPersonCamera{ dynamic_cast<camera::FirstPersonCamera*>(&m_scene->GetCurrentCamera()) };
+                if (firstPersonCamera)
                 {
-                    playerComponent.currentSpeed = component::PlayerComponent::RUN_SPEED;
-                }
-                else if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_DOWN))
-                {
-                    playerComponent.currentSpeed = -component::PlayerComponent::RUN_SPEED;
-                }
-                else
-                {
-                    playerComponent.currentSpeed = 0.0f;
-                }
-
-                if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_RIGHT))
-                {
-                    playerComponent.currentTurnSpeed = -component::PlayerComponent::TURN_SPEED;
-                }
-                else if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_LEFT))
-                {
-                    playerComponent.currentTurnSpeed = component::PlayerComponent::TURN_SPEED;
-                }
-                else
-                {
-                    playerComponent.currentTurnSpeed = 0.0f;
-                }
-
-                if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_SPACE))
-                {
-                    if (!playerComponent.isInAir)
+                    if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_UP))
                     {
-                        playerComponent.upSpeed = component::PlayerComponent::JUMP_POWER;
-                        playerComponent.isInAir = true;
+                        playerComponent.currentSpeed = component::PlayerComponent::RUN_SPEED;
+                    }
+                    else if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_DOWN))
+                    {
+                        playerComponent.currentSpeed = -component::PlayerComponent::RUN_SPEED;
+                    }
+                    else
+                    {
+                        playerComponent.currentSpeed = 0.0f;
+                    }
+
+                    if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_RIGHT))
+                    {
+                        playerComponent.currentTurnSpeed = -component::PlayerComponent::TURN_SPEED;
+                    }
+                    else if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_LEFT))
+                    {
+                        playerComponent.currentTurnSpeed = component::PlayerComponent::TURN_SPEED;
+                    }
+                    else
+                    {
+                        playerComponent.currentTurnSpeed = 0.0f;
+                    }
+
+                    if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_SPACE))
+                    {
+                        if (!playerComponent.isInAir)
+                        {
+                            playerComponent.upSpeed = component::PlayerComponent::JUMP_POWER;
+                            playerComponent.isInAir = true;
+                        }
+                    }
+
+                    // update player y-rotation
+                    transformComponent.rotation.y += playerComponent.currentTurnSpeed * dt;
+
+                    // update player x and z-position
+                    const auto distance = playerComponent.currentSpeed * dt;
+                    const auto dx{ static_cast<float>(distance * glm::sin(glm::radians(transformComponent.rotation.y))) };
+                    const auto dz{ static_cast<float>(distance * glm::cos(glm::radians(transformComponent.rotation.y))) };
+                    transformComponent.position.x += dx;
+                    transformComponent.position.z += dz;
+
+                    // update player y-position
+                    playerComponent.upSpeed += component::PlayerComponent::GRAVITY * dt;
+                    transformComponent.position.y += playerComponent.upSpeed * dt;
+
+                    // keep the player on the terrain/plane
+                    if (transformComponent.position.y < playerComponent.lowestY)
+                    {
+                        playerComponent.upSpeed = 0.0f;
+                        playerComponent.isInAir = false;
+                        transformComponent.position.y = playerComponent.lowestY;
                     }
                 }
 
-                // update player y-rotation
-                transformComponent.rotation.y += playerComponent.currentTurnSpeed * dt;
-
-                // update player x and z-position
-                const auto distance = playerComponent.currentSpeed * dt;
-                const auto dx{ static_cast<float>(distance * glm::sin(glm::radians(transformComponent.rotation.y))) };
-                const auto dz{ static_cast<float>(distance * glm::cos(glm::radians(transformComponent.rotation.y))) };
-                transformComponent.position.x += dx;
-                transformComponent.position.z += dz;
-
-                // update player y-position
-                playerComponent.upSpeed += component::PlayerComponent::GRAVITY * dt;
-                transformComponent.position.y += playerComponent.upSpeed * dt;
-
-                // keep the player on the terrain/plane
-                if (transformComponent.position.y < 200.0f) // todo 
+                // ThirdPersonCamera
+                auto* thirdPersonCamera{ dynamic_cast<camera::ThirdPersonCamera*>(&m_scene->GetCurrentCamera()) };
+                if (thirdPersonCamera)
                 {
-                    playerComponent.upSpeed = 0.0f;
-                    playerComponent.isInAir = false;
-                    transformComponent.position.y = 200.0f;
+                    if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_W))
+                    {
+                        playerComponent.currentSpeed = component::PlayerComponent::RUN_SPEED;
+                    }
+                    else if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_S))
+                    {
+                        playerComponent.currentSpeed = -component::PlayerComponent::RUN_SPEED;
+                    }
+                    else
+                    {
+                        playerComponent.currentSpeed = 0.0f;
+                    }
+
+                    if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_D))
+                    {
+                        playerComponent.currentTurnSpeed = -component::PlayerComponent::TURN_SPEED;
+                    }
+                    else if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_A))
+                    {
+                        playerComponent.currentTurnSpeed = component::PlayerComponent::TURN_SPEED;
+                    }
+                    else
+                    {
+                        playerComponent.currentTurnSpeed = 0.0f;
+                    }
+
+                    if (m_scene->GetApplicationContext()->GetWindow().IsKeyPressed(GLFW_KEY_SPACE))
+                    {
+                        if (!playerComponent.isInAir)
+                        {
+                            playerComponent.upSpeed = component::PlayerComponent::JUMP_POWER;
+                            playerComponent.isInAir = true;
+                        }
+                    }
+
+                    // update player y-rotation
+                    transformComponent.rotation.y += playerComponent.currentTurnSpeed * dt;
+
+                    // update player x and z-position
+                    const auto distance = playerComponent.currentSpeed * dt;
+                    const auto dx{ static_cast<float>(distance * glm::sin(glm::radians(transformComponent.rotation.y))) };
+                    const auto dz{ static_cast<float>(distance * glm::cos(glm::radians(transformComponent.rotation.y))) };
+                    transformComponent.position.x += dx;
+                    transformComponent.position.z += dz;
+
+                    // update player y-position
+                    playerComponent.upSpeed += component::PlayerComponent::GRAVITY * dt;
+                    transformComponent.position.y += playerComponent.upSpeed * dt;
+
+                    // keep the player on the terrain/plane
+                    if (transformComponent.position.y < playerComponent.lowestY)
+                    {
+                        playerComponent.upSpeed = 0.0f;
+                        playerComponent.isInAir = false;
+                        transformComponent.position.y = playerComponent.lowestY;
+                    }
+
+                    // the ThirdPersonCamera follows the player
+                    thirdPersonCamera->SetPlayerPosition(transformComponent.position);
+                    thirdPersonCamera->SetPlayerRotationY(transformComponent.rotation.y);
                 }
             }
         }

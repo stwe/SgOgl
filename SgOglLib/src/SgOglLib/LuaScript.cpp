@@ -239,7 +239,9 @@ void sg::ogl::LuaScript::CreateCameraUsertypes()
         ),
         "SetPlayerPosition", &camera::ThirdPersonCamera::SetPlayerPosition,
         "SetPlayerRotationY", &camera::ThirdPersonCamera::SetPlayerRotationY,
-        "GetPlayerRotationY", &camera::ThirdPersonCamera::GetPlayerRotationY
+        "GetPlayerRotationY", &camera::ThirdPersonCamera::GetPlayerRotationY,
+        "SetYaw", &camera::ThirdPersonCamera::SetYaw,
+        "SetPitch", &camera::ThirdPersonCamera::SetPitch
     );
 }
 
@@ -475,7 +477,7 @@ void sg::ogl::LuaScript::CreateEcsRegistryUsertype()
             t_reg.emplace<ecs::component::ModelInstancesComponent>(t_entity, t_model, t_showTriangles, t_fakeNormals, instances);
         },
         "AddTerrainQuadtreeComponent", static_cast<ecs::component::TerrainQuadtreeComponent& (entt::registry::*)(entt::entity, terrain::TerrainQuadtree*&&)>(&entt::registry::emplace<ecs::component::TerrainQuadtreeComponent, terrain::TerrainQuadtree*>),
-        "AddPlayerComponent", static_cast<ecs::component::PlayerComponent& (entt::registry::*)(entt::entity, std::string&&)>(&entt::registry::emplace<ecs::component::PlayerComponent, std::string>),
+        "AddPlayerComponent", static_cast<ecs::component::PlayerComponent& (entt::registry::*)(entt::entity, std::string&&, uint32_t&&, float&&, float&&)>(&entt::registry::emplace<ecs::component::PlayerComponent, std::string, uint32_t, float, float>),
         "GetPointLightComponent", static_cast<light::PointLight& (entt::registry::*)(entt::entity)>(&entt::registry::get<light::PointLight>)
     );
 }
