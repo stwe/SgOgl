@@ -23,6 +23,7 @@ before_install:
   - conan profile new default --detect
   - conan profile update settings.compiler.version=9 default
   - conan profile update settings.compiler.libcxx=libstdc++11 default
+  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
 script:
   - conan install . --build missing
