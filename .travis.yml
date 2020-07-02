@@ -15,6 +15,7 @@ matrix:
         - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
 
 before_install:
+  - sudo apt-get install libgl1-mesa-dev
   - sudo apt-get install python3
   - sudo apt-get install python3-pip
   - sudo apt-get install python3-setuptools
