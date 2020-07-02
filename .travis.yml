@@ -15,11 +15,13 @@ matrix:
         - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
 
 before_install:
-  - sudo apt-get install libgl1-mesa-dev
-  - sudo apt-get install xorg-dev
-  - sudo apt-get install python3
-  - sudo apt-get install python3-pip
-  - sudo apt-get install python3-setuptools
+  - sudo apt-get -qq update
+  - sudo apt-get -y install libgl1-mesa-dev
+  - sudo apt-get -y install xorg-dev
+  - sudo apt-get -y install python3
+  - sudo apt-get -y install python3-pip
+  - sudo apt-get -y install python3-setuptools
+  - sudo apt-get -y install libxcb-render-util0-dev
   - pip3 install wheel
   - pip3 install conan
   - conan profile new default --detect
