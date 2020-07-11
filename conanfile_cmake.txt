@@ -1,0 +1,15 @@
+[requires]
+glm/0.9.9.7
+glfw/3.3.2
+glew/2.1.0@bincrafters/stable
+spdlog/1.5.0
+entt/3.4.0
+assimp/5.0.1
+freetype/2.10.1
+imgui/1.75
+fmt/6.2.0
+lua/5.3.5
+sol2/3.2.1
+
+[generators]
+cmake

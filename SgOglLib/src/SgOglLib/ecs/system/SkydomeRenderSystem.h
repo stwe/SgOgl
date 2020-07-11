@@ -27,13 +27,13 @@ namespace sg::ogl::ecs::system
         explicit SkydomeRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
         {
-            debugName = "SkydomeRenderer";
+            name = "SkydomeRenderer";
         }
 
         SkydomeRenderSystem(const int t_priority, scene::Scene* t_scene)
             : RenderSystem(t_priority, t_scene)
         {
-            debugName = "SkydomeRenderer";
+            name = "SkydomeRenderer";
         }
 
         //-------------------------------------------------

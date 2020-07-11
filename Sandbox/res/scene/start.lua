@@ -103,6 +103,7 @@ skyboxCubemapId = textureManager:GetCubemapId(a)
 planeEntity = ecs:CreateEntity()
 ecs:AddModelComponent(planeEntity, plane, false)
 ecs:AddTransformComponent(planeEntity, Vec3.new(0.0, 150.0, 0.0), Vec3.new(0.0, 0.0, 0.0), Vec3.new(5000.0, 1.0, 5000.0))
+ecs:AddInputComponent(planeEntity, "MouseInput")
 
 -- hero
 
@@ -211,10 +212,31 @@ ecs:AddTextComponent(textEntity1, "Version: dev-master", 40.0, 730.0, 0.35, Vec3
 -- Functions --
 ---------------
 
+-- example update function
+
 val = 0.0
 
 function UpdatePointLight(entity, dt)
     val = val + dt
     p = ecs:GetPointLightComponent(entity)
     p.position.x = p.position.x + (math.sin(val) * 4.0)
+end
+
+-- example input function
+
+function MouseInput()
+    -- if left mouse button was pressed
+    if (mouseInput:IsLeftButtonPressed()) then
+        print("left mouse button pressed")
+
+        -- get current mouse position
+        mousePosition = mouseInput:GetCurrentPos()
+        print("mouse x: " .. mousePosition.x)
+        print("mouse y: " .. mousePosition.y)
+
+        -- get current width && height
+        projectionOptions = applicationContext:GetProjectionOptions()
+        print("screen width: " .. projectionOptions.width)
+        print("screen height: " .. projectionOptions.height)
+    end
 end

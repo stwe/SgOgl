@@ -30,14 +30,14 @@ namespace sg::ogl::ecs::system
             : RenderSystem(t_scene)
         {
             m_sunQuadMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::SUN_QUAD_MESH);
-            debugName = "SunRenderer";
+            name = "SunRenderer";
         }
 
         SunRenderSystem(const int t_priority, scene::Scene* t_scene)
             : RenderSystem(t_priority, t_scene)
         {
             m_sunQuadMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::SUN_QUAD_MESH);
-            debugName = "SunRenderer";
+            name = "SunRenderer";
         }
 
         //-------------------------------------------------

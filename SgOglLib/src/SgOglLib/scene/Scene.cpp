@@ -13,7 +13,6 @@
 #include "Scene.h"
 #include "Core.h"
 #include "Application.h"
-#include "input/MouseInput.h"
 #include "camera/Camera.h"
 #include "ecs/component/Components.h"
 #include "ecs/system/WaterRenderSystem.h"
@@ -116,29 +115,16 @@ void sg::ogl::scene::Scene::Input()
 {
     GetCurrentCamera().Input();
 
-    // todo: tmp code
-
     // run the input components
     if (m_parentLuaState)
     {
-        // todo in lua abfragen
-        if (GetApplicationContext()->GetMouseInput().IsLeftButtonPressed())
-        {
-            auto mousePosition = GetApplicationContext()->GetMouseInput().GetCurrentPos();
-
-            // ndc
-            const auto x{ (2.0f * mousePosition.x) / static_cast<float>(GetApplicationContext()->GetProjectionOptions().width) - 1.0f };
-            const auto y{ 1.0f - (2.0f * mousePosition.y) / static_cast<float>(GetApplicationContext()->GetProjectionOptions().height) };
-
-            sol::state_view lua{ m_parentLuaState };
-            m_application->registry.view<ecs::component::InputComponent>().each(
-                [&](entt::entity t_entity, auto& t_inputComponent)
-                {
-                    lua[t_inputComponent.luaFunction](t_entity, x, y);
-                    //lua[t_inputComponent.luaFunction](t_entity, 0.5f * x + 0.5f, 0.5f * y + 0.5f);
-                }
-            );
-        }
+        sol::state_view lua{ m_parentLuaState };
+        m_application->registry.view<ecs::component::InputComponent>().each(
+            [&](entt::entity t_entity, auto& t_inputComponent)
+            {
+                lua[t_inputComponent.luaFunction](t_entity);
+            }
+        );
     }
 }
 
@@ -167,11 +153,11 @@ void sg::ogl::scene::Scene::Update(const double t_dt)
 
 void sg::ogl::scene::Scene::Render()
 {
-    // todo: do not search for the debug name
+    // run the WaterRenderer first if extist
     if (!waterSurfaces.empty())
     {
         const auto& it = std::find_if(renderer.begin(), renderer.end(),
-            [](std::unique_ptr<ecs::system::RenderSystemInterface>& t_renderSystem) {return t_renderSystem->debugName == "WaterRenderer"; });
+            [](std::unique_ptr<ecs::system::RenderSystemInterface>& t_renderSystem) { return t_renderSystem->name == "WaterRenderer"; });
 
         if (it != renderer.end())
         {
@@ -181,6 +167,7 @@ void sg::ogl::scene::Scene::Render()
         }
     }
 
+    // run the render functions of all other renderers
     for (auto& r : renderer)
     {
         r->PrepareRendering();

@@ -37,14 +37,14 @@ namespace sg::ogl::ecs::system
             : RenderSystem(t_scene)
         {
             m_waterMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::WATER_MESH);
-            debugName = "WaterRenderer";
+            name = "WaterRenderer";
         }
 
         WaterRenderSystem(const int t_priority, scene::Scene* t_scene)
             : RenderSystem(t_priority, t_scene)
         {
             m_waterMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::WATER_MESH);
-            debugName = "WaterRenderer";
+            name = "WaterRenderer";
         }
 
         //-------------------------------------------------

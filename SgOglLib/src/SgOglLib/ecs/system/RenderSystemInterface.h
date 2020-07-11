@@ -21,7 +21,7 @@ namespace sg::ogl::ecs::system
         //-------------------------------------------------
 
         int priority{ 100 };
-        std::string debugName;
+        std::string name;
 
         //-------------------------------------------------
         // Ctors. / Dtor.
@@ -36,7 +36,7 @@ namespace sg::ogl::ecs::system
 
         virtual ~RenderSystemInterface()
         {
-            Log::SG_OGL_CORE_LOG_DEBUG("[RenderSystemInterface::~RenderSystemInterface()] Destruct RenderSystem {}.", debugName);
+            Log::SG_OGL_CORE_LOG_DEBUG("[RenderSystemInterface::~RenderSystemInterface()] Destruct RenderSystem {}.", name);
         }
 
         //-------------------------------------------------

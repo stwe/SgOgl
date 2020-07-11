@@ -37,7 +37,7 @@ namespace sg::ogl::ecs::system
             InitFreeType();
             CreateMesh();
 
-            debugName = "TextRenderer";
+            name = "TextRenderer";
         }
 
         TextRenderSystem(const int t_priority, scene::Scene* t_scene, std::string t_fontPath)
@@ -47,7 +47,7 @@ namespace sg::ogl::ecs::system
             InitFreeType();
             CreateMesh();
 
-            debugName = "TextRenderer";
+            name = "TextRenderer";
         }
 
         //-------------------------------------------------

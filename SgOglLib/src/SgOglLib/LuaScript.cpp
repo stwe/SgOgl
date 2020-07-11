@@ -16,6 +16,7 @@
 #include "resource/ModelManager.h"
 #include "resource/TextureManager.h"
 #include "resource/SkeletalModel.h"
+#include "input/MouseInput.h"
 #include "water/Water.h"
 #include "particle/ParticleSystem.h"
 #include "terrain/TerrainConfig.h"
@@ -114,7 +115,7 @@ void sg::ogl::LuaScript::FinishLuaScript() const
     auto i{ 0 };
     for (const auto& renderer : m_application->currentScene->renderer)
     {
-        Log::SG_OGL_CORE_LOG_INFO("[LuaScript::FinishLuaScript()] {}. {}", i, renderer->debugName);
+        Log::SG_OGL_CORE_LOG_INFO("[LuaScript::FinishLuaScript()] {}. {}", i, renderer->name);
         i++;
     }
 
@@ -127,14 +128,47 @@ void sg::ogl::LuaScript::FinishLuaScript() const
 
 void sg::ogl::LuaScript::RegisterFunctions()
 {
+    m_lua.new_usertype<ProjectionOptions>(
+        "ProjectionOptions",
+        sol::no_constructor,
+        "width", &ProjectionOptions::width,
+        "height", &ProjectionOptions::height
+    );
+
+    m_lua.new_usertype<Application>(
+        "Application",
+        sol::no_constructor,
+        "GetProjectionOptions", [](Application& t_application)
+        {
+            return t_application.GetProjectionOptions();
+        }
+    );
+
+    m_lua.new_usertype<input::MouseInput>(
+        "MouseInput",
+        sol::no_constructor,
+        "IsLeftButtonPressed", &input::MouseInput::IsLeftButtonPressed,
+        "IsRightButtonPressed", &input::MouseInput::IsRightButtonPressed,
+        "GetCurrentPos", &input::MouseInput::GetCurrentPos
+    );
+
     m_lua["applicationContext"] = m_application;
     m_lua["modelManager"] = &m_application->GetModelManager();
     m_lua["textureManager"] = &m_application->GetTextureManager();
+    m_lua["mouseInput"] = &m_application->GetMouseInput();
     m_lua["ecs"] = &m_application->registry;
 }
 
 void sg::ogl::LuaScript::CreateGlmUsertypes()
 {
+    // glm::ivec2
+    m_lua.new_usertype<glm::ivec2>(
+        "Ivec2",
+        sol::constructors<glm::ivec2(), glm::ivec2(int), glm::ivec2(int, int)>(),
+        "x", &glm::ivec2::x,
+        "y", &glm::ivec2::y
+    );
+
     // glm::vec2
     m_lua.new_usertype<glm::vec2>(
         "Vec2",

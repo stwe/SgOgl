@@ -30,13 +30,13 @@ namespace sg::ogl::ecs::system
         explicit InstancingRenderSystem(scene::Scene* t_scene)
             : RenderSystem(t_scene)
         {
-            debugName = "InstancingRenderer";
+            name = "InstancingRenderer";
         }
 
         InstancingRenderSystem(const int t_priority, scene::Scene* t_scene)
             : RenderSystem(t_priority, t_scene)
         {
-            debugName = "InstancingRenderer";
+            name = "InstancingRenderer";
         }
 
         //-------------------------------------------------

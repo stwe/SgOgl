@@ -34,14 +34,14 @@ namespace sg::ogl::ecs::system
             : RenderSystem(t_scene)
         {
             m_quadMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::PARTICLE_QUAD_MESH);
-            debugName = "ParticleSystemRenderer";
+            name = "ParticleSystemRenderer";
         }
 
         ParticleSystemRenderer(const int t_priority, scene::Scene* t_scene)
             : RenderSystem(t_priority, t_scene)
         {
             m_quadMesh = m_scene->GetApplicationContext()->GetModelManager().GetStaticMeshByName(resource::ModelManager::PARTICLE_QUAD_MESH);
-            debugName = "ParticleSystemRenderer";
+            name = "ParticleSystemRenderer";
         }
 
         //-------------------------------------------------
