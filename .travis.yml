@@ -16,12 +16,14 @@ matrix:
 
 before_install:
   - sudo apt-get -qq update
+  - sudo apt-get -y install python3
+  - sudo apt-get -y install python3-pip
+  - sudo apt-get -y install python3-setuptools
   - pip3 install wheel
   - pip3 install conan
   - conan profile new default --detect
   - conan profile update settings.compiler.version=9 default
   - conan profile update settings.compiler.libcxx=libstdc++11 default
-  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
 script:
   - conan install conanfile_cmake.txt --build missing
