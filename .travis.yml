@@ -22,6 +22,7 @@ before_install:
   - sudo apt-get -y install python3-pip
   - sudo apt-get -y install python3-setuptools
   - sudo apt-get -y install libxcb-render-util0-dev
+  - sudo apt-get -y install libglu1-mesa-dev
   - pip3 install wheel
   - pip3 install conan
   - conan profile new default --detect

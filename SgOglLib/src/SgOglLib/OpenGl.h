@@ -11,6 +11,10 @@
 
 // include Windows.h before glfw3.h
 #ifdef _WIN64
+    #ifndef NOMINMAX
+        #define NOMINMAX
+    #endif
+
     #include <Windows.h>
 #endif
 

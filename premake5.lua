@@ -31,8 +31,6 @@ project "SgOglLib"
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("obj/" .. outputdir .. "/%{prj.name}")
 
-    linkoptions { conan_exelinkflags }
-
     files
     {
         "%{prj.name}/src/**.h",
@@ -88,8 +86,6 @@ project "Sandbox"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("obj/" .. outputdir .. "/%{prj.name}")
-
-    linkoptions { conan_exelinkflags }
 
     files
     {

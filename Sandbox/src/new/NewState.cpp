@@ -28,6 +28,11 @@ bool NewState::Input()
 
 bool NewState::Update(const double t_dt)
 {
+    if (ImGui::GetIO().WantCaptureMouse)
+    {
+        return true;
+    }
+
     if (GetApplicationContext()->currentScene)
     {
         GetApplicationContext()->currentScene->Update(t_dt);
