@@ -42,4 +42,8 @@ before_install:
 
 script:
   - conan install conanfile_cmake.txt -s build_type=Debug --build=missing
-  - cmake --build .
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+
