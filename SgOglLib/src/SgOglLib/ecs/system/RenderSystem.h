@@ -10,6 +10,7 @@
 #pragma once
 
 #include "Core.h"
+#include "Application.h"
 #include "RenderSystemInterface.h"
 #include "scene/Scene.h"
 #include "resource/ShaderManager.h"

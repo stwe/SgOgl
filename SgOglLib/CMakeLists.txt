@@ -9,7 +9,7 @@ file(GLOB_RECURSE LIB_SRC_FILES
     "*.cpp"
 )
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+include(../conanbuildinfo.cmake)
 conan_basic_setup()
 
 add_library(${PROJECT_NAME} STATIC ${LIB_SRC_FILES})

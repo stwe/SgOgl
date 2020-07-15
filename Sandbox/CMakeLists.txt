@@ -9,7 +9,7 @@ file(GLOB_RECURSE SANDBOX_SRC_FILES
     "*.cpp"
 )
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+include(../conanbuildinfo.cmake)
 conan_basic_setup()
 
 add_executable(${PROJECT_NAME} ${SANDBOX_SRC_FILES})
