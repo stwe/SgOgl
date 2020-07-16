@@ -15,6 +15,7 @@ matrix:
         - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
 
 before_install:
+  - eval "${MATRIX_EVAL}"
   - sudo apt update
   - sudo apt install libglu1-mesa-dev freeglut3-dev mesa-common-dev
   - sudo apt install libgl1-mesa-dev
