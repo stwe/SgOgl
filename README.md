@@ -2,13 +2,6 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/499a4726db5844449126e0101ac1074f)](https://app.codacy.com/app/stwe/SgOgl?utm_source=github.com&utm_medium=referral&utm_content=stwe/SgOgl&utm_campaign=Badge_Grade_Dashboard)
 
-
-[![Build Status](https://travis-ci.org/stwe/SgOgl.svg?branch=master)](https://travis-ci.org/stwe/SgOgl)
-
-
-[![codecov](https://codecov.io/gh/stwe/SgOgl/branch/master/graph/badge.svg)](https://codecov.io/gh/stwe/SgOgl)
-
-
 ![Terrain](https://github.com/stwe/SgOgl/blob/master/Sandbox/res/devlog/terrainWithTrees.png)
 
 
